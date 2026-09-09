@@ -44,12 +44,12 @@ const SLIDES = [
   },
   {
     id: 3,
-    tag: "ÉDITIONS EXCLUSIVES",
+    tag: "CRÉATIONS RARES",
     titlePrefix: "Le Sillage de ",
     titleHighlight: "L'Élégance",
-    subtitle: "Packs exclusifs et déodorants haut de gamme livrés chez vous.",
-    btnText: "Voir les Packs",
-    btnLink: "/collection/packs",
+    subtitle: "Sélection exclusive de parfums de niche confidentiels et extraits précieux.",
+    btnText: "Voir les Parfums",
+    btnLink: "/collection/all",
     bgImage: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=2000&auto=format&fit=crop",
   },
 ];

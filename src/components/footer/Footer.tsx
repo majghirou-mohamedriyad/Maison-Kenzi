@@ -55,27 +55,27 @@ const Footer = () => {
             <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
               <li>
                 <Link to="/collection/homme" className="hover:text-primary transition-colors">
-                  Parfums Homme
+                  Parfums Niche Homme
                 </Link>
               </li>
               <li>
                 <Link to="/collection/femme" className="hover:text-primary transition-colors">
-                  Parfums Femme
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/deodorants-stick" className="hover:text-primary transition-colors">
-                  Déodorants Stick
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/packs" className="hover:text-primary transition-colors font-medium text-primary">
-                  Packs & Coffrets
+                  Parfums Niche Femme
                 </Link>
               </li>
               <li>
                 <Link to="/collection/all" className="hover:text-primary transition-colors">
-                  Toute la Collection
+                  Créations Rares & Unisexe
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/all" className="hover:text-primary transition-colors font-medium text-primary">
+                  Décants Nomades 5ml & 10ml
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/all" className="hover:text-primary transition-colors">
+                  Tous les Parfums de Niche
                 </Link>
               </li>
             </ul>

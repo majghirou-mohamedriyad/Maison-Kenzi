@@ -1,8 +1,7 @@
 /**
  * Barre d'Annonce Supérieure (StatusBar) — Maison Kenzi
  *
- * Affiche les engagements clés de la maison (livraison, authenticité, décantage)
- * avec un lettrage espacé et des teintes nudes feutrées.
+ * Affiche les engagements exclusifs Haute Parfumerie & Parfums de Niche.
  */
 
 import { useEffect, useState } from "react";
@@ -12,10 +11,10 @@ const StatusBar = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const usps = [
-    { text: "Livraison Rapide 24–48h partout au Maroc", icon: Truck },
-    { text: "Paiement à la Livraison — Commandez en toute sérénité", icon: ShieldCheck },
-    { text: "100% Parfums Authentiques & Décantation Artisanale", icon: Sparkles },
-    { text: "Flacons scellés & Échantillons haute précision", icon: Award },
+    { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc", icon: Sparkles },
+    { text: "Flacons Originaux & Décants Précision 5ml & 10ml", icon: Award },
+    { text: "Livraison Express 24–48h partout au Maroc", icon: Truck },
+    { text: "Paiement à la Livraison — 100% Parfums Authentiques", icon: ShieldCheck },
   ];
 
   useEffect(() => {

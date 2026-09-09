@@ -1,8 +1,8 @@
 /**
- * Section Univers Olfactifs (FiftyFiftySection / Grille Catégories) — Maison Kenzi
+ * Section Univers Olfactifs (FiftyFiftySection / Grille Parfums de Niche) — Maison Kenzi
  *
- * Présentation des 4 catégories phares (Homme, Femme, Déodorants, Packs)
- * avec visuels verticaux élégants et typographie éditoriale.
+ * Présentation des 4 univers phares de la haute parfumerie de niche :
+ * Parfums Homme, Parfums Femme, Créations Rares & Unisexe, et l'Art du Décant.
  */
 
 import { Link } from "react-router-dom";
@@ -10,40 +10,40 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 const CATEGORIES = [
   {
-    title: "Parfums Homme",
-    text: "Fragrances boisées, cuirées & ambrées.",
+    title: "Parfums Niche Homme",
+    text: "Fragrances boisées, cuirées & ambrées de caractère.",
     href: "/collection/homme",
     src: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1000&auto=format&fit=crop",
     fallbackSrc: "/products/g87MYErZ4y721NboX4dgUZheBrJKrMQamehWpORN_md.jpg",
-    alt: "Parfums Homme — Maison Kenzi",
-    tag: "Masculin",
+    alt: "Parfums Niche Homme — Maison Kenzi",
+    tag: "Masculin Niche",
   },
   {
-    title: "Parfums Femme",
-    text: "Sillages envoûtants, floraux & rares.",
+    title: "Parfums Niche Femme",
+    text: "Sillages floraux précieux, vanillés & orientaux rares.",
     href: "/collection/femme",
     src: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop",
     fallbackSrc: "/products/lynd0GeO8jp8IAPSLqd5NIbsyvS6etaIniWkVsMv_md.jpg",
-    alt: "Parfums Femme — Maison Kenzi",
-    tag: "Féminin",
+    alt: "Parfums Niche Femme — Maison Kenzi",
+    tag: "Féminin Niche",
   },
   {
-    title: "Déodorants Stick",
-    text: "Fraîcheur intense & protection 48h.",
-    href: "/collection/deodorants-stick",
-    src: "/products/kaGqhOEfyMLMuT81ymdfkblWvtk1Bf7rtiQtJrju_md.jpg",
+    title: "Créations Rares & Unisexe",
+    text: "Extraits de parfum & compositions confidentielles.",
+    href: "/collection/all",
+    src: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=1000&auto=format&fit=crop",
     fallbackSrc: "/products/kaGqhOEfyMLMuT81ymdfkblWvtk1Bf7rtiQtJrju_md.jpg",
-    alt: "Déodorants Stick — Maison Kenzi",
-    tag: "Soin & Fraîcheur",
+    alt: "Créations Rares & Unisexe — Maison Kenzi",
+    tag: "Haute Parfumerie",
   },
   {
-    title: "Packs & Coffrets",
-    text: "Duos d'exception & coffrets cadeau.",
-    href: "/collection/packs",
+    title: "L'Art du Décant Nomade",
+    text: "Flacons précieux 5ml & 10ml pour explorer les grands crus.",
+    href: "/collection/all",
     src: "/products/Klva1NBIVrAWITRlToAdkhN4pDMvlkXTrjHZXzCP_md.jpg",
     fallbackSrc: "/products/Klva1NBIVrAWITRlToAdkhN4pDMvlkXTrjHZXzCP_md.jpg",
-    alt: "LES PACKS — Maison Kenzi",
-    tag: "Exclusivité",
+    alt: "Décants Nomades — Maison Kenzi",
+    tag: "Formats Nomades",
     isGold: true,
   },
 ];
@@ -126,7 +126,7 @@ const FiftyFiftySection = () => {
           <span>Haute Parfumerie</span>
         </div>
         <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
-          Explorez Nos Univers Olfactifs
+          Nos Univers de Parfumerie de Niche
         </h2>
         <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-3 rounded-full" />
       </div>
