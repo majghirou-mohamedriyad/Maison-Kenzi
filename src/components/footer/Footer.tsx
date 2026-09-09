@@ -1,0 +1,161 @@
+import { Link } from "react-router-dom";
+import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-react";
+import { useAppSettings } from "@/hooks/useAppSettings";
+
+const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.461c-1.884 0-3.649-.508-5.176-1.393l-.371-.215-3.847 1.009 1.026-3.748-.236-.375c-.97-1.545-1.482-3.344-1.482-5.187 0-5.385 4.381-9.766 9.766-9.766 5.384 0 9.765 4.381 9.765 9.766 0 5.384-4.381 9.765-9.765 9.765m0-21.5c-6.48 0-11.754 5.274-11.754 11.754 0 2.07.539 4.095 1.562 5.88l-1.658 6.059 6.2-1.626c1.716.936 3.659 1.44 5.65 1.44 6.479 0 11.754-5.274 11.754-11.754s-5.275-11.753-11.754-11.753" />
+  </svg>
+);
+
+const Footer = () => {
+  const { settings } = useAppSettings();
+
+  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
+  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
+  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.")}`;
+  const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
+
+  return (
+    <footer className="w-full bg-card/70 border-t border-border text-foreground pt-12 md:pt-16 pb-8 px-4 sm:px-6 mt-20 md:mt-32">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-10 md:mb-12">
+          {/* Col 1: Brand Identity */}
+          <div className="space-y-3.5">
+            <Link
+              to="/"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="inline-block transition-transform hover:scale-105 cursor-pointer"
+              aria-label="Maison Kenzi - Accueil"
+            >
+              <img
+                src="/logo.png"
+                alt="Maison Kenzi"
+                className="h-9 md:h-11 w-auto object-contain dark:invert"
+              />
+            </Link>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
+              Haute Parfumerie & Décantation
+            </p>
+            <p className="text-xs font-light text-muted-foreground leading-relaxed max-w-xs">
+              Sélection exclusive des plus grandes maisons de parfum. Flacons originaux & décants nomades 5ml & 10ml livrés partout au Maroc.
+            </p>
+          </div>
+
+          {/* Col 2: Collections Links */}
+          <div>
+            <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
+              Collections
+            </h4>
+            <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
+              <li>
+                <Link to="/collection/homme" className="hover:text-primary transition-colors">
+                  Parfums Homme
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/femme" className="hover:text-primary transition-colors">
+                  Parfums Femme
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/deodorants-stick" className="hover:text-primary transition-colors">
+                  Déodorants Stick
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/packs" className="hover:text-primary transition-colors font-medium text-primary">
+                  Packs & Coffrets
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/all" className="hover:text-primary transition-colors">
+                  Toute la Collection
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Assistance & Client */}
+          <div>
+            <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
+              Informations
+            </h4>
+            <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
+              <li>
+                <Link to="/about" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span>À Propos de Maison Kenzi</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/about/service-client" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                  <span>Service Client & Contact</span>
+                </Link>
+              </li>
+              <li className="pt-1 text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-primary" />
+                <span>Livraison Express 24–48h Maroc</span>
+              </li>
+              <li className="text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                <span>Paiement Cash à la Réception</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Direct Contact & Socials */}
+          <div>
+            <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
+              Nous Contacter
+            </h4>
+            <div className="space-y-3">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-foreground hover:bg-[#25D366]/20 transition-all group cursor-pointer"
+              >
+                <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="min-w-0">
+                  <p className="font-semibold text-xs text-[#25D366]">WhatsApp Direct</p>
+                  <p className="text-[11px] text-muted-foreground truncate">+{waNumber}</p>
+                </div>
+              </a>
+
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-primary/10 border border-primary/30 text-foreground hover:bg-primary/20 transition-all group cursor-pointer"
+              >
+                <Instagram className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="min-w-0">
+                  <p className="font-semibold text-xs text-primary">Instagram Officiel</p>
+                  <p className="text-[11px] text-muted-foreground truncate">@maisonkenzi</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom copyright bar */}
+        <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
+          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>
+          <div className="flex items-center gap-2 text-[11px]">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span>Maison de Parfumerie au Maroc</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

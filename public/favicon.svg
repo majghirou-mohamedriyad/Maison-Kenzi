@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E0AA"/>
+      <stop offset="50%" stop-color="#D8B043"/>
+      <stop offset="100%" stop-color="#9E7C24"/>
+    </linearGradient>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#241B15"/>
+      <stop offset="100%" stop-color="#0E0A08"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="248" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="12"/>
+
+  <!-- Inner Subtle Accent Ring -->
+  <circle cx="256" cy="256" r="226" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="8 6" opacity="0.6"/>
+
+  <!-- TABAT "T" Luxury Monogram -->
+  <g fill="url(#goldGrad)" transform="translate(0, 0)">
+    <!-- Top Horizontal Bar -->
+    <path d="M 130 160 C 130 145 150 140 180 140 L 332 140 C 362 140 382 145 382 160 C 382 172 365 175 340 175 L 285 175 L 285 340 C 285 365 298 370 315 372 C 322 373 322 385 256 385 C 190 385 190 373 197 372 C 214 370 227 365 227 340 L 227 175 L 172 175 C 147 175 130 172 130 160 Z" />
+  </g>
+</svg>

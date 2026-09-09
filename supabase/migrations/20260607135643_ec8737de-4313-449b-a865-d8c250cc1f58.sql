@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.place_order(text, text, text, text, jsonb, numeric, text);

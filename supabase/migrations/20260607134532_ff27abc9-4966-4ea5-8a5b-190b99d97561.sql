@@ -1,0 +1,1 @@
+CREATE TRIGGER orders_upsert_customer AFTER INSERT ON public.orders FOR EACH ROW EXECUTE FUNCTION public.upsert_customer_from_order(); CREATE TRIGGER orders_set_updated_at BEFORE UPDATE ON public.orders FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

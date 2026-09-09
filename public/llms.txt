@@ -1,0 +1,24 @@
+# Myaura
+
+> Maison marocaine de décants de parfums de luxe 100% authentiques, en formats 5 ml, 10 ml et 20 ml.
+
+Myaura sélectionne des flacons originaux des plus grandes maisons de parfumerie et les décante avec soin pour rendre la haute parfumerie accessible au Maroc. Livraison nationale, paiement à la livraison, commandes confirmées via WhatsApp.
+
+## Pages
+
+- [Accueil](/): Présentation de la maison et collections en vedette.
+- [Toutes les fragrances](/collection/all): Catalogue complet des décants disponibles.
+- [Collection Homme](/collection/homme): Fragrances pour homme.
+- [Collection Femme](/collection/femme): Fragrances pour femme.
+- [Collection Mixte](/collection/mixte): Fragrances mixtes.
+- [Nouveautés](/collection/nouveautes): Derniers arrivages.
+- [Notre histoire](/about/notre-histoire): À propos de la maison Myaura.
+- [Ingrédients](/about/ingredients): Notre approche des matières.
+- [Guide des tailles](/about/guide-des-tailles): Choisir entre 5 ml, 10 ml et 20 ml.
+- [Service client](/about/service-client): Nous contacter.
+- [Livraison](/about/livraison): Conditions et délais de livraison au Maroc.
+
+## Optional
+
+- [Politique de confidentialité](/privacy-policy)
+- [Conditions générales](/terms-of-service)

@@ -1,0 +1,410 @@
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  Search,
+  ShoppingBag as BagIcon,
+  Menu,
+  X,
+  Sparkles,
+  ChevronRight,
+  Flame,
+  Flower2,
+  Shield,
+  Crown,
+  Info,
+  MessageCircle,
+} from "lucide-react";
+import ShoppingBag from "./ShoppingBag";
+import { useCart } from "@/store/cart";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useParfums } from "@/hooks/useParfums";
+import { formatMAD } from "@/lib/sizes";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import { useCategories } from "@/store/useCategoryStore";
+
+const Navigation = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isBagOpen, setIsBagOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { totalItems } = useCart();
+  const { data: allParfums } = useParfums();
+  const { settings } = useAppSettings();
+  const adminCategories = useCategories();
+  const activeAdminCategories = useMemo(
+    () => adminCategories.filter((c) => c.is_active),
+    [adminCategories]
+  );
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut Ctrl+K / Cmd+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      } else if (e.key === "Escape") {
+        setIsSearchOpen(false);
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+  }, [location.pathname]);
+
+  const filteredParfums = searchQuery.trim()
+    ? allParfums
+        .filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.maison.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .slice(0, 5)
+    : [];
+
+  const handleSelectProduct = (id: string) => {
+    setIsSearchOpen(false);
+    setIsMobileMenuOpen(false);
+    setSearchQuery("");
+    navigate(`/parfum/${id}`);
+  };
+
+  const waRaw = settings.whatsapp_phone || "212752850156";
+  const waNumber = waRaw.replace(/[^0-9]/g, "");
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, j'aurais besoin d'un conseil.")}`;
+
+  return (
+    <div className="relative">
+      {/* Floating Pill Container */}
+      <nav className="bg-background/85 dark:bg-[#12141a]/90 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-full shadow-lg shadow-black/5 dark:shadow-black/30 px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
+        
+        {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
+        <div className="flex items-center gap-1 sm:gap-2 z-10">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => {
+              setIsSearchOpen(false);
+              setIsMobileMenuOpen((v) => !v);
+            }}
+            className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-foreground hover:text-primary hover:bg-muted/50 transition-colors cursor-pointer"
+            aria-label="Menu"
+          >
+            {isMobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
+          </button>
+
+          {/* Desktop Nav Pills (Left side) */}
+          <div className="hidden md:flex items-center gap-1">
+            {activeAdminCategories
+              .filter((cat) => !cat.slug.toLowerCase().includes("pack"))
+              .map((cat) => {
+                const s = cat.slug.toLowerCase();
+                let Icon = Flame;
+                if (s === "femme") Icon = Flower2;
+                else if (s.includes("deodorant")) Icon = Shield;
+
+                const path = `/collection/${cat.slug}`;
+                const isActive = location.pathname === path;
+
+                return (
+                  <Link
+                    key={cat.id}
+                    to={path}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
+                      isActive
+                        ? "bg-foreground text-background shadow-xs"
+                        : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
+                  </Link>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Absolute Dead Center: Brand Logo */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto z-20">
+          <Link
+            to="/"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              setIsSearchOpen(false);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex items-center justify-center px-2 py-0.5 transition-transform duration-200 hover:scale-105 select-none cursor-pointer"
+            aria-label="Maison Kenzi - Accueil"
+          >
+            <img
+              src="/logo.png"
+              alt="Maison Kenzi"
+              className="h-7 sm:h-8 md:h-9 w-auto object-contain dark:invert"
+            />
+          </Link>
+        </div>
+
+        {/* Right Side: Packs, À Propos, Theme, Search, Cart */}
+        <div className="flex items-center gap-1 sm:gap-1.5 z-10">
+          {/* Desktop Packs Link (Golden Pill) */}
+          <Link
+            to="/collection/packs"
+            className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
+              location.pathname === "/collection/packs"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-primary hover:bg-primary/10"
+            }`}
+          >
+            <Crown className="w-3.5 h-3.5" />
+            <span>Packs</span>
+            {location.pathname !== "/collection/packs" && <Sparkles className="w-2.5 h-2.5 text-primary" />}
+          </Link>
+
+          {/* Desktop À Propos Link */}
+          <Link
+            to="/about"
+            className={`hidden lg:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
+              location.pathname === "/about"
+                ? "bg-foreground text-background"
+                : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+            }`}
+          >
+            <Info className="w-3.5 h-3.5" />
+            <span>À Propos</span>
+          </Link>
+
+          {/* Theme Toggle */}
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
+
+          {/* Search Button */}
+          <button
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              setIsSearchOpen((v) => !v);
+            }}
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              isSearchOpen
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+            }`}
+            aria-label="Rechercher"
+            title="Recherche (Ctrl + K)"
+          >
+            <Search size={17} strokeWidth={1.8} />
+          </button>
+
+          {/* Cart Button with Animated Badge */}
+          <button
+            onClick={() => setIsBagOpen(true)}
+            className="relative w-9 h-9 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
+            aria-label="Panier"
+          >
+            <BagIcon size={17} strokeWidth={1.8} />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center shadow-xs animate-in zoom-in duration-150">
+                {totalItems}
+              </span>
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {/* Floating Spotlight Search Card */}
+      {isSearchOpen && (
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
+          <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-xl max-w-xl mx-auto space-y-3">
+            <div className="flex items-center bg-card/80 border border-border/80 focus-within:border-primary rounded-xl px-3 py-2 transition-all">
+              <Search size={16} className="text-primary mr-2 shrink-0" />
+              <input
+                ref={searchInputRef}
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher un parfum, une maison (ex: Baccarat, Gris Charnel)..."
+                className="w-full bg-transparent text-xs sm:text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-muted-foreground hover:text-foreground text-xs px-1 cursor-pointer"
+                >
+                  Effacer
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Quick Suggestions */}
+            {!searchQuery.trim() && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] uppercase font-semibold text-muted-foreground mr-1">Suggestions :</span>
+                <button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    navigate("/collection/packs");
+                  }}
+                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-1"
+                >
+                  <Crown className="w-3 h-3" /> Les Packs
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    navigate("/collection/homme");
+                  }}
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary text-foreground hover:bg-secondary/80 transition-colors cursor-pointer flex items-center gap-1"
+                >
+                  <Flame className="w-3 h-3 text-primary" /> Homme
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    navigate("/collection/femme");
+                  }}
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary text-foreground hover:bg-secondary/80 transition-colors cursor-pointer flex items-center gap-1"
+                >
+                  <Flower2 className="w-3 h-3 text-primary" /> Femme
+                </button>
+              </div>
+            )}
+
+            {/* Results List */}
+            {searchQuery.trim() !== "" && (
+              <div className="space-y-1 max-h-60 overflow-y-auto divide-y divide-border/40">
+                {filteredParfums.length > 0 ? (
+                  filteredParfums.map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => handleSelectProduct(product.id)}
+                      className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-primary/10 transition-colors text-left group cursor-pointer"
+                    >
+                      <img
+                        src={product.image_url || "/placeholder.svg"}
+                        alt={product.name}
+                        className="w-10 h-10 object-cover rounded-lg border border-border shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium truncate">
+                          {product.maison} · {product.gender}
+                        </p>
+                        <h4 className="font-serif text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                          {product.name}
+                        </h4>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-serif font-bold text-primary">
+                          {formatMAD(product.price_5ml)}
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-xs text-muted-foreground">
+                    Aucun parfum trouvé pour « {searchQuery} »
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Floating Mobile Dropdown Menu Card */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
+          <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              {activeAdminCategories.map((cat) => {
+                const s = cat.slug.toLowerCase();
+                let Icon = Flame;
+                if (s === "femme") Icon = Flower2;
+                else if (s.includes("deodorant")) Icon = Shield;
+                else if (s.includes("pack")) Icon = Crown;
+
+                const isPacks = s.includes("pack");
+
+                return (
+                  <Link
+                    key={cat.id}
+                    to={`/collection/${cat.slug}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${
+                      isPacks
+                        ? "bg-primary/10 border-primary/30 text-primary shadow-xs"
+                        : "bg-card border-border/80 hover:border-primary/40 text-foreground"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                        isPacks ? "bg-primary/20 text-primary" : "bg-primary/10 text-primary"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-semibold block truncate">{cat.name}</span>
+                      <span className="text-[10px] text-muted-foreground truncate block">
+                        {cat.description || "Collection"}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="pt-2 border-t border-border/60 flex flex-col gap-2">
+              <Link
+                to="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-card/60 border border-border/60 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Info className="w-4 h-4 text-muted-foreground" /> À Propos de Maison Kenzi
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+              </Link>
+
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold shadow-xs transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Conseil & Commande WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shopping Bag Drawer */}
+      <ShoppingBag isOpen={isBagOpen} onClose={() => setIsBagOpen(false)} />
+    </div>
+  );
+};
+
+export default Navigation;

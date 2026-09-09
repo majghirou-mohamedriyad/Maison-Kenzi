@@ -1,0 +1,84 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
+import { CartProvider } from "./store/cart";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import MaintenanceGate from "./components/MaintenanceGate";
+import ChatBotMount from "./components/ChatBotMount";
+
+import Index from "./pages/Index";
+import Collection from "./pages/Category";
+import ParfumDetail from "./pages/ProductDetail";
+import Checkout from "./pages/Checkout";
+import NotFound from "./pages/NotFound";
+import ServiceClient from "./pages/about/CustomerCare";
+import About from "./pages/About";
+import AdminLogin from "./admin/AdminLogin";
+import AdminGuard from "./admin/AdminGuard";
+import AdminLayout from "./admin/AdminLayout";
+import Dashboard from "./admin/pages/Dashboard";
+import Produits from "./admin/pages/Produits";
+import CategoriesAdmin from "./admin/pages/Categories";
+import Commandes from "./admin/pages/Commandes";
+import Clients from "./admin/pages/Clients";
+import Parametres from "./admin/pages/Parametres";
+import BotAdmin from "./admin/pages/Bot";
+import Finances from "./admin/pages/Finances";
+
+import BestSellersAdmin from "./admin/pages/BestSellers";
+import SeasonalAdmin from "./admin/pages/SeasonalAdmin";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <CartProvider>
+            <Toaster />
+            <Sonner />
+            <ScrollToTop />
+            <MaintenanceGate>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/collection/:collection" element={<Collection />} />
+              <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/about/notre-histoire" element={<About />} />
+              <Route path="/about/service-client" element={<ServiceClient />} />
+
+              {/* Admin */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route element={<AdminGuard />}>
+                <Route element={<AdminLayout />}>
+                  <Route path="/admin" element={<Dashboard />} />
+                  <Route path="/admin/produits" element={<Produits />} />
+                  <Route path="/admin/categories" element={<CategoriesAdmin />} />
+                  <Route path="/admin/bestsellers" element={<BestSellersAdmin />} />
+                  <Route path="/admin/saison" element={<SeasonalAdmin />} />
+                  <Route path="/admin/commandes" element={<Commandes />} />
+                  <Route path="/admin/clients" element={<Clients />} />
+                  <Route path="/admin/finances" element={<Finances />} />
+                  <Route path="/admin/bot" element={<BotAdmin />} />
+                  <Route path="/admin/parametres" element={<Parametres />} />
+                </Route>
+              </Route>
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <ChatBotMount />
+            </MaintenanceGate>
+
+          </CartProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
