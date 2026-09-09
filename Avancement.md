@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Épuration des affichages publics : mention sobre "Aucun produit" (sans bouton admin) et adaptation dynamique des catégories
+- **Statut général** : Correction de l'état vide sur la page Catalogue / Collections (`/collection/all`)
 
 ---
 
@@ -23,14 +23,14 @@
   - [x] Schéma PostgreSQL `maisonkenzi` vierge et opérationnel.
   - [x] Nettoyage des fallbacks et initialisation des données à vide.
 - [x] Ajustements des États Vides et Catégories :
-  - [x] `ProductCarousel.tsx` : Affichage sobre de "Aucun produit" sans bouton ou mention invitant vers l'admin.
-  - [x] `useCategoryStore.ts` : Initialisation des catégories à vide (`[]`), synchronisées avec la table Supabase `maisonkenzi.categories`.
-  - [x] `FiftyFiftySection.tsx` : Masquage automatique de la section si aucune catégorie n'est encore créée en base.
-  - [x] `Navigation.tsx` : Affichage d'un lien propre "Catalogue" et rendu dynamique des catégories créées dans l'admin.
+  - [x] `ProductCarousel.tsx` : Affichage sobre de "Aucun produit" sans bouton admin.
+  - [x] `Category.tsx` (`/collection/all`) : Affichage sobre de "Aucun produit" lorsque la base est vide (masquage de la fausse alerte de filtre).
+  - [x] `useCategoryStore.ts` & `FiftyFiftySection.tsx` : Catégories 100% dynamiques issues de Supabase.
+  - [x] `Navigation.tsx` : Barre de navigation épurée.
 
 ---
 
 ## Prochaines Tâches Planifiées
 
-- [ ] Saisie des catégories et des parfums réels via l'espace administration ([`/admin`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin)).
+- [ ] Saisie des premiers parfums de niche réels via [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
 - [ ] Test du cycle complet de commande et suivi des stocks.

@@ -398,47 +398,49 @@ const Collection = () => {
           </div>
 
           {/* Search, Filter Bar & Sort Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 border border-border rounded-2xl p-3 shadow-xs">
-            {/* Quick in-page search */}
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
-                placeholder={`Rechercher dans ${hero.title}...`}
-                className="w-full pl-9 pr-3 py-2 text-xs bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
-              />
-            </div>
-
-            {/* Sort & In Stock Filters */}
-            <div className="flex items-center justify-between sm:justify-end gap-2 text-xs">
-              <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-foreground cursor-pointer select-none text-[11px]">
+          {allParfums.length > 0 && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 border border-border rounded-2xl p-3 shadow-xs">
+              {/* Quick in-page search */}
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
-                  type="checkbox"
-                  checked={onlyInStock}
-                  onChange={(e) => setOnlyInStock(e.target.checked)}
-                  className="rounded text-primary focus:ring-primary w-3.5 h-3.5"
+                  type="text"
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                  placeholder={`Rechercher dans ${hero.title}...`}
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
                 />
-                <span>En stock uniquement</span>
-              </label>
+              </div>
 
-              <div className="flex items-center gap-1 bg-background border border-border rounded-xl px-2.5 py-1.5">
-                <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="bg-transparent text-[11px] font-medium text-foreground outline-none cursor-pointer pr-1"
-                >
-                  <option value="featured" className="bg-card text-foreground">Recommandés</option>
-                  <option value="price_asc" className="bg-card text-foreground">Prix croissant</option>
-                  <option value="price_desc" className="bg-card text-foreground">Prix décroissant</option>
-                  <option value="newest" className="bg-card text-foreground">Nouveautés</option>
-                  <option value="name_asc" className="bg-card text-foreground">Nom (A–Z)</option>
-                </select>
+              {/* Sort & In Stock Filters */}
+              <div className="flex items-center justify-between sm:justify-end gap-2 text-xs">
+                <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-foreground cursor-pointer select-none text-[11px]">
+                  <input
+                    type="checkbox"
+                    checked={onlyInStock}
+                    onChange={(e) => setOnlyInStock(e.target.checked)}
+                    className="rounded text-primary focus:ring-primary w-3.5 h-3.5"
+                  />
+                  <span>En stock uniquement</span>
+                </label>
+
+                <div className="flex items-center gap-1 bg-background border border-border rounded-xl px-2.5 py-1.5">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                    className="bg-transparent text-[11px] font-medium text-foreground outline-none cursor-pointer pr-1"
+                  >
+                    <option value="featured" className="bg-card text-foreground">Recommandés</option>
+                    <option value="price_asc" className="bg-card text-foreground">Prix croissant</option>
+                    <option value="price_desc" className="bg-card text-foreground">Prix décroissant</option>
+                    <option value="newest" className="bg-card text-foreground">Nouveautés</option>
+                    <option value="name_asc" className="bg-card text-foreground">Nom (A–Z)</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Products Grid Section */}
@@ -463,6 +465,16 @@ const Collection = () => {
                   <div className="h-4 w-16 bg-muted/80 rounded" />
                 </div>
               ))}
+            </div>
+          ) : allParfums.length === 0 ? (
+            /* État sobre : Aucun produit dans la base */
+            <div className="text-center py-24 px-4 max-w-md mx-auto">
+              <p className="font-serif text-xl sm:text-2xl text-foreground font-normal mb-2">
+                Aucun produit
+              </p>
+              <p className="text-xs font-light text-muted-foreground leading-relaxed">
+                Aucun parfum n'est disponible pour le moment.
+              </p>
             </div>
           ) : (
             <>
@@ -553,7 +565,7 @@ const Collection = () => {
               {filteredAndSorted.length === 0 && (
                 <div className="text-center py-20 bg-card/40 border border-border rounded-3xl p-8 max-w-md mx-auto space-y-3">
                   <p className="text-sm font-medium text-foreground">
-                    Aucun parfum trouvé pour vos critères de recherche.
+                    Aucun parfum ne correspond à vos critères de recherche.
                   </p>
                   <button
                     onClick={() => {
