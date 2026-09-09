@@ -1,3 +1,10 @@
+/**
+ * Contexte de Thème (ThemeContext) — Maison Kenzi
+ *
+ * Gère le thème actif (Light Nude / Dark Espresso) indépendamment pour le site client
+ * et le panneau d'administration, avec persistance dans le localStorage.
+ */
+
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -11,18 +18,18 @@ import {
 } from "@/hooks/useTheme";
 
 type Ctx = {
-  /** The theme of the currently active surface (admin or customer). */
+  /** Thème de la surface actuellement active (admin ou client) */
   theme: Theme;
-  /** Toggle the active surface theme. */
+  /** Basculer le thème de la surface active */
   toggleTheme: () => void;
-  /** Set the active surface theme. */
+  /** Définir explicitement le thème de la surface active */
   setTheme: (t: Theme) => void;
 
-  /** Customer site theme (independent of admin). */
+  /** Thème du site client */
   customerTheme: Theme;
   setCustomerTheme: (t: Theme) => void;
 
-  /** Admin panel theme (independent of customer). */
+  /** Thème du panneau d'administration */
   adminTheme: Theme;
   setAdminTheme: (t: Theme) => void;
 };
@@ -38,24 +45,22 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const activeTheme = isAdmin ? adminTheme : customerTheme;
 
-  // Apply the right theme to <html> whenever the route or stored value changes
+  // Appliquer le thème sur l'élément <html> lors de tout changement de route ou d'état
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.add("theme-transition");
     applyTheme(activeTheme);
-    const id = window.setTimeout(() => root.classList.remove("theme-transition"), 350);
-    return () => window.clearTimeout(id);
   }, [activeTheme]);
 
   const setCustomerTheme = useCallback((t: Theme) => {
     setCustomerThemeState(t);
     writeTheme(CUSTOMER_KEY, t);
-  }, []);
+    if (!isAdmin) applyTheme(t);
+  }, [isAdmin]);
 
   const setAdminTheme = useCallback((t: Theme) => {
     setAdminThemeState(t);
     writeTheme(ADMIN_KEY, t);
-  }, []);
+    if (isAdmin) applyTheme(t);
+  }, [isAdmin]);
 
   const setTheme = useCallback(
     (t: Theme) => (isAdmin ? setAdminTheme(t) : setCustomerTheme(t)),

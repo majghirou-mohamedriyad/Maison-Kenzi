@@ -1,3 +1,9 @@
+/**
+ * Bouton de Basculement de Thème (ThemeToggle) — Maison Kenzi
+ *
+ * Permet de basculer en douceur entre le mode Nude Albâtre (Clair) et Espresso Doré (Sombre).
+ */
+
 import { Sun, Moon } from "lucide-react";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
@@ -13,23 +19,25 @@ const ThemeToggle = ({ className = "" }: Props) => {
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={isDark ? "Activer le thème clair" : "Activer le thème sombre"}
-      title={isDark ? "Mode clair" : "Mode sombre"}
-      className={`relative h-9 w-9 inline-flex items-center justify-center rounded-md hover:bg-muted/60 transition-colors ${className}`}
+      aria-label={isDark ? "Activer le mode clair nude" : "Activer le mode sombre espresso"}
+      title={isDark ? "Passer en mode Clair (Nude)" : "Passer en mode Sombre (Espresso)"}
+      className={`relative w-9 h-9 rounded-full flex items-center justify-center text-foreground/80 hover:text-primary hover:bg-muted/60 transition-colors duration-200 cursor-pointer ${className}`}
     >
       <Sun
-        size={20}
-        strokeWidth={1.5}
-        className={`absolute transition-all duration-200 ${
-          isDark ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-75 -rotate-90"
+        className={`w-4 h-4 text-primary transition-all duration-300 ease-out ${
+          isDark
+            ? "opacity-100 rotate-0 scale-100"
+            : "opacity-0 -rotate-90 scale-50 pointer-events-none"
         }`}
+        strokeWidth={1.5}
       />
       <Moon
-        size={20}
-        strokeWidth={1.5}
-        className={`absolute transition-all duration-200 ${
-          isDark ? "opacity-0 scale-75 rotate-90" : "opacity-100 scale-100 rotate-0"
+        className={`w-4 h-4 text-primary absolute transition-all duration-300 ease-out ${
+          isDark
+            ? "opacity-0 rotate-90 scale-50 pointer-events-none"
+            : "opacity-100 rotate-0 scale-100"
         }`}
+        strokeWidth={1.5}
       />
     </button>
   );
