@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Refonte intégrale de l'Espace Admin avec Sidebar Rétractable (Collapsible) et Thème Haute Parfumerie Luxe Nude
+- **Statut général** : Espace Admin Haute Parfumerie opérationnel, Sidebar rétractable et Switch de thèmes fluidifié
 
 ---
 
@@ -34,6 +34,9 @@
   - [x] [`src/admin/components/DeleteDialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/DeleteDialog.tsx) : Modale de suppression sécurisée et raffinée.
   - [x] [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx) : Vue d'ensemble avec suivi des ventes, inventaire de flaconnage et tableau des meilleures créations.
   - [x] [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx) & [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx) : Harmonisation Luxe Nude.
+- [x] Optimisation & Fluidification du Basculement de Thème (ThemeToggle) :
+  - [x] [`src/hooks/useTheme.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useTheme.ts) & [`src/contexts/ThemeContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/ThemeContext.tsx) : Application synchrone et réactive des classes `light`/`dark` et de `colorScheme` sur `<html>`.
+  - [x] [`src/components/ThemeToggle.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ThemeToggle.tsx) : Icônes centrées au pixel près sans décalage ni saut de layout lors de la bascule.
 
 ---
 

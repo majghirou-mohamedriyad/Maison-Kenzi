@@ -47,8 +47,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Appliquer le thème sur l'élément <html> lors de tout changement de route ou d'état
   useEffect(() => {
-    applyTheme(activeTheme);
-  }, [activeTheme]);
+    const themeToApply = isAdmin ? adminTheme : customerTheme;
+    applyTheme(themeToApply);
+  }, [isAdmin, adminTheme, customerTheme]);
 
   const setCustomerTheme = useCallback((t: Theme) => {
     setCustomerThemeState(t);
@@ -63,14 +64,26 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isAdmin]);
 
   const setTheme = useCallback(
-    (t: Theme) => (isAdmin ? setAdminTheme(t) : setCustomerTheme(t)),
+    (t: Theme) => {
+      if (isAdmin) {
+        setAdminTheme(t);
+      } else {
+        setCustomerTheme(t);
+      }
+    },
     [isAdmin, setAdminTheme, setCustomerTheme],
   );
 
-  const toggleTheme = useCallback(
-    () => setTheme(activeTheme === "dark" ? "light" : "dark"),
-    [activeTheme, setTheme],
-  );
+  const toggleTheme = useCallback(() => {
+    const current = isAdmin ? adminTheme : customerTheme;
+    const next: Theme = current === "dark" ? "light" : "dark";
+    if (isAdmin) {
+      setAdminTheme(next);
+    } else {
+      setCustomerTheme(next);
+    }
+  }, [isAdmin, adminTheme, customerTheme, setAdminTheme, setCustomerTheme]);
+
 
   return (
     <ThemeContext.Provider

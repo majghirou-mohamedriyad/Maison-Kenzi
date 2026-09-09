@@ -1,3 +1,10 @@
+/**
+ * Utilitaires de Thème — Maison Kenzi
+ *
+ * Gère la persistance et l'application des modes Clair (Nude Albâtre)
+ * et Sombre (Warm Espresso Obsidian).
+ */
+
 export type Theme = "dark" | "light";
 
 export const CUSTOMER_KEY = "ne_theme";
@@ -13,8 +20,12 @@ export const storageKeyFor = (path?: string) =>
 
 export const readTheme = (key: string, fallback: Theme = "dark"): Theme => {
   if (typeof window === "undefined") return fallback;
-  const v = localStorage.getItem(key);
-  return v === "light" || v === "dark" ? v : fallback;
+  try {
+    const v = localStorage.getItem(key);
+    return v === "light" || v === "dark" ? v : fallback;
+  } catch {
+    return fallback;
+  }
 };
 
 export const writeTheme = (key: string, theme: Theme) => {
@@ -26,6 +37,15 @@ export const writeTheme = (key: string, theme: Theme) => {
 export const applyTheme = (theme: Theme) => {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
-  root.classList.remove("dark", "light");
-  root.classList.add(theme);
+  
+  if (theme === "dark") {
+    root.classList.add("dark");
+    root.classList.remove("light");
+    root.style.colorScheme = "dark";
+  } else {
+    root.classList.add("light");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+  }
 };
+
