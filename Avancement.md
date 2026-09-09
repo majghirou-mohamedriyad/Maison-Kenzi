@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Correction de l'état vide sur la page Catalogue / Collections (`/collection/all`)
+- **Statut général** : Correction de la Content Security Policy (CSP) pour le VPS et résolution du crash sur la page `/collection/all`
 
 ---
 
@@ -22,15 +22,14 @@
 - [x] Raccordement Intégral du Site à la Base Supabase VPS (`maisonkenzi.*`) :
   - [x] Schéma PostgreSQL `maisonkenzi` vierge et opérationnel.
   - [x] Nettoyage des fallbacks et initialisation des données à vide.
-- [x] Ajustements des États Vides et Catégories :
-  - [x] `ProductCarousel.tsx` : Affichage sobre de "Aucun produit" sans bouton admin.
-  - [x] `Category.tsx` (`/collection/all`) : Affichage sobre de "Aucun produit" lorsque la base est vide (masquage de la fausse alerte de filtre).
-  - [x] `useCategoryStore.ts` & `FiftyFiftySection.tsx` : Catégories 100% dynamiques issues de Supabase.
-  - [x] `Navigation.tsx` : Barre de navigation épurée.
+- [x] Résolution des Erreurs Bloquantes & Affichages :
+  - [x] `index.html` : Mise à jour de la directive Content Security Policy (`connect-src` et `img-src`) pour autoriser les connexions HTTP et WebSockets vers l'IP du VPS (`http://185.197.249.4:8000`).
+  - [x] `Category.tsx` : Correction de la variable `parfums` (élimination du crash `ReferenceError: allParfums is not defined`).
+  - [x] Affichage sobre et épuré de "Aucun produit" lorsque la base de données est vierge.
 
 ---
 
 ## Prochaines Tâches Planifiées
 
 - [ ] Saisie des premiers parfums de niche réels via [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
-- [ ] Test du cycle complet de commande et suivi des stocks.
+- [ ] Test d'une commande test en direct pour valider le flux complet.

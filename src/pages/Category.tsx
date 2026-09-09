@@ -398,7 +398,7 @@ const Collection = () => {
           </div>
 
           {/* Search, Filter Bar & Sort Controls */}
-          {allParfums.length > 0 && (
+          {parfums.length > 0 && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 border border-border rounded-2xl p-3 shadow-xs">
               {/* Quick in-page search */}
               <div className="relative flex-1 max-w-sm">
@@ -466,7 +466,7 @@ const Collection = () => {
                 </div>
               ))}
             </div>
-          ) : allParfums.length === 0 ? (
+          ) : parfums.length === 0 ? (
             /* État sobre : Aucun produit dans la base */
             <div className="text-center py-24 px-4 max-w-md mx-auto">
               <p className="font-serif text-xl sm:text-2xl text-foreground font-normal mb-2">
