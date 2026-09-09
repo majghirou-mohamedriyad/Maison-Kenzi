@@ -1,4 +1,12 @@
-import { BarChart3, ShoppingBag, Box, Users, Droplet, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
+/**
+ * Tableau de Bord Principal — Maison Kenzi Admin
+ *
+ * Vue d'ensemble stratégique : Métriques de ventes, suivi des commandes,
+ * inventaire de flaconnage, meilleures ventes et graphique des revenus.
+ * Style Haute Parfumerie & Luxe Nude (zéro emoji).
+ */
+
+import { BarChart3, ShoppingBag, Box, Users, Droplet, TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import KpiCard from "../components/KpiCard";
 import { useProducts } from "@/store/useProductStore";
@@ -26,43 +34,48 @@ const BottleCard = ({
 }) => {
   const total = initialStock > 0 ? initialStock : available + used;
   const pct = total > 0 ? Math.round((used / total) * 100) : 0;
+
   return (
-    <div className="bg-card border border-border rounded-lg p-5">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+    <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:border-[#C9A96E]/40 transition-all duration-300">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
           <div
-            className={`h-8 w-8 rounded-full flex items-center justify-center ${
-              isLow ? "bg-rose-500/10 text-rose-500" : "bg-primary/10 text-primary"
+            className={`w-9 h-9 rounded-xl flex items-center justify-center border ${
+              isLow 
+                ? "bg-rose-500/10 text-rose-500 border-rose-500/20" 
+                : "bg-[#FAF7F2] dark:bg-[#1C1A18] text-[#C9A96E] border-[#E5DDD0] dark:border-[#332E28]"
             }`}
           >
-            <Droplet className="w-4 h-4" />
+            <Droplet className="w-4 h-4 stroke-[1.75]" />
           </div>
-          <h3 className="text-sm font-medium text-foreground">{label}</h3>
+          <h3 className="text-xs font-medium uppercase tracking-wider text-[#1A1816] dark:text-[#F3EFEA]">{label}</h3>
         </div>
         {isLow ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/30">
-            <AlertTriangle className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <AlertTriangle className="w-3 h-3 stroke-[2]" />
             Stock bas
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">{pct}% utilisé</span>
+          <span className="text-[11px] text-[#8C827A] dark:text-[#9E958C]">{pct}% utilisé</span>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 mb-3">
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Disponibles</p>
-          <p className={`text-2xl font-serif mt-1 ${isLow ? "text-rose-500" : "text-foreground"}`}>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Disponibles</p>
+          <p className={`text-2xl font-serif mt-1 font-medium ${isLow ? "text-rose-500" : "text-[#1A1816] dark:text-[#FAF7F2]"}`}>
             {available}
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Utilisées</p>
-          <p className="text-2xl font-serif text-accent mt-1">{used}</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Utilisées</p>
+          <p className="text-2xl font-serif text-[#C9A96E] mt-1 font-medium">{used}</p>
         </div>
       </div>
-      <div className="h-2 rounded-full bg-secondary overflow-hidden">
+
+      <div className="h-1.5 rounded-full bg-[#EAE3D8] dark:bg-[#24211E] overflow-hidden">
         <div
-          className={`h-full transition-all ${isLow ? "bg-rose-500" : "bg-primary"}`}
+          className={`h-full transition-all duration-500 rounded-full ${isLow ? "bg-rose-500" : "bg-[#C9A96E]"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -70,43 +83,55 @@ const BottleCard = ({
   );
 };
 
-
 const RevenueChart = ({ data }: { data: { month: string; revenue: number }[] }) => {
   const { theme } = useThemeContext();
   const isDark = theme === "dark";
-  const grid = isDark ? "#2A2A2A" : "#E5E7EB";
-  const axis = isDark ? "#9CA3AF" : "#6B7280";
-  const tooltipBg = isDark ? "#1A1A1A" : "#FFFFFF";
-  const tooltipBorder = isDark ? "#2A2A2A" : "#E5E7EB";
-  const tooltipText = isDark ? "#F9FAFB" : "#111827";
+  const grid = isDark ? "#24211E" : "#EAE3D8";
+  const axis = isDark ? "#8E867E" : "#8C827A";
+  const tooltipBg = isDark ? "#1C1A18" : "#FFFFFF";
+  const tooltipBorder = isDark ? "#38332C" : "#E5DDD0";
+  const tooltipText = isDark ? "#FAF7F2" : "#1A1816";
+
   return (
-    <div className="bg-card border border-border rounded-lg p-5">
-      <h3 className="text-sm font-medium text-foreground mb-4">Revenus des 6 derniers mois</h3>
+    <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Performance</span>
+          <h3 className="text-base font-serif font-medium text-[#1A1816] dark:text-[#FAF7F2] mt-0.5">
+            Revenus des 6 derniers mois
+          </h3>
+        </div>
+        <div className="w-8 h-8 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] flex items-center justify-center text-[#C9A96E]">
+          <BarChart3 className="w-4 h-4 stroke-[1.75]" />
+        </div>
+      </div>
+
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={grid} vertical={false} />
-            <XAxis dataKey="month" stroke={axis} fontSize={12} tickLine={false} axisLine={false} />
+            <XAxis dataKey="month" stroke={axis} fontSize={11} tickLine={false} axisLine={false} />
             <YAxis
               stroke={axis}
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`)}
             />
             <Tooltip
-              cursor={{ fill: isDark ? "rgba(255,255,255,0.05)" : "#F8F9FA" }}
+              cursor={{ fill: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}
               contentStyle={{
                 background: tooltipBg,
                 border: `1px solid ${tooltipBorder}`,
-                borderRadius: 6,
+                borderRadius: 12,
                 fontSize: 12,
                 color: tooltipText,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
               }}
-              labelStyle={{ color: tooltipText }}
-              formatter={(v: number) => [fmtMad(v), "Revenus"]}
+              labelStyle={{ color: tooltipText, fontWeight: 600, marginBottom: 4 }}
+              formatter={(v: number) => [fmtMad(v), "Chiffre d'affaires"]}
             />
-            <Bar dataKey="revenue" fill="#C9A96E" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="revenue" fill="#C9A96E" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -134,46 +159,80 @@ const Dashboard = () => {
   const revenueTrend = kpis ? trendPct(kpis.revenueThisMonth, kpis.revenueLastMonth) : 0;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="space-y-8">
+      {/* En-tête de bienvenue luxe */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-[#EAE3D8] dark:border-[#24211E]">
+        <div>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-[#C9A96E] font-medium">
+            Maison Kenzi · Haute Parfumerie
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-[#1A1816] dark:text-[#FAF7F2] mt-1">
+            Supervision Générale
+          </h2>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/produits"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs uppercase tracking-[0.15em] font-medium transition-all shadow-sm group"
+          >
+            <span>Nouveau Parfum</span>
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Cartes KPI Principales */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <KpiCard
           title="Chiffre d'affaires"
           value={loading ? "…" : fmtMad(kpis?.revenueThisMonth ?? 0)}
-          sub="Ce mois-ci"
+          sub="Mois en cours"
           trend={revenueTrend}
           icon={BarChart3}
         />
         <KpiCard
           title="Commandes"
           value={loading ? "…" : String(kpis?.ordersThisMonth ?? 0)}
-          sub={`En cours : ${kpis?.ordersInProgress ?? 0}`}
+          sub={`En préparation : ${kpis?.ordersInProgress ?? 0}`}
           icon={ShoppingBag}
         />
         <KpiCard
-          title="Produits actifs"
+          title="Parfums Actifs"
           value={String(active)}
           sub={`${rupture} en rupture de stock`}
           icon={Box}
         />
         <KpiCard
-          title="Clients"
+          title="Clients Enregistrés"
           value={loading ? "…" : String(kpis?.customers ?? 0)}
           sub={`+${kpis?.customersThisMonth ?? 0} ce mois`}
           icon={Users}
         />
       </div>
 
+      {/* Inventaire & Flaconnage */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-foreground">Inventaire par format</h2>
-          <Link to="/admin/finances" className="text-xs text-primary hover:underline">
-            Gérer le flaconnage →
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Stock & Conditionnement</span>
+            <h3 className="text-lg font-serif font-medium text-[#1A1816] dark:text-[#FAF7F2]">
+              Inventaire par format
+            </h3>
+          </div>
+          <Link 
+            to="/admin/finances" 
+            className="inline-flex items-center gap-1.5 text-xs text-[#C9A96E] hover:text-[#B8985F] font-medium transition-colors"
+          >
+            <span>Gérer le flaconnage</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {(["5ml", "10ml", "full"] as const).map((s) => {
             const f = flacon(s);
-            const label = s === "full" ? "Bouteilles complètes" : `Flacons ${s}`;
+            const label = s === "full" ? "Flacons 50ml & 100ml" : `Échantillons & Décants ${s}`;
             return (
               <BottleCard
                 key={s}
@@ -188,35 +247,47 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Graphiques & Meilleures Ventes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RevenueChart data={revenueData} />
 
-        <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-sm font-medium text-foreground mb-4">Meilleures ventes</h3>
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Classement</span>
+              <h3 className="text-base font-serif font-medium text-[#1A1816] dark:text-[#FAF7F2] mt-0.5">
+                Meilleures Ventes
+              </h3>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] flex items-center justify-center text-[#C9A96E]">
+              <Sparkles className="w-4 h-4 stroke-[1.75]" />
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-xs uppercase tracking-wide text-muted-foreground">
+              <thead className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] border-b border-[#EAE3D8] dark:border-[#24211E]">
                 <tr>
-                  <th className="text-left py-2">Produit</th>
-                  <th className="text-left py-2">Taille</th>
-                  <th className="text-right py-2">Qté</th>
-                  <th className="text-right py-2">Revenus</th>
+                  <th className="text-left py-3 font-medium">Création Olfactive</th>
+                  <th className="text-left py-3 font-medium">Contenance</th>
+                  <th className="text-right py-3 font-medium">Volume</th>
+                  <th className="text-right py-3 font-medium">Revenus</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#EAE3D8]/60 dark:divide-[#24211E]/60">
                 {top.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="py-6 text-center text-muted-foreground">
-                      Aucune vente pour le moment.
+                    <td colSpan={4} className="py-8 text-center text-xs text-[#8C827A] dark:text-[#9E958C]">
+                      Aucune vente enregistrée pour le moment.
                     </td>
                   </tr>
                 )}
                 {top.map((s) => (
-                  <tr key={`${s.parfum_name}-${s.size}`} className="border-t border-border">
-                    <td className="py-2.5 font-medium text-foreground">{s.parfum_name}</td>
-                    <td className="py-2.5 text-muted-foreground">{s.size}</td>
-                    <td className="py-2.5 text-right">{s.qty}</td>
-                    <td className="py-2.5 text-right">{fmtMad(s.revenue)}</td>
+                  <tr key={`${s.parfum_name}-${s.size}`} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors">
+                    <td className="py-3.5 font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.parfum_name}</td>
+                    <td className="py-3.5 text-xs text-[#7A726A] dark:text-[#A39B91]">{s.size}</td>
+                    <td className="py-3.5 text-right font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.qty}</td>
+                    <td className="py-3.5 text-right font-serif text-[#C9A96E] font-medium">{fmtMad(s.revenue)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -225,25 +296,30 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Quick health */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TrendingUp className="w-4 h-4 text-emerald-500" /> Revenus mois précédent
+      {/* Indicateurs Rapides */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#8C827A] dark:text-[#9E958C]">
+            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
+            <span>Revenus mois précédent</span>
           </div>
-          <p className="text-2xl font-serif text-foreground mt-2">{fmtMad(kpis?.revenueLastMonth ?? 0)}</p>
+          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{fmtMad(kpis?.revenueLastMonth ?? 0)}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <ShoppingBag className="w-4 h-4 text-primary" /> Commandes en attente
+
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#8C827A] dark:text-[#9E958C]">
+            <ShoppingBag className="w-4 h-4 text-[#C9A96E] stroke-[1.75]" />
+            <span>Commandes en attente</span>
           </div>
-          <p className="text-2xl font-serif text-foreground mt-2">{kpis?.ordersInProgress ?? 0}</p>
+          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{kpis?.ordersInProgress ?? 0}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TrendingDown className="w-4 h-4 text-rose-500" /> Produits en rupture
+
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#8C827A] dark:text-[#9E958C]">
+            <TrendingDown className="w-4 h-4 text-rose-500 stroke-[1.75]" />
+            <span>Parfums en rupture</span>
           </div>
-          <p className="text-2xl font-serif text-foreground mt-2">{rupture}</p>
+          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{rupture}</p>
         </div>
       </div>
     </div>
@@ -251,3 +327,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

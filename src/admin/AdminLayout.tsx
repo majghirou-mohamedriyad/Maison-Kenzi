@@ -1,3 +1,11 @@
+/**
+ * Layout Principal d'Administration — Maison Kenzi
+ *
+ * Structure avec Sidebar rétractable (Collapsible), topbar en verre dépoli,
+ * navigation par univers, mémorisation de l'état dans localStorage
+ * et design Haute Parfumerie Luxe Nude (zéro emoji).
+ */
+
 import { useState, useEffect } from "react";
 import { NavLink, Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -17,10 +25,18 @@ import {
   ShieldCheck,
   Store,
   FolderTree,
+  ChevronLeft,
+  ChevronRight,
+  Sparkle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ThemeToggle from "@/components/ThemeToggle";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const NAV_GROUPS = [
   {
@@ -30,16 +46,16 @@ const NAV_GROUPS = [
     ],
   },
   {
-    title: "Catalogue & Vitrine",
+    title: "Catalogue & Niche",
     items: [
-      { to: "/admin/produits", label: "Tous les Produits", icon: Package },
-      { to: "/admin/categories", label: "Catégories", icon: FolderTree },
+      { to: "/admin/produits", label: "Tous les Parfums", icon: Package },
+      { to: "/admin/categories", label: "Catégories & Univers", icon: FolderTree },
       { to: "/admin/bestsellers", label: "Best Sellers", icon: Flame, badge: "Vedettes" },
       { to: "/admin/saison", label: "Parfums de Saison", icon: Sparkles },
     ],
   },
   {
-    title: "Ventes & Clients",
+    title: "Ventes & Relations",
     items: [
       { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, isOrderLink: true },
       { to: "/admin/finances", label: "Finances & Revenus", icon: Wallet },
@@ -47,25 +63,25 @@ const NAV_GROUPS = [
     ],
   },
   {
-    title: "Système & Outils",
+    title: "Maison & Outils",
     items: [
-      { to: "/admin/bot", label: "Assistant IA", icon: Bot },
-      { to: "/admin/parametres", label: "Paramètres du Site", icon: Settings },
+      { to: "/admin/bot", label: "Conseiller Olfactif IA", icon: Bot },
+      { to: "/admin/parametres", label: "Paramètres de la Boutique", icon: Settings },
     ],
   },
 ];
 
 const TITLES: Record<string, string> = {
-  "/admin": "Tableau de bord",
-  "/admin/produits": "Gestion du Catalogue Produits",
-  "/admin/categories": "Gestion des Catégories & Collections",
-  "/admin/bestsellers": "Gestion des Best Sellers",
-  "/admin/saison": "Gestion des Parfums de Saison",
-  "/admin/commandes": "Gestion des Commandes",
+  "/admin": "Tableau de Bord Privé",
+  "/admin/produits": "Catalogue des Parfums de Niche",
+  "/admin/categories": "Univers & Familles Olfactives",
+  "/admin/bestsellers": "Sélections Phares & Best Sellers",
+  "/admin/saison": "Éditions & Parfums de Saison",
+  "/admin/commandes": "Gestion des Commandes Clients",
   "/admin/finances": "Statistiques Financières & Revenus",
   "/admin/clients": "Base de Données Clients",
-  "/admin/bot": "Configuration de l'Assistant Virtuel",
-  "/admin/parametres": "Paramètres & Maintenance du Site",
+  "/admin/bot": "Configuration du Conseiller Virtuel",
+  "/admin/parametres": "Paramètres & Statut de la Maison",
 };
 
 const AdminLayout = () => {
@@ -73,10 +89,31 @@ const AdminLayout = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingOrdersCount, setPendingOrdersCount] = useState<number>(0);
+  
+  // État de la sidebar collapsible mémorisé
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("mk_admin_sidebar_collapsed") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("mk_admin_sidebar_collapsed", String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   const title = TITLES[location.pathname] || "Administration";
 
-  // Fetch pending orders count for dynamic badge
+  // Récupération des commandes en attente pour le badge
   useEffect(() => {
     const fetchPendingOrders = async () => {
       try {
@@ -88,7 +125,7 @@ const AdminLayout = () => {
           setPendingOrdersCount(count);
         }
       } catch {
-        // silent fallback
+        // fallback silencieux
       }
     };
 
@@ -107,177 +144,270 @@ const AdminLayout = () => {
   };
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-gradient-to-b from-[#0e131f] via-[#111827] to-[#0a0e17] text-[#F9FAFB] border-r border-white/5 shadow-2xl overflow-y-auto no-scrollbar">
-      {/* Brand Header: Logo Maison Kenzi + Admin Panel text underneath */}
-      <div className="px-5 py-5 border-b border-white/10 flex flex-col items-center justify-center text-center">
-        <Link to="/admin" className="flex flex-col items-center gap-1.5 group">
-          <img
-            src="/logo.png"
-            alt="Maison Kenzi Admin"
-            className="h-9 w-auto object-contain invert transition-transform group-hover:scale-105"
-          />
-          <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#C9A96E] group-hover:text-white transition-colors">
-            Admin Panel
-          </span>
+    <div className="flex flex-col h-full bg-[#121110] dark:bg-[#0E0D0C] text-[#F3EFEA] border-r border-[#26221E] shadow-2xl select-none transition-all duration-300">
+      {/* Brand Header */}
+      <div className={`p-4 border-b border-[#26221E] flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+        <Link 
+          to="/admin" 
+          className={`flex items-center gap-3 group overflow-hidden transition-all ${isCollapsed ? "justify-center" : ""}`}
+          title="Maison Kenzi Admin"
+        >
+          {isCollapsed ? (
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1C1A18] to-[#121110] border border-[#C9A96E]/40 flex items-center justify-center text-[#C9A96E] font-serif font-bold text-base shadow-sm group-hover:border-[#C9A96E] transition-colors">
+              MK
+            </div>
+          ) : (
+            <div className="flex flex-col items-start min-w-0">
+              <span className="font-serif text-lg tracking-wider font-semibold text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
+                MAISON KENZI
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
+                Administration Privée
+              </span>
+            </div>
+          )}
         </Link>
       </div>
 
       {/* Navigation Sections */}
-      <nav className="flex-1 px-3 py-4 space-y-6">
+      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto no-scrollbar">
         {NAV_GROUPS.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1.5">
-            <h3 className="px-3 text-[10px] font-bold uppercase tracking-[0.22em] text-[#C9A96E]/70 select-none">
-              {group.title}
-            </h3>
+            {!isCollapsed ? (
+              <h3 className="px-3 text-[10px] font-medium uppercase tracking-[0.25em] text-[#8C827A] select-none">
+                {group.title}
+              </h3>
+            ) : (
+              <div className="w-6 h-[1px] bg-[#26221E] mx-auto my-2" />
+            )}
+
             <div className="space-y-1">
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group ${
-                      isActive
-                        ? "bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] font-semibold shadow-lg shadow-[#C9A96E]/20 translate-x-0.5"
-                        : "text-[#F9FAFB]/75 hover:bg-white/7 hover:text-white hover:translate-x-0.5"
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className="flex items-center gap-3 min-w-0">
-                        <item.icon
-                          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                            isActive
-                              ? "text-[#111827]"
-                              : "text-[#C9A96E] group-hover:scale-110 group-hover:text-white"
-                          }`}
-                        />
-                        <span className="truncate">{item.label}</span>
-                      </div>
+              {group.items.map((item) => {
+                const navLinkElement = (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    onClick={() => setMobileOpen(false)}
+                    className={({ isActive }) =>
+                      `relative flex items-center rounded-xl text-xs transition-all duration-200 group ${
+                        isCollapsed 
+                          ? "justify-center w-11 h-11 mx-auto" 
+                          : "justify-between px-3.5 py-2.5"
+                      } ${
+                        isActive
+                          ? "bg-[#C9A96E] text-[#121110] font-semibold shadow-md shadow-[#C9A96E]/20"
+                          : "text-[#D6CEC4]/80 hover:bg-white/5 hover:text-[#FAF7F2]"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "min-w-0"}`}>
+                          <item.icon
+                            className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
+                              isActive
+                                ? "text-[#121110]"
+                                : "text-[#C9A96E] group-hover:scale-110"
+                            }`}
+                            strokeWidth={isActive ? 2.25 : 1.75}
+                          />
+                          {!isCollapsed && (
+                            <span className="truncate">{item.label}</span>
+                          )}
+                        </div>
 
-                      {/* Badges */}
-                      {item.isOrderLink && pendingOrdersCount > 0 && (
-                        <span
-                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-xs ${
-                            isActive
-                              ? "bg-[#111827] text-[#C9A96E]"
-                              : "bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse"
-                          }`}
-                        >
-                          {pendingOrdersCount}
-                        </span>
-                      )}
+                        {/* Badges pour version dépliée */}
+                        {!isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
+                              isActive
+                                ? "bg-[#121110] text-[#C9A96E]"
+                                : "bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse"
+                            }`}
+                          >
+                            {pendingOrdersCount}
+                          </span>
+                        )}
 
-                      {item.badge && !item.isOrderLink && (
-                        <span
-                          className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.2 rounded-md ${
-                            isActive
-                              ? "bg-[#111827]/30 text-[#111827]"
-                              : "bg-white/10 text-[#C9A96E] border border-white/5"
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              ))}
+                        {!isCollapsed && item.badge && !item.isOrderLink && (
+                          <span
+                            className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
+                              isActive
+                                ? "bg-[#121110]/20 text-[#121110]"
+                                : "bg-white/10 text-[#C9A96E] border border-white/5"
+                            }`}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+
+                        {/* Point badge pour version repliée */}
+                        {isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
+                          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-[#121110] animate-pulse" />
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                );
+
+                if (isCollapsed) {
+                  return (
+                    <Tooltip key={item.to} delayDuration={100}>
+                      <TooltipTrigger asChild>
+                        {navLinkElement}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="bg-[#1C1A18] text-[#FAF7F2] border-[#38332C] text-xs font-medium">
+                        {item.label}
+                        {item.isOrderLink && pendingOrdersCount > 0 && ` (${pendingOrdersCount})`}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                return navLinkElement;
+              })}
             </div>
           </div>
         ))}
       </nav>
 
-      {/* Sidebar Footer / Déconnexion */}
-      <div className="p-3 border-t border-white/10 mt-auto">
+      {/* Bouton de repli (Collapse Toggle) & Déconnexion */}
+      <div className="p-3 border-t border-[#26221E] mt-auto space-y-2">
+        {/* Toggle Collapse Desktop */}
         <button
-          onClick={logout}
-          className="w-full flex items-center justify-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+          onClick={toggleSidebar}
+          className={`hidden md:flex items-center rounded-xl text-xs text-[#8C827A] hover:text-[#FAF7F2] hover:bg-white/5 transition-all cursor-pointer ${
+            isCollapsed ? "justify-center w-11 h-10 mx-auto" : "w-full px-3.5 py-2 justify-between"
+          }`}
+          title={isCollapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
         >
-          <LogOut className="w-4 h-4 shrink-0" />
-          <span>Déconnexion</span>
+          {!isCollapsed && (
+            <span className="text-[11px] uppercase tracking-[0.15em] font-medium">
+              Réduire la barre
+            </span>
+          )}
+          {isCollapsed ? (
+            <ChevronRight className="w-4 h-4 text-[#C9A96E]" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 text-[#C9A96E]" />
+          )}
         </button>
+
+        {/* Déconnexion */}
+        {isCollapsed ? (
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={logout}
+                className="w-11 h-11 mx-auto flex items-center justify-center rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="bg-[#1C1A18] text-red-300 border-red-900/40 text-xs">
+              Déconnexion
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <button
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            <span>Déconnexion</span>
+          </button>
+        )}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#0F0F0F] font-sans text-[#111827] dark:text-[#F9FAFB]">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 z-30">
-        {SidebarContent}
-      </aside>
+    <TooltipProvider>
+      <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0C0B0A] font-sans text-[#1A1816] dark:text-[#F3EFEA] transition-colors duration-300">
+        {/* Sidebar Bureau */}
+        <aside 
+          className={`hidden md:flex fixed inset-y-0 left-0 z-30 transition-all duration-300 ${
+            isCollapsed ? "w-20" : "w-64"
+          }`}
+        >
+          {SidebarContent}
+        </aside>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="md:hidden fixed inset-y-0 left-0 w-64 z-50 animate-in slide-in-from-left duration-300 shadow-2xl">
-            {SidebarContent}
-          </aside>
-        </>
-      )}
+        {/* Tiroir Mobile */}
+        {mobileOpen && (
+          <>
+            <div
+              className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+              onClick={() => setMobileOpen(false)}
+            />
+            <aside className="md:hidden fixed inset-y-0 left-0 w-64 z-50 animate-in slide-in-from-left duration-300 shadow-2xl">
+              {SidebarContent}
+            </aside>
+          </>
+        )}
 
-      <div className="md:ml-64 flex flex-col min-h-screen transition-all">
-        {/* Topbar */}
-        <header className="sticky top-0 z-20 bg-white/90 dark:bg-[#1A1A1A]/90 backdrop-blur-md border-b border-[#E5E7EB] dark:border-[#2A2A2A] h-14 flex items-center justify-between px-4 md:px-6 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              className="md:hidden p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              onClick={() => setMobileOpen((v) => !v)}
-              aria-label="Menu de navigation"
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#C9A96E] hidden sm:inline" />
-              <h1 className="text-base md:text-lg font-semibold tracking-tight text-foreground">
-                {title}
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/60 hover:border-primary text-xs font-medium text-foreground hover:text-primary transition-all"
-            >
-              <Store className="w-3.5 h-3.5 text-primary" />
-              <span>Boutique</span>
-              <ExternalLink className="w-3 h-3 text-muted-foreground" />
-            </Link>
-
-            <ThemeToggle className="text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-[#F8F9FA] dark:hover:bg-white/5 rounded-full" />
-
-            <div className="w-8 h-8 rounded-full bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-bold flex items-center justify-center text-xs shadow-xs">
-              A
+        {/* Zone de contenu principal */}
+        <div 
+          className={`flex flex-col min-h-screen transition-all duration-300 ${
+            isCollapsed ? "md:ml-20" : "md:ml-64"
+          }`}
+        >
+          {/* Topbar Flottante en Verre Dépoli */}
+          <header className="sticky top-0 z-20 bg-[#FFFFFF]/85 dark:bg-[#141312]/85 backdrop-blur-md border-b border-[#EAE3D8] dark:border-[#24211E] h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-3">
+              <button
+                className="md:hidden p-2 -ml-2 rounded-xl text-[#7A726A] hover:text-[#1A1816] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                onClick={() => setMobileOpen((v) => !v)}
+                aria-label="Menu de navigation"
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+              
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] hidden sm:flex items-center justify-center text-[#C9A96E]">
+                  <ShieldCheck className="w-4 h-4 stroke-[1.75]" />
+                </div>
+                <div>
+                  <h1 className="text-sm sm:text-base font-serif font-medium tracking-tight text-[#1A1816] dark:text-[#F3EFEA]">
+                    {title}
+                  </h1>
+                </div>
+              </div>
             </div>
 
-            {/* Added Déconnexion Button */}
-            <button
-              onClick={logout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 text-xs font-semibold transition-all cursor-pointer"
-              title="Se déconnecter"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Déconnexion</span>
-            </button>
-          </div>
-        </header>
+            <div className="flex items-center gap-3">
+              {/* Raccourci vers la vitrine */}
+              <Link
+                to="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#E2D8CC] dark:border-[#2D2924] bg-[#FFFFFF]/60 dark:bg-[#1C1A18]/60 hover:border-[#C9A96E] text-xs font-medium text-[#4A453E] dark:text-[#D1C9BF] hover:text-[#C9A96E] transition-all duration-200 group"
+              >
+                <Store className="w-3.5 h-3.5 text-[#C9A96E]" />
+                <span className="hidden sm:inline">Voir la Boutique</span>
+                <ExternalLink className="w-3 h-3 text-[#9E958C] group-hover:text-[#C9A96E] transition-colors" />
+              </Link>
 
-        <main className="flex-1 p-3 sm:p-4 md:p-6">
-          <Outlet />
-        </main>
+              {/* Sélecteur de thème */}
+              <ThemeToggle className="text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-[#F2ECE4] dark:hover:bg-[#1F1D1A] rounded-full p-2 transition-colors" />
+
+              {/* Avatar Admin */}
+              <div className="w-8 h-8 rounded-full bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-serif font-semibold flex items-center justify-center text-xs shadow-sm">
+                MK
+              </div>
+            </div>
+          </header>
+
+          {/* Contenu de la page */}
+          <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
 
 export default AdminLayout;
+

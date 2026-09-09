@@ -1,35 +1,48 @@
+/**
+ * Page de Paramètres & Statut de la Maison — Maison Kenzi Admin
+ *
+ * Configuration des informations de la boutique, du contact WhatsApp / Instagram,
+ * de la gestion du mode maintenance et des accès administrateur.
+ */
+
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Wrench, Eye, EyeOff } from "lucide-react";
+import { Wrench, Eye, EyeOff, ShieldCheck, Store, MessageSquare, Instagram, Lock, Save, Loader2 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { supabase } from "@/lib/supabase";
 
 const inputCls =
-  "w-full px-3 py-2 text-sm bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-md focus:outline-none focus:ring-2 focus:ring-[#C9A96E] text-[#111827] dark:text-[#F9FAFB]";
-const labelCls = "block text-xs font-medium text-[#111827] dark:text-[#F9FAFB] mb-1";
+  "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] placeholder-[#A8A196] dark:placeholder-[#5E5851] transition-colors";
+const labelCls = "block text-[11px] font-medium tracking-[0.15em] uppercase text-[#4A453E] dark:text-[#D1C9BF] mb-1.5";
 
 const Card = ({
   title,
+  subtitle,
   children,
   onSave,
   saving = false,
 }: {
   title: string;
+  subtitle?: string;
   children: React.ReactNode;
   onSave: () => void;
   saving?: boolean;
 }) => (
-  <div className="bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-lg p-5 space-y-4">
-    <h3 className="text-sm font-semibold text-[#111827] dark:text-[#F9FAFB]">{title}</h3>
-    <div className="space-y-3">{children}</div>
-    <div className="pt-2">
+  <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] space-y-5">
+    <div>
+      <h3 className="font-serif text-lg font-medium text-[#1A1816] dark:text-[#FAF7F2]">{title}</h3>
+      {subtitle && <p className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-0.5">{subtitle}</p>}
+    </div>
+    <div className="space-y-4">{children}</div>
+    <div className="pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] flex justify-end">
       <button
         type="button"
         onClick={onSave}
         disabled={saving}
-        className="px-4 py-2 text-sm rounded-md bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] hover:bg-[#1F2937] dark:hover:bg-[#C9A96E] dark:hover:text-[#111827] disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.15em] rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
       >
-        {saving ? "Sauvegarde..." : "Sauvegarder"}
+        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+        <span>{saving ? "Sauvegarde en cours…" : "Enregistrer"}</span>
       </button>
     </div>
   </div>
@@ -57,6 +70,7 @@ const Parametres = () => {
   const [igUrl, setIgUrl] = useState(settings.instagram_url);
   const [waPhone, setWaPhone] = useState(settings.whatsapp_phone || "212752850156");
   const [savingMaint, setSavingMaint] = useState(false);
+
 
   useEffect(() => {
     setStoreName(settings.store_name || "Maison Kenzi");

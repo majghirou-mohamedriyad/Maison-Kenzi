@@ -1,3 +1,10 @@
+/**
+ * Page de Gestion du Catalogue Produits — Maison Kenzi Admin
+ *
+ * Interface de consultation, filtrage, création, modification
+ * et suppression des parfums de niche avec vue tableau ou cartes.
+ */
+
 import { useMemo, useState } from "react";
 import {
   Plus,
@@ -17,6 +24,7 @@ import {
   Tag,
   CheckCircle2,
   AlertTriangle,
+  Package,
 } from "lucide-react";
 import ProductTable from "../components/ProductTable";
 import ProductModal from "../components/ProductModal";
@@ -38,10 +46,10 @@ const Produits = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
 
-  // Load persisted view mode from localStorage (default to 'table')
+  // Mémorisation du mode d'affichage
   const [viewMode, setViewMode] = useState<"table" | "grid">(() => {
     try {
-      const saved = localStorage.getItem("tabat_admin_product_view_mode");
+      const saved = localStorage.getItem("mk_admin_product_view_mode");
       if (saved === "grid" || saved === "table") return saved;
     } catch {}
     return "table";
@@ -50,7 +58,7 @@ const Produits = () => {
   const changeViewMode = (mode: "table" | "grid") => {
     setViewMode(mode);
     try {
-      localStorage.setItem("tabat_admin_product_view_mode", mode);
+      localStorage.setItem("mk_admin_product_view_mode", mode);
     } catch {}
   };
 
@@ -58,13 +66,13 @@ const Produits = () => {
   const [editing, setEditing] = useState<AdminParfum | null>(null);
   const [deleting, setDeleting] = useState<AdminParfum | null>(null);
 
-  // Extract unique Maisons list from current products
+  // Extraction de la liste unique des Maisons
   const uniqueMaisons = useMemo(() => {
     const list = Array.from(new Set(products.map((p) => p.maison).filter(Boolean))).sort();
     return list;
   }, [products]);
 
-  // Handle column header sort toggles
+  // Tri par colonnes
   const handleSortHeader = (field: string) => {
     if (field === "name") {
       setSortOption((prev) => (prev === "name_asc" ? "name_desc" : "name_asc"));
@@ -82,9 +90,9 @@ const Produits = () => {
   const filteredAndSorted = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    // 1. Filtering
+    // 1. Filtrage
     const result = products.filter((p) => {
-      // Category filter
+      // Filtre catégorie
       if (categoryFilter === "Homme" && p.gender !== "Homme") return false;
       if (categoryFilter === "Femme" && p.gender !== "Femme") return false;
       if (categoryFilter === "Mixte" && p.gender !== "Mixte") return false;
@@ -110,10 +118,10 @@ const Produits = () => {
       )
         return false;
 
-      // Maison filter
+      // Filtre maison
       if (maisonFilter !== "Toutes" && p.maison !== maisonFilter) return false;
 
-      // Status & Stock filter
+      // Filtre statut & stock
       const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
       const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
       const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
@@ -126,7 +134,7 @@ const Produits = () => {
       if (statusFilter === "in_stock" && !inStock) return false;
       if (statusFilter === "out_of_stock" && inStock) return false;
 
-      // Search query
+      // Recherche textuelle
       if (q) {
         const matchesName = p.name.toLowerCase().includes(q);
         const matchesMaison = p.maison.toLowerCase().includes(q);
@@ -137,7 +145,7 @@ const Produits = () => {
       return true;
     });
 
-    // 2. Sorting
+    // 2. Tri
     result.sort((a, b) => {
       const getPrice = (p: AdminParfum) => {
         if (p.sale_mode === "full_bottle") return p.full_bottle_price ?? p.prices["5ml"] ?? 0;
@@ -200,90 +208,91 @@ const Produits = () => {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-card border border-border/80 p-4 sm:p-5 rounded-2xl shadow-xs">
+    <div className="space-y-6">
+      {/* Barre d'En-tête */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
         <div>
-          <h1 className="font-serif text-xl sm:text-2xl text-foreground font-bold">
-            Gestion du Catalogue Produits
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Catalogue & Créations</span>
+          <h1 className="font-serif text-2xl sm:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight mt-0.5">
+            Gestion des Parfums
           </h1>
-          <p className="text-xs text-muted-foreground font-light mt-0.5">
-            {products.length} produits enregistrés • {filteredAndSorted.length} affichés
+          <p className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-1">
+            {products.length} créations enregistrées • {filteredAndSorted.length} affichées
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
-          {/* View Mode Toggle: Table vs Grid Card */}
-          <div className="inline-flex items-center bg-background border border-border/80 rounded-xl p-1 shadow-xs">
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* Bascule Tableau / Cartes */}
+          <div className="inline-flex items-center bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] rounded-xl p-1 shadow-xs">
             <button
               type="button"
               onClick={() => changeViewMode("table")}
-              className={`p-2 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                 viewMode === "table"
-                  ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-xs"
+                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
               }`}
               title="Affichage en Tableau"
             >
-              <Table2 className="w-4 h-4" />
+              <Table2 className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Tableau</span>
             </button>
 
             <button
               type="button"
               onClick={() => changeViewMode("grid")}
-              className={`p-2 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                 viewMode === "grid"
-                  ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-xs"
+                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
               }`}
               title="Affichage en Grille de Cartes"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Cartes</span>
             </button>
           </div>
 
-          {/* Add Product Button */}
+          {/* Bouton Nouveau Produit */}
           <Button
             onClick={onAdd}
-            className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold uppercase tracking-wider h-10 px-4 gap-2 shadow-md cursor-pointer"
+            className="rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs font-medium uppercase tracking-[0.15em] h-10 px-5 gap-2 shadow-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Nouveau Produit</span>
+            <span>Nouveau Parfum</span>
           </Button>
         </div>
       </div>
 
-      {/* Multi-Filters & Sorting Control Bar */}
-      <div className="bg-card border border-border/80 p-4 rounded-2xl space-y-3.5 shadow-xs">
-        {/* Row 1: Search & Dropdown Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-          {/* Search Input */}
+      {/* Barre de Filtres & Recherche */}
+      <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+        {/* Ligne 1: Recherche & Sélecteurs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Recherche */}
           <div className="relative lg:col-span-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher par nom, maison..."
-              className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-background border border-border/80 rounded-xl focus:outline-none focus:border-primary transition-colors text-foreground h-10"
+              placeholder="Rechercher par nom, maison de parfum…"
+              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C827A] hover:text-[#1A1816] p-1 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Filter Maison */}
+          {/* Filtre Maison */}
           <div className="relative">
             <select
               value={maisonFilter}
               onChange={(e) => setMaisonFilter(e.target.value)}
-              className="w-full py-2 px-3 text-xs bg-background border border-border/80 rounded-xl focus:outline-none focus:border-primary text-foreground h-10 cursor-pointer"
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Toutes">Toutes les Maisons</option>
               {uniqueMaisons.map((m) => (
@@ -294,12 +303,12 @@ const Produits = () => {
             </select>
           </div>
 
-          {/* Filter Catégorie */}
+          {/* Filtre Catégorie */}
           <div className="relative">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as FilterCategory)}
-              className="w-full py-2 px-3 text-xs bg-background border border-border/80 rounded-xl focus:outline-none focus:border-primary text-foreground h-10 cursor-pointer"
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Tous">Toutes Catégories</option>
               <option value="Homme">Parfums Homme</option>
@@ -311,12 +320,12 @@ const Produits = () => {
             </select>
           </div>
 
-          {/* Filter Statut / Stock */}
+          {/* Filtre Statut / Stock */}
           <div className="relative">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="w-full py-2 px-3 text-xs bg-background border border-border/80 rounded-xl focus:outline-none focus:border-primary text-foreground h-10 cursor-pointer"
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Tous">Tous les Statuts</option>
               <option value="in_stock">En stock uniquement</option>
@@ -325,17 +334,16 @@ const Produits = () => {
           </div>
         </div>
 
-        {/* Row 2: Sort by Selector & Active Filter Indicators */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/50 text-xs">
-          {/* Sorting Dropdown */}
+        {/* Ligne 2: Tri & Réinitialisation */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground flex items-center gap-1 font-medium">
-              <ArrowUpDown className="w-3.5 h-3.5 text-primary" /> Trier par :
+            <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
             </span>
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="py-1 px-2.5 text-xs bg-background border border-border/80 rounded-lg focus:outline-none focus:border-primary text-foreground font-semibold cursor-pointer"
+              className="py-1 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
             >
               <option value="name_asc">Nom (A → Z)</option>
               <option value="name_desc">Nom (Z → A)</option>
@@ -347,21 +355,18 @@ const Produits = () => {
             </select>
           </div>
 
-          {/* Clear active filters button */}
           {hasActiveFilters && (
             <button
               type="button"
               onClick={resetFilters}
-              className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-bold cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
               <span>Réinitialiser les filtres</span>
             </button>
           )}
         </div>
-      </div>
-
-      {/* Main Product Table or Card Grid */}
+      {/* Tableau principal ou grille de cartes */}
       <ProductTable
         products={filteredAndSorted}
         viewMode={viewMode}
@@ -371,10 +376,10 @@ const Produits = () => {
         onSortChange={handleSortHeader}
       />
 
-      {/* Product Edit / Add Modal */}
+      {/* Modale d'ajout / modification de parfum */}
       <ProductModal open={modalOpen} onOpenChange={setModalOpen} initial={editing} />
 
-      {/* Delete Confirmation Dialog */}
+      {/* Modale de confirmation de suppression */}
       <DeleteDialog
         open={!!deleting}
         onOpenChange={(o) => !o && setDeleting(null)}
@@ -386,3 +391,4 @@ const Produits = () => {
 };
 
 export default Produits;
+

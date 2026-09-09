@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Connexion Supabase VPS 100% opérationnelle et refonte Haute Parfumerie de la page Admin Login
+- **Statut général** : Refonte intégrale de l'Espace Admin avec Sidebar Rétractable (Collapsible) et Thème Haute Parfumerie Luxe Nude
 
 ---
 
@@ -27,8 +27,13 @@
   - [x] `index.html` : Mise à jour de la directive Content Security Policy (`connect-src` et `img-src`) pour autoriser les connexions HTTP et WebSockets vers l'IP du VPS (`http://185.197.249.4:8000`).
   - [x] `Category.tsx` : Correction de la variable `parfums` (élimination du crash `ReferenceError: allParfums is not defined`).
   - [x] Affichage sobre et épuré de "Aucun produit" lorsque la base de données est vierge.
-- [x] Refonte Design Haute Parfumerie de l'Espace Admin Login :
+- [x] Refonte Design Haute Parfumerie de l'Espace Admin & Sidebar Rétractable :
   - [x] [`src/admin/AdminLogin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLogin.tsx) : Ambiance lumineuse nude/albâtre, carte en verre dépoli, typographie Serif prestigieuse, micro-interactions soignées, bouton d'accès doré champagne et conformité stricte zéro emoji.
+  - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Sidebar rétractable (collapsible) avec bascule 260px / 76px, mémorisation dans `localStorage`, monogramme MK, tooltips élégants au survol, topbar flottante en verre dépoli et navigation hiérarchisée.
+  - [x] [`src/admin/components/KpiCard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/KpiCard.tsx) : Cartes métriques haute parfumerie avec typographie Serif et pastilles de tendance douces.
+  - [x] [`src/admin/components/DeleteDialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/DeleteDialog.tsx) : Modale de suppression sécurisée et raffinée.
+  - [x] [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx) : Vue d'ensemble avec suivi des ventes, inventaire de flaconnage et tableau des meilleures créations.
+  - [x] [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx) & [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx) : Harmonisation Luxe Nude.
 
 ---
 
