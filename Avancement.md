@@ -29,7 +29,7 @@
   - [x] Affichage sobre et épuré de "Aucun produit" lorsque la base de données est vierge.
 - [x] Refonte Design Haute Parfumerie de l'Espace Admin & Sidebar Rétractable :
   - [x] [`src/admin/AdminLogin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLogin.tsx) : Ambiance lumineuse nude/albâtre, carte en verre dépoli, typographie Serif prestigieuse, micro-interactions soignées, bouton d'accès doré champagne et conformité stricte zéro emoji.
-  - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Sidebar rétractable (collapsible) avec bascule 260px / 76px, mémorisation dans `localStorage`, monogramme MK, tooltips élégants au survol, topbar flottante en verre dépoli et navigation hiérarchisée.
+  - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Sidebar rétractable avec palette adaptative (clair doux / sombre feutré), bouton toggle intégré directement à côté du logo, monogramme MK, tooltips élégants et navigation hiérarchisée.
   - [x] [`src/admin/components/KpiCard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/KpiCard.tsx) : Cartes métriques haute parfumerie avec typographie Serif et pastilles de tendance douces.
   - [x] [`src/admin/components/DeleteDialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/DeleteDialog.tsx) : Modale de suppression sécurisée et raffinée.
   - [x] [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx) : Vue d'ensemble avec suivi des ventes, inventaire de flaconnage et tableau des meilleures créations.

@@ -1,9 +1,9 @@
 /**
  * Layout Principal d'Administration — Maison Kenzi
  *
- * Structure avec Sidebar rétractable (Collapsible), topbar en verre dépoli,
- * navigation par univers, mémorisation de l'état dans localStorage
- * et design Haute Parfumerie Luxe Nude (zéro emoji).
+ * Structure avec Sidebar rétractable (Collapsible), bouton toggle intégré
+ * à côté du logo dans l'en-tête, palette adaptative Clair / Sombre,
+ * navigation par univers et design Haute Parfumerie (zéro emoji).
  */
 
 import { useState, useEffect } from "react";
@@ -27,7 +27,6 @@ import {
   FolderTree,
   ChevronLeft,
   ChevronRight,
-  Sparkle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -144,29 +143,44 @@ const AdminLayout = () => {
   };
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-[#121110] dark:bg-[#0E0D0C] text-[#F3EFEA] border-r border-[#26221E] shadow-2xl select-none transition-all duration-300">
-      {/* Brand Header */}
-      <div className={`p-4 border-b border-[#26221E] flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+    <div className="flex flex-col h-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
+      {/* Brand Header avec bouton Toggle juste à côté du Logo */}
+      <div className={`p-4 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center ${isCollapsed ? "justify-center flex-col gap-2" : "justify-between"}`}>
         <Link 
           to="/admin" 
-          className={`flex items-center gap-3 group overflow-hidden transition-all ${isCollapsed ? "justify-center" : ""}`}
+          className="flex items-center gap-2.5 group overflow-hidden min-w-0"
           title="Maison Kenzi Admin"
         >
-          {isCollapsed ? (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1C1A18] to-[#121110] border border-[#C9A96E]/40 flex items-center justify-center text-[#C9A96E] font-serif font-bold text-base shadow-sm group-hover:border-[#C9A96E] transition-colors">
-              MK
-            </div>
-          ) : (
+          <div className="w-9 h-9 rounded-xl bg-[#F0E9DF] dark:bg-[#1C1A18] border border-[#C9A96E]/50 flex items-center justify-center text-[#1A1816] dark:text-[#C9A96E] font-serif font-bold text-sm shrink-0 shadow-xs group-hover:border-[#C9A96E] transition-colors">
+            MK
+          </div>
+          {!isCollapsed && (
             <div className="flex flex-col items-start min-w-0">
-              <span className="font-serif text-lg tracking-wider font-semibold text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
+              <span className="font-serif text-base tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
                 MAISON KENZI
               </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
-                Administration Privée
+              <span className="text-[8px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
+                Administration
               </span>
             </div>
           )}
         </Link>
+
+        {/* Bouton de réduction / déploiement placé à côté du logo */}
+        <button
+          onClick={toggleSidebar}
+          className={`hidden md:flex items-center justify-center rounded-lg text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 border border-[#EAE3D8] dark:border-[#26221E] transition-all cursor-pointer shrink-0 ${
+            isCollapsed ? "w-8 h-8 mt-1" : "w-8 h-8"
+          }`}
+          title={isCollapsed ? "Déplier le menu latéral" : "Réduire le menu latéral"}
+          aria-label="Réduire ou déplier le menu"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="w-4 h-4 text-[#C9A96E]" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 text-[#C9A96E]" />
+          )}
+        </button>
       </div>
 
       {/* Navigation Sections */}
@@ -174,11 +188,11 @@ const AdminLayout = () => {
         {NAV_GROUPS.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1.5">
             {!isCollapsed ? (
-              <h3 className="px-3 text-[10px] font-medium uppercase tracking-[0.25em] text-[#8C827A] select-none">
+              <h3 className="px-3 text-[10px] font-medium uppercase tracking-[0.25em] text-[#8C827A] dark:text-[#7A726A] select-none">
                 {group.title}
               </h3>
             ) : (
-              <div className="w-6 h-[1px] bg-[#26221E] mx-auto my-2" />
+              <div className="w-6 h-[1px] bg-[#EAE3D8] dark:bg-[#26221E] mx-auto my-2" />
             )}
 
             <div className="space-y-1">
@@ -196,8 +210,8 @@ const AdminLayout = () => {
                           : "justify-between px-3.5 py-2.5"
                       } ${
                         isActive
-                          ? "bg-[#C9A96E] text-[#121110] font-semibold shadow-md shadow-[#C9A96E]/20"
-                          : "text-[#D6CEC4]/80 hover:bg-white/5 hover:text-[#FAF7F2]"
+                          ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-sm"
+                          : "text-[#6B635B] dark:text-[#D6CEC4]/80 hover:bg-[#EFE7DC] dark:hover:bg-white/5 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                       }`
                     }
                   >
@@ -207,8 +221,8 @@ const AdminLayout = () => {
                           <item.icon
                             className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
                               isActive
-                                ? "text-[#121110]"
-                                : "text-[#C9A96E] group-hover:scale-110"
+                                ? "text-[#C9A96E] dark:text-[#121110]"
+                                : "text-[#8C827A] dark:text-[#C9A96E] group-hover:scale-110 group-hover:text-[#C9A96E]"
                             }`}
                             strokeWidth={isActive ? 2.25 : 1.75}
                           />
@@ -222,8 +236,8 @@ const AdminLayout = () => {
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
                               isActive
-                                ? "bg-[#121110] text-[#C9A96E]"
-                                : "bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse"
+                                ? "bg-[#C9A96E] text-[#121110]"
+                                : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
                             }`}
                           >
                             {pendingOrdersCount}
@@ -234,8 +248,8 @@ const AdminLayout = () => {
                           <span
                             className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
                               isActive
-                                ? "bg-[#121110]/20 text-[#121110]"
-                                : "bg-white/10 text-[#C9A96E] border border-white/5"
+                                ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
+                                : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
                             }`}
                           >
                             {item.badge}
@@ -244,7 +258,7 @@ const AdminLayout = () => {
 
                         {/* Point badge pour version repliée */}
                         {isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
-                          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-[#121110] animate-pulse" />
+                          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-[#FAF7F2] dark:ring-[#121110] animate-pulse" />
                         )}
                       </>
                     )}
@@ -257,7 +271,7 @@ const AdminLayout = () => {
                       <TooltipTrigger asChild>
                         {navLinkElement}
                       </TooltipTrigger>
-                      <TooltipContent side="right" className="bg-[#1C1A18] text-[#FAF7F2] border-[#38332C] text-xs font-medium">
+                      <TooltipContent side="right" className="bg-[#1A1816] text-[#FAF7F2] dark:bg-[#1C1A18] dark:text-[#FAF7F2] border-[#38332C] text-xs font-medium">
                         {item.label}
                         {item.isOrderLink && pendingOrdersCount > 0 && ` (${pendingOrdersCount})`}
                       </TooltipContent>
@@ -272,35 +286,14 @@ const AdminLayout = () => {
         ))}
       </nav>
 
-      {/* Bouton de repli (Collapse Toggle) & Déconnexion */}
-      <div className="p-3 border-t border-[#26221E] mt-auto space-y-2">
-        {/* Toggle Collapse Desktop */}
-        <button
-          onClick={toggleSidebar}
-          className={`hidden md:flex items-center rounded-xl text-xs text-[#8C827A] hover:text-[#FAF7F2] hover:bg-white/5 transition-all cursor-pointer ${
-            isCollapsed ? "justify-center w-11 h-10 mx-auto" : "w-full px-3.5 py-2 justify-between"
-          }`}
-          title={isCollapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-        >
-          {!isCollapsed && (
-            <span className="text-[11px] uppercase tracking-[0.15em] font-medium">
-              Réduire la barre
-            </span>
-          )}
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-[#C9A96E]" />
-          ) : (
-            <ChevronLeft className="w-4 h-4 text-[#C9A96E]" />
-          )}
-        </button>
-
-        {/* Déconnexion */}
+      {/* Déconnexion en bas */}
+      <div className="p-3 border-t border-[#EAE3D8] dark:border-[#26221E] mt-auto">
         {isCollapsed ? (
           <Tooltip delayDuration={100}>
             <TooltipTrigger asChild>
               <button
                 onClick={logout}
-                className="w-11 h-11 mx-auto flex items-center justify-center rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+                className="w-11 h-11 mx-auto flex items-center justify-center rounded-xl text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer border border-red-200 dark:border-red-500/20"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -312,7 +305,7 @@ const AdminLayout = () => {
         ) : (
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+            className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer border border-red-200 dark:border-red-500/20"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span>Déconnexion</span>
@@ -324,7 +317,7 @@ const AdminLayout = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0C0B0A] font-sans text-[#1A1816] dark:text-[#F3EFEA] transition-colors duration-300">
+      <div className="min-h-screen bg-[#F5EFEB] dark:bg-[#0C0B0A] font-sans text-[#1A1816] dark:text-[#F3EFEA] transition-colors duration-300">
         {/* Sidebar Bureau */}
         <aside 
           className={`hidden md:flex fixed inset-y-0 left-0 z-30 transition-all duration-300 ${
@@ -410,4 +403,5 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
 
