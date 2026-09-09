@@ -366,6 +366,8 @@ const Produits = () => {
             </button>
           )}
         </div>
+      </div>
+
       {/* Tableau principal ou grille de cartes */}
       <ProductTable
         products={filteredAndSorted}
