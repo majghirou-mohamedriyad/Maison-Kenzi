@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Correction de la Content Security Policy (CSP) pour le VPS et résolution du crash sur la page `/collection/all`
+- **Statut général** : Connexion Supabase VPS 100% opérationnelle et refonte Haute Parfumerie de la page Admin Login
 
 ---
 
@@ -20,16 +20,20 @@
 - [x] Implémentation du Thème Luxe Minimaliste & Couleurs Nudes :
   - [x] `src/index.css` & `tailwind.config.ts` : Palette Nude Albâtre & Warm Espresso Obsidian, polices Playfair Display / Manrope.
 - [x] Raccordement Intégral du Site à la Base Supabase VPS (`maisonkenzi.*`) :
-  - [x] Schéma PostgreSQL `maisonkenzi` vierge et opérationnel.
+  - [x] Résolution de l'exposition du schéma `PGRST_DB_SCHEMAS=...,maisonkenzi` sur l'API PostgREST du VPS.
+  - [x] Base PostgreSQL vierge opérationnelle répondant en `200 OK`.
   - [x] Nettoyage des fallbacks et initialisation des données à vide.
 - [x] Résolution des Erreurs Bloquantes & Affichages :
   - [x] `index.html` : Mise à jour de la directive Content Security Policy (`connect-src` et `img-src`) pour autoriser les connexions HTTP et WebSockets vers l'IP du VPS (`http://185.197.249.4:8000`).
   - [x] `Category.tsx` : Correction de la variable `parfums` (élimination du crash `ReferenceError: allParfums is not defined`).
   - [x] Affichage sobre et épuré de "Aucun produit" lorsque la base de données est vierge.
+- [x] Refonte Design Haute Parfumerie de l'Espace Admin Login :
+  - [x] [`src/admin/AdminLogin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLogin.tsx) : Ambiance lumineuse nude/albâtre, carte en verre dépoli, typographie Serif prestigieuse, micro-interactions soignées, bouton d'accès doré champagne et conformité stricte zéro emoji.
 
 ---
 
 ## Prochaines Tâches Planifiées
 
 - [ ] Saisie des premiers parfums de niche réels via [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
+- [ ] Personnalisation des sections et catégories depuis le panneau d'administration.
 - [ ] Test d'une commande test en direct pour valider le flux complet.
