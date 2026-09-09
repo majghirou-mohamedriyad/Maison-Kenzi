@@ -43,8 +43,10 @@ const SeasonalSection = () => {
     .map((id) => allProducts.find((p) => p.id === id))
     .filter(Boolean);
 
-  // Fallback if none matched
-  const featured = seasonalProducts.length > 0 ? seasonalProducts : allProducts.slice(0, 4);
+  // Si aucun parfum n'est disponible dans la base, masquer la section saisonnière
+  if (allProducts.length === 0 && !loading) {
+    return null;
+  }
 
   return (
     <section className="w-full mb-16 sm:mb-28 px-4 sm:px-6 max-w-7xl mx-auto relative overflow-hidden">

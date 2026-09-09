@@ -1,7 +1,14 @@
+/**
+ * Hook de Récupération des Parfums — Maison Kenzi
+ *
+ * Charge les parfums en temps réel depuis le schéma maisonkenzi de Supabase
+ * et synchronise l'affichage avec l'espace administrateur.
+ */
+
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Gender, Parfum } from "@/types/database";
-import { getProducts } from "@/store/useProductStore";
+import { getProducts, setProducts, type AdminParfum } from "@/store/useProductStore";
 
 export type ParfumFilter = {
   gender?: Gender;
@@ -11,207 +18,188 @@ export type ParfumFilter = {
   category?: string;
 };
 
-// Convert products from useProductStore to database Parfum format with live images and stock
-const formatStaticParfums = (): Parfum[] => {
-  const products = getProducts();
-  return products.map((p) => {
-    const isFull = (p.sale_mode ?? "decant") === "full_bottle" || p.category === "deodorants-stick" || p.category === "packs";
-    const fullStock = p.full_bottle_stock ?? 0;
-    const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
-    const totalStock = isFull ? fullStock : decantStock;
-    const inStock = (p.active ?? true) && totalStock > 0;
+// Convertit les produits de la base de données Supabase vers le type Parfum de l'UI
+const mapRowToParfum = (row: any): Parfum => {
+  const isFull = (row.sale_mode ?? "decant") === "full_bottle" || row.category === "packs" || row.category === "deodorants-stick";
+  const fullStock = Number(row.full_bottle_stock ?? 0);
+  const decantStock = Number(row.stock_5ml ?? 0) + Number(row.stock_10ml ?? 0);
+  const totalStock = isFull ? fullStock : decantStock;
+  const inStock = (row.is_active ?? true) && (totalStock > 0 || (row.stock_status === 'actif'));
 
-    return {
-      id: p.id,
-      name: p.name,
-      maison: p.maison,
-      gender: p.gender,
-      category: p.category,
-      description: p.description,
-      notes_tete: p.notes?.tete ?? [],
-      notes_coeur: p.notes?.coeur ?? [],
-      notes_fond: p.notes?.fond ?? [],
-      price_5ml: p.prices?.['5ml'] ?? 0,
-      price_10ml: p.prices?.['10ml'] ?? 0,
-      image_label: p.imageLabel,
-      image_url: p.image_url ?? null,
-      is_active: inStock,
-      is_new: !!p.isNew,
-      is_bestseller: !!p.isBestseller,
-      stock_status: inStock ? 'actif' : 'rupture',
-      sale_mode: isFull ? 'full_bottle' : (p.sale_mode ?? 'decant'),
-      full_bottle_price: p.full_bottle_price ?? p.prices?.['5ml'] ?? null,
-      full_bottle_volume_ml: p.full_bottle_volume_ml ?? (p.sale_mode === 'full_bottle' ? 50 : null),
-      full_bottle_stock: fullStock,
-      stock_5ml: p.stock_5ml ?? 0,
-      stock_10ml: p.stock_10ml ?? 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-  });
+  return {
+    id: row.id,
+    name: row.name,
+    maison: row.maison,
+    gender: row.gender as Gender,
+    category: row.category,
+    description: row.description || "",
+    notes_tete: row.notes_tete ?? [],
+    notes_coeur: row.notes_coeur ?? [],
+    notes_fond: row.notes_fond ?? [],
+    price_5ml: Number(row.price_5ml ?? 0),
+    price_10ml: Number(row.price_10ml ?? 0),
+    image_label: row.image_label || row.id,
+    image_url: row.image_url ?? null,
+    is_active: inStock,
+    is_new: !!row.is_new,
+    is_bestseller: !!row.is_bestseller,
+    stock_status: inStock ? 'actif' : 'rupture',
+    sale_mode: isFull ? 'full_bottle' : (row.sale_mode ?? 'decant'),
+    full_bottle_price: row.full_bottle_price ? Number(row.full_bottle_price) : null,
+    full_bottle_volume_ml: row.full_bottle_volume_ml ? Number(row.full_bottle_volume_ml) : (row.sale_mode === 'full_bottle' ? 50 : null),
+    full_bottle_stock: fullStock,
+    stock_5ml: Number(row.stock_5ml ?? 0),
+    stock_10ml: Number(row.stock_10ml ?? 0),
+    created_at: row.created_at || new Date().toISOString(),
+    updated_at: row.updated_at || new Date().toISOString(),
+  };
 };
 
-const getActiveBestsellerIds = (): string[] => {
-  try {
-    const saved = localStorage.getItem("tabat_bestseller_ids");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return [
-    '9-pm-night-out-afnan',
-    'le-beau-le-parfum',
-    'valentino-born-in-roma-intense',
-    'stronger-with-you-intensely',
-  ];
+const mapLocalToParfum = (p: AdminParfum): Parfum => {
+  const isFull = (p.sale_mode ?? "decant") === "full_bottle" || p.category === "packs" || p.category === "deodorants-stick";
+  const fullStock = p.full_bottle_stock ?? 0;
+  const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
+  const totalStock = isFull ? fullStock : decantStock;
+  const inStock = (p.active ?? true) && totalStock > 0;
+
+  return {
+    id: p.id,
+    name: p.name,
+    maison: p.maison,
+    gender: p.gender,
+    category: p.category,
+    description: p.description,
+    notes_tete: p.notes?.tete ?? [],
+    notes_coeur: p.notes?.coeur ?? [],
+    notes_fond: p.notes?.fond ?? [],
+    price_5ml: p.prices?.['5ml'] ?? 0,
+    price_10ml: p.prices?.['10ml'] ?? 0,
+    image_label: p.imageLabel,
+    image_url: p.image_url ?? null,
+    is_active: inStock,
+    is_new: !!p.isNew,
+    is_bestseller: !!p.isBestseller,
+    stock_status: inStock ? 'actif' : 'rupture',
+    sale_mode: isFull ? 'full_bottle' : (p.sale_mode ?? 'decant'),
+    full_bottle_price: p.full_bottle_price ?? null,
+    full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
+    full_bottle_stock: fullStock,
+    stock_5ml: p.stock_5ml ?? 0,
+    stock_10ml: p.stock_10ml ?? 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
 };
 
 export const useParfums = (filter?: ParfumFilter) => {
-  const [data, setData] = useState<Parfum[]>(() => formatStaticParfums());
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Parfum[]>(() => getProducts().map(mapLocalToParfum));
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const key = JSON.stringify(filter ?? {});
 
   const load = useCallback(async () => {
+    setLoading(true);
     setError(null);
-    const bestsellerIds = getActiveBestsellerIds();
-    const localParfums = formatStaticParfums();
-
-    // Immediately update with local items synchronously for 0ms delay
-    let immediate = localParfums;
-    if (filter?.gender) immediate = immediate.filter((p) => p.gender === filter.gender);
-    if (filter?.isNew !== undefined) immediate = immediate.filter((p) => p.is_new === filter.isNew);
-    if (filter?.isActive !== undefined) immediate = immediate.filter((p) => p.is_active === filter.isActive);
-    if (filter?.category) immediate = immediate.filter((p) => p.category === filter.category);
-    if (filter?.isBestseller) {
-      immediate = immediate
-        .filter((p) => bestsellerIds.includes(p.id))
-        .sort((a, b) => bestsellerIds.indexOf(a.id) - bestsellerIds.indexOf(b.id));
-    }
-    setData(immediate);
 
     try {
       let q = supabase.from("parfums").select("*").order("created_at", { ascending: false });
       if (filter?.gender) q = q.eq("gender", filter.gender);
       if (filter?.isNew !== undefined) q = q.eq("is_new", filter.isNew);
       if (filter?.isActive !== undefined) q = q.eq("is_active", filter.isActive);
+      if (filter?.category) q = q.eq("category", filter.category);
+
       const { data: rows, error: err } = await q;
 
-      const localMap = new Map(localParfums.map((p) => [p.id, p]));
-      let merged: Parfum[] = [];
+      if (!err && Array.isArray(rows)) {
+        const mapped = rows.map(mapRowToParfum);
+        
+        let filtered = mapped;
+        if (filter?.isBestseller) {
+          filtered = filtered.filter((p) => p.is_bestseller);
+        }
 
-      if (!err && rows && rows.length > 0) {
-        const supabaseRows = rows as unknown as Parfum[];
-        const processedIds = new Set<string>();
+        setData(filtered);
 
-        supabaseRows.forEach((row) => {
-          const localOverride = localMap.get(row.id);
-          if (localOverride) {
-            merged.push({
-              ...row,
-              ...localOverride,
-              image_url: localOverride.image_url || row.image_url,
-            });
-            processedIds.add(row.id);
-          } else {
-            merged.push(row);
-            processedIds.add(row.id);
-          }
-        });
-
-        localParfums.forEach((p) => {
-          if (!processedIds.has(p.id)) {
-            merged.push(p);
-          }
-        });
+        // Mettre à jour le store local si on charge tous les produits
+        if (!filter) {
+          const adminProducts: AdminParfum[] = rows.map((r: any) => ({
+            id: r.id,
+            name: r.name,
+            maison: r.maison,
+            gender: r.gender,
+            category: r.category,
+            description: r.description || "",
+            notes: {
+              tete: r.notes_tete ?? [],
+              coeur: r.notes_coeur ?? [],
+              fond: r.notes_fond ?? [],
+            },
+            prices: {
+              '5ml': Number(r.price_5ml ?? 0),
+              '10ml': Number(r.price_10ml ?? 0),
+            },
+            imageLabel: r.image_label || r.id,
+            image_url: r.image_url ?? null,
+            isNew: !!r.is_new,
+            isBestseller: !!r.is_bestseller,
+            sale_mode: r.sale_mode ?? 'decant',
+            full_bottle_price: r.full_bottle_price ? Number(r.full_bottle_price) : null,
+            full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : null,
+            full_bottle_stock: Number(r.full_bottle_stock ?? 0),
+            full_bottle_limited: !!r.full_bottle_limited,
+            stock_5ml: Number(r.stock_5ml ?? 0),
+            stock_10ml: Number(r.stock_10ml ?? 0),
+            active: r.is_active ?? true,
+          }));
+          setProducts(adminProducts);
+        }
       } else {
-        merged = localParfums;
+        // En cas d'erreur ou d'absence de connexion, se baser sur le store local
+        let local = getProducts().map(mapLocalToParfum);
+        if (filter?.gender) local = local.filter((p) => p.gender === filter.gender);
+        if (filter?.isNew !== undefined) local = local.filter((p) => p.is_new === filter.isNew);
+        if (filter?.isActive !== undefined) local = local.filter((p) => p.is_active === filter.isActive);
+        if (filter?.category) local = local.filter((p) => p.category === filter.category);
+        if (filter?.isBestseller) local = local.filter((p) => p.is_bestseller);
+        setData(local);
       }
-
-      let result = merged;
-
-      if (filter?.gender) result = result.filter((p) => p.gender === filter.gender);
-      if (filter?.isNew !== undefined) result = result.filter((p) => p.is_new === filter.isNew);
-      if (filter?.isActive !== undefined) result = result.filter((p) => p.is_active === filter.isActive);
-      if (filter?.category) result = result.filter((p) => p.category === filter.category);
-
-      if (filter?.isBestseller) {
-        result = result
-          .filter((p) => bestsellerIds.includes(p.id))
-          .sort((a, b) => bestsellerIds.indexOf(a.id) - bestsellerIds.indexOf(b.id));
-      }
-
-      setData(result);
-    } catch {
-      setData(immediate);
+    } catch (e: any) {
+      setError(e?.message || "Erreur de chargement");
+      setData([]);
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
-
-  // Live real-time update listeners across tabs and components
-  useEffect(() => {
-    const handleUpdate = () => load();
-    window.addEventListener("tabat_bestsellers_updated", handleUpdate);
-    window.addEventListener("tabat_products_updated", handleUpdate);
-    window.addEventListener("storage", handleUpdate);
-
-    // Unique Supabase Realtime channel topic per component instance
-    const channelTopic = `parfums_live_${Math.random().toString(36).slice(2, 9)}`;
-    const channel = supabase
-      .channel(channelTopic)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "parfums" },
-        () => {
-          load();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      window.removeEventListener("tabat_bestsellers_updated", handleUpdate);
-      window.removeEventListener("tabat_products_updated", handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
-      supabase.removeChannel(channel);
-    };
-  }, [load]);
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  // Synchronisation temps réel via écouteur d'événements
+  useEffect(() => {
+    const handleUpdate = () => load();
+    window.addEventListener("maisonkenzi_products_updated", handleUpdate);
+    return () => window.removeEventListener("maisonkenzi_products_updated", handleUpdate);
   }, [load]);
 
   return { data, loading, error, refetch: load };
 };
 
 export const useParfum = (id?: string) => {
-  const [data, setData] = useState<Parfum | null>(() => {
-    if (!id) return null;
-    const statics = formatStaticParfums();
-    return statics.find((p) => p.id === id) ?? null;
-  });
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Parfum | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchItem = useCallback(async () => {
+  const load = useCallback(async () => {
     if (!id) {
       setData(null);
       setLoading(false);
       return;
     }
-    setError(null);
-    const statics = formatStaticParfums();
-    const localFound = statics.find((p) => p.id === id) ?? null;
 
-    // Immediately update with local item for instant 0ms feedback
-    if (localFound) {
-      setData(localFound);
-    }
+    setLoading(true);
+    setError(null);
 
     try {
       const { data: row, error: err } = await supabase
@@ -221,75 +209,23 @@ export const useParfum = (id?: string) => {
         .maybeSingle();
 
       if (!err && row) {
-        const dbParfum = row as unknown as Parfum;
-        if (localFound) {
-          setData({
-            ...dbParfum,
-            ...localFound,
-            image_url: localFound.image_url || dbParfum.image_url,
-          });
-        } else {
-          setData(dbParfum);
-        }
+        setData(mapRowToParfum(row));
       } else {
-        setData(localFound);
+        // Recherche dans le store local
+        const local = getProducts().find((p) => p.id === id);
+        setData(local ? mapLocalToParfum(local) : null);
       }
-    } catch {
-      setData(localFound);
+    } catch (e: any) {
+      setError(e?.message || "Erreur lors du chargement du parfum");
+      setData(null);
     } finally {
       setLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
-    fetchItem();
-  }, [fetchItem]);
+    load();
+  }, [load]);
 
-  useEffect(() => {
-    if (!id) return;
-    const handleUpdate = () => fetchItem();
-    window.addEventListener("tabat_products_updated", handleUpdate);
-    window.addEventListener("storage", handleUpdate);
-
-    const channelTopic = `parfum_live_${id}_${Math.random().toString(36).slice(2, 9)}`;
-    const channel = supabase
-      .channel(channelTopic)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "parfums", filter: `id=eq.${id}` },
-        () => {
-          fetchItem();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      window.removeEventListener("tabat_products_updated", handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
-      supabase.removeChannel(channel);
-    };
-  }, [fetchItem, id]);
-
-  return { data, loading, error, refetch: fetchItem };
-};
-
-/** Helper to fetch parfums by id list (for cart & checkout display) */
-export const fetchParfumsByIds = async (ids: string[]): Promise<Parfum[]> => {
-  if (!ids.length) return [];
-  const statics = formatStaticParfums();
-  const staticMap = new Map(statics.map((p) => [p.id, p]));
-
-  try {
-    const { data, error } = await supabase.from("parfums").select("*").in("id", ids);
-    if (!error && data && data.length > 0) {
-      return (data as unknown as Parfum[]).map((row) => {
-        const local = staticMap.get(row.id);
-        return local ? { ...row, ...local, image_url: local.image_url || row.image_url } : row;
-      });
-    }
-  } catch {
-    // fallback
-  }
-
-  return statics.filter((p) => ids.includes(p.id));
+  return { data, loading, error, refetch: load };
 };

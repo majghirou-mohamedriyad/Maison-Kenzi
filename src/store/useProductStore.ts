@@ -1,17 +1,22 @@
-import { useSyncExternalStore } from "react";
-import { parfums as seed, type Parfum } from "@/data/parfums";
+/**
+ * Store Local des Produits — Maison Kenzi
+ *
+ * Gère l'état réactif local des produits en synchronisation avec Supabase.
+ */
 
-const STORAGE_KEY = "ne_products";
-const CHANNEL_NAME = "tabat_realtime_channel";
+import { useSyncExternalStore } from "react";
+import type { Parfum } from "@/data/parfums";
+
+const STORAGE_KEY = "maisonkenzi_products";
+const CHANNEL_NAME = "maisonkenzi_realtime_channel";
 
 export type SaleMode = "decant" | "full_bottle";
 
 type ExtraMeta = {
   active?: boolean;
-  stock?: number; // legacy: total bottles
+  stock?: number;
   stock_5ml?: number;
   stock_10ml?: number;
-  // Full bottle mode
   sale_mode?: SaleMode;
   full_bottle_volume_ml?: number | null;
   full_bottle_price?: number | null;
@@ -35,107 +40,78 @@ const withDefaults = (p: AdminParfum): AdminParfum => ({
 });
 
 const load = (): AdminParfum[] => {
-  if (typeof window === "undefined") return seed.map((p) => withDefaults(p as AdminParfum));
+  if (typeof window === "undefined") return [];
   try {
+    // Nettoyer l'ancienne clé legacy de démo
+    localStorage.removeItem("ne_products");
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as AdminParfum[];
-      if (Array.isArray(parsed) && parsed.length) {
-        // Fusionner les produits seed manquants (packs, déodorants) si non présents dans le localStorage
-        const existingIds = new Set(parsed.map((p) => p.id));
-        const missingSeed = seed.filter((s) => !existingIds.has(s.id));
-        return [...parsed, ...missingSeed].map(withDefaults);
+      if (Array.isArray(parsed)) {
+        return parsed.map(withDefaults);
       }
     }
   } catch {}
-  return seed.map((p) => withDefaults(p as AdminParfum));
+  return [];
 };
 
 let state: AdminParfum[] = load();
 const listeners = new Set<() => void>();
 
-// Set up Cross-Tab Broadcast Channel
+// Canal de diffusion inter-onglets
 let broadcastChannel: BroadcastChannel | null = null;
 if (typeof window !== "undefined" && "BroadcastChannel" in window) {
   try {
     broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
     broadcastChannel.onmessage = (event) => {
-      if (event.data?.type === "TABAT_PRODUCTS_SYNC") {
-        state = load();
-        listeners.forEach((l) => l());
-        window.dispatchEvent(new Event("tabat_products_updated"));
+      if (event.data?.type === "UPDATE_PRODUCTS") {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          state = raw ? (JSON.parse(raw) as AdminParfum[]).map(withDefaults) : [];
+          listeners.forEach((l) => l());
+        } catch {}
       }
     };
-  } catch (err) {
-    console.warn("BroadcastChannel init note:", err);
-  }
-}
-
-// Cross-tab storage event listener
-if (typeof window !== "undefined") {
-  window.addEventListener("storage", (e) => {
-    if (e.key === STORAGE_KEY || e.key === null) {
-      state = load();
-      listeners.forEach((l) => l());
-      window.dispatchEvent(new Event("tabat_products_updated"));
-    }
-  });
-}
-
-const persist = () => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {}
-};
+}
 
-const emit = () => {
-  persist();
-  listeners.forEach((l) => l());
+const notify = () => {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("tabat_products_updated"));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      broadcastChannel?.postMessage({ type: "UPDATE_PRODUCTS" });
+    } catch {}
   }
-  // Broadcast to other tabs immediately
-  try {
-    broadcastChannel?.postMessage({
-      type: "TABAT_PRODUCTS_SYNC",
-      timestamp: Date.now(),
-    });
-  } catch {}
+  listeners.forEach((l) => l());
 };
 
-const subscribe = (l: () => void) => {
-  listeners.add(l);
-  return () => listeners.delete(l);
+export const getProducts = (): AdminParfum[] => state;
+
+export const setProducts = (products: AdminParfum[]) => {
+  state = products.map(withDefaults);
+  notify();
 };
 
-const getSnapshot = () => state;
-
-export const useProducts = (): AdminParfum[] =>
-  useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-
-export const useProduct = (id?: string): AdminParfum | undefined => {
-  const list = useProducts();
-  return id ? list.find((p) => p.id === id) : undefined;
+export const addProduct = (product: AdminParfum) => {
+  state = [withDefaults(product), ...state];
+  notify();
 };
 
-export const getProducts = () => state;
-
-export const addProduct = (p: AdminParfum) => {
-  state = [...state, p];
-  emit();
-};
-
-export const updateProduct = (id: string, patch: Partial<AdminParfum>) => {
-  state = state.map((p) => (p.id === id ? { ...p, ...patch } : p));
-  emit();
+export const updateProduct = (id: string, partial: Partial<AdminParfum>) => {
+  state = state.map((p) => (p.id === id ? withDefaults({ ...p, ...partial }) : p));
+  notify();
 };
 
 export const deleteProduct = (id: string) => {
   state = state.filter((p) => p.id !== id);
-  emit();
+  notify();
 };
 
-export const resetProducts = () => {
-  state = seed.map((p) => withDefaults(p as AdminParfum));
-  emit();
+export const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+export const useProducts = (): AdminParfum[] => {
+  return useSyncExternalStore(subscribe, getProducts, () => []);
 };

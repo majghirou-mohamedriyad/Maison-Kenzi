@@ -1,50 +1,57 @@
+/**
+ * Section Carrousel des Meilleures Ventes — Maison Kenzi
+ *
+ * Affiche la sélection de parfums de niche best-sellers issus de Supabase
+ * avec gestion élégante de l'état vide.
+ */
+
 import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
-import { Flame } from "lucide-react";
+import { Sparkles, Plus } from "lucide-react";
 
 const ProductCarousel = () => {
-  const { data: rawFeatured, loading } = useParfums({ isBestseller: true });
-  const featured = rawFeatured.slice(0, 4);
+  const { data: allParfums, loading } = useParfums();
+  const featured = allParfums.filter((p) => p.is_bestseller).slice(0, 4);
+  const displayItems = featured.length > 0 ? featured : allParfums.slice(0, 4);
 
   return (
-    <section className="w-full mb-16 sm:mb-28 px-4 sm:px-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-6 sm:mb-8">
+    <section className="w-full mb-20 sm:mb-32 px-4 sm:px-6 max-w-7xl mx-auto">
+      {/* En-tête de section */}
+      <div className="flex items-end justify-between mb-8 sm:mb-12">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-1 flex items-center gap-2 font-medium">
-            <span className="relative flex h-4 w-4 items-center justify-center">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/30 opacity-75"></span>
-              <Flame className="relative w-3.5 h-3.5 text-primary" />
-            </span>
+          <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-primary mb-1.5 flex items-center gap-2 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-primary" strokeWidth={1.5} />
             <span>Sélection Privilège</span>
           </p>
-          <h2 className="font-serif text-2xl sm:text-4xl text-foreground">
+          <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
             Nos Meilleures Ventes
           </h2>
         </div>
-        <Link
-          to="/collection/all"
-          className="text-[11px] sm:text-xs uppercase tracking-widest text-primary hover:text-primary-hover border-b border-primary/40 pb-0.5 transition-all hover:gap-1.5 inline-flex items-center"
-        >
-          Voir tout
-        </Link>
+        {displayItems.length > 0 && (
+          <Link
+            to="/collection/all"
+            className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-primary hover:text-primary-hover border-b border-primary/30 pb-0.5 transition-all font-medium inline-flex items-center"
+          >
+            Voir tout
+          </Link>
+        )}
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="aspect-square bg-muted mb-3 rounded-xl" />
-              <div className="h-3 w-20 bg-muted mb-2 rounded" />
-              <div className="h-4 w-32 bg-muted rounded" />
+              <div className="aspect-[3/4] bg-muted/60 mb-3 rounded-2xl" />
+              <div className="h-3 w-20 bg-muted/60 mb-2 rounded" />
+              <div className="h-4 w-32 bg-muted/60 rounded" />
             </div>
           ))}
         </div>
-      ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          {featured.map((p, idx) => {
+      ) : displayItems.length > 0 ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {displayItems.map((p, idx) => {
             const isFull = p.sale_mode === "full_bottle";
             const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
             const outOfStock =
@@ -61,57 +68,67 @@ const ProductCarousel = () => {
                 }`}
                 style={{ animationDelay: `${idx * 150}ms` }}
               >
-                {/* Image Container */}
-                <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40">
+                {/* Conteneur Image Produit */}
+                <div className="relative mb-3 overflow-hidden rounded-2xl bg-card border border-border/70 aspect-[3/4] shadow-nude">
                   <ProductImage
                     src={p.image_url}
                     alt={p.name}
                     label={p.image_label}
-                    className={`transition-all duration-700 ease-out ${
-                      outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
+                    className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${
+                      outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
                     }`}
                   />
 
-                  {/* Out of stock badge */}
+                  {/* Badge Rupture */}
                   {outOfStock && (
-                    <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 py-0.5 rounded-full font-bold border border-zinc-700/60 shadow-md">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                      <span>Rupture</span>
+                    <span className="absolute top-3 left-3 z-10 inline-flex items-center text-[9px] uppercase tracking-[0.2em] bg-background/90 text-muted-foreground backdrop-blur-md px-2.5 py-1 rounded-full font-medium border border-border">
+                      Rupture
                     </span>
-                  )}
-
-                  {/* Light Sweep Shimmer Effect */}
-                  {!outOfStock && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
                   )}
                 </div>
 
-                {/* Details */}
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
+                {/* Détails Typographiques */}
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                   {p.maison}
                 </p>
-                <h3 className={`font-serif text-sm sm:text-lg mt-0.5 sm:mt-1 truncate font-medium transition-colors duration-300 ${
+                <h3 className={`font-serif text-sm sm:text-base mt-1 truncate font-normal transition-colors duration-300 ${
                   outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                 }`}>
                   {p.name}
                 </h3>
-                <div className="flex items-center justify-between mt-2 pt-1 border-t sm:border-t-0 border-border/30">
-                  <span className={`text-[11px] sm:text-xs font-light ${
-                    outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground/80"
-                  }`}>
-                    {outOfStock
-                      ? "Rupture de stock"
-                      : isFull
-                      ? formatMAD(p.full_bottle_price ?? 0)
-                      : `À partir de ${formatMAD(p.price_5ml)}`}
+                <div className="flex items-center justify-between mt-2 pt-1 border-t border-border/40">
+                  <span className="text-xs font-light text-foreground/90 font-serif">
+                    {isFull
+                      ? `${formatMAD(p.full_bottle_price ?? 0)} MAD`
+                      : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)} MAD`}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary/80 border border-border/40 px-1.5 sm:px-2 py-0.5 rounded-sm">
-                    {p.gender}
+                  <span className="text-[10px] uppercase tracking-wider text-primary font-medium">
+                    {isFull ? "Flacon" : "Décant"}
                   </span>
                 </div>
               </Link>
             );
           })}
+        </div>
+      ) : (
+        /* État vide raffiné quand la base de données est vierge */
+        <div className="rounded-2xl border border-dashed border-border/80 p-8 sm:p-14 text-center bg-card/40 backdrop-blur-xs">
+          <div className="w-12 h-12 rounded-full border border-primary/30 bg-primary/5 flex items-center justify-center mx-auto mb-4 text-primary">
+            <Sparkles className="w-5 h-5" strokeWidth={1.5} />
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl text-foreground font-normal mb-2">
+            Collection en Préparation
+          </h3>
+          <p className="text-xs sm:text-sm font-light text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
+            Votre catalogue est actuellement vide. Vous pouvez ajouter vos premiers parfums de niche directement depuis le panneau d'administration.
+          </p>
+          <Link
+            to="/admin/produits"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-foreground text-background text-xs uppercase tracking-[0.2em] font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-300 shadow-xs"
+          >
+            <Plus className="w-3.5 h-3.5" strokeWidth={1.5} />
+            <span>Ajouter un Parfum (Admin)</span>
+          </Link>
         </div>
       )}
     </section>

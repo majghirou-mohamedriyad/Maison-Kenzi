@@ -3,7 +3,7 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Création du schéma PostgreSQL dédié `maisonkenzi` et mise à jour du script d'initialisation
+- **Statut général** : Transition complète de l'application (client et admin) sur la nouvelle base de données Supabase VPS (schéma `maisonkenzi`)
 
 ---
 
@@ -23,14 +23,18 @@
   - [x] `index.html`, `StatusBar.tsx`, `LargeHero.tsx`, `FiftyFiftySection.tsx`, `Footer.tsx` recentrés sur les parfums de niche et décants.
 - [x] Correction et Optimisation du Switch de Thème :
   - [x] Suppression des saccades CSS et fluidification du basculement.
-- [x] Configuration de la Base de Données Supabase VPS :
-  - [x] Fichier `.env` configuré avec l'IP et la clé du VPS.
-  - [x] Création du script SQL dédié [`setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) avec le schéma `maisonkenzi` et les droits PostgREST (`anon`, `authenticated`, `service_role`).
-  - [x] Mise à jour de [`src/integrations/supabase/client.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/integrations/supabase/client.ts) pour interroger par défaut le schéma `maisonkenzi`.
+- [x] Raccordement Intégral du Site à la Base Supabase VPS (`maisonkenzi.*`) :
+  - [x] Catalogue Produits : `src/hooks/useParfums.ts` connecté en direct à `maisonkenzi.parfums`.
+  - [x] Catégories : `src/store/useCategoryStore.ts` synchronisé avec `maisonkenzi.categories`.
+  - [x] Commandes & Formulaire Express : `Checkout.tsx` et `ExpressOrderForm.tsx` enregistrent directement dans `maisonkenzi.orders`.
+  - [x] Suivi Client & Dashboard : `useAdminOrders.ts`, `useAdminCustomers.ts` et `useAdminDashboard.ts` branchés sur `maisonkenzi.customers`.
+  - [x] Stocks de Décants & Flaconnage : `useFlaconnage.ts` branché sur `maisonkenzi.flaconnage`.
+  - [x] Finances & Dépenses : `useAdminFinances.ts` branché sur `maisonkenzi.expenses`.
+  - [x] Paramètres Généraux & Bot : `useAppSettings.ts` et `Bot.tsx` branchés sur `maisonkenzi.app_settings` et `maisonkenzi.bot_qa`.
 
 ---
 
 ## Prochaines Tâches Planifiées
 
-- [ ] Exécution du script SQL `setup_maisonkenzi_database.sql` dans le SQL Editor de Supabase sur le VPS.
-- [ ] Ajout de la variable `PGRST_DB_SCHEMAS="public,storage,graphql_public,maisonkenzi"` dans la configuration Supabase du VPS si besoin.
+- [ ] Saisie des premiers parfums de niche réels depuis l'interface [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
+- [ ] Test d'une commande test en direct sur le site pour valider le flux complet.
