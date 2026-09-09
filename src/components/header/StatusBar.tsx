@@ -1,3 +1,10 @@
+/**
+ * Barre d'Annonce Supérieure (StatusBar) — Maison Kenzi
+ *
+ * Affiche les engagements clés de la maison (livraison, authenticité, décantage)
+ * avec un lettrage espacé et des teintes nudes feutrées.
+ */
+
 import { useEffect, useState } from "react";
 import { Truck, ShieldCheck, Sparkles, Award } from "lucide-react";
 
@@ -22,12 +29,12 @@ const StatusBar = () => {
   const CurrentIcon = usps[currentIndex].icon;
 
   return (
-    <div className="bg-[#0f1115] text-[#D8B043] dark:bg-[#15120c] dark:text-[#D8B043] py-1.5 px-4 text-center border-b border-primary/20 transition-all select-none overflow-hidden">
+    <div className="bg-card/90 text-primary py-1.5 px-4 text-center border-b border-border/60 transition-all select-none overflow-hidden backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
-        <CurrentIcon className="w-3.5 h-3.5 text-primary shrink-0 transition-transform duration-300" />
+        <CurrentIcon className="w-3.5 h-3.5 text-primary shrink-0 transition-transform duration-300" strokeWidth={1.5} />
         <p
           key={currentIndex}
-          className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] font-semibold transition-all duration-700 ease-out animate-fade-in truncate"
+          className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-700 ease-out animate-fade-in truncate text-foreground/90"
         >
           {usps[currentIndex].text}
         </p>

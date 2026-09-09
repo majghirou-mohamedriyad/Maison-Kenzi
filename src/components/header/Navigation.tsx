@@ -90,7 +90,7 @@ const Navigation = () => {
   return (
     <div className="relative">
       {/* Floating Pill Container */}
-      <nav className="bg-background/85 dark:bg-[#12141a]/90 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-full shadow-lg shadow-black/5 dark:shadow-black/30 px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
+      <nav className="bg-card/85 backdrop-blur-2xl border border-border/80 rounded-full shadow-nude px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
         
         {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
         <div className="flex items-center gap-1 sm:gap-2 z-10">

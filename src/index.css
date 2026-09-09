@@ -1,110 +1,115 @@
+/**
+ * Styles Globaux & Système de Design Nude Minimaliste — Maison Kenzi
+ *
+ * Ce fichier définit les variables CSS pour le mode Nude Albâtre (Light) et
+ * Warm Espresso Obsidian (Dark), la hiérarchie typographique éditoriale et les transitions feutrées.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* TABAT — Dual-theme luxury design system (dark default, light optional) */
-
 @layer base {
-  /* Dark warm luxury obsidian gold palette (default) */
+  /* Mode Sombre : Espresso chaud, Cacao satiné et Doré Champagne (Warm Obsidian Nude) */
   :root,
   .dark {
-    --background: 20 25% 6%;         /* #140E0A deep obsidian noir */
-    --foreground: 36 50% 94%;        /* #F7F0E8 radiant warm pearl cream */
+    --background: 24 16% 7%;          /* #140F0D espresso feutré */
+    --foreground: 36 30% 93%;         /* #F5EFE8 crème de lin lumineuse */
 
-    --status-bar: 20 25% 5%;
-    --status-bar-foreground: 36 50% 94%;
+    --status-bar: 24 16% 6%;
+    --status-bar-foreground: 36 30% 93%;
 
-    --nav-background: 20 25% 6%;
-    --nav-foreground: 36 50% 94%;
-    --nav-hover: 43 65% 55%;
+    --nav-background: 24 16% 7%;
+    --nav-foreground: 36 30% 93%;
+    --nav-hover: 35 42% 64%;          /* #D4B68D */
 
-    --primary: 43 65% 55%;           /* #D8B043 luxury gold accent */
-    --primary-foreground: 20 25% 6%;
-    --primary-hover: 43 65% 48%;
+    --primary: 35 42% 64%;            /* #D4B68D doré champagne brossé */
+    --primary-foreground: 24 16% 7%;
+    --primary-hover: 35 42% 56%;
 
-    --secondary: 20 25% 10%;         /* #1F1611 obsidian surface */
-    --secondary-foreground: 36 50% 94%;
+    --secondary: 24 12% 15%;          /* #2B221E surface cacao */
+    --secondary-foreground: 36 30% 93%;
 
-    --muted: 20 20% 14%;             /* #241A14 */
-    --muted-foreground: 26 20% 75%;
+    --muted: 24 12% 14%;              /* #271E1A */
+    --muted-foreground: 28 12% 68%;   /* #B6AAA0 grège soyeux */
 
-    --accent: 357 35% 52%;
-    --accent-foreground: 36 50% 94%;
+    --accent: 35 42% 64%;
+    --accent-foreground: 24 16% 7%;
 
-    --border: 22 25% 18%;            /* #36271F border */
-    --input: 22 25% 18%;
-    --ring: 43 65% 55%;
+    --border: 24 14% 18%;             /* #362B25 bordure feutrée */
+    --input: 24 14% 18%;
+    --ring: 35 42% 64%;
 
-    --card: 20 22% 11%;              /* #221813 luxury card */
-    --card-foreground: 36 50% 94%;
+    --card: 24 14% 11%;               /* #1F1815 carte satinée */
+    --card-foreground: 36 30% 93%;
 
-    --popover: 20 22% 11%;
-    --popover-foreground: 36 50% 94%;
+    --popover: 24 14% 11%;
+    --popover-foreground: 36 30% 93%;
 
     --destructive: 357 45% 42%;
-    --destructive-foreground: 36 50% 94%;
+    --destructive-foreground: 36 30% 93%;
 
     --radius: 0.5rem;
 
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --sidebar-background: 20 25% 8%;
-    --sidebar-foreground: 36 50% 94%;
-    --sidebar-primary: 43 65% 55%;
-    --sidebar-primary-foreground: 20 25% 6%;
-    --sidebar-accent: 20 22% 11%;
-    --sidebar-accent-foreground: 36 50% 94%;
-    --sidebar-border: 22 25% 18%;
-    --sidebar-ring: 43 65% 55%;
+    --sidebar-background: 24 16% 9%;
+    --sidebar-foreground: 36 30% 93%;
+    --sidebar-primary: 35 42% 64%;
+    --sidebar-primary-foreground: 24 16% 7%;
+    --sidebar-accent: 24 14% 11%;
+    --sidebar-accent-foreground: 36 30% 93%;
+    --sidebar-border: 24 14% 18%;
+    --sidebar-ring: 35 42% 64%;
   }
 
-  /* Warm soft light palette */
+  /* Mode Clair : Blanc Albâtre, Lin chaud, Travertin et Doré Cuivré (Nude Luxury) */
   .light {
-    --background: 26 55% 91%;        /* #F3E7DD body */
-    --foreground: 18 26% 18%;        /* #3A2A22 main text & headings */
+    --background: 38 30% 96%;         /* #F9F6F0 blanc albâtre / lin poudré */
+    --foreground: 24 12% 12%;         /* #1C1714 noir d'ébène profond */
 
-    --status-bar: 26 55% 91%;
-    --status-bar-foreground: 18 26% 18%;
+    --status-bar: 38 30% 96%;
+    --status-bar-foreground: 24 12% 12%;
 
-    --nav-background: 26 55% 91%;
-    --nav-foreground: 18 26% 18%;
-    --nav-hover: 357 29% 48%;
+    --nav-background: 38 30% 96%;
+    --nav-foreground: 24 12% 12%;
+    --nav-hover: 35 38% 54%;
 
-    --primary: 45 47% 51%;           /* #bc9d45 warm gold accent */
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 45 47% 45%;
+    --primary: 35 38% 54%;            /* #BFA27E doré champagne satiné */
+    --primary-foreground: 38 30% 98%;
+    --primary-hover: 35 38% 46%;
 
-    --secondary: 28 53% 93%;         /* #F6EEE7 section bg */
-    --secondary-foreground: 18 26% 18%;
+    --secondary: 30 22% 89%;          /* #EAE1D7 porcelaine poudrée */
+    --secondary-foreground: 24 12% 12%;
 
-    --muted: 28 53% 93%;             /* #F6EEE7 */
-    --muted-foreground: 18 20% 35%;
+    --muted: 30 22% 91%;              /* #ECE5DC sable doux */
+    --muted-foreground: 25 10% 42%;   /* #736860 taupe chaud velouté */
 
-    --accent: 357 29% 48%;           /* #9d575b muted red accent */
-    --accent-foreground: 0 0% 100%;
+    --accent: 35 38% 54%;             /* #BFA27E */
+    --accent-foreground: 38 30% 98%;
 
-    --border: 25 44% 86%;            /* #EAD8CB card border */
-    --input: 25 44% 86%;
-    --ring: 45 47% 51%;
+    --border: 30 18% 86%;             /* #E4D9CE liseré nude ultra-fin */
+    --input: 30 18% 86%;
+    --ring: 35 38% 54%;
 
-    --card: 0 0% 100%;               /* #FFFFFF card surface */
-    --card-foreground: 18 26% 18%;
+    --card: 30 25% 93%;               /* #F4EDE6 surface travertin délicate */
+    --card-foreground: 24 12% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 18 26% 18%;
+    --popover: 30 25% 93%;
+    --popover-foreground: 24 12% 12%;
 
     --destructive: 357 45% 42%;
     --destructive-foreground: 0 0% 100%;
 
-    --sidebar-background: 28 53% 93%;
-    --sidebar-foreground: 18 26% 18%;
-    --sidebar-primary: 45 47% 51%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 44% 86%;
-    --sidebar-accent-foreground: 18 26% 18%;
-    --sidebar-border: 25 44% 86%;
-    --sidebar-ring: 45 47% 51%;
+    --sidebar-background: 30 22% 91%;
+    --sidebar-foreground: 24 12% 12%;
+    --sidebar-primary: 35 38% 54%;
+    --sidebar-primary-foreground: 38 30% 98%;
+    --sidebar-accent: 30 18% 86%;
+    --sidebar-accent-foreground: 24 12% 12%;
+    --sidebar-border: 30 18% 86%;
+    --sidebar-ring: 35 38% 54%;
   }
 }
 
@@ -125,76 +130,69 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans font-light;
+    @apply bg-background text-foreground font-sans font-light antialiased selection:bg-primary/20 selection:text-foreground;
   }
 
   h1, h2, h3, h4, h5, h6,
-  .font-serif {
-    font-family: 'Sora', 'Manrope', system-ui, sans-serif !important;
+  .font-serif,
+  .font-brand,
+  .font-heading {
+    font-family: 'Playfair Display', Georgia, serif !important;
   }
 
-  .font-brand {
-    font-family: 'Playfair Display', 'Sora', serif !important;
-  }
-
-  /* Smooth theme transitions */
+  /* Transitions feutrées de changement de thème */
   html.theme-transition,
   html.theme-transition *,
   html.theme-transition *::before,
   html.theme-transition *::after {
-    transition: background-color 300ms ease,
-                border-color 300ms ease,
-                color 150ms ease,
-                fill 300ms ease,
-                stroke 300ms ease !important;
+    transition: background-color 350ms cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 350ms cubic-bezier(0.25, 1, 0.5, 1),
+                color 200ms ease,
+                fill 350ms ease,
+                stroke 350ms ease !important;
     transition-delay: 0 !important;
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.08); }
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
 }
 
 .animate-float-slow {
-  animation: float 4s ease-in-out infinite;
+  animation: float 5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 
 .animate-pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
+  animation: pulseGlow 4s ease-in-out infinite;
 }
 
 @keyframes badgeGlow {
   0%, 100% {
-    box-shadow: 0 0 4px rgba(216, 176, 67, 0.4);
+    box-shadow: 0 0 4px rgba(191, 162, 126, 0.3);
     opacity: 0.95;
   }
   50% {
-    box-shadow: 0 0 10px rgba(216, 176, 67, 0.7);
+    box-shadow: 0 0 12px rgba(191, 162, 126, 0.6);
     opacity: 1;
   }
 }
 
 .animate-badge-glow {
-  animation: badgeGlow 3.5s ease-in-out infinite;
+  animation: badgeGlow 4s ease-in-out infinite;
 }
 
-/* Luxury Toast Notification Keyframes & Enhancements */
+/* Notifications Toast Nude & Prestige */
 @keyframes toastSlideInRight {
   0% {
     opacity: 0;
-    transform: translate3d(110%, 0, 0) scale(0.94);
-    filter: blur(6px);
-  }
-  70% {
-    opacity: 1;
-    transform: translate3d(-6px, 0, 0) scale(1.02);
-    filter: blur(0px);
+    transform: translate3d(105%, 0, 0) scale(0.95);
+    filter: blur(4px);
   }
   100% {
     opacity: 1;
@@ -203,41 +201,34 @@
   }
 }
 
-@keyframes toastGlowPulse {
-  0%, 100% {
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(216, 176, 67, 0.2);
-  }
-  50% {
-    box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.4), 0 0 25px rgba(216, 176, 67, 0.35);
-  }
-}
-
 [data-sonner-toaster] [data-sonner-toast] {
-  animation: toastSlideInRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-  border-radius: 1.1rem !important;
+  animation: toastSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Manrope', sans-serif !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="success"] {
-  border-left: 4px solid #22c55e !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(34, 197, 94, 0.2) !important;
+  border-left: 3px solid #22c55e !important;
+  box-shadow: 0 10px 30px -5px rgba(26, 23, 21, 0.08), 0 0 1px 1px rgba(230, 221, 212, 0.6) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="error"] {
-  border-left: 4px solid #ef4444 !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(239, 68, 68, 0.2) !important;
+  border-left: 3px solid #ef4444 !important;
+  box-shadow: 0 10px 30px -5px rgba(26, 23, 21, 0.08), 0 0 1px 1px rgba(230, 221, 212, 0.6) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-type="info"],
 [data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
-  border-left: 4px solid hsl(var(--primary)) !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(216, 176, 67, 0.2) !important;
+  border-left: 3px solid hsl(var(--primary)) !important;
+  box-shadow: 0 10px 30px -5px rgba(26, 23, 21, 0.08), 0 0 15px rgba(191, 162, 126, 0.15) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast]:hover {
-  transform: translateY(-2px) scale(1.01) !important;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: translateY(-2px) scale(1.005) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-/* Hide scrollbars utility */
+
+/* Utilitaires de défilement discret */
 .no-scrollbar::-webkit-scrollbar,
 .scrollbar-none::-webkit-scrollbar {
   display: none;

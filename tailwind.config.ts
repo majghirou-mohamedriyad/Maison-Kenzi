@@ -1,3 +1,10 @@
+/**
+ * Configuration TailwindCSS — Maison Kenzi
+ *
+ * Définit le système de design Luxe & Minimaliste avec palette de couleurs Nudes,
+ * polices typographiques de prestige (Playfair Display, Manrope) et animations feutrées.
+ */
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -12,9 +19,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Manrope', 'sans-serif'],
-        serif: ['Sora', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
         brand: ['"Playfair Display"', 'serif'],
+        heading: ['"Playfair Display"', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -76,6 +84,11 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        'nude-sm': '0 2px 8px -2px rgba(26, 23, 21, 0.04)',
+        'nude': '0 10px 30px -5px rgba(26, 23, 21, 0.05), 0 0 1px 1px rgba(230, 221, 212, 0.6)',
+        'nude-hover': '0 20px 40px -10px rgba(26, 23, 21, 0.08), 0 0 1px 1px rgba(197, 168, 128, 0.4)',
+      },
       keyframes: {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
         "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
@@ -88,10 +101,10 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "slide-in": "slide-in 0.3s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
-        "fade-in": "fade-in 0.2s ease-out",
+        "fade-in": "fade-in 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
       },
       transitionTimingFunction: {
-        smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
+        smooth: "cubic-bezier(0.25, 1, 0.5, 1)",
         bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
       },
     },
