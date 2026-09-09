@@ -1,101 +1,35 @@
 /**
- * Section Univers Olfactifs (FiftyFiftySection / Grille Parfums de Niche) — Maison Kenzi
+ * Section Univers Olfactifs (FiftyFiftySection / Grille Catégories Dynamiques) — Maison Kenzi
  *
- * Présentation des 4 univers phares de la haute parfumerie de niche :
- * Parfums Homme, Parfums Femme, Créations Rares & Unisexe, et l'Art du Décant.
+ * Affiche les univers et catégories configurés dans Supabase.
+ * Masque automatiquement la section si aucune catégorie n'est encore enregistrée en base.
  */
 
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
-
-const CATEGORIES = [
-  {
-    title: "Parfums Niche Homme",
-    text: "Fragrances boisées, cuirées & ambrées de caractère.",
-    href: "/collection/homme",
-    src: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1000&auto=format&fit=crop",
-    fallbackSrc: "/products/g87MYErZ4y721NboX4dgUZheBrJKrMQamehWpORN_md.jpg",
-    alt: "Parfums Niche Homme — Maison Kenzi",
-    tag: "Masculin Niche",
-  },
-  {
-    title: "Parfums Niche Femme",
-    text: "Sillages floraux précieux, vanillés & orientaux rares.",
-    href: "/collection/femme",
-    src: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop",
-    fallbackSrc: "/products/lynd0GeO8jp8IAPSLqd5NIbsyvS6etaIniWkVsMv_md.jpg",
-    alt: "Parfums Niche Femme — Maison Kenzi",
-    tag: "Féminin Niche",
-  },
-  {
-    title: "Créations Rares & Unisexe",
-    text: "Extraits de parfum & compositions confidentielles.",
-    href: "/collection/all",
-    src: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=1000&auto=format&fit=crop",
-    fallbackSrc: "/products/kaGqhOEfyMLMuT81ymdfkblWvtk1Bf7rtiQtJrju_md.jpg",
-    alt: "Créations Rares & Unisexe — Maison Kenzi",
-    tag: "Haute Parfumerie",
-  },
-  {
-    title: "L'Art du Décant Nomade",
-    text: "Flacons précieux 5ml & 10ml pour explorer les grands crus.",
-    href: "/collection/all",
-    src: "/products/Klva1NBIVrAWITRlToAdkhN4pDMvlkXTrjHZXzCP_md.jpg",
-    fallbackSrc: "/products/Klva1NBIVrAWITRlToAdkhN4pDMvlkXTrjHZXzCP_md.jpg",
-    alt: "Décants Nomades — Maison Kenzi",
-    tag: "Formats Nomades",
-    isGold: true,
-  },
-];
+import { useCategories } from "@/store/useCategoryStore";
 
 const Card = ({
   title,
   text,
   href,
-  src,
-  fallbackSrc,
-  alt,
   tag,
-  isGold,
 }: {
   title: string;
   text: string;
   href: string;
-  src: string;
-  fallbackSrc: string;
-  alt: string;
   tag: string;
-  isGold?: boolean;
 }) => (
   <Link
     to={href}
-    className={`group relative overflow-hidden rounded-2xl border transition-all duration-700 shadow-nude aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card ${
-      isGold ? "border-primary/50 hover:border-primary ring-1 ring-primary/20" : "border-border/70 hover:border-primary/50"
-    }`}
+    className="group relative overflow-hidden rounded-2xl border border-border/70 hover:border-primary/50 transition-all duration-700 shadow-nude aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card"
   >
-    {/* Full-bleed Visual Image */}
-    <img
-      src={src}
-      onError={(e) => {
-        (e.target as HTMLImageElement).src = fallbackSrc;
-      }}
-      alt={alt}
-      loading="lazy"
-      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] z-0"
-    />
+    {/* Voile de fond feutré */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 z-1 transition-opacity duration-500 group-hover:opacity-90" />
 
-    {/* Voile dégradé feutré pour contraste textuel parfait */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 z-1 transition-opacity duration-500 group-hover:opacity-90" />
-
-    {/* Badge supérieur délicat */}
+    {/* Badge supérieur */}
     <div className="relative z-10 flex items-center justify-between">
-      <span
-        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium px-3 py-1 rounded-full backdrop-blur-md shadow-xs ${
-          isGold
-            ? "bg-primary text-primary-foreground"
-            : "bg-black/50 text-white/90 border border-white/15"
-        }`}
-      >
+      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium px-3 py-1 rounded-full backdrop-blur-md shadow-xs bg-black/50 text-white/90 border border-white/15">
         {tag}
       </span>
     </div>
@@ -105,9 +39,11 @@ const Card = ({
       <h3 className="font-serif text-base sm:text-xl font-normal text-white group-hover:text-primary transition-colors leading-tight">
         {title}
       </h3>
-      <p className="text-[11px] sm:text-xs font-light text-white/75 line-clamp-1 leading-snug">
-        {text}
-      </p>
+      {text && (
+        <p className="text-[11px] sm:text-xs font-light text-white/75 line-clamp-1 leading-snug">
+          {text}
+        </p>
+      )}
 
       <div className="pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-primary uppercase tracking-[0.2em] transition-all group-hover:translate-x-1">
         <span>Explorer</span>
@@ -118,6 +54,14 @@ const Card = ({
 );
 
 const FiftyFiftySection = () => {
+  const categories = useCategories();
+  const activeCategories = categories.filter((c) => c.is_active);
+
+  // Si aucune catégorie n'est créée en base, masquer proprement la section
+  if (activeCategories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="w-full mb-20 sm:mb-32 px-4 sm:px-6 max-w-7xl mx-auto">
       <div className="text-center mb-8 sm:mb-14">
@@ -126,14 +70,20 @@ const FiftyFiftySection = () => {
           <span>Haute Parfumerie</span>
         </div>
         <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
-          Nos Univers de Parfumerie de Niche
+          Nos Univers Olfactifs
         </h2>
         <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-3 rounded-full" />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {CATEGORIES.map((cat, i) => (
-          <Card key={i} {...cat} />
+        {activeCategories.map((cat) => (
+          <Card
+            key={cat.id}
+            title={cat.name}
+            text={cat.description}
+            href={`/collection/${cat.slug}`}
+            tag={cat.name}
+          />
         ))}
       </div>
     </section>

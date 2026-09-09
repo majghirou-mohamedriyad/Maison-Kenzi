@@ -108,32 +108,35 @@ const Navigation = () => {
 
           {/* Desktop Nav Pills (Left side) */}
           <div className="hidden md:flex items-center gap-1">
-            {activeAdminCategories
-              .filter((cat) => !cat.slug.toLowerCase().includes("pack"))
-              .map((cat) => {
-                const s = cat.slug.toLowerCase();
-                let Icon = Flame;
-                if (s === "femme") Icon = Flower2;
-                else if (s.includes("deodorant")) Icon = Shield;
+            <Link
+              to="/collection/all"
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+                location.pathname === "/collection/all"
+                  ? "bg-foreground text-background"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+              }`}
+            >
+              <span>Catalogue</span>
+            </Link>
 
-                const path = `/collection/${cat.slug}`;
-                const isActive = location.pathname === path;
+            {activeAdminCategories.map((cat) => {
+              const path = `/collection/${cat.slug}`;
+              const isActive = location.pathname === path;
 
-                return (
-                  <Link
-                    key={cat.id}
-                    to={path}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
-                      isActive
-                        ? "bg-foreground text-background shadow-xs"
-                        : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
-                  </Link>
-                );
-              })}
+              return (
+                <Link
+                  key={cat.id}
+                  to={path}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+                    isActive
+                      ? "bg-foreground text-background"
+                      : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+                  }`}
+                >
+                  <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
@@ -157,21 +160,8 @@ const Navigation = () => {
           </Link>
         </div>
 
-        {/* Right Side: Packs, À Propos, Theme, Search, Cart */}
+        {/* Right Side: À Propos, Theme, Search, Cart */}
         <div className="flex items-center gap-1 sm:gap-1.5 z-10">
-          {/* Desktop Packs Link (Golden Pill) */}
-          <Link
-            to="/collection/packs"
-            className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
-              location.pathname === "/collection/packs"
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-primary hover:bg-primary/10"
-            }`}
-          >
-            <Crown className="w-3.5 h-3.5" />
-            <span>Packs</span>
-            {location.pathname !== "/collection/packs" && <Sparkles className="w-2.5 h-2.5 text-primary" />}
-          </Link>
 
           {/* Desktop À Propos Link */}
           <Link

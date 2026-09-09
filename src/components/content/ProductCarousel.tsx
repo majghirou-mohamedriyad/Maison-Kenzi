@@ -2,14 +2,14 @@
  * Section Carrousel des Meilleures Ventes — Maison Kenzi
  *
  * Affiche la sélection de parfums de niche best-sellers issus de Supabase
- * avec gestion élégante de l'état vide.
+ * et indique sobrement "Aucun produit" si la base est vide.
  */
 
 import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
-import { Sparkles, Plus } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const ProductCarousel = () => {
   const { data: allParfums, loading } = useParfums();
@@ -111,24 +111,14 @@ const ProductCarousel = () => {
           })}
         </div>
       ) : (
-        /* État vide raffiné quand la base de données est vierge */
-        <div className="rounded-2xl border border-dashed border-border/80 p-8 sm:p-14 text-center bg-card/40 backdrop-blur-xs">
-          <div className="w-12 h-12 rounded-full border border-primary/30 bg-primary/5 flex items-center justify-center mx-auto mb-4 text-primary">
-            <Sparkles className="w-5 h-5" strokeWidth={1.5} />
-          </div>
-          <h3 className="font-serif text-xl sm:text-2xl text-foreground font-normal mb-2">
-            Collection en Préparation
-          </h3>
-          <p className="text-xs sm:text-sm font-light text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
-            Votre catalogue est actuellement vide. Vous pouvez ajouter vos premiers parfums de niche directement depuis le panneau d'administration.
+        /* État sobre : Aucun produit */
+        <div className="rounded-2xl border border-dashed border-border/70 py-12 px-6 text-center bg-card/30">
+          <p className="font-serif text-lg sm:text-xl text-foreground font-normal mb-1">
+            Aucun produit
           </p>
-          <Link
-            to="/admin/produits"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-foreground text-background text-xs uppercase tracking-[0.2em] font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-300 shadow-xs"
-          >
-            <Plus className="w-3.5 h-3.5" strokeWidth={1.5} />
-            <span>Ajouter un Parfum (Admin)</span>
-          </Link>
+          <p className="text-xs font-light text-muted-foreground">
+            Aucun parfum n'est disponible pour le moment.
+          </p>
         </div>
       )}
     </section>

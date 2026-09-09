@@ -2,6 +2,7 @@
  * Store des Catégories & Univers — Maison Kenzi
  *
  * Gère les catégories synchronisées avec la table maisonkenzi.categories de Supabase.
+ * Initialisé à vide si la base de données est vierge.
  */
 
 import { useSyncExternalStore } from "react";
@@ -18,35 +19,7 @@ export type AdminCategory = {
   order_index: number;
 };
 
-const DEFAULT_CATEGORIES: AdminCategory[] = [
-  {
-    id: "cat_homme",
-    slug: "homme",
-    name: "Parfums Niche Homme",
-    description: "Sillage puissant, boisé et charismatique dédié aux hommes.",
-    gender: "Homme",
-    is_active: true,
-    order_index: 1,
-  },
-  {
-    id: "cat_femme",
-    slug: "femme",
-    name: "Parfums Niche Femme",
-    description: "Fragrances florales, ambrées et élégantes pour femmes.",
-    gender: "Femme",
-    is_active: true,
-    order_index: 2,
-  },
-  {
-    id: "cat_mixte",
-    slug: "mixte",
-    name: "Créations Rares & Unisexe",
-    description: "Créations olfactives universelles et extraits précieux de niche.",
-    gender: "Mixte",
-    is_active: true,
-    order_index: 3,
-  },
-];
+const DEFAULT_CATEGORIES: AdminCategory[] = [];
 
 const STORAGE_KEY = "maisonkenzi_categories";
 const CHANNEL_NAME = "maisonkenzi_categories_channel";
@@ -58,7 +31,7 @@ const load = (): AdminCategory[] => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length) return parsed;
+      if (Array.isArray(parsed)) return parsed;
     }
   } catch {}
   return DEFAULT_CATEGORIES;
@@ -76,7 +49,7 @@ if (typeof window !== "undefined") {
         .select("*")
         .order("sort_order", { ascending: true });
 
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         state = data.map((c: any) => ({
           id: c.id,
           slug: c.slug,
