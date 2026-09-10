@@ -1,7 +1,15 @@
+/**
+ * Section Produits Similaires — Maison Kenzi
+ *
+ * Suggère des fragrances de la même maison ou du même univers olfactif
+ * avec étiquettes de genre et saisons d'utilisation.
+ */
+
 import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
+import { Sun, Leaf, Wind, Snowflake } from "lucide-react";
 
 interface RelatedProductsProps {
   currentParfumId?: string;
@@ -28,40 +36,43 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
   const sameMaison = availableParfums.filter(
     (p) =>
       maison &&
+      p.maison &&
       p.maison.trim().toLowerCase() === maison.trim().toLowerCase()
   );
 
-  // 2. Fallback products if same maison has fewer items
-  const otherParfums = availableParfums.filter(
+  // 2. Filter products from the SAME gender (if different from maison)
+  const sameGender = availableParfums.filter(
     (p) =>
-      !maison || p.maison.trim().toLowerCase() !== maison.trim().toLowerCase()
+      gender &&
+      p.gender === gender &&
+      (!maison || p.maison?.trim().toLowerCase() !== maison.trim().toLowerCase())
   );
 
-  // Combine: Prioritize same provider first
-  const related = [...sameMaison, ...otherParfums].slice(0, 4);
+  // 3. Fallback: other active products
+  const remaining = availableParfums.filter(
+    (p) =>
+      (!maison || p.maison?.trim().toLowerCase() !== maison.trim().toLowerCase()) &&
+      (!gender || p.gender !== gender)
+  );
+
+  // Combine to get up to 4 recommendations prioritizing same maison, then same gender
+  const related = [...sameMaison, ...sameGender, ...remaining].slice(0, 4);
 
   if (!loading && related.length === 0) {
     return null;
   }
 
   return (
-    <section className="w-full mt-10 sm:mt-24 pt-6 sm:pt-10 border-t border-border/40 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-6 sm:mb-8 pb-3 border-b border-border/40">
+    <section className="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-border/60 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold mb-1">
-            {maison ? `Maison ${maison}` : "Haute Parfumerie"}
-          </p>
-          <h2 className="font-serif text-xl sm:text-3xl text-foreground font-medium">
-            Produits Apparentés
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-primary font-bold block">
+            Découverte Olfactive
+          </span>
+          <h2 className="font-serif text-lg sm:text-2xl text-foreground font-semibold">
+            Vous Aimerez Aussi
           </h2>
         </div>
-        <Link
-          to="/collection/all"
-          className="text-[10px] sm:text-xs uppercase tracking-wider text-primary hover:text-primary-hover font-semibold border-b border-primary/40 pb-0.5"
-        >
-          Voir Tout
-        </Link>
       </div>
 
       {loading ? (
@@ -102,14 +113,37 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                 <h3 className="font-serif text-xs sm:text-sm font-medium truncate mt-0.5 text-foreground">
                   {p.name}
                 </h3>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
+
+                {/* Étiquettes Genre & Saisons d'utilisation */}
+                <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                  {p.gender && (
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                      {p.gender}
+                    </span>
+                  )}
+                  {Array.isArray(p.seasons) && p.seasons.map((season) => {
+                    const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                    return (
+                      <span
+                        key={season}
+                        className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                      >
+                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                        <span>{season}</span>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/40">
                   <span className="text-xs font-serif font-bold text-primary">
                     {isFull
                       ? formatMAD(p.full_bottle_price ?? 0)
                       : `À partir de ${formatMAD(p.price_5ml)}`}
                   </span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50">
-                    {p.gender}
+                  <span className="text-[9px] uppercase tracking-wider text-primary font-medium">
+                    {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
                   </span>
                 </div>
               </Link>

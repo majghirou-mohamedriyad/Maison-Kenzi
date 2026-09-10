@@ -1,4 +1,27 @@
-import { Pencil, Trash2, Eye, Gift, Sparkles, Wine, Droplet, Layers, Package, Tag, ArrowUpDown } from "lucide-react";
+/**
+ * Composant Tableau & Grille Produits — Espace Administration Maison Kenzi
+ *
+ * Affichage haute parfumerie des créations avec badges de genre, saisons d'utilisation,
+ * inventaire flacons et actions de gestion rapide.
+ */
+
+import {
+  Pencil,
+  Trash2,
+  Eye,
+  Gift,
+  Sparkles,
+  Wine,
+  Droplet,
+  Layers,
+  Package,
+  Tag,
+  ArrowUpDown,
+  Sun,
+  Leaf,
+  Wind,
+  Snowflake,
+} from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 
 type Props = {
@@ -38,11 +61,11 @@ const ProductTable = ({
             return (
               <div
                 key={p.id}
-                className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-primary/40 transition-all duration-300 group"
+                className="group relative bg-card border border-border/80 hover:border-primary/50 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between"
               >
-                {/* Image and Badges Header */}
                 <div>
-                  <div className="relative aspect-square rounded-xl bg-muted/40 overflow-hidden mb-3.5 border border-border/60">
+                  {/* Card Visual & Status Bar */}
+                  <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted/30 border border-border/50 mb-3">
                     {p.image_url ? (
                       <img
                         src={p.image_url}
@@ -50,29 +73,22 @@ const ProductTable = ({
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-serif text-2xl font-bold text-muted-foreground">
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground font-serif text-3xl font-bold bg-muted/20">
                         {p.name.charAt(0)}
                       </div>
                     )}
 
-                    {/* Status Pill on Top Right */}
-                    <div className="absolute top-2 right-2">
+                    {/* Quick Status Tag */}
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
                       <span
-                        className={`inline-flex items-center gap-1.5 text-[10px] px-2.5 py-0.5 rounded-full font-bold backdrop-blur-md shadow-xs ${
+                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md border ${
                           inStock
-                            ? "bg-emerald-500/90 text-white"
-                            : "bg-red-500/90 text-white"
+                            ? "bg-emerald-500/90 text-white border-emerald-400/40"
+                            : "bg-red-500/90 text-white border-red-400/40"
                         }`}
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                        <span>{inStock ? "Actif" : "Rupture"}</span>
-                      </span>
-                    </div>
-
-                    {/* Category Tag on Top Left */}
-                    <div className="absolute top-2 left-2">
-                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/75 text-white backdrop-blur-md border border-white/10">
-                        {p.gender}
+                        <span className={`w-1.5 h-1.5 rounded-full ${inStock ? "bg-white" : "bg-white animate-pulse"}`} />
+                        {inStock ? "En Stock" : "Rupture"}
                       </span>
                     </div>
                   </div>
@@ -85,8 +101,30 @@ const ProductTable = ({
                     {p.name}
                   </h3>
 
+                  {/* Badges Genre & Saisons d'utilisation */}
+                  <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-2">
+                    {p.gender && (
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                        {p.gender}
+                      </span>
+                    )}
+                    {Array.isArray(p.seasons) && p.seasons.map((season) => {
+                      const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                      const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                      return (
+                        <span
+                          key={season}
+                          className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                        >
+                          <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                          <span>{season}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+
                   {/* Format Category Tag */}
-                  <div className="flex items-center gap-1.5 mt-2">
+                  <div className="flex items-center gap-1.5 mt-1">
                     {isPack && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
                         <Gift className="w-3 h-3" /> Pack & Coffret
@@ -299,9 +337,29 @@ const ProductTable = ({
                       </td>
                       <td className="px-4 py-3.5 text-muted-foreground text-xs font-semibold">{p.maison}</td>
                       <td className="px-4 py-3.5">
-                        <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold">
-                          {p.gender}
-                        </span>
+                        <div className="flex flex-col gap-1 items-start">
+                          <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold">
+                            {p.gender}
+                          </span>
+                          {Array.isArray(p.seasons) && p.seasons.length > 0 && (
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {p.seasons.map((season) => {
+                                const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                                return (
+                                  <span
+                                    key={season}
+                                    className="inline-flex items-center gap-0.5 text-[8.5px] px-1.5 py-0.2 rounded-md bg-muted text-foreground/80 border border-border/50"
+                                    title={`Saison : ${season}`}
+                                  >
+                                    <SeasonIconComp className="w-2 h-2 text-primary" />
+                                    <span>{season}</span>
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3.5 text-right font-medium text-foreground">
                         {isFull ? (

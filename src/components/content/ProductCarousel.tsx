@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Sun, Leaf, Wind, Snowflake } from "lucide-react";
 
 const ProductCarousel = () => {
   const { data: allParfums, loading } = useParfums();
@@ -91,19 +91,42 @@ const ProductCarousel = () => {
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                   {p.maison}
                 </p>
-                <h3 className={`font-serif text-sm sm:text-base mt-1 truncate font-normal transition-colors duration-300 ${
+                <h3 className={`font-serif text-sm sm:text-base mt-0.5 truncate font-normal transition-colors duration-300 ${
                   outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                 }`}>
                   {p.name}
                 </h3>
-                <div className="flex items-center justify-between mt-2 pt-1 border-t border-border/40">
+
+                {/* Étiquettes Genre & Saisons d'utilisation */}
+                <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                  {p.gender && (
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                      {p.gender}
+                    </span>
+                  )}
+                  {Array.isArray(p.seasons) && p.seasons.map((season) => {
+                    const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                    return (
+                      <span
+                        key={season}
+                        className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                      >
+                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                        <span>{season}</span>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/40">
                   <span className="text-xs font-light text-foreground/90 font-serif">
                     {isFull
                       ? `${formatMAD(p.full_bottle_price ?? 0)} MAD`
                       : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)} MAD`}
                   </span>
                   <span className="text-[10px] uppercase tracking-wider text-primary font-medium">
-                    {isFull ? "Flacon" : "Décant"}
+                    {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
                   </span>
                 </div>
               </Link>

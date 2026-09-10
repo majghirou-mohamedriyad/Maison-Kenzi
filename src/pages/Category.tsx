@@ -19,6 +19,10 @@ import {
   Search,
   Crown,
   SlidersHorizontal,
+  Sun,
+  Leaf,
+  Wind,
+  Snowflake,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -535,16 +539,38 @@ const Collection = () => {
                       <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                         {p.maison}
                       </p>
-                      <h3 className={`font-serif text-sm sm:text-base font-medium truncate mt-0.5 sm:mt-1 transition-colors duration-300 ${
+                      <h3 className={`font-serif text-sm sm:text-base font-medium truncate mt-0.5 transition-colors duration-300 ${
                         outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                       }`}>
                         {p.name}
                       </h3>
 
+                      {/* Étiquettes Genre & Saisons d'utilisation */}
+                      <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                        {p.gender && (
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                            {p.gender}
+                          </span>
+                        )}
+                        {Array.isArray(p.seasons) && p.seasons.map((season) => {
+                          const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                          const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                          return (
+                            <span
+                              key={season}
+                              className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                            >
+                              <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                              <span>{season}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+
                       {/* Price & Action */}
-                      <div className="flex items-center justify-between mt-2 pt-1 border-t sm:border-t-0 border-border/30">
+                      <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/30">
                         <span className={`text-[11px] sm:text-xs font-light ${
-                          outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground/80"
+                          outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground/80 font-serif"
                         }`}>
                           {outOfStock
                             ? "Rupture de stock"
@@ -553,8 +579,8 @@ const Collection = () => {
                             : `À partir de ${formatMAD(p.price_5ml)}`}
                         </span>
 
-                        <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary/80 border border-border/40 px-1.5 sm:px-2 py-0.5 rounded-sm">
-                          {p.category === "deodorants-stick" ? "Stick" : p.category === "packs" ? "Pack" : p.gender}
+                        <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-primary font-medium">
+                          {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
                         </span>
                       </div>
                     </Link>
