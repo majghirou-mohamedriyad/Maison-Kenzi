@@ -186,9 +186,9 @@ const SeasonalSection = () => {
                     return (
                       <span
                         key={season}
-                        className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                        className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
                       >
-                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
                         <span>{season}</span>
                       </span>
                     );

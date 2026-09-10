@@ -63,9 +63,8 @@ const ProductCarousel = () => {
               <Link
                 key={p.id}
                 to={`/parfum/${p.id}`}
-                className={`block group relative transition-all duration-500 hover:-translate-y-1 ${
-                  outOfStock ? "opacity-75" : ""
-                }`}
+                className={`block group relative transition-all duration-500 hover:-translate-y-1 ${outOfStock ? "opacity-75" : ""
+                  }`}
                 style={{ animationDelay: `${idx * 150}ms` }}
               >
                 {/* Conteneur Image Produit */}
@@ -74,9 +73,8 @@ const ProductCarousel = () => {
                     src={p.image_url}
                     alt={p.name}
                     label={p.image_label}
-                    className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${
-                      outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
-                    }`}
+                    className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
+                      }`}
                   />
 
                   {/* Badge Rupture */}
@@ -91,9 +89,8 @@ const ProductCarousel = () => {
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                   {p.maison}
                 </p>
-                <h3 className={`font-serif text-sm sm:text-base mt-0.5 truncate font-normal transition-colors duration-300 ${
-                  outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                }`}>
+                <h3 className={`font-serif text-sm sm:text-base mt-0.5 truncate font-normal transition-colors duration-300 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                  }`}>
                   {p.name}
                 </h3>
 
@@ -110,9 +107,9 @@ const ProductCarousel = () => {
                     return (
                       <span
                         key={season}
-                        className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                        className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
                       >
-                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                        <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
                         <span>{season}</span>
                       </span>
                     );
