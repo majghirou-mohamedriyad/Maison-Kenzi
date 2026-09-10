@@ -18,7 +18,7 @@ const Index = () => {
         ogType="website"
       />
       <Header />
-      <main className="pt-2 sm:pt-3">
+      <main className="pt-0">
         <LargeHero />
         <FiftyFiftySection />
         <ProductCarousel />

@@ -64,9 +64,9 @@ const LargeHero = () => {
   const slide = SLIDES[currentSlide];
 
   return (
-    <section className="relative w-full px-3 sm:px-6 md:px-8 max-w-[1440px] mx-auto mb-14 sm:mb-20">
-      {/* Conteneur Hero Immersif Haute Parfumerie aux bordures raffinées */}
-      <div className="relative w-full min-h-[540px] sm:min-h-[620px] md:min-h-[680px] lg:min-h-[720px] flex flex-col justify-center items-center rounded-2xl sm:rounded-3xl md:rounded-[2.25rem] overflow-hidden bg-[#0C0B0A] border border-[#C9A96E]/25 shadow-2xl shadow-black/30">
+    <section className="relative w-full mb-16 sm:mb-24 overflow-hidden">
+      {/* Conteneur Hero Immersif occupant 100% de la section Hero */}
+      <div className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[740px] lg:min-h-[820px] flex flex-col justify-center items-center overflow-hidden bg-[#0C0B0A]">
         
         {/* Layer Arrière-Plan : Diaporama animé occupant 100% de la surface du Hero */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">

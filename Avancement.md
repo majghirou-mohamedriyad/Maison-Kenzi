@@ -9,10 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Animation Immersive Plein Écran & Harmonisation de la Section Hero :
-  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : L'animation d'arrière-plan et le diaporama occupent 100% de la surface du Hero avec effet Ken Burns continu (`scale-105`), transitions de fondu doux et halos dorés champagne.
-  - [x] Typographie éditoriale Playfair Display, navigation par flèches discrètes et pagination dorée.
-  - [x] Harmonisation avec la Navbar et le design system : cadrage en grand format luxe (`max-w-[1440px]`), angles arrondis (`rounded-3xl`), liséré champagne (`border-[#C9A96E]/25`), suppression du décalage d'espacement et épuration visuelle totale.
+- [x] Animation Immersive Plein Écran de la Section Hero & Navbar Adaptative au Scroll :
+  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : La section Hero et son animation cinématique occupent désormais 100% de la largeur et de la hauteur de la section avec effet Ken Burns continu (`scale-105`), transitions de fondu doux et halos dorés.
+  - [x] [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx) & [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Écoute dynamique du défilement (`isScrolled`) — la barre de navigation est intégrée au sommet et se transforme en barre flottante arrondie (`rounded-full`) avec ombre douce et verre dépoli lors du défilement.
+  - [x] [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx) : Ajustement du flux pour une continuité visuelle sans rupture entre l'en-tête et le Hero.
 - [x] Définition et création des 4 compétences d'agent dans `.agents/skills/` :
   - [x] `luxury-nude-design-system` : Nuancier HSL / Hex nude, albâtre, sable et champagne.
   - [x] `editorial-luxury-typography` : Duo typographique Serif / Sans-Serif avec espacement tracking.
