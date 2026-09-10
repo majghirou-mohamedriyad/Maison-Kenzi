@@ -30,11 +30,14 @@ import {
   Calendar,
   Sparkle,
   Layers,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useParfum } from "@/hooks/useParfums";
 import { useCart } from "@/store/cart";
 import { toast } from "sonner";
 import { SIZES, SIZE_META, formatMAD, priceFor } from "@/lib/sizes";
+import { getParfumImages } from "@/lib/productImages";
 import type { Size } from "@/types/database";
 import type { OrderSelectionItem } from "@/components/content/ExpressOrderForm";
 import {
@@ -56,6 +59,11 @@ const ParfumDetail = () => {
 
   // State des quantités initialisé pour chaque format
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [parfumId]);
 
   useEffect(() => {
     if (!parfum) return;
@@ -285,65 +293,144 @@ const ParfumDetail = () => {
 
           {/* MAIN PRODUCT CLEAN & AIRY GRID */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-start">
-            {/* LEFT COLUMN: Crystal Clear Product Image + Flacon Preview */}
+            {/* LEFT COLUMN: Crystal Clear Product Image + Multi-photo Gallery Preview */}
             <div className="md:col-span-5 w-full space-y-3 md:sticky md:top-24">
-              <div className="relative group overflow-hidden rounded-2xl bg-card/30 border border-border/60">
-                <ProductImage
-                  src={parfum.image_url}
-                  alt={parfum.name}
-                  label={parfum.image_label}
-                  aspect="aspect-[4/5]"
-                  fitMode="cover"
-                  className={`max-h-[280px] sm:max-h-[380px] md:max-h-[440px] w-full mx-auto transition-all duration-500 ${
-                    outOfStock ? "grayscale opacity-60 contrast-75" : ""
-                  }`}
-                />
+              {(() => {
+                const galleryImages = getParfumImages(parfum);
+                const currentDisplayImage =
+                  galleryImages[activeImageIndex] || parfum.image_url;
 
-                {outOfStock && (
-                  <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-full font-bold border border-zinc-700/60 shadow-lg">
-                    <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span>Rupture de Stock</span>
-                  </span>
-                )}
+                const prevImg = () => {
+                  if (galleryImages.length <= 1) return;
+                  setActiveImageIndex(
+                    (prev) => (prev - 1 + galleryImages.length) % galleryImages.length
+                  );
+                };
 
-                {/* Glass Spray Bottle Badge Preview */}
-                {!isFullBottle && !outOfStock && (
-                  <div
-                    className="absolute top-2.5 right-2.5 z-20 bg-background/95 dark:bg-black/90 backdrop-blur-md border border-primary/50 rounded-2xl p-2 sm:p-2.5 shadow-xl animate-in zoom-in-95 fade-in duration-300 flex flex-col items-center gap-1 min-w-[60px] sm:min-w-[68px]"
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-primary font-bold">
-                        {quantities["10ml"] > 0 ? "10ml" : quantities["5ml"] > 0 ? "5ml" : "Decant"}
-                      </span>
-                      <Sparkles className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary animate-pulse" />
-                    </div>
+                const nextImg = () => {
+                  if (galleryImages.length <= 1) return;
+                  setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
+                };
 
-                    <div className="flex flex-col items-center py-0.5">
-                      <div
-                        className="rounded-t-[3px] shadow-sm relative"
-                        style={{
-                          width: "12px",
-                          height: quantities["10ml"] > 0 ? "16px" : "12px",
-                          background: "linear-gradient(180deg, #111111 0%, #333333 40%, #0a0a0a 100%)",
-                        }}
+                return (
+                  <div className="space-y-2.5">
+                    {/* Conteneur de l'image principale */}
+                    <div className="relative group overflow-hidden rounded-2xl bg-card/30 border border-border/60">
+                      <ProductImage
+                        src={currentDisplayImage}
+                        alt={parfum.name}
+                        label={parfum.image_label}
+                        aspect="aspect-[4/5]"
+                        fitMode="cover"
+                        className={`max-h-[280px] sm:max-h-[380px] md:max-h-[440px] w-full mx-auto transition-all duration-500 ${
+                          outOfStock ? "grayscale opacity-60 contrast-75" : ""
+                        }`}
                       />
-                      <div
-                        className="border-x-2 border-b-2 border-primary/80 bg-gradient-to-b from-primary/10 via-primary/30 to-primary/15 rounded-b-[4px] relative shadow-inner"
-                        style={{
-                          width: "10px",
-                          height: quantities["10ml"] > 0 ? "55px" : "36px",
-                        }}
-                      >
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-[90%] bg-foreground/50" />
-                      </div>
+
+                      {/* Flèches de navigation si plusieurs images */}
+                      {galleryImages.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={prevImg}
+                            aria-label="Image précédente"
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-background/85 dark:bg-black/80 backdrop-blur-md border border-border/80 text-foreground flex items-center justify-center shadow-lg hover:scale-110 hover:bg-background transition-all cursor-pointer opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
+                          >
+                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={nextImg}
+                            aria-label="Image suivante"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-background/85 dark:bg-black/80 backdrop-blur-md border border-border/80 text-foreground flex items-center justify-center shadow-lg hover:scale-110 hover:bg-background transition-all cursor-pointer opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
+                          >
+                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                          </button>
+
+                          {/* Indicateur de position (ex: 1 / 3) */}
+                          <div className="absolute bottom-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-medium backdrop-blur-md border border-white/10 shadow-sm pointer-events-none">
+                            {activeImageIndex + 1} / {galleryImages.length}
+                          </div>
+                        </>
+                      )}
+
+                      {outOfStock && (
+                        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-full font-bold border border-zinc-700/60 shadow-lg">
+                          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-red-500 animate-pulse" />
+                          <span>Rupture de Stock</span>
+                        </span>
+                      )}
+
+                      {/* Glass Spray Bottle Badge Preview */}
+                      {!isFullBottle && !outOfStock && (
+                        <div className="absolute top-2.5 right-2.5 z-20 bg-background/95 dark:bg-black/90 backdrop-blur-md border border-primary/50 rounded-2xl p-2 sm:p-2.5 shadow-xl animate-in zoom-in-95 fade-in duration-300 flex flex-col items-center gap-1 min-w-[60px] sm:min-w-[68px]">
+                          <div className="flex items-center gap-1">
+                            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-primary font-bold">
+                              {quantities["10ml"] > 0
+                                ? "10ml"
+                                : quantities["5ml"] > 0
+                                ? "5ml"
+                                : "Decant"}
+                            </span>
+                            <Sparkles className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary animate-pulse" />
+                          </div>
+
+                          <div className="flex flex-col items-center py-0.5">
+                            <div
+                              className="rounded-t-[3px] shadow-sm relative"
+                              style={{
+                                width: "12px",
+                                height: quantities["10ml"] > 0 ? "16px" : "12px",
+                                background:
+                                  "linear-gradient(180deg, #111111 0%, #333333 40%, #0a0a0a 100%)",
+                              }}
+                            />
+                            <div
+                              className="border-x-2 border-b-2 border-primary/80 bg-gradient-to-b from-primary/10 via-primary/30 to-primary/15 rounded-b-[4px] relative shadow-inner"
+                              style={{
+                                width: "10px",
+                                height: quantities["10ml"] > 0 ? "55px" : "36px",
+                              }}
+                            >
+                              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-[90%] bg-foreground/50" />
+                            </div>
+                          </div>
+
+                          <p className="text-[7px] sm:text-[7.5px] text-primary font-bold text-center">
+                            {totalQuantity > 0
+                              ? `${totalQuantity} flacon${totalQuantity > 1 ? "s" : ""}`
+                              : "Flacons Verre"}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
-                    <p className="text-[7px] sm:text-[7.5px] text-primary font-bold text-center">
-                      {totalQuantity > 0 ? `${totalQuantity} flacon${totalQuantity > 1 ? "s" : ""}` : "Flacons Verre"}
-                    </p>
+                    {/* Rangée des miniatures (Vignettes cliquables) */}
+                    {galleryImages.length > 1 && (
+                      <div className="flex items-center gap-2 overflow-x-auto py-1 px-0.5 scrollbar-none">
+                        {galleryImages.map((img, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setActiveImageIndex(idx)}
+                            className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer ${
+                              idx === activeImageIndex
+                                ? "border-primary ring-2 ring-primary/30 scale-[1.03] shadow-sm"
+                                : "border-border/70 opacity-70 hover:opacity-100 hover:border-border"
+                            }`}
+                          >
+                            <img
+                              src={img}
+                              alt={`${parfum.name} — vue ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                );
+              })()}
 
               {/* Trust Badges */}
               <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground text-center">

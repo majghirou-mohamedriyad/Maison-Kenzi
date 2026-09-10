@@ -21,6 +21,7 @@ export type Parfum = {
   price_10ml: number;
   image_label: string;
   image_url: string | null;
+  images?: string[];
   is_active: boolean;
   is_new: boolean;
   is_bestseller: boolean;

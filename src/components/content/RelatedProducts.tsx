@@ -101,6 +101,7 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                 <div className="relative mb-2 overflow-hidden rounded-xl bg-muted/40">
                   <ProductImage
                     src={p.image_url}
+                    images={p.images}
                     alt={p.name}
                     label={p.image_label}
                     aspect="aspect-[4/5]"

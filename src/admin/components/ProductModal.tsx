@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
 import { useCategories } from "@/store/useCategoryStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
+import { getParfumImages } from "@/lib/productImages";
 import type { Gender } from "@/data/parfums";
 import { toast } from "sonner";
 import {
@@ -27,6 +28,12 @@ import {
   Check,
   Search,
   Layers,
+  Star,
+  ArrowLeft,
+  ArrowRight,
+  Trash2,
+  Image as ImageIcon,
+  Plus,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
@@ -67,6 +74,7 @@ const emptyForm = {
   description: "",
   imageLabel: "",
   imageUrl: "" as string,
+  images: [] as string[],
   active: true,
   isNew: false,
   isBestseller: false,
@@ -133,6 +141,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           .join(", ");
 
         const initialSeasons = getParfumSeasons(initial);
+        const initialImages = getParfumImages(initial);
 
         setF({
           name: initial.name || "",
@@ -146,7 +155,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           notes: initialNotes,
           description: initial.description || "",
           imageLabel: initial.imageLabel || "",
-          imageUrl: initial.image_url || "",
+          imageUrl: initialImages[0] || initial.image_url || "",
+          images: initialImages,
           active: initial.active ?? true,
           isNew: !!initial.isNew,
           isBestseller: !!initial.isBestseller,
@@ -190,39 +200,107 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     }
   };
 
-  const handleFile = async (file: File | null) => {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Format de fichier non supporté. Veuillez choisir une image (PNG, JPG, WEBP).");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 10MB).");
-      return;
-    }
+  const handleFiles = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList);
+
+    const validFiles = files.filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`"${file.name}" n'est pas une image valide.`);
+        return false;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`"${file.name}" dépasse 10 Mo.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
     try {
       setUploading(true);
       const id = initial?.id && isUuid(initial.id) ? initial.id : crypto.randomUUID();
-      const url = await uploadProductImage(id, file);
-      set("imageUrl", url);
-      toast.success("Photo du produit mise à jour avec succès");
-    } catch (err) {
-      console.error("Erreur upload:", err);
-      try {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            set("imageUrl", e.target.result as string);
-            toast.success("Image chargée avec succès");
-          }
-        };
-        reader.readAsDataURL(file);
-      } catch {
-        toast.error("Impossible de lire ce fichier image.");
+      const uploadedUrls: string[] = [];
+
+      for (const file of validFiles) {
+        try {
+          const url = await uploadProductImage(id, file);
+          uploadedUrls.push(url);
+        } catch (err) {
+          console.error("Erreur upload Supabase Storage, bascule en local data-URL:", err);
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+          uploadedUrls.push(dataUrl);
+        }
       }
+
+      setF((prev) => {
+        const nextImages = [...(prev.images || []), ...uploadedUrls];
+        return {
+          ...prev,
+          images: nextImages,
+          imageUrl: nextImages[0] || prev.imageUrl || "",
+        };
+      });
+
+      toast.success(
+        uploadedUrls.length === 1
+          ? "Photo ajoutée avec succès"
+          : `${uploadedUrls.length} photos ajoutées avec succès`
+      );
+    } catch (err) {
+      console.error("Erreur lors de l'upload des images:", err);
+      toast.error("Impossible de charger les images sélectionnées.");
     } finally {
       setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
+  };
+
+  const setPrimaryImage = (index: number) => {
+    setF((prev) => {
+      const list = [...(prev.images || [])];
+      if (index <= 0 || index >= list.length) return prev;
+      const [target] = list.splice(index, 1);
+      list.unshift(target);
+      return {
+        ...prev,
+        images: list,
+        imageUrl: list[0] || "",
+      };
+    });
+    toast.success("Image définie comme photo de couverture principale");
+  };
+
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    setF((prev) => {
+      const list = [...(prev.images || [])];
+      if (toIndex < 0 || toIndex >= list.length || fromIndex === toIndex) return prev;
+      const [target] = list.splice(fromIndex, 1);
+      list.splice(toIndex, 0, target);
+      return {
+        ...prev,
+        images: list,
+        imageUrl: list[0] || "",
+      };
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setF((prev) => {
+      const list = [...(prev.images || [])].filter((_, i) => i !== index);
+      return {
+        ...prev,
+        images: list,
+        imageUrl: list[0] || "",
+      };
+    });
+    toast.success("Photo retirée de la galerie");
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -275,6 +353,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         ? initial.id
         : initial?.id ?? crypto.randomUUID();
 
+    const finalImages = (f.images && f.images.length > 0)
+      ? f.images
+      : (f.imageUrl ? [f.imageUrl] : []);
+
+    const primaryImageUrl = finalImages[0] || null;
+
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
@@ -294,7 +378,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         "100ml": numPrice,
       },
       imageLabel: (f.imageLabel || "").trim() || slugify(f.name) || "produit",
-      image_url: f.imageUrl || null,
+      image_url: primaryImageUrl,
+      images: finalImages,
       isNew: f.isNew,
       isBestseller: f.isBestseller,
       active: f.active,
@@ -322,7 +407,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
       // 2. Synchronisation Supabase en arrière-plan
       try {
-        await upsertParfumToSupabase(payload, f.imageUrl || null);
+        await upsertParfumToSupabase(payload, primaryImageUrl, finalImages);
       } catch (dbErr) {
         console.warn("Supabase upsert note:", dbErr);
       }
@@ -602,49 +687,159 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
             {/* COLONNE DROITE : Image, Catégorie & Visibilité (5 colonnes) */}
             <div className="lg:col-span-5 space-y-6">
-              {/* Visuel du Produit */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Visuel du produit</h3>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-24 h-24 shrink-0 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#F8F9FA] dark:bg-[#0F0F0F] overflow-hidden flex items-center justify-center shadow-inner relative">
-                    {f.imageUrl ? (
-                      <img src={f.imageUrl} alt="Aperçu" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-[10px] uppercase tracking-widest text-[#9CA3AF]">Aucune</span>
-                    )}
+              {/* Visuels du Produit (Multi-photos) */}
+              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-[#C9A96E]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+                      Visuels du produit
+                    </h3>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        disabled={uploading}
-                        onClick={() => fileRef.current?.click()}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FA] dark:hover:bg-white/5 disabled:opacity-50 transition-colors cursor-pointer"
-                      >
-                        {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5 text-[#C9A96E]" />}
-                        {uploading ? "Chargement..." : f.imageUrl ? "Changer l'image" : "Uploader (.png, .jpg, .webp)"}
-                      </button>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                    {(f.images || []).length} photo{(f.images || []).length > 1 ? "s" : ""}
+                  </span>
+                </div>
 
-                      {f.imageUrl && (
-                        <button
-                          type="button"
-                          onClick={() => set("imageUrl", "")}
-                          className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl border border-[#EF4444]/30 text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors cursor-pointer"
+                {/* Consignes de dimensions & fonctionnement du survol */}
+                <div className="p-2.5 rounded-xl bg-[#F8F9FA] dark:bg-white/[0.03] border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-1">
+                  <p className="text-[11px] font-semibold text-[#111827] dark:text-[#F9FAFB]">
+                    Dimensions recommandées : 800 × 1000 px (Portrait 4:5) ou 1000 × 1000 px (Carré 1:1)
+                  </p>
+                  <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
+                    • <strong>1ère photo</strong> : Couverture principale affichée sur la boutique.<br />
+                    • <strong>2ème photo</strong> : Image interactive révélée au survol du produit.<br />
+                    • <strong>Photos suivantes</strong> : Visibles via le carrousel sur la fiche détail.
+                  </p>
+                </div>
+
+                {/* Grille des photos déjà ajoutées */}
+                {(f.images || []).length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                    {(f.images || []).map((imgUrl, idx) => {
+                      const isCover = idx === 0;
+                      const isHover = idx === 1;
+
+                      return (
+                        <div
+                          key={`${imgUrl}-${idx}`}
+                          className={`group relative rounded-xl border overflow-hidden bg-[#0F0F0F] aspect-[4/5] flex flex-col justify-between transition-all ${
+                            isCover
+                              ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30"
+                              : "border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                          }`}
                         >
-                          <X className="w-3.5 h-3.5" /> Retirer
-                        </button>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">PNG / JPG / WEBP — Synchronisation immédiate.</p>
+                          <img
+                            src={imgUrl}
+                            alt={`Photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+
+                          {/* Badge de position en haut */}
+                          <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
+                            {isCover ? (
+                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#C9A96E] text-[#111827] flex items-center gap-1 shadow-md">
+                                <Star className="w-2.5 h-2.5 fill-[#111827]" /> 1 • Couverture
+                              </span>
+                            ) : isHover ? (
+                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#111827]/85 dark:bg-black/85 text-white backdrop-blur-xs shadow-md">
+                                2 • Survol boutique
+                              </span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-black/75 text-white backdrop-blur-xs">
+                                Photo {idx + 1}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Barre d'actions en bas de chaque photo */}
+                          <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-center justify-between gap-1">
+                            <div className="flex items-center gap-1">
+                              {/* Bouton Définir comme photo principale */}
+                              {!isCover && (
+                                <button
+                                  type="button"
+                                  title="Définir comme photo de couverture"
+                                  onClick={() => setPrimaryImage(idx)}
+                                  className="p-1 rounded-lg bg-black/60 hover:bg-[#C9A96E] text-white hover:text-[#111827] transition-colors cursor-pointer"
+                                >
+                                  <Star className="w-3 h-3" />
+                                </button>
+                              )}
+
+                              {/* Bouton Déplacer vers la gauche */}
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  title="Déplacer vers la gauche"
+                                  onClick={() => moveImage(idx, idx - 1)}
+                                  className="p-1 rounded-lg bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                >
+                                  <ArrowLeft className="w-3 h-3" />
+                                </button>
+                              )}
+
+                              {/* Bouton Déplacer vers la droite */}
+                              {idx < (f.images || []).length - 1 && (
+                                <button
+                                  type="button"
+                                  title="Déplacer vers la droite"
+                                  onClick={() => moveImage(idx, idx + 1)}
+                                  className="p-1 rounded-lg bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                >
+                                  <ArrowRight className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Bouton Supprimer la photo */}
+                            <button
+                              type="button"
+                              title="Supprimer cette photo"
+                              onClick={() => removeImage(idx)}
+                              className="p-1 rounded-lg bg-red-600/80 hover:bg-red-600 text-white transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
+                )}
+
+                {/* Zone d'ajout de photos (multi-fichiers) */}
+                <div className="pt-1">
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    onClick={() => fileRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 p-3 text-xs font-medium rounded-xl border border-dashed border-[#C9A96E]/40 hover:border-[#C9A96E] bg-[#C9A96E]/5 hover:bg-[#C9A96E]/10 text-[#111827] dark:text-[#F9FAFB] disabled:opacity-50 transition-all cursor-pointer"
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C9A96E]" />
+                        <span>Téléversement en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 text-[#C9A96E]" />
+                        <span>
+                          {(f.images || []).length === 0
+                            ? "Ajouter des photos du produit (PNG, JPG, WEBP)"
+                            : "Ajouter d'autres photos"}
+                        </span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </section>
 

@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import type { Gender, Parfum } from "@/types/database";
 import { getProducts, setProducts, type AdminParfum } from "@/store/useProductStore";
 import { getParfumSeasons } from "@/lib/seasonsStore";
+import { getParfumImages, getPrimaryImage } from "@/lib/productImages";
 
 export type ParfumFilter = {
   gender?: Gender;
@@ -26,6 +27,8 @@ const mapRowToParfum = (row: any): Parfum => {
   const decantStock = Number(row.stock_5ml ?? 0) + Number(row.stock_10ml ?? 0);
   const totalStock = isFull ? fullStock : decantStock;
   const inStock = (row.is_active ?? true) && (totalStock > 0 || (row.stock_status === 'actif'));
+  const images = getParfumImages(row);
+  const primaryImg = images[0] || row.image_url || null;
 
   return {
     id: row.id,
@@ -41,7 +44,8 @@ const mapRowToParfum = (row: any): Parfum => {
     price_5ml: Number(row.price_5ml ?? 0),
     price_10ml: Number(row.price_10ml ?? 0),
     image_label: row.image_label || row.id,
-    image_url: row.image_url ?? null,
+    image_url: primaryImg,
+    images: images,
     is_active: inStock,
     is_new: !!row.is_new,
     is_bestseller: !!row.is_bestseller,
@@ -63,6 +67,8 @@ const mapLocalToParfum = (p: AdminParfum): Parfum => {
   const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
   const totalStock = isFull ? fullStock : decantStock;
   const inStock = (p.active ?? true) && totalStock > 0;
+  const images = getParfumImages(p);
+  const primaryImg = images[0] || p.image_url || null;
 
   return {
     id: p.id,
@@ -78,7 +84,8 @@ const mapLocalToParfum = (p: AdminParfum): Parfum => {
     price_5ml: p.prices?.['5ml'] ?? 0,
     price_10ml: p.prices?.['10ml'] ?? 0,
     image_label: p.imageLabel,
-    image_url: p.image_url ?? null,
+    image_url: primaryImg,
+    images: images,
     is_active: inStock,
     is_new: !!p.isNew,
     is_bestseller: !!p.isBestseller,

@@ -137,6 +137,7 @@ const SeasonalSection = () => {
                 <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40">
                   <ProductImage
                     src={p.image_url}
+                    images={p.images}
                     alt={p.name}
                     label={p.image_label}
                     className={`transition-all duration-700 ease-out ${

@@ -34,6 +34,7 @@ const withDefaults = (p: AdminParfum): AdminParfum => ({
   stock: p.stock ?? 20,
   sale_mode: p.sale_mode ?? "decant",
   seasons: p.seasons ?? [],
+  images: Array.isArray(p.images) ? p.images : p.image_url ? [p.image_url] : [],
   full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
   full_bottle_price: p.full_bottle_price ?? null,
   full_bottle_stock: p.full_bottle_stock ?? 0,

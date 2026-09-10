@@ -85,12 +85,40 @@ export const uploadProductImage = async (productId: string, file: File): Promise
   return await compressImageToDataUrl(file);
 };
 
-export const upsertParfumToSupabase = async (p: AdminParfum, imageUrl: string | null) => {
+/**
+ * Synchronisation des Parfums avec Supabase & Stockage Médias — Maison Kenzi
+ *
+ * Gère le téléversement des images dans Supabase Storage (avec compression WebP de secours)
+ * et la persistance des parfums avec galerie multi-photos.
+ */
+
+export const upsertParfumToSupabase = async (
+  p: AdminParfum,
+  imageUrl: string | null,
+  images?: string[]
+) => {
+  const isFull =
+    (p.sale_mode ?? "decant") === "full_bottle" ||
+    p.category === "packs" ||
+    p.category === "deodorants-stick";
   const fullStock = p.full_bottle_stock ?? 0;
   const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
-  const currentSeasons = Array.isArray(p.seasons) && p.seasons.length > 0 ? p.seasons : ["Printemps", "Été"];
+  const currentSeasons =
+    Array.isArray(p.seasons) && p.seasons.length > 0 ? p.seasons : ["Printemps", "Été"];
   persistParfumSeasons(p.id, currentSeasons);
   persistParfumSeasons(p.name, currentSeasons);
+
+  const allImages =
+    Array.isArray(images) && images.length > 0
+      ? images
+      : Array.isArray(p.images) && p.images.length > 0
+      ? p.images
+      : imageUrl
+      ? [imageUrl]
+      : [];
+
+  const primaryImageUrl = allImages[0] || imageUrl || null;
+  const imageLabelValue = allImages.length > 0 ? JSON.stringify(allImages) : p.imageLabel || p.id;
 
   const row = {
     id: p.id,
@@ -105,8 +133,8 @@ export const upsertParfumToSupabase = async (p: AdminParfum, imageUrl: string | 
     notes_fond: p.notes.fond,
     price_5ml: p.prices["5ml"],
     price_10ml: p.prices["10ml"],
-    image_label: p.imageLabel,
-    image_url: imageUrl,
+    image_label: imageLabelValue,
+    image_url: primaryImageUrl,
     is_active: p.active ?? true,
     is_new: !!p.isNew,
     is_bestseller: !!p.isBestseller,
