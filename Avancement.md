@@ -2,13 +2,17 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-09
-- **Statut général** : Espace Admin Haute Parfumerie opérationnel, Sidebar rétractable et Switch de thèmes fluidifié
+- **Dernière mise à jour** : 2026-09-10
+- **Statut général** : Section Hero immersive plein écran avec animation Ken Burns cinématique, Espace Admin Haute Parfumerie et Sidebar rétractable opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
 
+- [x] Animation Immersive Plein Écran de la Section Hero :
+  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : L'animation d'arrière-plan et le diaporama occupent désormais 100% de la largeur et de la hauteur de la section Hero.
+  - [x] Effet cinématique Ken Burns continu (`scale-105`), transitions de fondu doux (1000ms), dégradés d'ambiance sombres et halos dorés champagne.
+  - [x] Typographie éditoriale Playfair Display, navigation par flèches discrètes et barre d'engagements de confiance ancrée en pied de Hero.
 - [x] Définition et création des 4 compétences d'agent dans `.agents/skills/` :
   - [x] `luxury-nude-design-system` : Nuancier HSL / Hex nude, albâtre, sable et champagne.
   - [x] `editorial-luxury-typography` : Duo typographique Serif / Sans-Serif avec espacement tracking.
