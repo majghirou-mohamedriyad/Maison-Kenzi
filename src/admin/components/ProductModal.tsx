@@ -35,16 +35,6 @@ type Props = {
   initial?: AdminParfum | null;
 };
 
-const SEASON_OPTIONS = ["Printemps", "Été", "Automne", "Hiver"] as const;
-
-const DEFAULT_CATEGORIES = [
-  { id: "homme", slug: "homme", name: "Parfums Homme" },
-  { id: "femme", slug: "femme", name: "Parfums Femme" },
-  { id: "mixte", slug: "mixte", name: "Parfums Mixtes / Unisexes" },
-  { id: "deodorants-stick", slug: "deodorants-stick", name: "Déodorants Stick" },
-  { id: "packs", slug: "packs", name: "Coffrets & Packs" },
-];
-
 const slugify = (s: string) =>
   (s || "")
     .toLowerCase()
@@ -89,18 +79,16 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const rawCategories = availableCategories.length > 0 ? availableCategories : DEFAULT_CATEGORIES;
-
-  // Filtrage réactif des catégories pour une sélection fluide
+  // Filtrage réactif des catégories dynamiques issues de Supabase
   const filteredCategories = useMemo(() => {
-    if (!categorySearch.trim()) return rawCategories;
+    if (!categorySearch.trim()) return availableCategories;
     const q = categorySearch.toLowerCase().trim();
-    return rawCategories.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q));
-  }, [rawCategories, categorySearch]);
+    return availableCategories.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q));
+  }, [availableCategories, categorySearch]);
 
   const selectedCategoryObj = useMemo(() => {
-    return rawCategories.find((c) => c.slug === f.category);
-  }, [rawCategories, f.category]);
+    return availableCategories.find((c) => c.slug === f.category);
+  }, [availableCategories, f.category]);
 
   useEffect(() => {
     if (open) {
@@ -653,7 +641,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 </div>
 
                 {/* Champ de recherche rapide de catégorie si plus de 4 catégories */}
-                {rawCategories.length > 4 && (
+                {availableCategories.length > 4 && (
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                     <input
@@ -675,34 +663,45 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Grille des catégories disponibles */}
-                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category ? "ring-1 ring-red-500/50" : ""}`}>
-                  {filteredCategories.map((cat) => {
-                    const isSelected = f.category === cat.slug;
-                    return (
-                      <button
-                        key={cat.id || cat.slug}
-                        type="button"
-                        onClick={() => set("category", cat.slug)}
-                        className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                          isSelected
-                            ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                            : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <Layers className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
-                          <span className="text-xs truncate font-medium">{cat.name}</span>
-                        </div>
-                        {isSelected && (
-                          <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
-                            <Check className="w-2.5 h-2.5" />
+                {/* Grille des catégories dynamiques issues de Supabase */}
+                {filteredCategories.length > 0 ? (
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category ? "ring-1 ring-red-500/50" : ""}`}>
+                    {filteredCategories.map((cat) => {
+                      const isSelected = f.category === cat.slug;
+                      return (
+                        <button
+                          key={cat.id || cat.slug}
+                          type="button"
+                          onClick={() => set("category", cat.slug)}
+                          className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                            isSelected
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                              : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Layers className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
+                            <span className="text-xs truncate font-medium">{cat.name}</span>
                           </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                          {isSelected && (
+                            <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
+                              <Check className="w-2.5 h-2.5" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-3.5 rounded-xl border border-dashed border-[#E5E7EB] dark:border-[#2A2A2A] text-center space-y-1">
+                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
+                      Aucune catégorie trouvée
+                    </p>
+                    <p className="text-[10px] text-[#9CA3AF]">
+                      Créez vos univers dans l'onglet Catégories du panneau d'administration.
+                    </p>
+                  </div>
+                )}
                 {errors.category && (
                   <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />

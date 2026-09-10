@@ -33,15 +33,16 @@ import { deleteProduct, useProducts, type AdminParfum } from "@/store/useProduct
 import { deleteParfumFromSupabase } from "@/admin/lib/syncParfum";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useCategories } from "@/store/useCategoryStore";
 
-type FilterCategory = "Tous" | "Homme" | "Femme" | "Mixte" | "packs" | "deodorants-stick" | "full_bottle";
 type StatusFilter = "Tous" | "in_stock" | "out_of_stock";
 type SortOption = "name_asc" | "name_desc" | "maison_asc" | "price_asc" | "price_desc" | "stock_asc" | "stock_desc";
 
 const Produits = () => {
   const products = useProducts();
+  const categories = useCategories();
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<FilterCategory>("Tous");
+  const [categoryFilter, setCategoryFilter] = useState<string>("Tous");
   const [maisonFilter, setMaisonFilter] = useState<string>("Toutes");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
@@ -63,60 +64,61 @@ const Produits = () => {
   };
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<AdminParfum | null>(null);
-  const [deleting, setDeleting] = useState<AdminParfum | null>(null);
+  const [editingProduct, setEditingProduct] = useState<AdminParfum | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState<AdminParfum | null>(null);
 
-  // Extraction de la liste unique des Maisons
-  const uniqueMaisons = useMemo(() => {
-    const list = Array.from(new Set(products.map((p) => p.maison).filter(Boolean))).sort();
-    return list;
-  }, [products]);
+  const onAdd = () => {
+    setEditingProduct(null);
+    setModalOpen(true);
+  };
 
-  // Tri par colonnes
-  const handleSortHeader = (field: string) => {
-    if (field === "name") {
-      setSortOption((prev) => (prev === "name_asc" ? "name_desc" : "name_asc"));
-    } else if (field === "maison") {
-      setSortOption((prev) => (prev === "maison_asc" ? "name_asc" : "maison_asc"));
-    } else if (field === "price") {
-      setSortOption((prev) => (prev === "price_asc" ? "price_desc" : "price_asc"));
-    } else if (field === "stock") {
-      setSortOption((prev) => (prev === "stock_desc" ? "stock_asc" : "stock_desc"));
-    } else if (field === "status") {
-      setStatusFilter((prev) => (prev === "in_stock" ? "out_of_stock" : "in_stock"));
+  const onEdit = (p: AdminParfum) => {
+    setEditingProduct(p);
+    setModalOpen(true);
+  };
+
+  const onDelete = (p: AdminParfum) => {
+    setDeletingProduct(p);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingProduct) return;
+    try {
+      deleteProduct(deletingProduct.id);
+      await deleteParfumFromSupabase(deletingProduct.id);
+      toast.success("Produit supprimé", {
+        description: `Le parfum ${deletingProduct.name} a été retiré du catalogue.`,
+      });
+    } catch (err: any) {
+      toast.error("Erreur de suppression", {
+        description: err?.message || "Impossible de supprimer le produit.",
+      });
+    } finally {
+      setDeletingProduct(null);
     }
   };
 
+  // Liste unique des maisons existantes pour le filtre
+  const uniqueMaisons = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      if (p.maison && p.maison.trim()) set.add(p.maison.trim());
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
+  // Filtrage et Tri combinés
   const filteredAndSorted = useMemo(() => {
     const q = search.trim().toLowerCase();
 
     // 1. Filtrage
     const result = products.filter((p) => {
-      // Filtre catégorie
-      if (categoryFilter === "Homme" && p.gender !== "Homme") return false;
-      if (categoryFilter === "Femme" && p.gender !== "Femme") return false;
-      if (categoryFilter === "Mixte" && p.gender !== "Mixte") return false;
-      if (
-        categoryFilter === "packs" &&
-        p.category !== "packs" &&
-        !p.id.startsWith("pack-") &&
-        !p.name.toLowerCase().includes("pack")
-      )
-        return false;
-      if (
-        categoryFilter === "deodorants-stick" &&
-        p.category !== "deodorants-stick" &&
-        !p.id.includes("deodorant") &&
-        !p.id.includes("old-spice")
-      )
-        return false;
-      if (
-        categoryFilter === "full_bottle" &&
-        p.sale_mode !== "full_bottle" &&
-        p.category !== "deodorants-stick" &&
-        p.category !== "packs"
-      )
-        return false;
+      // Filtre catégorie dynamique
+      if (categoryFilter !== "Tous") {
+        const matchesCategory = p.category === categoryFilter;
+        const matchesGender = p.gender?.toLowerCase() === categoryFilter.toLowerCase();
+        if (!matchesCategory && !matchesGender) return false;
+      }
 
       // Filtre maison
       if (maisonFilter !== "Toutes" && p.maison !== maisonFilter) return false;
@@ -311,12 +313,11 @@ const Produits = () => {
               className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Tous">Toutes Catégories</option>
-              <option value="Homme">Parfums Homme</option>
-              <option value="Femme">Parfums Femme</option>
-              <option value="Mixte">Parfums Mixtes</option>
-              <option value="packs">Packs & Coffrets</option>
-              <option value="deodorants-stick">Déodorants Stick</option>
-              <option value="full_bottle">Flacons Complets</option>
+              {categories.map((cat) => (
+                <option key={cat.id || cat.slug} value={cat.slug}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
