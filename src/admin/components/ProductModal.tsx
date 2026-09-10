@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
 import { useCategories } from "@/store/useCategoryStore";
@@ -345,15 +345,22 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         <form onSubmit={submit} className="space-y-6">
           {/* En-tête avec Titre à gauche et Boutons d'Action à droite */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A] pr-8 sm:pr-10">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <DialogTitle className="text-lg sm:text-xl font-serif font-bold text-[#111827] dark:text-[#F9FAFB]">
-                {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
-              </DialogTitle>
-              {initial && (
-                <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                  {initial.name}
-                </span>
-              )}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <DialogTitle className="text-lg sm:text-xl font-serif font-bold text-[#111827] dark:text-[#F9FAFB]">
+                  {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
+                </DialogTitle>
+                {initial && (
+                  <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                    {initial.name}
+                  </span>
+                )}
+              </div>
+              <DialogDescription className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
+                {initial
+                  ? "Modifiez les caractéristiques, pyramide olfactive et visuels de cette création."
+                  : "Renseignez les détails pour ajouter une nouvelle création de haute parfumerie."}
+              </DialogDescription>
             </div>
 
             {/* Boutons d'action dans l'en-tête */}

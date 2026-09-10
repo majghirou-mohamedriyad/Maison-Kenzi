@@ -26,7 +26,14 @@ import {
   type AdminCategory,
 } from "@/store/useCategoryStore";
 import { useProducts } from "@/store/useProductStore";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -367,6 +374,11 @@ const CategoriesAdmin = () => {
               <FolderTree className="w-5 h-5 text-primary" />
               <span>{editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}</span>
             </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-1 text-left">
+              {editingCat
+                ? "Modifiez les informations et l'univers olfactif de cette catégorie."
+                : "Configurez un nouvel univers olfactif pour organiser vos créations de niche."}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSave} className="space-y-4 mt-2">
@@ -438,10 +450,10 @@ const CategoriesAdmin = () => {
             <DialogTitle className="text-sm font-serif font-bold text-foreground">
               Confirmer la suppression
             </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground my-2">
+              Êtes-vous sûr de vouloir supprimer la catégorie <strong className="text-foreground">{deletingCat?.name}</strong> ? Cette action est irréversible.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-xs text-muted-foreground my-2">
-            Êtes-vous sûr de vouloir supprimer la catégorie <strong className="text-foreground">{deletingCat?.name}</strong> ? Cette action est irréversible.
-          </p>
           <DialogFooter className="gap-2 pt-2">
             <button
               type="button"
