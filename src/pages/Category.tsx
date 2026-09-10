@@ -534,13 +534,13 @@ const Collection = () => {
                       }`}
                     >
                       {/* Product Visual Container */}
-                      <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-square w-full">
+                      <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5] w-full">
                         <ProductImage
                           src={p.image_url}
                           images={p.images}
                           alt={p.name}
                           label={p.image_label}
-                          aspect="aspect-square"
+                          aspect="aspect-[4/5]"
                           fitMode="cover"
                           className={`w-full h-full transition-all duration-700 ease-out ${
                             outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"

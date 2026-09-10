@@ -26,8 +26,8 @@ const ProductImage = ({
   alt,
   label,
   className,
-  aspect = "aspect-square",
-  fitMode = "contain",
+  aspect = "aspect-[4/5]",
+  fitMode = "cover",
 }: ProductImageProps) => {
   const primary = src || (Array.isArray(images) && images.length > 0 ? images[0] : null);
   const secondary = secondarySrc || (Array.isArray(images) && images.length > 1 ? images[1] : null);

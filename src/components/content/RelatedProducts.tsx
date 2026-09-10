@@ -98,15 +98,15 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="group block rounded-2xl p-2 sm:p-3 transition-all hover:bg-card/40 relative text-left"
               >
-                <div className="relative mb-2 overflow-hidden rounded-xl bg-muted/40">
+                <div className="relative mb-2 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5]">
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
                     alt={p.name}
                     label={p.image_label}
                     aspect="aspect-[4/5]"
-                    fitMode="contain"
-                    className="max-h-48 sm:max-h-56 mx-auto transition-all duration-300 group-hover:scale-105"
+                    fitMode="cover"
+                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                   />
                 </div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">

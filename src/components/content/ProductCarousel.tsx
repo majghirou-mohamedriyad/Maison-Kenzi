@@ -69,12 +69,14 @@ const ProductCarousel = () => {
                 style={{ animationDelay: `${idx * 150}ms` }}
               >
                 {/* Conteneur Image Produit */}
-                <div className="relative mb-3 overflow-hidden rounded-2xl bg-card border border-border/70 aspect-[3/4] shadow-nude">
+                <div className="relative mb-3 overflow-hidden rounded-2xl bg-card border border-border/70 aspect-[4/5] shadow-nude">
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
                     alt={p.name}
                     label={p.image_label}
+                    aspect="aspect-[4/5]"
+                    fitMode="cover"
                     className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
                       }`}
                   />

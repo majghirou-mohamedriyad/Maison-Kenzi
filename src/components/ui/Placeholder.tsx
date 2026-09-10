@@ -10,7 +10,7 @@ interface PlaceholderProps {
  * Image placeholder block. NO real or AI-generated imagery.
  * Used everywhere a product / brand photo will later be inserted manually.
  */
-const Placeholder = ({ label, className, aspect = "aspect-square" }: PlaceholderProps) => {
+const Placeholder = ({ label, className, aspect = "aspect-[4/5]" }: PlaceholderProps) => {
   return (
     <div
       className={cn(
