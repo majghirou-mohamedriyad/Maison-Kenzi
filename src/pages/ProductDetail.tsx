@@ -46,14 +46,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-// Configuration des icônes et libellés des saisons d'utilisation
-const SEASON_CONFIG: Record<string, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
-  printemps: { label: "Printemps", icon: Leaf },
-  ete: { label: "Été", icon: Sun },
-  "été": { label: "Été", icon: Sun },
-  automne: { label: "Automne", icon: Wind },
-  hiver: { label: "Hiver", icon: Snowflake },
-};
+import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 
 const ParfumDetail = () => {
   const { parfumId } = useParams();
@@ -365,62 +358,55 @@ const ParfumDetail = () => {
               </div>
 
               {/* Product Olfactory & Seasonal Profile Card */}
-              {((Array.isArray(parfum.seasons) && parfum.seasons.length > 0) ||
-                parfum.description ||
-                (parfum.notes_tete && parfum.notes_tete.length > 0)) && (
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-card/40 border border-border/70 space-y-3 text-xs">
-                  {/* Saisons d'utilisation */}
-                  {Array.isArray(parfum.seasons) && parfum.seasons.length > 0 && (
-                    <div className="space-y-1.5">
-                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" /> Saisons d'utilisation
-                      </span>
-                      <div className="flex flex-wrap gap-1.5 pt-0.5">
-                        {parfum.seasons.map((season) => {
-                          const key = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                          const conf = SEASON_CONFIG[key] || { label: season, icon: Sun };
-                          const IconComp = conf.icon;
-                          return (
-                            <span
-                              key={season}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground"
-                            >
-                              <IconComp className="w-3 h-3 text-primary" />
-                              <span>{conf.label}</span>
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Notes olfactives */}
-                  {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])].filter(Boolean).length > 0 && (
-                    <div className="space-y-1.5 pt-1 border-t border-border/50">
-                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                        <Sparkle className="w-3.5 h-3.5" /> Pyramide Olfactive
-                      </span>
-                      <p className="text-muted-foreground leading-relaxed text-[11px]">
-                        {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])]
-                          .filter(Boolean)
-                          .join(" • ")}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Description olfactive */}
-                  {parfum.description && (
-                    <div className="space-y-1 pt-1 border-t border-border/50">
-                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
-                        Description & Sillage
-                      </span>
-                      <p className="text-muted-foreground leading-relaxed text-[11px]">
-                        {parfum.description}
-                      </p>
-                    </div>
-                  )}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-card/40 border border-border/70 space-y-3 text-xs">
+                {/* Saisons d'utilisation */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5" /> Saisons d'utilisation
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {getParfumSeasons(parfum).map((season) => {
+                      const meta = getSeasonMeta(season);
+                      const IconComp = meta.icon;
+                      return (
+                        <span
+                          key={season}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground"
+                        >
+                          <IconComp className="w-3 h-3 text-primary" strokeWidth={1.75} />
+                          <span>{meta.label}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
+
+                {/* Notes olfactives */}
+                {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])].filter(Boolean).length > 0 && (
+                  <div className="space-y-1.5 pt-1 border-t border-border/50">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+                      <Sparkle className="w-3.5 h-3.5" /> Pyramide Olfactive
+                    </span>
+                    <p className="text-muted-foreground leading-relaxed text-[11px]">
+                      {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])]
+                        .filter(Boolean)
+                        .join(" • ")}
+                    </p>
+                  </div>
+                )}
+
+                {/* Description olfactive */}
+                {parfum.description && (
+                  <div className="space-y-1 pt-1 border-t border-border/50">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
+                      Description & Sillage
+                    </span>
+                    <p className="text-muted-foreground leading-relaxed text-[11px]">
+                      {parfum.description}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* RIGHT COLUMN: Product Information & Order Actions */}
@@ -455,17 +441,16 @@ const ParfumDetail = () => {
                   )}
 
                   {/* Tags Saisons d'utilisation harmonisés */}
-                  {Array.isArray(parfum.seasons) && parfum.seasons.map((season) => {
-                    const key = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    const conf = SEASON_CONFIG[key] || { label: season, icon: Sun };
-                    const IconComp = conf.icon;
+                  {getParfumSeasons(parfum).map((season) => {
+                    const meta = getSeasonMeta(season);
+                    const IconComp = meta.icon;
                     return (
                       <span
                         key={season}
                         className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium"
                       >
                         <IconComp className="w-3 h-3 text-primary" strokeWidth={1.75} />
-                        <span>{conf.label}</span>
+                        <span>{meta.label}</span>
                       </span>
                     );
                   })}

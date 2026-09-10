@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { AdminParfum } from "@/store/useProductStore";
+import { persistParfumSeasons } from "@/lib/seasonsStore";
 
 const BUCKETS_TO_TRY = ["product-images", "parfums", "products", "images"];
 // 10 years
@@ -87,14 +88,17 @@ export const uploadProductImage = async (productId: string, file: File): Promise
 export const upsertParfumToSupabase = async (p: AdminParfum, imageUrl: string | null) => {
   const fullStock = p.full_bottle_stock ?? 0;
   const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
-  const isFull = (p.sale_mode ?? "decant") === "full_bottle";
+  const currentSeasons = Array.isArray(p.seasons) && p.seasons.length > 0 ? p.seasons : ["Printemps", "Été"];
+  persistParfumSeasons(p.id, currentSeasons);
+  persistParfumSeasons(p.name, currentSeasons);
+
   const row = {
     id: p.id,
     name: p.name,
     maison: p.maison,
     gender: p.gender,
     category: p.category ?? null,
-    seasons: Array.isArray(p.seasons) ? p.seasons : [],
+    seasons: currentSeasons,
     description: p.description,
     notes_tete: p.notes.tete,
     notes_coeur: p.notes.coeur,

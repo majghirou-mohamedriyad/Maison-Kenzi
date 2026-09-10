@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Gender, Parfum } from "@/types/database";
 import { getProducts, setProducts, type AdminParfum } from "@/store/useProductStore";
+import { getParfumSeasons } from "@/lib/seasonsStore";
 
 export type ParfumFilter = {
   gender?: Gender;
@@ -32,19 +33,7 @@ const mapRowToParfum = (row: any): Parfum => {
     maison: row.maison,
     gender: row.gender as Gender,
     category: row.category,
-    seasons: Array.isArray(row.seasons) && row.seasons.length > 0
-      ? row.seasons
-      : typeof row.seasons === "string" && row.seasons.trim().length > 0
-      ? (() => {
-          try {
-            const parsed = JSON.parse(row.seasons);
-            return Array.isArray(parsed) && parsed.length > 0 ? parsed : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []);
-          } catch {
-            const splitted = row.seasons.split(",").map((s: string) => s.trim()).filter(Boolean);
-            return splitted.length > 0 ? splitted : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []);
-          }
-        })()
-      : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []),
+    seasons: getParfumSeasons(row),
     description: row.description || "",
     notes_tete: row.notes_tete ?? [],
     notes_coeur: row.notes_coeur ?? [],

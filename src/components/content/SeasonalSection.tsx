@@ -11,6 +11,7 @@ import { Sun, Leaf, Snowflake, Sparkles, Wind } from "lucide-react";
 import { useParfums } from "@/hooks/useParfums";
 import ProductImage from "@/components/ui/ProductImage";
 import { formatMAD } from "@/lib/sizes";
+import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import {
   getSavedSeasonalSettings,
   resolveActiveSeason,
@@ -180,16 +181,16 @@ const SeasonalSection = () => {
                       {p.gender}
                     </span>
                   )}
-                  {Array.isArray(p.seasons) && p.seasons.map((season) => {
-                    const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                  {getParfumSeasons(p).map((season) => {
+                    const meta = getSeasonMeta(season);
+                    const SeasonIconComp = meta.icon;
                     return (
                       <span
                         key={season}
                         className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
                       >
                         <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
-                        <span>{season}</span>
+                        <span>{meta.label}</span>
                       </span>
                     );
                   })}
