@@ -56,6 +56,7 @@
   - [x] [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Restitution automatique et présélection visuelle des saisons enregistrées à l'ouverture du modal de modification (`isSeasonSelected` et `getParfumSeasons`).
   - [x] [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts) & [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Résolution de l'enregistrement des catégories dans la base de données Supabase (génération sécurisée d'identifiant unique, persistance sans `id: undefined`, assainissement du stockage local, retour d'état asynchrone avec alertes et correction de l'avertissement React de clé unique `key`).
   - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) & [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Intégration de `DialogDescription` pour l'accessibilité WAI-ARIA et suppression de l'avertissement Radix UI (`Missing Description or aria-describedby`).
+  - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Épuration visuelle et suppression des cartes d'indicateurs (KPIs) pour un affichage direct et sobre du tableau de gestion.
 
 ---
 

@@ -13,10 +13,7 @@ import {
   Pencil,
   Trash2,
   Eye,
-  Layers,
-  Sparkles,
   AlertCircle,
-  Package,
 } from "lucide-react";
 import {
   useCategories,
@@ -204,39 +201,6 @@ const CategoriesAdmin = () => {
         >
           <Plus className="w-4 h-4" /> Nouvelle Catégorie
         </button>
-      </div>
-
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-serif font-bold text-foreground">{categories.length}</div>
-            <div className="text-xs text-muted-foreground font-medium">Catégories Actives</div>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-            <Package className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-serif font-bold text-foreground">{products.length}</div>
-            <div className="text-xs text-muted-foreground font-medium">Produits Répartis</div>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#C9A96E]/15 text-[#C9A96E] flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-serif font-bold text-foreground">100%</div>
-            <div className="text-xs text-muted-foreground font-medium">Synchronisation Vitrine</div>
-          </div>
-        </div>
       </div>
 
       {/* Search Bar */}
