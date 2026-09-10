@@ -2,8 +2,7 @@
  * Modal d'Ajout & Modification de Parfum — Maison Kenzi Admin
  *
  * Formulaire épuré pour flacons complets :
- * - Informations générales avec Prix de vente (MAD), Volume (ml) et Stock directement intégrés
- * - Pyramide olfactive (tête, cœur, fond)
+ * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock et Notes olfactives (séparées par virgule)
  * - Téléversement d'image haute définition
  * - Statut de visibilité & badges (Nouveau, Best-Seller)
  * Conformité Haute Parfumerie & Zéro Emoji.
@@ -39,10 +38,8 @@ const emptyForm = {
   price: "",
   volume: "100",
   stock: "10",
+  notes: "",
   description: "",
-  tete: "",
-  coeur: "",
-  fond: "",
   imageLabel: "",
   imageUrl: "" as string,
   active: true,
@@ -81,6 +78,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         const initialVolume = String(initial.full_bottle_volume_ml ?? 100);
         const initialStock = String(initial.full_bottle_stock ?? initial.stock ?? 10);
 
+        const initialNotes = [
+          ...(initial.notes?.tete ?? []),
+          ...(initial.notes?.coeur ?? []),
+          ...(initial.notes?.fond ?? []),
+        ]
+          .filter(Boolean)
+          .join(", ");
+
         setF({
           name: initial.name,
           maison: initial.maison,
@@ -88,10 +93,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           price: initialPrice,
           volume: initialVolume,
           stock: initialStock,
+          notes: initialNotes,
           description: initial.description || "",
-          tete: initial.notes?.tete?.join(", ") ?? "",
-          coeur: initial.notes?.coeur?.join(", ") ?? "",
-          fond: initial.notes?.fond?.join(", ") ?? "",
           imageLabel: initial.imageLabel ?? "",
           imageUrl: initial.image_url ?? "",
           active: initial.active ?? true,
@@ -175,6 +178,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     const parseNotes = (s: string) =>
       s.split(",").map((x) => x.trim()).filter(Boolean);
 
+    const parsedNotes = parseNotes(f.notes);
+
     const id =
       initial?.id && isUuid(initial.id)
         ? initial.id
@@ -187,9 +192,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       gender: f.gender,
       description: f.description.trim(),
       notes: {
-        tete: parseNotes(f.tete),
-        coeur: parseNotes(f.coeur),
-        fond: parseNotes(f.fond),
+        tete: parsedNotes,
+        coeur: [],
+        fond: [],
       },
       prices: {
         "5ml": numPrice,
@@ -271,7 +276,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
           {/* Grille principale en 2 colonnes */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* COLONNE GAUCHE : Informations Générales & Tarification (7 colonnes) */}
+            {/* COLONNE GAUCHE : Informations Générales, Prix & Notes (7 colonnes) */}
             <div className="lg:col-span-7 space-y-6">
               <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Informations générales & Prix</h3>
@@ -387,14 +392,28 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     />
                   </div>
 
-                  {/* Description courte */}
+                  {/* Notes olfactives */}
+                  <div className="sm:col-span-2">
+                    <label className={labelCls}>Notes olfactives (séparées par des virgules)</label>
+                    <input
+                      className={inputCls}
+                      value={f.notes}
+                      onChange={(e) => set("notes", e.target.value)}
+                      placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
+                    />
+                    <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
+                      Indiquez les accords et notes olfactives séparés par une virgule.
+                    </span>
+                  </div>
+
+                  {/* Description olfactive */}
                   <div className="sm:col-span-2">
                     <label className={labelCls}>
                       Description olfactive
                       <span className="float-right text-[#6B7280] dark:text-[#9CA3AF]">{f.description.length}/200</span>
                     </label>
                     <textarea
-                      className={inputCls + " min-h-[90px] resize-none"}
+                      className={inputCls + " min-h-[85px] resize-none"}
                       maxLength={200}
                       value={f.description}
                       onChange={(e) => set("description", e.target.value)}
@@ -405,25 +424,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
             </div>
 
-            {/* COLONNE DROITE : Pyramide Olfactive, Image & Visibilité (5 colonnes) */}
+            {/* COLONNE DROITE : Image & Visibilité (5 colonnes) */}
             <div className="lg:col-span-5 space-y-6">
-              {/* Pyramide Olfactive */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Pyramide Olfactive</h3>
-                <div>
-                  <label className={labelCls}>Notes de tête</label>
-                  <input className={inputCls} value={f.tete} onChange={(e) => set("tete", e.target.value)} placeholder="Jasmin, Safran" />
-                </div>
-                <div>
-                  <label className={labelCls}>Notes de cœur</label>
-                  <input className={inputCls} value={f.coeur} onChange={(e) => set("coeur", e.target.value)} placeholder="Bois d'ambre, Ambre gris" />
-                </div>
-                <div>
-                  <label className={labelCls}>Notes de fond</label>
-                  <input className={inputCls} value={f.fond} onChange={(e) => set("fond", e.target.value)} placeholder="Résine de sapin, Cèdre" />
-                </div>
-              </section>
-
               {/* Visuel du Produit */}
               <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Visuel du produit</h3>
