@@ -32,6 +32,17 @@ const mapRowToParfum = (row: any): Parfum => {
     maison: row.maison,
     gender: row.gender as Gender,
     category: row.category,
+    seasons: Array.isArray(row.seasons)
+      ? row.seasons
+      : typeof row.seasons === "string"
+      ? (() => {
+          try {
+            return JSON.parse(row.seasons);
+          } catch {
+            return row.seasons.split(",").map((s: string) => s.trim()).filter(Boolean);
+          }
+        })()
+      : [],
     description: row.description || "",
     notes_tete: row.notes_tete ?? [],
     notes_coeur: row.notes_coeur ?? [],
@@ -68,6 +79,7 @@ const mapLocalToParfum = (p: AdminParfum): Parfum => {
     maison: p.maison,
     gender: p.gender,
     category: p.category,
+    seasons: Array.isArray(p.seasons) ? p.seasons : [],
     description: p.description,
     notes_tete: p.notes?.tete ?? [],
     notes_coeur: p.notes?.coeur ?? [],

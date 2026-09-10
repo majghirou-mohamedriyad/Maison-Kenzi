@@ -47,6 +47,8 @@
 - [x] Refonte Haute Parfumerie du Système de Notifications & Alertes (Toasts) :
   - [x] [`src/components/ui/sonner.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/sonner.tsx), [`src/components/ui/toast.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/toast.tsx) & [`src/index.css`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/index.css) : Positionnement en bas à droite de l'écran (`bottom-right`), design épuré en verre dépoli avec bordures dorées champagne, ombres soignées, icônes Lucide professionnelles (CheckCircle2, AlertCircle, Info, AlertTriangle) et conformité stricte zéro emoji.
   - [x] Correction et activation immédiate du bouton de fermeture (X) des alertes (résolution de l'interception de clics par le viewport et styles dédiés d'accessibilité et de survol).
+- [x] Affichage Haute Parfumerie des Saisons d'Utilisation & Profil Olfactif :
+  - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts) & [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts) : Intégration des saisons d'utilisation avec icônes vectorielles adaptées (`Leaf`, `Sun`, `Wind`, `Snowflake`) en pastilles directes sous le titre et carte dédiée « Saisons d'utilisation & Pyramide Olfactive ».
 
 ---
 
