@@ -122,8 +122,8 @@ const ProductCarousel = () => {
                 <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/40">
                   <span className="text-xs font-light text-foreground/90 font-serif">
                     {isFull
-                      ? `${formatMAD(p.full_bottle_price ?? 0)} MAD`
-                      : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)} MAD`}
+                      ? formatMAD(p.full_bottle_price ?? 0)
+                      : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)}`}
                   </span>
                   <span className="text-[10px] uppercase tracking-wider text-primary font-medium">
                     {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
