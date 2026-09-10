@@ -35,6 +35,8 @@ type Props = {
   initial?: AdminParfum | null;
 };
 
+const SEASON_OPTIONS = ["Printemps", "Été", "Automne", "Hiver"] as const;
+
 const slugify = (s: string) =>
   (s || "")
     .toLowerCase()
