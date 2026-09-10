@@ -60,8 +60,8 @@ const emptyForm = {
   category: "",
   seasons: [] as string[],
   price: "",
-  volume: "100",
-  stock: "10",
+  volume: "",
+  stock: "",
   notes: "",
   description: "",
   imageLabel: "",
@@ -114,8 +114,16 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             ? String(initial.prices["5ml"])
             : "";
 
-        const initialVolume = String(initial.full_bottle_volume_ml ?? 100);
-        const initialStock = String(initial.full_bottle_stock ?? initial.stock ?? 10);
+        const initialVolume =
+          initial.full_bottle_volume_ml != null
+            ? String(initial.full_bottle_volume_ml)
+            : "";
+        const initialStock =
+          initial.full_bottle_stock != null
+            ? String(initial.full_bottle_stock)
+            : initial.stock != null
+            ? String(initial.stock)
+            : "";
 
         const initialNotes = [
           ...(initial.notes?.tete ?? []),
@@ -513,7 +521,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         className={(errors.volume ? inputErrorCls : inputCls) + " pr-10 font-medium"}
                         value={f.volume}
                         onChange={(e) => set("volume", e.target.value)}
-                        placeholder="100"
+                        placeholder="Ex: 100"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#6B7280] dark:text-[#9CA3AF] pointer-events-none">
                         ml
@@ -536,7 +544,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       className={errors.stock ? inputErrorCls : inputCls}
                       value={f.stock}
                       onChange={(e) => set("stock", e.target.value)}
-                      placeholder="10"
+                      placeholder="Ex: 10"
                     />
                     {errors.stock && (
                       <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
