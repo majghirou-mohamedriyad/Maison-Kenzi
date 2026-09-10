@@ -65,6 +65,7 @@
   - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx) : Galerie interactive complète sur la page produit avec flèches de navigation gauche/droite (`ChevronLeft` / `ChevronRight`), pastille de comptage (`1 / N`), bande de vignettes miniatures cliquables sous l'image principale et gestes tactiles de glissement.
   - [x] Standardisation complète du format des cartes produits sur **Portrait 4:5 (800 × 1000 px)** avec remplissage haute précision (`object-cover` / `aspect-[4/5]`) sur toutes les sections (Accueil, Univers/Catégories, Saisons, Découverte Olfactive et Placeholders).
   - [x] [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Suppression de la limite restrictive de 200 caractères sur le champ Description olfactive pour permettre la saisie de récits et descriptions détaillées avec zone de texte redimensionnable.
+  - [x] [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx) : Ajout des filtres par **Genre** (`Homme`, `Femme`, `Mixte`) et par **Saison d'utilisation** (`Printemps`, `Été`, `Automne`, `Hiver`) dans la barre de recherche et de filtres de la gestion des parfums avec réinitialisation dynamique.
 
 ---
 

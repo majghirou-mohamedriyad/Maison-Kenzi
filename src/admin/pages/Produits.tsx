@@ -34,9 +34,13 @@ import { deleteParfumFromSupabase } from "@/admin/lib/syncParfum";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/store/useCategoryStore";
+import { getParfumSeasons } from "@/lib/seasonsStore";
 
 type StatusFilter = "Tous" | "in_stock" | "out_of_stock";
 type SortOption = "name_asc" | "name_desc" | "maison_asc" | "price_asc" | "price_desc" | "stock_asc" | "stock_desc";
+
+const SEASON_FILTER_OPTIONS = ["Toutes", "Printemps", "Été", "Automne", "Hiver"] as const;
+const GENDER_FILTER_OPTIONS = ["Tous", "Homme", "Femme", "Mixte"] as const;
 
 const Produits = () => {
   const products = useProducts();
@@ -44,6 +48,8 @@ const Produits = () => {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("Tous");
   const [maisonFilter, setMaisonFilter] = useState<string>("Toutes");
+  const [genderFilter, setGenderFilter] = useState<string>("Tous");
+  const [seasonFilter, setSeasonFilter] = useState<string>("Toutes");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
 
@@ -127,6 +133,31 @@ const Produits = () => {
 
     // 1. Filtrage
     const result = products.filter((p) => {
+      // Filtre Genre
+      if (genderFilter !== "Tous") {
+        const pGender = (p.gender || "").toLowerCase().trim();
+        if (pGender !== genderFilter.toLowerCase().trim()) return false;
+      }
+
+      // Filtre Saison
+      if (seasonFilter !== "Toutes") {
+        const pSeasons = getParfumSeasons(p);
+        const targetSeasonNorm = seasonFilter
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim();
+        const hasSeason = pSeasons.some(
+          (s) =>
+            (s || "")
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .trim() === targetSeasonNorm
+        );
+        if (!hasSeason) return false;
+      }
+
       // Filtre catégorie dynamique
       if (categoryFilter !== "Tous") {
         const matchesCategory = p.category === categoryFilter;
@@ -186,13 +217,20 @@ const Produits = () => {
     });
 
     return result;
-  }, [products, search, categoryFilter, maisonFilter, statusFilter, sortOption]);
+  }, [products, search, genderFilter, seasonFilter, categoryFilter, maisonFilter, statusFilter, sortOption]);
 
   const hasActiveFilters =
-    search.trim() !== "" || categoryFilter !== "Tous" || maisonFilter !== "Toutes" || statusFilter !== "Tous";
+    search.trim() !== "" ||
+    genderFilter !== "Tous" ||
+    seasonFilter !== "Toutes" ||
+    categoryFilter !== "Tous" ||
+    maisonFilter !== "Toutes" ||
+    statusFilter !== "Tous";
 
   const resetFilters = () => {
     setSearch("");
+    setGenderFilter("Tous");
+    setSeasonFilter("Toutes");
     setCategoryFilter("Tous");
     setMaisonFilter("Toutes");
     setStatusFilter("Tous");
@@ -258,10 +296,10 @@ const Produits = () => {
 
       {/* Barre de Filtres & Recherche */}
       <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-        {/* Ligne 1: Recherche & Sélecteurs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        {/* Ligne 1: Recherche & Sélecteurs (Genre, Saison, Maison, Catégorie, Statut) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Recherche */}
-          <div className="relative lg:col-span-2">
+          <div className="relative sm:col-span-2 md:col-span-3 lg:col-span-2">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
             <input
               value={search}
@@ -277,6 +315,38 @@ const Produits = () => {
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
+          </div>
+
+          {/* Filtre Genre */}
+          <div className="relative">
+            <select
+              value={genderFilter}
+              onChange={(e) => setGenderFilter(e.target.value)}
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+            >
+              <option value="Tous">Tous les Genres</option>
+              {GENDER_FILTER_OPTIONS.filter((g) => g !== "Tous").map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filtre Saison */}
+          <div className="relative">
+            <select
+              value={seasonFilter}
+              onChange={(e) => setSeasonFilter(e.target.value)}
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+            >
+              <option value="Toutes">Toutes les Saisons</option>
+              {SEASON_FILTER_OPTIONS.filter((s) => s !== "Toutes").map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Filtre Maison */}
@@ -299,7 +369,7 @@ const Produits = () => {
           <div className="relative">
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value as FilterCategory)}
+              onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Tous">Toutes Catégories</option>
@@ -310,40 +380,44 @@ const Produits = () => {
               ))}
             </select>
           </div>
-
-          {/* Filtre Statut / Stock */}
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
-            >
-              <option value="Tous">Tous les Statuts</option>
-              <option value="in_stock">En stock uniquement</option>
-              <option value="out_of_stock">Rupture de stock</option>
-            </select>
-          </div>
         </div>
 
-        {/* Ligne 2: Tri & Réinitialisation */}
+        {/* Ligne 2: Tri, Filtre de Statut & Réinitialisation */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] text-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
-              <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
-            </span>
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="py-1 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
-            >
-              <option value="name_asc">Nom (A → Z)</option>
-              <option value="name_desc">Nom (Z → A)</option>
-              <option value="maison_asc">Maison (A → Z)</option>
-              <option value="price_asc">Prix Vente (Croissant)</option>
-              <option value="price_desc">Prix Vente (Décroissant)</option>
-              <option value="stock_desc">Stock Total (Plus élevé)</option>
-              <option value="stock_asc">Stock Total (Plus faible)</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Statut & Disponibilité */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#8C827A] dark:text-[#9E958C] font-medium">Statut :</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                className="py-1 px-2.5 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
+              >
+                <option value="Tous">Tous les Statuts</option>
+                <option value="in_stock">En stock uniquement</option>
+                <option value="out_of_stock">Rupture de stock</option>
+              </select>
+            </div>
+
+            {/* Tri */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
+                <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
+              </span>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                className="py-1 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
+              >
+                <option value="name_asc">Nom (A → Z)</option>
+                <option value="name_desc">Nom (Z → A)</option>
+                <option value="maison_asc">Maison (A → Z)</option>
+                <option value="price_asc">Prix Vente (Croissant)</option>
+                <option value="price_desc">Prix Vente (Décroissant)</option>
+                <option value="stock_desc">Stock Total (Plus élevé)</option>
+                <option value="stock_asc">Stock Total (Plus faible)</option>
+              </select>
+            </div>
           </div>
 
           {hasActiveFilters && (
