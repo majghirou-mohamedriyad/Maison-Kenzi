@@ -242,7 +242,11 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       errs.category = "Veuillez sélectionner une catégorie pour le parfum";
     }
 
-    const numVolume = Number(f.volume) || 100;
+    const numVolume = Number(f.volume);
+    if (!f.volume || isNaN(numVolume) || numVolume <= 0) {
+      errs.volume = "Veuillez renseigner la contenance du flacon (ex: 100)";
+    }
+
     const numStock = Math.max(0, Number(f.stock) || 0);
 
     if (Object.keys(errs).length) {
@@ -502,12 +506,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Volume du flacon */}
                   <div>
-                    <label className={labelCls}>Volume / Contenance (ml)</label>
+                    <label className={labelCls}>Volume / Contenance (ml) *</label>
                     <div className="relative">
                       <input
                         type="number"
                         min={1}
-                        className={inputCls + " pr-10 font-medium"}
+                        className={(errors.volume ? inputErrorCls : inputCls) + " pr-10 font-medium"}
                         value={f.volume}
                         onChange={(e) => set("volume", e.target.value)}
                         placeholder="100"
@@ -516,6 +520,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         ml
                       </span>
                     </div>
+                    {errors.volume && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.volume}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Stock disponible */}
