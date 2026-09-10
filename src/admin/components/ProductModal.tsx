@@ -422,7 +422,6 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   };
 
   const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
-  const descriptionLength = (f.description || "").length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -669,13 +668,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Description olfactive */}
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>
-                      Description olfactive
-                      <span className="float-right text-[#6B7280] dark:text-[#9CA3AF]">{descriptionLength}/200</span>
-                    </label>
+                    <label className={labelCls}>Description olfactive</label>
                     <textarea
-                      className={inputCls + " min-h-[85px] resize-none"}
-                      maxLength={200}
+                      className={inputCls + " min-h-[95px] resize-y"}
                       value={f.description}
                       onChange={(e) => set("description", e.target.value)}
                       placeholder="Notes ambrées florales et boisées d'une élégance rare..."
