@@ -29,6 +29,8 @@ import {
   Layers,
 } from "lucide-react";
 
+import { getParfumSeasons } from "@/lib/seasonsStore";
+
 type Props = {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -36,6 +38,13 @@ type Props = {
 };
 
 const SEASON_OPTIONS = ["Printemps", "Été", "Automne", "Hiver"] as const;
+
+const isSeasonSelected = (seasonName: string, selectedList: string[] = []) => {
+  const target = (seasonName || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return (selectedList || []).some(
+    (s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === target
+  );
+};
 
 const slugify = (s: string) =>
   (s || "")
@@ -123,7 +132,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           .filter(Boolean)
           .join(", ");
 
-        const initialSeasons = Array.isArray(initial.seasons) ? initial.seasons : [];
+        const initialSeasons = getParfumSeasons(initial);
 
         setF({
           name: initial.name || "",
@@ -165,8 +174,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const toggleSeason = (season: string) => {
     setF((prev) => {
       const current = Array.isArray(prev.seasons) ? prev.seasons : [];
-      const next = current.includes(season)
-        ? current.filter((s) => s !== season)
+      const norm = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      const exists = current.some((s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === norm);
+      const next = exists
+        ? current.filter((s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() !== norm)
         : [...current, season];
       return { ...prev, seasons: next };
     });
@@ -452,7 +463,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {SEASON_OPTIONS.map((season) => {
-                        const isSelected = currentSeasons.includes(season);
+                        const isSelected = isSeasonSelected(season, currentSeasons);
                         return (
                           <button
                             key={season}
