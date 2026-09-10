@@ -645,10 +645,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <Layers className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
-                          <div className="truncate">
-                            <div className="text-xs truncate font-medium">{cat.name}</div>
-                            <div className={`text-[9px] truncate ${isSelected ? "opacity-80" : "text-[#9CA3AF]"}`}>/{cat.slug}</div>
-                          </div>
+                          <span className="text-xs truncate font-medium">{cat.name}</span>
                         </div>
                         {isSelected && (
                           <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
