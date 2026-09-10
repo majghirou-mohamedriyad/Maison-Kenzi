@@ -9,11 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Animation Immersive Plein Écran de la Section Hero :
-  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : L'animation d'arrière-plan et le diaporama occupent désormais 100% de la largeur et de la hauteur de la section Hero.
-  - [x] Effet cinématique Ken Burns continu (`scale-105`), transitions de fondu doux (1000ms), dégradés d'ambiance sombres et halos dorés champagne.
+- [x] Animation Immersive Plein Écran & Harmonisation de la Section Hero :
+  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : L'animation d'arrière-plan et le diaporama occupent 100% de la surface du Hero avec effet Ken Burns continu (`scale-105`), transitions de fondu doux et halos dorés champagne.
   - [x] Typographie éditoriale Playfair Display, navigation par flèches discrètes et pagination dorée.
-  - [x] Épuration visuelle : suppression de la barre des 4 badges de confiance (Authenticité, Livraison 24-48h, Formats nomades, Paiement à la réception) pour une immersion visuelle totale sans coupure.
+  - [x] Harmonisation avec la Navbar et le design system : cadrage en grand format luxe (`max-w-[1440px]`), angles arrondis (`rounded-3xl`), liséré champagne (`border-[#C9A96E]/25`), suppression du décalage d'espacement et épuration visuelle totale.
 - [x] Définition et création des 4 compétences d'agent dans `.agents/skills/` :
   - [x] `luxury-nude-design-system` : Nuancier HSL / Hex nude, albâtre, sable et champagne.
   - [x] `editorial-luxury-typography` : Duo typographique Serif / Sans-Serif avec espacement tracking.
