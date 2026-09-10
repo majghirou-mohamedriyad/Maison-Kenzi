@@ -224,7 +224,6 @@ const CategoriesAdmin = () => {
             <thead className="bg-muted/50 text-muted-foreground text-[10px] uppercase tracking-wider border-b border-border font-bold">
               <tr>
                 <th className="text-left px-5 py-3.5">Catégorie</th>
-                <th className="text-left px-5 py-3.5">Slug URL</th>
                 <th className="text-left px-5 py-3.5">Description</th>
                 <th className="text-center px-4 py-3.5">Produits</th>
                 <th className="text-center px-4 py-3.5">Statut</th>
@@ -256,13 +255,6 @@ const CategoriesAdmin = () => {
                           )}
                         </div>
                       </div>
-                    </td>
-
-                    {/* Slug */}
-                    <td className="px-5 py-4 font-mono text-muted-foreground">
-                      <span className="bg-muted px-2 py-1 rounded-md border border-border/60">
-                        /collection/{cat.slug}
-                      </span>
                     </td>
 
                     {/* Description */}
