@@ -32,17 +32,19 @@ const mapRowToParfum = (row: any): Parfum => {
     maison: row.maison,
     gender: row.gender as Gender,
     category: row.category,
-    seasons: Array.isArray(row.seasons)
+    seasons: Array.isArray(row.seasons) && row.seasons.length > 0
       ? row.seasons
-      : typeof row.seasons === "string"
+      : typeof row.seasons === "string" && row.seasons.trim().length > 0
       ? (() => {
           try {
-            return JSON.parse(row.seasons);
+            const parsed = JSON.parse(row.seasons);
+            return Array.isArray(parsed) && parsed.length > 0 ? parsed : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []);
           } catch {
-            return row.seasons.split(",").map((s: string) => s.trim()).filter(Boolean);
+            const splitted = row.seasons.split(",").map((s: string) => s.trim()).filter(Boolean);
+            return splitted.length > 0 ? splitted : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []);
           }
         })()
-      : [],
+      : (getProducts().find((lp) => lp.id === row.id)?.seasons ?? []),
     description: row.description || "",
     notes_tete: row.notes_tete ?? [],
     notes_coeur: row.notes_coeur ?? [],
@@ -135,35 +137,52 @@ export const useParfums = (filter?: ParfumFilter) => {
 
         // Mettre à jour le store local si on charge tous les produits
         if (!filter) {
-          const adminProducts: AdminParfum[] = rows.map((r: any) => ({
-            id: r.id,
-            name: r.name,
-            maison: r.maison,
-            gender: r.gender,
-            category: r.category,
-            description: r.description || "",
-            notes: {
-              tete: r.notes_tete ?? [],
-              coeur: r.notes_coeur ?? [],
-              fond: r.notes_fond ?? [],
-            },
-            prices: {
-              '5ml': Number(r.price_5ml ?? 0),
-              '10ml': Number(r.price_10ml ?? 0),
-            },
-            imageLabel: r.image_label || r.id,
-            image_url: r.image_url ?? null,
-            isNew: !!r.is_new,
-            isBestseller: !!r.is_bestseller,
-            sale_mode: r.sale_mode ?? 'decant',
-            full_bottle_price: r.full_bottle_price ? Number(r.full_bottle_price) : null,
-            full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : null,
-            full_bottle_stock: Number(r.full_bottle_stock ?? 0),
-            full_bottle_limited: !!r.full_bottle_limited,
-            stock_5ml: Number(r.stock_5ml ?? 0),
-            stock_10ml: Number(r.stock_10ml ?? 0),
-            active: r.is_active ?? true,
-          }));
+          const currentLocal = getProducts();
+          const adminProducts: AdminParfum[] = rows.map((r: any) => {
+            const localMatch = currentLocal.find((lp) => lp.id === r.id);
+            const parsedSeasons = Array.isArray(r.seasons)
+              ? r.seasons
+              : typeof r.seasons === "string"
+              ? (() => {
+                  try {
+                    return JSON.parse(r.seasons);
+                  } catch {
+                    return r.seasons.split(",").map((s: string) => s.trim()).filter(Boolean);
+                  }
+                })()
+              : (localMatch?.seasons ?? []);
+
+            return {
+              id: r.id,
+              name: r.name,
+              maison: r.maison,
+              gender: r.gender,
+              category: r.category ?? localMatch?.category,
+              seasons: parsedSeasons,
+              description: r.description || "",
+              notes: {
+                tete: r.notes_tete ?? localMatch?.notes?.tete ?? [],
+                coeur: r.notes_coeur ?? localMatch?.notes?.coeur ?? [],
+                fond: r.notes_fond ?? localMatch?.notes?.fond ?? [],
+              },
+              prices: {
+                '5ml': Number(r.price_5ml ?? localMatch?.prices?.['5ml'] ?? 0),
+                '10ml': Number(r.price_10ml ?? localMatch?.prices?.['10ml'] ?? 0),
+              },
+              imageLabel: r.image_label || localMatch?.imageLabel || r.id,
+              image_url: r.image_url ?? localMatch?.image_url ?? null,
+              isNew: !!r.is_new,
+              isBestseller: !!r.is_bestseller,
+              sale_mode: r.sale_mode ?? localMatch?.sale_mode ?? 'full_bottle',
+              full_bottle_price: r.full_bottle_price ? Number(r.full_bottle_price) : localMatch?.full_bottle_price ?? null,
+              full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : localMatch?.full_bottle_volume_ml ?? null,
+              full_bottle_stock: Number(r.full_bottle_stock ?? localMatch?.full_bottle_stock ?? 0),
+              full_bottle_limited: !!r.full_bottle_limited,
+              stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
+              stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
+              active: r.is_active ?? localMatch?.active ?? true,
+            };
+          });
           setProducts(adminProducts);
         }
       } else {

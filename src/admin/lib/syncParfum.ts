@@ -93,6 +93,8 @@ export const upsertParfumToSupabase = async (p: AdminParfum, imageUrl: string | 
     name: p.name,
     maison: p.maison,
     gender: p.gender,
+    category: p.category ?? null,
+    seasons: Array.isArray(p.seasons) ? p.seasons : [],
     description: p.description,
     notes_tete: p.notes.tete,
     notes_coeur: p.notes.coeur,
@@ -112,7 +114,12 @@ export const upsertParfumToSupabase = async (p: AdminParfum, imageUrl: string | 
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
   };
   const { error } = await supabase.from("parfums").upsert(row as never, { onConflict: "id" });
-  if (error) throw error;
+  if (error) {
+    console.warn("Supabase upsert note (tentative avec payload standard):", error);
+    const { seasons, category, ...fallbackRow } = row;
+    const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as never, { onConflict: "id" });
+    if (err2) throw err2;
+  }
 };
 
 export const deleteParfumFromSupabase = async (id: string) => {
