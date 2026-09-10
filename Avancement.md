@@ -49,6 +49,7 @@
   - [x] Correction et activation immédiate du bouton de fermeture (X) des alertes (résolution de l'interception de clics par le viewport et styles dédiés d'accessibilité et de survol).
 - [x] Affichage Haute Parfumerie des Saisons d'Utilisation & Profil Olfactif :
   - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts) & [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts) : Intégration des saisons d'utilisation avec icônes vectorielles adaptées (`Leaf`, `Sun`, `Wind`, `Snowflake`) en pastilles directes sous le titre et carte dédiée « Saisons d'utilisation & Pyramide Olfactive ».
+  - [x] [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx) : Correction du `ReferenceError: featured is not defined` et fallback automatique sur les parfums de la saison active.
 
 ---
 

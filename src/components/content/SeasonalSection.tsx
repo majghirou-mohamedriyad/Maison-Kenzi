@@ -1,3 +1,10 @@
+/**
+ * Section Vitrine Saisonnière — Maison Kenzi
+ *
+ * Présente la sélection de fragrances adaptées à la saison active (Printemps, Été, Automne, Hiver)
+ * avec animations cinématiques et synchronisation dynamique.
+ */
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Sun, Leaf, Snowflake, Sparkles } from "lucide-react";
@@ -38,13 +45,27 @@ const SeasonalSection = () => {
 
   const displayTitle = settings.customTitle.trim() || seasonInfo.defaultTitle;
 
-  // Filter products in order of productIds
+  // Filtrer les produits configurés ou sélectionner automatiquement les parfums de la saison
   const seasonalProducts = settings.productIds
     .map((id) => allProducts.find((p) => p.id === id))
-    .filter(Boolean);
+    .filter(Boolean) as typeof allProducts;
 
-  // Si aucun parfum n'est disponible dans la base, masquer la section saisonnière
-  if (allProducts.length === 0 && !loading) {
+  const featured =
+    seasonalProducts.length > 0
+      ? seasonalProducts
+      : allProducts
+          .filter((p) => {
+            if (!p.is_active) return false;
+            if (Array.isArray(p.seasons) && p.seasons.length > 0) {
+              const activeLabel = seasonInfo.label.toLowerCase();
+              return p.seasons.some((s) => s.toLowerCase().includes(activeLabel) || activeLabel.includes(s.toLowerCase()));
+            }
+            return true;
+          })
+          .slice(0, 4);
+
+  // Si aucun parfum n'est disponible dans la sélection ou dans la base, masquer la section
+  if (featured.length === 0 && !loading) {
     return null;
   }
 
