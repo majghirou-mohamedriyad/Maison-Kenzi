@@ -143,12 +143,12 @@ const AdminLayout = () => {
   };
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
-      {/* Brand Header avec bouton Toggle juste à côté du Logo */}
-      <div className={`p-4 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center ${isCollapsed ? "justify-center flex-col gap-2" : "justify-between"}`}>
+    <div className="flex flex-col h-full w-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
+      {/* Brand Header avec bouton Toggle juste à côté du Logo — Hauteur h-16 synchronisée avec la navbar */}
+      <div className={`h-16 px-4 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center ${isCollapsed ? "justify-center flex-col gap-1" : "justify-between"}`}>
         <Link 
           to="/admin" 
-          className="flex items-center gap-2.5 group overflow-hidden min-w-0"
+          className="flex items-center gap-3 group overflow-hidden min-w-0"
           title="Maison Kenzi Admin"
         >
           <div className="w-9 h-9 rounded-xl bg-[#F0E9DF] dark:bg-[#1C1A18] border border-[#C9A96E]/50 flex items-center justify-center text-[#1A1816] dark:text-[#C9A96E] font-serif font-bold text-sm shrink-0 shadow-xs group-hover:border-[#C9A96E] transition-colors">
@@ -156,7 +156,7 @@ const AdminLayout = () => {
           </div>
           {!isCollapsed && (
             <div className="flex flex-col items-start min-w-0">
-              <span className="font-serif text-base tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
+              <span className="font-serif text-sm tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
                 MAISON KENZI
               </span>
               <span className="text-[8px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
@@ -321,7 +321,7 @@ const AdminLayout = () => {
         {/* Sidebar Bureau */}
         <aside 
           className={`hidden md:flex fixed inset-y-0 left-0 z-30 transition-all duration-300 ${
-            isCollapsed ? "w-20" : "w-64"
+            isCollapsed ? "w-20" : "w-72"
           }`}
         >
           {SidebarContent}
@@ -334,7 +334,7 @@ const AdminLayout = () => {
               className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
               onClick={() => setMobileOpen(false)}
             />
-            <aside className="md:hidden fixed inset-y-0 left-0 w-64 z-50 animate-in slide-in-from-left duration-300 shadow-2xl">
+            <aside className="md:hidden fixed inset-y-0 left-0 w-72 z-50 animate-in slide-in-from-left duration-300 shadow-2xl">
               {SidebarContent}
             </aside>
           </>
@@ -343,11 +343,11 @@ const AdminLayout = () => {
         {/* Zone de contenu principal */}
         <div 
           className={`flex flex-col min-h-screen transition-all duration-300 ${
-            isCollapsed ? "md:ml-20" : "md:ml-64"
+            isCollapsed ? "md:ml-20" : "md:ml-72"
           }`}
         >
-          {/* Topbar Flottante en Verre Dépoli */}
-          <header className="sticky top-0 z-20 bg-[#FFFFFF]/85 dark:bg-[#141312]/85 backdrop-blur-md border-b border-[#EAE3D8] dark:border-[#24211E] h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+          {/* Topbar Intégrée — Continuité parfaite avec la Sidebar */}
+          <header className="sticky top-0 z-20 bg-[#FAF7F2]/95 dark:bg-[#121110]/95 backdrop-blur-md border-b border-[#EAE3D8] dark:border-[#26221E] h-16 flex items-center justify-between px-4 sm:px-6 md:px-8">
             <div className="flex items-center gap-3">
               <button
                 className="md:hidden p-2 -ml-2 rounded-xl text-[#7A726A] hover:text-[#1A1816] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
