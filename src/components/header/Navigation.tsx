@@ -22,11 +22,7 @@ import { formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
 
-interface NavigationProps {
-  isScrolled?: boolean;
-}
-
-const Navigation = ({ isScrolled = false }: NavigationProps) => {
+const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBagOpen, setIsBagOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -93,14 +89,8 @@ const Navigation = ({ isScrolled = false }: NavigationProps) => {
 
   return (
     <div className="relative">
-      {/* Dynamic Nav Container: Devient arrondi (rounded-full / pill) avec ombre au défilement */}
-      <nav
-        className={`flex items-center justify-between transition-all duration-500 ease-out ${
-          isScrolled
-            ? "bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-3.5 sm:px-5 py-2"
-            : "bg-card/75 dark:bg-[#0C0B0A]/75 backdrop-blur-md border border-border/40 dark:border-white/10 rounded-2xl md:rounded-full px-4 sm:px-8 py-2.5 shadow-none"
-        }`}
-      >
+      {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
+      <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
         
         {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
         <div className="flex items-center gap-1 sm:gap-2 z-10">
