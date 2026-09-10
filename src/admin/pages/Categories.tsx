@@ -1,3 +1,10 @@
+/**
+ * Page d'Administration des Catégories & Univers — Maison Kenzi
+ *
+ * Permet la création, modification, réorganisation et suppression des catégories olfactives.
+ * Synchronisation bidirectionnelle avec Supabase et le store réactif externe.
+ */
+
 import { useState, useMemo } from "react";
 import {
   FolderTree,
@@ -6,10 +13,8 @@ import {
   Pencil,
   Trash2,
   Eye,
-  ExternalLink,
   Layers,
   Sparkles,
-  Check,
   AlertCircle,
   Package,
 } from "lucide-react";
@@ -40,6 +45,7 @@ const CategoriesAdmin = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCat, setEditingCat] = useState<AdminCategory | null>(null);
   const [deletingCat, setDeletingCat] = useState<AdminCategory | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -100,7 +106,7 @@ const CategoriesAdmin = () => {
     setSlug(slugify(val));
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = "Veuillez renseigner le nom de la catégorie";
@@ -108,7 +114,7 @@ const CategoriesAdmin = () => {
     const finalSlug = slug.trim() || slugify(name.trim());
     if (!finalSlug) errs.name = "Le nom doit comporter des caractères valides";
 
-    // Check duplicate slug
+    // Vérifier les doublons de slug
     const duplicate = categories.find((c) => c.slug === finalSlug && c.id !== editingCat?.id);
     if (duplicate) {
       errs.name = "Une catégorie portant un nom similaire existe déjà";
@@ -119,34 +125,54 @@ const CategoriesAdmin = () => {
       return;
     }
 
-    if (editingCat) {
-      updateCategory(editingCat.id, {
-        name: name.trim(),
-        slug: finalSlug,
-        description: description.trim(),
-        gender: gender || undefined,
-        is_active: isActive,
-      });
-      toast.success("Catégorie mise à jour");
-    } else {
-      addCategory({
-        name: name.trim(),
-        slug: finalSlug,
-        description: description.trim(),
-        gender: gender || undefined,
-        is_active: isActive,
-        order_index: categories.length + 1,
-      });
-      toast.success("Nouvelle catégorie créée");
-    }
+    setIsSaving(true);
+    try {
+      if (editingCat) {
+        const res = await updateCategory(editingCat.id, {
+          name: name.trim(),
+          slug: finalSlug,
+          description: description.trim(),
+          gender: gender || undefined,
+          is_active: isActive,
+        });
 
-    setModalOpen(false);
+        if (res.error) {
+          toast.error("Erreur lors de la mise à jour dans la base de données");
+        } else {
+          toast.success("Catégorie mise à jour avec succès");
+        }
+      } else {
+        const res = await addCategory({
+          name: name.trim(),
+          slug: finalSlug,
+          description: description.trim(),
+          gender: gender || undefined,
+          is_active: isActive,
+          order_index: categories.length + 1,
+        });
+
+        if (res.error) {
+          toast.error("Erreur lors de l'enregistrement dans la base de données");
+        } else {
+          toast.success("Nouvelle catégorie créée avec succès");
+        }
+      }
+      setModalOpen(false);
+    } catch {
+      toast.error("Une erreur inattendue est survenue");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingCat) {
-      deleteCategory(deletingCat.id);
-      toast.success(`Catégorie "${deletingCat.name}" supprimée`);
+      const res = await deleteCategory(deletingCat.id);
+      if (res.error) {
+        toast.error("Erreur lors de la suppression dans la base de données");
+      } else {
+        toast.success(`Catégorie "${deletingCat.name}" supprimée`);
+      }
       setDeletingCat(null);
     }
   };
@@ -231,11 +257,11 @@ const CategoriesAdmin = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
-              {filteredCategories.map((cat) => {
+              {filteredCategories.map((cat, idx) => {
                 const count = categoryStats[cat.slug] ?? 0;
                 return (
                   <tr
-                    key={cat.id}
+                    key={cat.id || cat.slug || `cat-row-${idx}`}
                     className="hover:bg-muted/30 transition-colors group"
                   >
                     {/* Name & Icon */}
@@ -395,9 +421,10 @@ const CategoriesAdmin = () => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 transition-all cursor-pointer"
+                disabled={isSaving}
+                className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
               >
-                {editingCat ? "Mettre à jour" : "Créer la catégorie"}
+                {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour" : "Créer la catégorie"}
               </button>
             </DialogFooter>
           </form>

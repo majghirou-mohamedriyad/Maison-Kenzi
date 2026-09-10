@@ -24,6 +24,16 @@ const DEFAULT_CATEGORIES: AdminCategory[] = [];
 const STORAGE_KEY = "maisonkenzi_categories";
 const CHANNEL_NAME = "maisonkenzi_categories_channel";
 
+// Génération sécurisée d'un identifiant unique (UUID ou horodatage)
+const generateId = (): string => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch {}
+  }
+  return `cat_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
 const load = (): AdminCategory[] => {
   if (typeof window === "undefined") return DEFAULT_CATEGORIES;
   try {
@@ -31,7 +41,14 @@ const load = (): AdminCategory[] => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.map((cat: any, index: number) => ({
+          ...cat,
+          id: cat.id || cat.slug || `cat_${index}_${Date.now()}`,
+          is_active: cat.is_active ?? true,
+          order_index: cat.order_index ?? index,
+        }));
+      }
     }
   } catch {}
   return DEFAULT_CATEGORIES;
@@ -50,14 +67,14 @@ if (typeof window !== "undefined") {
         .order("sort_order", { ascending: true });
 
       if (!error && Array.isArray(data)) {
-        state = data.map((c: any) => ({
-          id: c.id,
+        state = data.map((c: any, index: number) => ({
+          id: c.id || c.slug || `cat_${index}`,
           slug: c.slug,
           name: c.name,
           description: c.description || "",
           icon: c.icon || "",
           is_active: c.is_active ?? true,
-          order_index: c.sort_order ?? 0,
+          order_index: c.sort_order ?? index,
         }));
         notify();
       }
@@ -99,25 +116,52 @@ export const setCategories = (cats: AdminCategory[]) => {
   notify();
 };
 
-export const addCategory = async (cat: AdminCategory) => {
-  state = [...state, cat];
+export const addCategory = async (
+  cat: Omit<AdminCategory, "id"> & { id?: string }
+): Promise<{ success: boolean; error?: any; category: AdminCategory }> => {
+  const id = cat.id?.trim() ? cat.id : generateId();
+  const fullCat: AdminCategory = {
+    id,
+    name: cat.name.trim(),
+    slug: cat.slug.trim(),
+    description: cat.description ? cat.description.trim() : "",
+    icon: cat.icon || "",
+    gender: cat.gender,
+    is_active: cat.is_active ?? true,
+    order_index: cat.order_index ?? state.length + 1,
+  };
+
+  // Mise à jour optimiste locale
+  state = [...state.filter((c) => c.id !== id), fullCat];
   notify();
 
-  // Persistance dans Supabase
+  // Persistance dans la base de données Supabase
   try {
-    await supabase.from("categories").upsert({
-      id: cat.id,
-      name: cat.name,
-      slug: cat.slug,
-      description: cat.description,
-      icon: cat.icon || null,
-      is_active: cat.is_active,
-      sort_order: cat.order_index,
+    const { error } = await supabase.from("categories").upsert({
+      id: fullCat.id,
+      name: fullCat.name,
+      slug: fullCat.slug,
+      description: fullCat.description,
+      icon: fullCat.icon || null,
+      is_active: fullCat.is_active,
+      sort_order: fullCat.order_index,
     } as never);
-  } catch {}
+
+    if (error) {
+      console.error("Erreur lors de l'enregistrement de la catégorie dans Supabase :", error);
+      return { success: false, error, category: fullCat };
+    }
+    return { success: true, category: fullCat };
+  } catch (err) {
+    console.error("Exception lors de l'enregistrement de la catégorie :", err);
+    return { success: false, error: err, category: fullCat };
+  }
 };
 
-export const updateCategory = async (id: string, partial: Partial<AdminCategory>) => {
+export const updateCategory = async (
+  id: string,
+  partial: Partial<AdminCategory>
+): Promise<{ success: boolean; error?: any }> => {
   state = state.map((c) => (c.id === id ? { ...c, ...partial } : c));
   notify();
 
@@ -125,7 +169,7 @@ export const updateCategory = async (id: string, partial: Partial<AdminCategory>
   try {
     const updated = state.find((c) => c.id === id);
     if (updated) {
-      await supabase.from("categories").upsert({
+      const { error } = await supabase.from("categories").upsert({
         id: updated.id,
         name: updated.name,
         slug: updated.slug,
@@ -134,18 +178,37 @@ export const updateCategory = async (id: string, partial: Partial<AdminCategory>
         is_active: updated.is_active,
         sort_order: updated.order_index,
       } as never);
+
+      if (error) {
+        console.error("Erreur lors de la mise à jour de la catégorie dans Supabase :", error);
+        return { success: false, error };
+      }
     }
-  } catch {}
+    return { success: true };
+  } catch (err) {
+    console.error("Exception lors de la mise à jour de la catégorie :", err);
+    return { success: false, error: err };
+  }
 };
 
-export const deleteCategory = async (id: string) => {
+export const deleteCategory = async (
+  id: string
+): Promise<{ success: boolean; error?: any }> => {
   state = state.filter((c) => c.id !== id);
   notify();
 
   // Suppression dans Supabase
   try {
-    await supabase.from("categories").delete().eq("id", id);
-  } catch {}
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) {
+      console.error("Erreur lors de la suppression de la catégorie dans Supabase :", error);
+      return { success: false, error };
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("Exception lors de la suppression de la catégorie :", err);
+    return { success: false, error: err };
+  }
 };
 
 export const subscribe = (listener: () => void) => {
@@ -156,3 +219,4 @@ export const subscribe = (listener: () => void) => {
 export const useCategories = (): AdminCategory[] => {
   return useSyncExternalStore(subscribe, getCategories, () => DEFAULT_CATEGORIES);
 };
+

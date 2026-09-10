@@ -54,6 +54,7 @@
   - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx) : Intégration des tags de saisons d'utilisation directement dans la rangée de pastilles d'en-tête aux côtés du genre (`MIXTE` / `HOMME` / `FEMME`) et du volume (`100 ml`), avec icônes vectorielles `lucide-react`.
   - [x] [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx) : Correction du doublon de devise « MAD MAD » sur les cartes de la page d'accueil et alignement du design des pastilles de saisons sur le style exact du tag Genre (`MIXTE` / `HOMME` / `FEMME`).
   - [x] [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Restitution automatique et présélection visuelle des saisons enregistrées à l'ouverture du modal de modification (`isSeasonSelected` et `getParfumSeasons`).
+  - [x] [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts) & [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Résolution de l'enregistrement des catégories dans la base de données Supabase (génération sécurisée d'identifiant unique, persistance sans `id: undefined`, assainissement du stockage local, retour d'état asynchrone avec alertes et correction de l'avertissement React de clé unique `key`).
 
 ---
 
@@ -62,3 +63,4 @@
 - [ ] Saisie des premiers parfums de niche réels via [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
 - [ ] Personnalisation des sections et catégories depuis le panneau d'administration.
 - [ ] Test d'une commande test en direct pour valider le flux complet.
+
