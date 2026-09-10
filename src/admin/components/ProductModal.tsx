@@ -3,8 +3,8 @@
  *
  * Formulaire épuré pour flacons complets :
  * - Boutons d'action (Annuler / Créer le produit) intégrés en haut à la même ligne que le titre
- * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock, Genre, Saisons d'utilisation (choix multiples) et Notes olfactives
- * - Sélecteur de Catégorie Haute Parfumerie : Cartes de catégories réelles et synchronisées (sans option automatique superflue)
+ * - Validation stricte des champs obligatoires : Nom *, Maison *, Genre *, Saisons *, Prix *, Stock *, Notes *, Catégorie *
+ * - Sélecteur de Catégorie Haute Parfumerie : Cartes de catégories réelles et synchronisées
  * - Téléversement d'image haute définition
  * - Statut de visibilité & badges (Nouveau, Best-Seller)
  * Conformité Haute Parfumerie & Zéro Emoji.
@@ -173,6 +173,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         : [...current, season];
       return { ...prev, seasons: next };
     });
+    if (errors.seasons) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.seasons;
+        return next;
+      });
+    }
   };
 
   const handleFile = async (file: File | null) => {
@@ -215,9 +222,25 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     const errs: Record<string, string> = {};
     if (!f.name.trim()) errs.name = "Veuillez renseigner le nom du parfum";
     if (!f.maison.trim()) errs.maison = "Veuillez renseigner la maison ou marque";
+    if (!f.gender) errs.gender = "Veuillez sélectionner un genre";
+
+    const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
+    if (currentSeasons.length === 0) errs.seasons = "Veuillez sélectionner au moins une saison d'utilisation";
 
     const numPrice = Number(f.price);
-    if (!numPrice || numPrice <= 0) errs.price = "Veuillez renseigner le prix de vente du parfum";
+    if (!f.price || !numPrice || numPrice <= 0) errs.price = "Veuillez renseigner le prix de vente du parfum";
+
+    if (f.stock === "" || isNaN(Number(f.stock)) || Number(f.stock) < 0) {
+      errs.stock = "Veuillez renseigner le stock disponible";
+    }
+
+    if (!f.notes.trim()) {
+      errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
+    }
+
+    if (!f.category) {
+      errs.category = "Veuillez sélectionner une catégorie pour le parfum";
+    }
 
     const numVolume = Number(f.volume) || 100;
     const numStock = Math.max(0, Number(f.stock) || 0);
@@ -225,7 +248,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     if (Object.keys(errs).length) {
       setErrors(errs);
       toast.error("Formulaire incomplet", {
-        description: "Veuillez renseigner les champs obligatoires surlignés en rouge.",
+        description: "Veuillez renseigner tous les champs obligatoires surlignés en rouge.",
       });
       return;
     }
@@ -240,15 +263,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         ? initial.id
         : initial?.id ?? crypto.randomUUID();
 
-    const finalCategory = f.category || (f.gender === "Homme" ? "homme" : f.gender === "Femme" ? "femme" : "mixte");
-
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
       maison: f.maison.trim(),
       gender: f.gender,
-      category: finalCategory as any,
-      seasons: Array.isArray(f.seasons) ? f.seasons : [],
+      category: f.category as any,
+      seasons: currentSeasons,
       description: (f.description || "").trim(),
       notes: {
         tete: parsedNotes,
@@ -387,7 +408,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Genre */}
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>Genre</label>
+                    <label className={labelCls}>Genre *</label>
                     <div className="grid grid-cols-3 gap-2">
                       {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
                         <button
@@ -410,15 +431,21 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         </button>
                       ))}
                     </div>
+                    {errors.gender && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.gender}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Saisons d'utilisation (Choix multiples) */}
                   <div className="sm:col-span-2">
                     <div className="flex items-center justify-between mb-1">
-                      <label className={labelCls}>Saisons d'utilisation</label>
+                      <label className={labelCls}>Saisons d'utilisation *</label>
                       <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">
                         {currentSeasons.length === 0
-                          ? "Toutes saisons"
+                          ? "Aucune sélectionnée"
                           : `${currentSeasons.length} sélectionnée${currentSeasons.length > 1 ? "s" : ""}`}
                       </span>
                     </div>
@@ -441,6 +468,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         );
                       })}
                     </div>
+                    {errors.seasons && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.seasons}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Prix de vente */}
@@ -487,22 +520,28 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Stock disponible */}
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>Stock disponible (flacons)</label>
+                    <label className={labelCls}>Stock disponible (flacons) *</label>
                     <input
                       type="number"
                       min={0}
-                      className={inputCls}
+                      className={errors.stock ? inputErrorCls : inputCls}
                       value={f.stock}
                       onChange={(e) => set("stock", e.target.value)}
                       placeholder="10"
                     />
+                    {errors.stock && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.stock}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Notes olfactives */}
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>Notes olfactives (séparées par des virgules)</label>
+                    <label className={labelCls}>Notes olfactives (séparées par des virgules) *</label>
                     <input
-                      className={inputCls}
+                      className={errors.notes ? inputErrorCls : inputCls}
                       value={f.notes}
                       onChange={(e) => set("notes", e.target.value)}
                       placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
@@ -510,6 +549,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
                       Indiquez les accords et notes olfactives séparés par une virgule.
                     </span>
+                    {errors.notes && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.notes}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Description olfactive */}
@@ -583,7 +628,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <span>Catégorie du parfum</span>
+                    <span>Catégorie du parfum *</span>
                   </h3>
                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
                     {selectedCategoryObj ? selectedCategoryObj.name : "Sélectionner"}
@@ -614,7 +659,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 )}
 
                 {/* Grille des catégories disponibles */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5">
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category ? "ring-1 ring-red-500/50" : ""}`}>
                   {filteredCategories.map((cat) => {
                     const isSelected = f.category === cat.slug;
                     return (
@@ -641,6 +686,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     );
                   })}
                 </div>
+                {errors.category && (
+                  <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{errors.category}</span>
+                  </div>
+                )}
               </section>
 
               {/* Visibilité & Badges */}
