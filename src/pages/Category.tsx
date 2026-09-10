@@ -262,6 +262,18 @@ const Collection = () => {
       <main className="flex-1 pb-16">
         {/* Luxury Category Hero Section */}
         <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
+          {/* Image d'ambiance de catégorie si définie */}
+          {(currentCategoryObj?.image || currentCategoryObj?.icon) && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10 dark:opacity-15">
+              <img
+                src={currentCategoryObj?.image || currentCategoryObj?.icon}
+                alt={hero.title}
+                className="w-full h-full object-cover blur-sm scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/50" />
+            </div>
+          )}
+
           {/* Subtle Ambient Glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
 
@@ -281,21 +293,33 @@ const Collection = () => {
               </BreadcrumbList>
             </Breadcrumb>
 
-            {/* Header Content */}
-            <div className="max-w-3xl space-y-2">
-              {hero.badge && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
-                  <Sparkles className="w-3 h-3" />
-                  <span>{hero.badge}</span>
+            {/* Header Content with optional category visual */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="max-w-3xl space-y-2">
+                {hero.badge && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
+                    <Sparkles className="w-3 h-3" />
+                    <span>{hero.badge}</span>
+                  </div>
+                )}
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-foreground font-bold tracking-tight">
+                  {hero.title}
+                </h1>
+                {hero.description && (
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light pt-1">
+                    {hero.description}
+                  </p>
+                )}
+              </div>
+
+              {(currentCategoryObj?.image || currentCategoryObj?.icon) && (
+                <div className="hidden md:block w-28 h-28 lg:w-36 lg:h-36 rounded-2xl overflow-hidden border border-border/80 shadow-md shrink-0 bg-card">
+                  <img
+                    src={currentCategoryObj?.image || currentCategoryObj?.icon}
+                    alt={hero.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              )}
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-foreground font-bold tracking-tight">
-                {hero.title}
-              </h1>
-              {hero.description && (
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light pt-1">
-                  {hero.description}
-                </p>
               )}
             </div>
           </div>

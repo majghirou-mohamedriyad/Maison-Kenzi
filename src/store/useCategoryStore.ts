@@ -13,6 +13,7 @@ export type AdminCategory = {
   slug: string;
   name: string;
   description: string;
+  image?: string;
   icon?: string;
   gender?: string;
   is_active: boolean;
@@ -45,6 +46,8 @@ const load = (): AdminCategory[] => {
         return parsed.map((cat: any, index: number) => ({
           ...cat,
           id: cat.id || cat.slug || `cat_${index}_${Date.now()}`,
+          image: cat.image || cat.icon || "",
+          icon: cat.icon || cat.image || "",
           is_active: cat.is_active ?? true,
           order_index: cat.order_index ?? index,
         }));
@@ -72,7 +75,8 @@ if (typeof window !== "undefined") {
           slug: c.slug,
           name: c.name,
           description: c.description || "",
-          icon: c.icon || "",
+          image: c.image || c.icon || "",
+          icon: c.icon || c.image || "",
           is_active: c.is_active ?? true,
           order_index: c.sort_order ?? index,
         }));
@@ -120,12 +124,14 @@ export const addCategory = async (
   cat: Omit<AdminCategory, "id"> & { id?: string }
 ): Promise<{ success: boolean; error?: any; category: AdminCategory }> => {
   const id = cat.id?.trim() ? cat.id : generateId();
+  const imageVal = cat.image || cat.icon || "";
   const fullCat: AdminCategory = {
     id,
     name: cat.name.trim(),
     slug: cat.slug.trim(),
     description: cat.description ? cat.description.trim() : "",
-    icon: cat.icon || "",
+    image: imageVal,
+    icon: imageVal,
     gender: cat.gender,
     is_active: cat.is_active ?? true,
     order_index: cat.order_index ?? state.length + 1,
@@ -142,7 +148,7 @@ export const addCategory = async (
       name: fullCat.name,
       slug: fullCat.slug,
       description: fullCat.description,
-      icon: fullCat.icon || null,
+      icon: fullCat.image || fullCat.icon || null,
       is_active: fullCat.is_active,
       sort_order: fullCat.order_index,
     } as never);
@@ -162,7 +168,13 @@ export const updateCategory = async (
   id: string,
   partial: Partial<AdminCategory>
 ): Promise<{ success: boolean; error?: any }> => {
-  state = state.map((c) => (c.id === id ? { ...c, ...partial } : c));
+  state = state.map((c) => {
+    if (c.id === id) {
+      const img = partial.image !== undefined ? partial.image : partial.icon !== undefined ? partial.icon : c.image;
+      return { ...c, ...partial, image: img, icon: img };
+    }
+    return c;
+  });
   notify();
 
   // Persistance dans Supabase
@@ -174,7 +186,7 @@ export const updateCategory = async (
         name: updated.name,
         slug: updated.slug,
         description: updated.description,
-        icon: updated.icon || null,
+        icon: updated.image || updated.icon || null,
         is_active: updated.is_active,
         sort_order: updated.order_index,
       } as never);

@@ -5,7 +5,7 @@
  * Synchronisation bidirectionnelle avec Supabase et le store réactif externe.
  */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   FolderTree,
   Plus,
@@ -14,6 +14,9 @@ import {
   Trash2,
   Eye,
   AlertCircle,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import {
   useCategories,
@@ -33,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { uploadProductImage } from "@/admin/lib/syncParfum";
 
 const slugify = (text: string) =>
   text
@@ -55,9 +59,13 @@ const CategoriesAdmin = () => {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [gender, setGender] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Product counts per category slug or gender
   const categoryStats = useMemo(() => {
@@ -88,6 +96,7 @@ const CategoriesAdmin = () => {
     setName("");
     setSlug("");
     setDescription("");
+    setImage("");
     setGender("");
     setIsActive(true);
     setErrors({});
@@ -99,6 +108,7 @@ const CategoriesAdmin = () => {
     setName(cat.name);
     setSlug(cat.slug);
     setDescription(cat.description);
+    setImage(cat.image || cat.icon || "");
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
     setErrors({});
@@ -108,6 +118,34 @@ const CategoriesAdmin = () => {
   const handleNameChange = (val: string) => {
     setName(val);
     setSlug(slugify(val));
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez sélectionner un fichier image valide (PNG, JPG, WebP)");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5 Mo");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const targetId = editingCat?.id || slug || `category-${Date.now()}`;
+      const url = await uploadProductImage(targetId, file);
+      setImage(url);
+      toast.success("Image téléversée avec succès");
+    } catch {
+      toast.error("Erreur lors du téléversement de l'image");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -136,6 +174,8 @@ const CategoriesAdmin = () => {
           name: name.trim(),
           slug: finalSlug,
           description: description.trim(),
+          image: image.trim() || undefined,
+          icon: image.trim() || undefined,
           gender: gender || undefined,
           is_active: isActive,
         });
@@ -150,6 +190,8 @@ const CategoriesAdmin = () => {
           name: name.trim(),
           slug: finalSlug,
           description: description.trim(),
+          image: image.trim() || undefined,
+          icon: image.trim() || undefined,
           gender: gender || undefined,
           is_active: isActive,
           order_index: categories.length + 1,
@@ -230,16 +272,25 @@ const CategoriesAdmin = () => {
             <tbody className="divide-y divide-border/60">
               {filteredCategories.map((cat, idx) => {
                 const count = categoryStats[cat.slug] ?? 0;
+                const catImg = cat.image || cat.icon;
                 return (
                   <tr
                     key={cat.id || cat.slug || `cat-row-${idx}`}
                     className="hover:bg-muted/30 transition-colors group"
                   >
-                    {/* Name & Icon */}
+                    {/* Name & Thumbnail */}
                     <td className="px-5 py-4 font-medium text-foreground">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                          {cat.name.charAt(0)}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden border border-border bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                          {catImg ? (
+                            <img
+                              src={catImg}
+                              alt={cat.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            cat.name.charAt(0)
+                          )}
                         </div>
                         <div>
                           <div className="font-serif font-bold text-sm text-foreground">
@@ -364,6 +415,71 @@ const CategoriesAdmin = () => {
                   <span>{errors.name}</span>
                 </div>
               )}
+            </div>
+
+            {/* Image de la catégorie */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-foreground">
+                  Visuel & Image de la catégorie
+                </label>
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  Recommandé : 800 × 1000 px
+                </span>
+              </div>
+
+              {image ? (
+                <div className="relative group rounded-xl overflow-hidden border border-border bg-muted/20 aspect-[16/9] flex items-center justify-center">
+                  <img
+                    src={image}
+                    alt="Aperçu catégorie"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 bg-white/95 dark:bg-black/90 text-foreground text-xs font-semibold rounded-lg shadow-sm hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Upload className="w-3.5 h-3.5" /> Remplacer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImage("")}
+                      className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Supprimer
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border hover:border-primary/60 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/30 transition-all group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    {uploading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <ImageIcon className="w-5 h-5" />
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold text-foreground">
+                    {uploading ? "Téléversement en cours..." : "Cliquez pour importer la photo de collection"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-1 max-w-xs">
+                    Dimensions recommandées : <strong>800 × 1000 px</strong> (Portrait 4:5) ou <strong>1000 × 1000 px</strong> (Carré 1:1) • PNG, JPG, WebP max 5 Mo
+                  </p>
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/jpg"
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </div>
 
             <div>

@@ -14,18 +14,35 @@ const Card = ({
   text,
   href,
   tag,
+  image,
 }: {
   title: string;
   text: string;
   href: string;
   tag: string;
+  image?: string;
 }) => (
   <Link
     to={href}
     className="group relative overflow-hidden rounded-2xl border border-border/70 hover:border-primary/50 transition-all duration-700 shadow-nude aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card"
   >
+    {/* Image de fond de catégorie si configurée */}
+    {image && (
+      <img
+        src={image}
+        alt={title}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+    )}
+
     {/* Voile de fond feutré */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 z-1 transition-opacity duration-500 group-hover:opacity-90" />
+    <div
+      className={`absolute inset-0 z-1 transition-opacity duration-500 ${
+        image
+          ? "bg-gradient-to-t from-black/85 via-black/40 to-black/20 group-hover:opacity-90"
+          : "bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:opacity-90"
+      }`}
+    />
 
     {/* Badge supérieur */}
     <div className="relative z-10 flex items-center justify-between">
@@ -40,7 +57,7 @@ const Card = ({
         {title}
       </h3>
       {text && (
-        <p className="text-[11px] sm:text-xs font-light text-white/75 line-clamp-1 leading-snug">
+        <p className="text-[11px] sm:text-xs font-light text-white/75 line-clamp-2 leading-snug">
           {text}
         </p>
       )}
@@ -83,6 +100,7 @@ const FiftyFiftySection = () => {
             text={cat.description}
             href={`/collection/${cat.slug}`}
             tag={cat.name}
+            image={cat.image || cat.icon}
           />
         ))}
       </div>
