@@ -33,6 +33,7 @@ const withDefaults = (p: AdminParfum): AdminParfum => ({
   stock_10ml: p.stock_10ml ?? 20,
   stock: p.stock ?? 20,
   sale_mode: p.sale_mode ?? "decant",
+  seasons: p.seasons ?? [],
   full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
   full_bottle_price: p.full_bottle_price ?? null,
   full_bottle_stock: p.full_bottle_stock ?? 0,

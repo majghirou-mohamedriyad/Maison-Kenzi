@@ -23,6 +23,7 @@ export type Parfum = {
   image_url?: string | null;
   isNew?: boolean;
   isBestseller?: boolean;
+  seasons?: string[];
   sale_mode?: 'decant' | 'full_bottle';
   full_bottle_price?: number | null;
 };

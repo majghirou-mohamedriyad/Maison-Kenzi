@@ -2,14 +2,16 @@
  * Modal d'Ajout & Modification de Parfum — Maison Kenzi Admin
  *
  * Formulaire épuré pour flacons complets :
- * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock et Notes olfactives (séparées par virgule)
+ * - Boutons d'action (Annuler / Créer le produit) intégrés en haut à la même ligne que le titre
+ * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock, Genre, Saisons d'utilisation (choix multiples) et Notes olfactives
+ * - Sécurisation totale contre les valeurs indéfinies / nulles
  * - Téléversement d'image haute définition
  * - Statut de visibilité & badges (Nouveau, Best-Seller)
  * Conformité Haute Parfumerie & Zéro Emoji.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
@@ -23,8 +25,10 @@ type Props = {
   initial?: AdminParfum | null;
 };
 
+const SEASON_OPTIONS = ["Printemps", "Été", "Automne", "Hiver"] as const;
+
 const slugify = (s: string) =>
-  s
+  (s || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -35,6 +39,7 @@ const emptyForm = {
   name: "",
   maison: "",
   gender: "Homme" as Gender,
+  seasons: [] as string[],
   price: "",
   volume: "100",
   stock: "10",
@@ -86,17 +91,20 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           .filter(Boolean)
           .join(", ");
 
+        const initialSeasons = Array.isArray(initial.seasons) ? initial.seasons : [];
+
         setF({
-          name: initial.name,
-          maison: initial.maison,
-          gender: initial.gender,
+          name: initial.name || "",
+          maison: initial.maison || "",
+          gender: initial.gender || "Homme",
+          seasons: initialSeasons,
           price: initialPrice,
           volume: initialVolume,
           stock: initialStock,
           notes: initialNotes,
           description: initial.description || "",
-          imageLabel: initial.imageLabel ?? "",
-          imageUrl: initial.image_url ?? "",
+          imageLabel: initial.imageLabel || "",
+          imageUrl: initial.image_url || "",
           active: initial.active ?? true,
           isNew: !!initial.isNew,
           isBestseller: !!initial.isBestseller,
@@ -118,6 +126,16 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         return next;
       });
     }
+  };
+
+  const toggleSeason = (season: string) => {
+    setF((prev) => {
+      const current = Array.isArray(prev.seasons) ? prev.seasons : [];
+      const next = current.includes(season)
+        ? current.filter((s) => s !== season)
+        : [...current, season];
+      return { ...prev, seasons: next };
+    });
   };
 
   const handleFile = async (file: File | null) => {
@@ -176,7 +194,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     }
 
     const parseNotes = (s: string) =>
-      s.split(",").map((x) => x.trim()).filter(Boolean);
+      (s || "").split(",").map((x) => x.trim()).filter(Boolean);
 
     const parsedNotes = parseNotes(f.notes);
 
@@ -190,7 +208,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       name: f.name.trim(),
       maison: f.maison.trim(),
       gender: f.gender,
-      description: f.description.trim(),
+      seasons: Array.isArray(f.seasons) ? f.seasons : [],
+      description: (f.description || "").trim(),
       notes: {
         tete: parsedNotes,
         coeur: [],
@@ -201,7 +220,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         "10ml": numPrice,
         "100ml": numPrice,
       },
-      imageLabel: f.imageLabel.trim() || slugify(f.name) || "produit",
+      imageLabel: (f.imageLabel || "").trim() || slugify(f.name) || "produit",
       image_url: f.imageUrl || null,
       isNew: f.isNew,
       isBestseller: f.isBestseller,
@@ -244,21 +263,46 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     }
   };
 
+  const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
+  const descriptionLength = (f.description || "").length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#FFFFFF] dark:bg-[#1A1A1A] max-w-4xl lg:max-w-5xl w-[95vw] max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
-        <DialogHeader className="pb-3 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
-          <DialogTitle className="text-lg sm:text-xl font-serif font-bold text-[#111827] dark:text-[#F9FAFB] flex items-center gap-2">
-            <span>{initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}</span>
-            {initial && (
-              <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                {initial.name}
-              </span>
-            )}
-          </DialogTitle>
-        </DialogHeader>
+        <form onSubmit={submit} className="space-y-6">
+          {/* En-tête avec Titre à gauche et Boutons d'Action à droite */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A] pr-8 sm:pr-10">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <DialogTitle className="text-lg sm:text-xl font-serif font-bold text-[#111827] dark:text-[#F9FAFB]">
+                {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
+              </DialogTitle>
+              {initial && (
+                <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                  {initial.name}
+                </span>
+              )}
+            </div>
 
-        <form onSubmit={submit} className="space-y-6 mt-4">
+            {/* Boutons d'action dans l'en-tête */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#F9FAFB] hover:bg-[#F8F9FA] dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={saving || uploading}
+                className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-lg shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+              >
+                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>{initial ? "Mettre à jour le produit" : "Créer le produit"}</span>
+              </button>
+            </div>
+          </div>
+
           {/* Bannière d'erreurs de validation */}
           {Object.keys(errors).length > 0 && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 flex items-start gap-3 text-xs text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-2">
@@ -276,7 +320,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
           {/* Grille principale en 2 colonnes */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* COLONNE GAUCHE : Informations Générales, Prix & Notes (7 colonnes) */}
+            {/* COLONNE GAUCHE : Informations Générales, Prix, Genre, Saisons & Notes (7 colonnes) */}
             <div className="lg:col-span-7 space-y-6">
               <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Informations générales & Prix</h3>
@@ -327,13 +371,44 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           onClick={() => set("gender", g)}
                           className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                             f.gender === g
-                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                               : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
                           }`}
                         >
                           {g}
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Saisons d'utilisation (Choix multiples) */}
+                  <div className="sm:col-span-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className={labelCls}>Saisons d'utilisation</label>
+                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">
+                        {currentSeasons.length === 0
+                          ? "Toutes saisons"
+                          : `${currentSeasons.length} sélectionnée${currentSeasons.length > 1 ? "s" : ""}`}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {SEASON_OPTIONS.map((season) => {
+                        const isSelected = currentSeasons.includes(season);
+                        return (
+                          <button
+                            key={season}
+                            type="button"
+                            onClick={() => toggleSeason(season)}
+                            className={`py-2 px-3 text-xs font-medium rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
+                              isSelected
+                                ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                                : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                            }`}
+                          >
+                            <span>{season}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -410,7 +485,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   <div className="sm:col-span-2">
                     <label className={labelCls}>
                       Description olfactive
-                      <span className="float-right text-[#6B7280] dark:text-[#9CA3AF]">{f.description.length}/200</span>
+                      <span className="float-right text-[#6B7280] dark:text-[#9CA3AF]">{descriptionLength}/200</span>
                     </label>
                     <textarea
                       className={inputCls + " min-h-[85px] resize-none"}
@@ -492,24 +567,6 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
             </div>
           </div>
-
-          <DialogFooter className="gap-3 pt-4 border-t border-[#E5E7EB] dark:border-[#2A2A2A]">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="px-5 py-2.5 text-xs font-medium rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#F9FAFB] hover:bg-[#F8F9FA] dark:hover:bg-white/5 transition-colors cursor-pointer"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              disabled={saving || uploading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-lg shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
-            >
-              {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>{initial ? "Mettre à jour le produit" : "Créer le produit"}</span>
-            </button>
-          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
