@@ -343,21 +343,6 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             </div>
           </div>
 
-          {/* Bannière d'erreurs de validation */}
-          {Object.keys(errors).length > 0 && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 flex items-start gap-3 text-xs text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold block">Veuillez renseigner les informations obligatoires :</span>
-                <ul className="list-disc list-inside mt-1 space-y-0.5 text-[11px] opacity-90">
-                  {Object.values(errors).slice(0, 3).map((msg, i) => (
-                    <li key={i}>{msg}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
           {/* Grille principale en 2 colonnes */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* COLONNE GAUCHE : Informations Générales, Prix, Genre, Saisons & Notes (7 colonnes) */}
