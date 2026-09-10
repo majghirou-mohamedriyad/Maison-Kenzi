@@ -83,30 +83,10 @@ export const useAppSettings = () => {
 
     fetchSettings();
 
-    const channel = supabase
-      .channel(`app_settings_changes_${Math.random().toString(36).slice(2)}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "app_settings" },
-        (payload) => {
-          if (payload.new && active) {
-            const next = { ...settings, ...(payload.new as Partial<AppSettings>) };
-            setSettings(next);
-            try {
-              localStorage.setItem("tabat_app_settings", JSON.stringify(next));
-            } catch {
-              // ignore
-            }
-          }
-        },
-      )
-      .subscribe();
-
     return () => {
       active = false;
       window.removeEventListener("tabat_settings_updated", handleLocalUpdate);
       window.removeEventListener("storage", handleLocalUpdate);
-      supabase.removeChannel(channel);
     };
   }, []);
 

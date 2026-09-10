@@ -436,9 +436,11 @@ const ParfumDetail = () => {
                 </h1>
 
                 <div className="flex items-center flex-wrap gap-1.5 pt-1">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
-                    {parfum.gender}
-                  </span>
+                  {parfum.gender && (
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
+                      {parfum.gender}
+                    </span>
+                  )}
 
                   {parfum.is_new && (
                     <span className="text-[10px] uppercase tracking-wider text-primary-foreground bg-primary px-2.5 py-0.5 rounded-full font-medium shadow-xs animate-badge-glow">
@@ -451,30 +453,23 @@ const ParfumDetail = () => {
                       {parfum.full_bottle_volume_ml} ml
                     </span>
                   )}
-                </div>
 
-                {/* Saisons d'utilisation (Badges rapides) */}
-                {Array.isArray(parfum.seasons) && parfum.seasons.length > 0 && (
-                  <div className="flex items-center gap-1.5 flex-wrap pt-1.5">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-primary" /> Saisons :
-                    </span>
-                    {parfum.seasons.map((season) => {
-                      const key = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                      const conf = SEASON_CONFIG[key] || { label: season, icon: Sun };
-                      const IconComp = conf.icon;
-                      return (
-                        <span
-                          key={season}
-                          className="inline-flex items-center gap-1 text-[10px] text-foreground bg-card border border-border/80 px-2 py-0.5 rounded-full font-medium shadow-xs"
-                        >
-                          <IconComp className="w-2.5 h-2.5 text-primary" />
-                          <span>{conf.label}</span>
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
+                  {/* Tags Saisons d'utilisation harmonisés */}
+                  {Array.isArray(parfum.seasons) && parfum.seasons.map((season) => {
+                    const key = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    const conf = SEASON_CONFIG[key] || { label: season, icon: Sun };
+                    const IconComp = conf.icon;
+                    return (
+                      <span
+                        key={season}
+                        className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium"
+                      >
+                        <IconComp className="w-3 h-3 text-primary" strokeWidth={1.75} />
+                        <span>{conf.label}</span>
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Multi-Format / Size Selection Cards with Independent Quantities */}
