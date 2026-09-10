@@ -12,7 +12,8 @@
 - [x] Animation Immersive Plein Écran de la Section Hero :
   - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : L'animation d'arrière-plan et le diaporama occupent désormais 100% de la largeur et de la hauteur de la section Hero.
   - [x] Effet cinématique Ken Burns continu (`scale-105`), transitions de fondu doux (1000ms), dégradés d'ambiance sombres et halos dorés champagne.
-  - [x] Typographie éditoriale Playfair Display, navigation par flèches discrètes et barre d'engagements de confiance ancrée en pied de Hero.
+  - [x] Typographie éditoriale Playfair Display, navigation par flèches discrètes et pagination dorée.
+  - [x] Épuration visuelle : suppression de la barre des 4 badges de confiance (Authenticité, Livraison 24-48h, Formats nomades, Paiement à la réception) pour une immersion visuelle totale sans coupure.
 - [x] Définition et création des 4 compétences d'agent dans `.agents/skills/` :
   - [x] `luxury-nude-design-system` : Nuancier HSL / Hex nude, albâtre, sable et champagne.
   - [x] `editorial-luxury-typography` : Duo typographique Serif / Sans-Serif avec espacement tracking.

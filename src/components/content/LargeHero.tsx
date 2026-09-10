@@ -12,21 +12,10 @@ import { Button } from "@/components/ui/button";
 import {
   Sparkles,
   ArrowRight,
-  ShieldCheck,
-  Truck,
-  Star,
-  Award,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
-
-const heroBadges = [
-  { icon: ShieldCheck, title: "100% Parfums Authentiques", shortTitle: "100% Authentiques" },
-  { icon: Truck, title: "Livraison Express 24–48h Partout au Maroc", shortTitle: "Livraison 24–48h" },
-  { icon: Award, title: "Formats Nomades 5ml, 10ml & Flacons", shortTitle: "Décants & Flacons" },
-  { icon: Star, title: "Paiement Sécurisé à la Réception", shortTitle: "Paiement Réception" },
-];
 
 const SLIDES = [
   {
@@ -190,27 +179,6 @@ const LargeHero = () => {
                 aria-label={`Aller à la diapositive ${index + 1}`}
               />
             ))}
-          </div>
-        </div>
-
-        {/* Barre d'Engagements & Confiance (Ancrée au bas de la section Hero) */}
-        <div className="relative z-10 w-full bg-[#0C0B0A]/90 backdrop-blur-xl border-t border-[#26221E] py-4 px-4 sm:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-6xl mx-auto text-center">
-            {heroBadges.map((b, i) => {
-              const Icon = b.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex items-center justify-center gap-2.5 text-[#E8E1D7] text-xs tracking-wide font-medium"
-                >
-                  <div className="w-6 h-6 rounded-full bg-[#C9A96E]/10 border border-[#C9A96E]/20 flex items-center justify-center text-[#C9A96E] shrink-0">
-                    <Icon className="w-3.5 h-3.5 stroke-[1.75]" />
-                  </div>
-                  <span className="hidden sm:inline">{b.title}</span>
-                  <span className="sm:hidden">{b.shortTitle}</span>
-                </div>
-              );
-            })}
           </div>
         </div>
 
