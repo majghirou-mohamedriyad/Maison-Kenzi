@@ -4,13 +4,13 @@
  * Formulaire épuré pour flacons complets :
  * - Boutons d'action (Annuler / Créer le produit) intégrés en haut à la même ligne que le titre
  * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock, Genre, Saisons d'utilisation (choix multiples) et Notes olfactives
- * - Assignation de la Catégorie / Univers de destination (synchronisée avec le store de catégories)
+ * - Sélecteur de Catégorie Haute Parfumerie : Cartes interactives raffinées avec recherche, indicateurs visuels et synchronisation temps réel
  * - Téléversement d'image haute définition
  * - Statut de visibilité & badges (Nouveau, Best-Seller)
  * Conformité Haute Parfumerie & Zéro Emoji.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
@@ -18,7 +18,19 @@ import { useCategories } from "@/store/useCategoryStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
 import type { Gender } from "@/data/parfums";
 import { toast } from "sonner";
-import { Upload, X, Loader2, AlertCircle, FolderTree } from "lucide-react";
+import {
+  Upload,
+  X,
+  Loader2,
+  AlertCircle,
+  FolderTree,
+  Check,
+  Search,
+  Layers,
+  Sparkles,
+  Package,
+  Tag,
+} from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -74,12 +86,24 @@ const inputErrorCls =
 const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const availableCategories = useCategories();
   const [f, setF] = useState(emptyForm);
+  const [categorySearch, setCategorySearch] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const categoriesList = availableCategories.length > 0 ? availableCategories : DEFAULT_CATEGORIES;
+  const rawCategories = availableCategories.length > 0 ? availableCategories : DEFAULT_CATEGORIES;
+
+  // Filtrage réactif des catégories pour une sélection fluide
+  const filteredCategories = useMemo(() => {
+    if (!categorySearch.trim()) return rawCategories;
+    const q = categorySearch.toLowerCase().trim();
+    return rawCategories.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q));
+  }, [rawCategories, categorySearch]);
+
+  const selectedCategoryObj = useMemo(() => {
+    return rawCategories.find((c) => c.slug === f.category);
+  }, [rawCategories, f.category]);
 
   useEffect(() => {
     if (open) {
@@ -126,6 +150,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       } else {
         setF(emptyForm);
       }
+      setCategorySearch("");
       setErrors({});
     }
   }, [open, initial]);
@@ -562,50 +587,93 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 </div>
               </section>
 
-              {/* Section Catégorie / Univers (Positionnée en haut de Visibilité & Badges) */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3">
+              {/* Section Sélecteur de Catégorie Haute Parfumerie (Positionnée au-dessus de Visibilité & Badges) */}
+              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <span>Catégorie du parfum</span>
+                    <span>Catégorie & Univers</span>
                   </h3>
-                  <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">
-                    {f.category ? "Classé" : "Auto"}
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                    {selectedCategoryObj ? selectedCategoryObj.name : "Selon genre"}
                   </span>
                 </div>
 
-                <div>
-                  <label className={labelCls}>Choisir la catégorie de destination</label>
-                  <select
-                    className={inputCls + " cursor-pointer font-medium"}
-                    value={f.category}
-                    onChange={(e) => set("category", e.target.value)}
-                  >
-                    <option value="">Sélectionner une catégorie spécifique</option>
-                    {categoriesList.map((cat) => (
-                      <option key={cat.id || cat.slug} value={cat.slug}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* Champ de recherche rapide de catégorie si plus de 4 catégories */}
+                {rawCategories.length > 4 && (
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                    <input
+                      type="text"
+                      className={inputCls + " pl-8 py-1.5 text-[11px]"}
+                      placeholder="Filtrer les univers et catégories..."
+                      value={categorySearch}
+                      onChange={(e) => setCategorySearch(e.target.value)}
+                    />
+                    {categorySearch && (
+                      <button
+                        type="button"
+                        onClick={() => setCategorySearch("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
 
-                {/* Badges de sélection rapide */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {categoriesList.map((cat) => {
+                {/* Grille de cartes de sélection de catégorie avec design de prestige */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[170px] overflow-y-auto pr-0.5">
+                  {/* Option Automatique */}
+                  <button
+                    type="button"
+                    onClick={() => set("category", "")}
+                    className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                      f.category === ""
+                        ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                        : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Sparkles className={`w-3.5 h-3.5 shrink-0 ${f.category === "" ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
+                      <div className="truncate">
+                        <div className="text-xs truncate font-medium">Automatique</div>
+                        <div className={`text-[9px] truncate ${f.category === "" ? "opacity-80" : "text-[#9CA3AF]"}`}>Selon le genre</div>
+                      </div>
+                    </div>
+                    {f.category === "" && (
+                      <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5" />
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Liste des catégories dynamiques */}
+                  {filteredCategories.map((cat) => {
                     const isSelected = f.category === cat.slug;
                     return (
                       <button
                         key={cat.id || cat.slug}
                         type="button"
                         onClick={() => set("category", isSelected ? "" : cat.slug)}
-                        className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
+                        className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
                           isSelected
                             ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                            : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                            : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
                         }`}
                       >
-                        {cat.name}
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Layers className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
+                          <div className="truncate">
+                            <div className="text-xs truncate font-medium">{cat.name}</div>
+                            <div className={`text-[9px] truncate ${isSelected ? "opacity-80" : "text-[#9CA3AF]"}`}>/{cat.slug}</div>
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
+                            <Check className="w-2.5 h-2.5" />
+                          </div>
+                        )}
                       </button>
                     );
                   })}
