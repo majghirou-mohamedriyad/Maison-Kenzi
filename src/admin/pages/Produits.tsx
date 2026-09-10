@@ -81,6 +81,20 @@ const Produits = () => {
     setDeletingProduct(p);
   };
 
+  const handleSortHeader = (field: string) => {
+    if (field === "name") {
+      setSortOption((prev) => (prev === "name_asc" ? "name_desc" : "name_asc"));
+    } else if (field === "maison") {
+      setSortOption((prev) => (prev === "maison_asc" ? "name_asc" : "maison_asc"));
+    } else if (field === "price") {
+      setSortOption((prev) => (prev === "price_asc" ? "price_desc" : "price_asc"));
+    } else if (field === "stock") {
+      setSortOption((prev) => (prev === "stock_desc" ? "stock_asc" : "stock_desc"));
+    } else if (field === "status") {
+      setStatusFilter((prev) => (prev === "in_stock" ? "out_of_stock" : "in_stock"));
+    }
+  };
+
   const confirmDelete = async () => {
     if (!deletingProduct) return;
     try {
@@ -183,30 +197,6 @@ const Produits = () => {
     setMaisonFilter("Toutes");
     setStatusFilter("Tous");
     setSortOption("name_asc");
-  };
-
-  const onAdd = () => {
-    setEditing(null);
-    setModalOpen(true);
-  };
-
-  const onEdit = (p: AdminParfum) => {
-    setEditing(p);
-    setModalOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (deleting) {
-      const id = deleting.id;
-      deleteProduct(id);
-      try {
-        await deleteParfumFromSupabase(id);
-      } catch (e) {
-        console.error(e);
-      }
-      toast.success(`${deleting.name} supprimé avec succès`);
-      setDeleting(null);
-    }
   };
 
   return (
@@ -374,20 +364,20 @@ const Produits = () => {
         products={filteredAndSorted}
         viewMode={viewMode}
         onEdit={onEdit}
-        onDelete={(p) => setDeleting(p)}
+        onDelete={onDelete}
         sortBy={sortOption}
         onSortChange={handleSortHeader}
       />
 
       {/* Modale d'ajout / modification de parfum */}
-      <ProductModal open={modalOpen} onOpenChange={setModalOpen} initial={editing} />
+      <ProductModal open={modalOpen} onOpenChange={setModalOpen} initial={editingProduct} />
 
       {/* Modale de confirmation de suppression */}
       <DeleteDialog
-        open={!!deleting}
-        onOpenChange={(o) => !o && setDeleting(null)}
+        open={!!deletingProduct}
+        onOpenChange={(o) => !o && setDeletingProduct(null)}
         onConfirm={confirmDelete}
-        productName={deleting?.name}
+        productName={deletingProduct?.name}
       />
     </div>
   );
