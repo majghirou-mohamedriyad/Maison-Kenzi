@@ -348,44 +348,6 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             </div>
           )}
 
-          {/* Sale mode selector */}
-          <section className="bg-[#F8F9FA] dark:bg-[#0F0F0F] p-4 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] mb-3">Mode de vente</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => set("saleMode", "decant")}
-                className={`text-left p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                  !isFull
-                    ? "border-[#C9A96E] bg-[#C9A96E]/10 shadow-sm"
-                    : "border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1A1A1A] hover:border-[#C9A96E]/40"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Droplet className="w-4 h-4 text-[#C9A96E]" />
-                  <span className="text-sm font-semibold text-[#111827] dark:text-[#F9FAFB]">Décants / Échantillons</span>
-                </div>
-                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Vente au format fractionné : 5 ml, 10 ml.</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => set("saleMode", "full_bottle")}
-                className={`text-left p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                  isFull
-                    ? "border-[#C9A96E] bg-[#C9A96E]/10 shadow-sm"
-                    : "border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1A1A1A] hover:border-[#C9A96E]/40"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Wine className="w-4 h-4 text-[#C9A96E]" />
-                  <span className="text-sm font-semibold text-[#111827] dark:text-[#F9FAFB]">Bouteille complète / Flacon scellé</span>
-                </div>
-                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Flacon original sous blister scellé ou stick déodorant.</p>
-              </button>
-            </div>
-          </section>
-
           {/* 2-Column Main Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* LEFT COLUMN: General Information (7 cols) */}
