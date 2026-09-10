@@ -1,3 +1,8 @@
+/**
+ * Composant Toast (Radix UI) — Notifications & Alertes Haute Parfumerie
+ * Positionné en bas à droite avec design épuré, accents champagne et icônes Lucide professionnelles (zéro emoji).
+ */
+
 import * as React from "react";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -14,7 +19,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-4 right-4 z-[150] flex max-h-screen w-full flex-col gap-2 p-0 md:max-w-[400px]",
+      "fixed bottom-4 right-4 z-[150] flex max-h-screen w-full flex-col-reverse gap-2 p-0 md:max-w-[400px]",
       className,
     )}
     {...props}
@@ -23,12 +28,14 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-2xl border p-4 pr-6 shadow-2xl transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-right-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-2xl border p-4 pr-6 shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)] transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-bottom-full data-[state=open]:sm:slide-in-from-right-full",
   {
     variants: {
       variant: {
-        default: "border-border/80 bg-background/95 backdrop-blur-xl text-foreground",
-        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
+        default:
+          "border-[#C9A96E]/30 dark:border-[#C9A96E]/20 bg-[#FAF8F5]/95 dark:bg-[#141414]/95 backdrop-blur-2xl text-[#111827] dark:text-[#F9FAFB] ring-1 ring-[#C9A96E]/15",
+        destructive:
+          "destructive group border-rose-500/30 bg-[#FAF8F5]/95 dark:bg-[#141414]/95 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20 backdrop-blur-2xl",
       },
     },
     defaultVariants: {

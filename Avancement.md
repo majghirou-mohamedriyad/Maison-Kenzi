@@ -44,6 +44,8 @@
 - [x] Optimisation & Fluidification du Basculement de Thème (ThemeToggle) :
   - [x] [`src/hooks/useTheme.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useTheme.ts) & [`src/contexts/ThemeContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/ThemeContext.tsx) : Application synchrone et réactive des classes `light`/`dark` et de `colorScheme` sur `<html>`.
   - [x] [`src/components/ThemeToggle.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ThemeToggle.tsx) : Icônes centrées au pixel près sans décalage ni saut de layout lors de la bascule.
+- [x] Refonte Haute Parfumerie du Système de Notifications & Alertes (Toasts) :
+  - [x] [`src/components/ui/sonner.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/sonner.tsx) & [`src/components/ui/toast.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/toast.tsx) : Positionnement en bas à droite de l'écran (`bottom-right`), design épuré en verre dépoli avec bordures dorées champagne, ombres soignées, icônes Lucide professionnelles (CheckCircle2, AlertCircle, Info, AlertTriangle) et conformité stricte zéro emoji.
 
 ---
 
