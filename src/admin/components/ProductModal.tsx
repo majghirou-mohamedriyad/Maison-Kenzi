@@ -4,7 +4,7 @@
  * Formulaire épuré pour flacons complets :
  * - Boutons d'action (Annuler / Créer le produit) intégrés en haut à la même ligne que le titre
  * - Informations générales avec Prix de vente (MAD), Volume (ml), Stock, Genre, Saisons d'utilisation (choix multiples) et Notes olfactives
- * - Sélecteur de Catégorie Haute Parfumerie : Cartes interactives raffinées avec recherche, indicateurs visuels et synchronisation temps réel
+ * - Sélecteur de Catégorie Haute Parfumerie : Cartes de catégories réelles et synchronisées (sans option automatique superflue)
  * - Téléversement d'image haute définition
  * - Statut de visibilité & badges (Nouveau, Best-Seller)
  * Conformité Haute Parfumerie & Zéro Emoji.
@@ -27,9 +27,6 @@ import {
   Check,
   Search,
   Layers,
-  Sparkles,
-  Package,
-  Tag,
 } from "lucide-react";
 
 type Props = {
@@ -60,7 +57,7 @@ const emptyForm = {
   name: "",
   maison: "",
   gender: "Homme" as Gender,
-  category: "",
+  category: "homme",
   seasons: [] as string[],
   price: "",
   volume: "100",
@@ -129,12 +126,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           .join(", ");
 
         const initialSeasons = Array.isArray(initial.seasons) ? initial.seasons : [];
+        const fallbackCat = initial.gender === "Femme" ? "femme" : initial.gender === "Mixte" ? "mixte" : "homme";
 
         setF({
           name: initial.name || "",
           maison: initial.maison || "",
           gender: initial.gender || "Homme",
-          category: (initial.category as string) || "",
+          category: (initial.category as string) || fallbackCat,
           seasons: initialSeasons,
           price: initialPrice,
           volume: initialVolume,
@@ -242,12 +240,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         ? initial.id
         : initial?.id ?? crypto.randomUUID();
 
+    const finalCategory = f.category || (f.gender === "Homme" ? "homme" : f.gender === "Femme" ? "femme" : "mixte");
+
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
       maison: f.maison.trim(),
       gender: f.gender,
-      category: (f.category || (f.gender === "Homme" ? "homme" : f.gender === "Femme" ? "femme" : "mixte")) as any,
+      category: finalCategory as any,
       seasons: Array.isArray(f.seasons) ? f.seasons : [],
       description: (f.description || "").trim(),
       notes: {
@@ -408,7 +408,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <button
                           key={g}
                           type="button"
-                          onClick={() => set("gender", g)}
+                          onClick={() => {
+                            set("gender", g);
+                            // Mettre à jour la catégorie par défaut si non modifiée manuellement
+                            if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
+                              set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
+                            }
+                          }}
                           className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                             f.gender === g
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
@@ -592,10 +598,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <span>Catégorie & Univers</span>
+                    <span>Catégorie du parfum</span>
                   </h3>
                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
-                    {selectedCategoryObj ? selectedCategoryObj.name : "Selon genre"}
+                    {selectedCategoryObj ? selectedCategoryObj.name : "Sélectionner"}
                   </span>
                 </div>
 
@@ -606,7 +612,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <input
                       type="text"
                       className={inputCls + " pl-8 py-1.5 text-[11px]"}
-                      placeholder="Filtrer les univers et catégories..."
+                      placeholder="Filtrer les catégories..."
                       value={categorySearch}
                       onChange={(e) => setCategorySearch(e.target.value)}
                     />
@@ -622,40 +628,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Grille de cartes de sélection de catégorie avec design de prestige */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[170px] overflow-y-auto pr-0.5">
-                  {/* Option Automatique */}
-                  <button
-                    type="button"
-                    onClick={() => set("category", "")}
-                    className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                      f.category === ""
-                        ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                        : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Sparkles className={`w-3.5 h-3.5 shrink-0 ${f.category === "" ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
-                      <div className="truncate">
-                        <div className="text-xs truncate font-medium">Automatique</div>
-                        <div className={`text-[9px] truncate ${f.category === "" ? "opacity-80" : "text-[#9CA3AF]"}`}>Selon le genre</div>
-                      </div>
-                    </div>
-                    {f.category === "" && (
-                      <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
-                        <Check className="w-2.5 h-2.5" />
-                      </div>
-                    )}
-                  </button>
-
-                  {/* Liste des catégories dynamiques */}
+                {/* Grille des catégories disponibles */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5">
                   {filteredCategories.map((cat) => {
                     const isSelected = f.category === cat.slug;
                     return (
                       <button
                         key={cat.id || cat.slug}
                         type="button"
-                        onClick={() => set("category", isSelected ? "" : cat.slug)}
+                        onClick={() => set("category", cat.slug)}
                         className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
                           isSelected
                             ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
