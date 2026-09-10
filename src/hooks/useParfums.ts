@@ -106,14 +106,27 @@ const mapLocalToParfum = (p: AdminParfum): Parfum => {
 };
 
 export const useParfums = (filter?: ParfumFilter) => {
-  const [data, setData] = useState<Parfum[]>(() => getProducts().map(mapLocalToParfum));
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<Parfum[]>(() => {
+    const local = getProducts().map(mapLocalToParfum);
+    if (!filter) return local;
+    let res = local;
+    if (filter.gender) res = res.filter((p) => p.gender === filter.gender);
+    if (filter.isNew !== undefined) res = res.filter((p) => p.is_new === filter.isNew);
+    if (filter.isActive !== undefined) res = res.filter((p) => p.is_active === filter.isActive);
+    if (filter.category) res = res.filter((p) => p.category === filter.category);
+    if (filter.isBestseller) res = res.filter((p) => p.is_bestseller);
+    return res;
+  });
+  const [loading, setLoading] = useState<boolean>(() => data.length === 0);
   const [error, setError] = useState<string | null>(null);
 
   const key = JSON.stringify(filter ?? {});
 
   const load = useCallback(async () => {
-    setLoading(true);
+    // Si on a déjà des données locales, ne pas afficher de loader bloquant
+    if (data.length === 0) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -123,19 +136,23 @@ export const useParfums = (filter?: ParfumFilter) => {
       if (filter?.isActive !== undefined) q = q.eq("is_active", filter.isActive);
       if (filter?.category) q = q.eq("category", filter.category);
 
-      const { data: rows, error: err } = await q;
+      // Timeout de sécurité de 3.5s
+      const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+        setTimeout(() => resolve({ data: null, error: new Error("Timeout") }), 3500)
+      );
+
+      const res = await Promise.race([q, timeoutPromise]);
+      const rows = res.data;
+      const err = res.error;
 
       if (!err && Array.isArray(rows)) {
         const mapped = rows.map(mapRowToParfum);
-        
         let filtered = mapped;
         if (filter?.isBestseller) {
           filtered = filtered.filter((p) => p.is_bestseller);
         }
-
         setData(filtered);
 
-        // Mettre à jour le store local si on charge tous les produits
         if (!filter) {
           const currentLocal = getProducts();
           const adminProducts: AdminParfum[] = rows.map((r: any) => {
@@ -186,7 +203,7 @@ export const useParfums = (filter?: ParfumFilter) => {
           setProducts(adminProducts);
         }
       } else {
-        // En cas d'erreur ou d'absence de connexion, se baser sur le store local
+        // Fallback local
         let local = getProducts().map(mapLocalToParfum);
         if (filter?.gender) local = local.filter((p) => p.gender === filter.gender);
         if (filter?.isNew !== undefined) local = local.filter((p) => p.is_new === filter.isNew);
@@ -196,8 +213,13 @@ export const useParfums = (filter?: ParfumFilter) => {
         setData(local);
       }
     } catch (e: any) {
-      setError(e?.message || "Erreur de chargement");
-      setData([]);
+      // Conserver les données locales en cas d'erreur
+      const local = getProducts().map(mapLocalToParfum);
+      if (local.length > 0) {
+        setData(local);
+      } else {
+        setError(e?.message || "Erreur de chargement");
+      }
     } finally {
       setLoading(false);
     }
@@ -218,8 +240,12 @@ export const useParfums = (filter?: ParfumFilter) => {
 };
 
 export const useParfum = (id?: string) => {
-  const [data, setData] = useState<Parfum | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<Parfum | null>(() => {
+    if (!id) return null;
+    const local = getProducts().find((p) => p.id === id);
+    return local ? mapLocalToParfum(local) : null;
+  });
+  const [loading, setLoading] = useState(() => !data);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -229,26 +255,45 @@ export const useParfum = (id?: string) => {
       return;
     }
 
-    setLoading(true);
+    // Si on a déjà une version locale en cache, on ne bloque pas l'écran
+    const localCached = getProducts().find((p) => p.id === id);
+    if (localCached) {
+      setData(mapLocalToParfum(localCached));
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     setError(null);
 
     try {
-      const { data: row, error: err } = await supabase
+      const fetchPromise = supabase
         .from("parfums")
         .select("*")
         .eq("id", id)
         .maybeSingle();
 
+      const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+        setTimeout(() => resolve({ data: null, error: new Error("Timeout") }), 3500)
+      );
+
+      const res = await Promise.race([fetchPromise, timeoutPromise]);
+      const row = res.data;
+      const err = res.error;
+
       if (!err && row) {
         setData(mapRowToParfum(row));
       } else {
-        // Recherche dans le store local
         const local = getProducts().find((p) => p.id === id);
         setData(local ? mapLocalToParfum(local) : null);
       }
     } catch (e: any) {
-      setError(e?.message || "Erreur lors du chargement du parfum");
-      setData(null);
+      const local = getProducts().find((p) => p.id === id);
+      if (local) {
+        setData(mapLocalToParfum(local));
+      } else {
+        setError(e?.message || "Erreur lors du chargement du parfum");
+        setData(null);
+      }
     } finally {
       setLoading(false);
     }
