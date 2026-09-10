@@ -56,8 +56,8 @@ const slugify = (s: string) =>
 const emptyForm = {
   name: "",
   maison: "",
-  gender: "Homme" as Gender,
-  category: "homme",
+  gender: "" as unknown as Gender,
+  category: "",
   seasons: [] as string[],
   price: "",
   volume: "100",
@@ -126,13 +126,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           .join(", ");
 
         const initialSeasons = Array.isArray(initial.seasons) ? initial.seasons : [];
-        const fallbackCat = initial.gender === "Femme" ? "femme" : initial.gender === "Mixte" ? "mixte" : "homme";
 
         setF({
           name: initial.name || "",
           maison: initial.maison || "",
-          gender: initial.gender || "Homme",
-          category: (initial.category as string) || fallbackCat,
+          gender: initial.gender || ("" as unknown as Gender),
+          category: (initial.category as string) || "",
           seasons: initialSeasons,
           price: initialPrice,
           volume: initialVolume,
