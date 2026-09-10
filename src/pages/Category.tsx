@@ -256,7 +256,7 @@ const Collection = () => {
 
       <main className="flex-1 pb-16">
         {/* Luxury Category Hero Section */}
-        <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-4 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
+        <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
           {/* Subtle Ambient Glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
 

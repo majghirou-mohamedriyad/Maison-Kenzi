@@ -226,7 +226,7 @@ const ParfumDetail = () => {
       />
       <Header />
 
-      <main className="flex-1 pt-3 pb-16">
+      <main className="flex-1 pt-20 sm:pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
           {/* Breadcrumb Navigation */}
           <Breadcrumb>

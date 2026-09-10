@@ -9,10 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Section Hero Plein Écran & Navbar Flottante Arrondie Permanente :
-  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : La section Hero et son animation cinématique occupent 100% de la largeur et de la hauteur de la section avec effet Ken Burns continu (`scale-105`), transitions de fondu doux et halos dorés.
-  - [x] [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx) & [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Barre de navigation flottante maintenue en permanence en pastille élégamment arrondie (`rounded-full`), centrée (`max-w-6xl`), avec verre dépoli (`backdrop-blur-2xl`), bordure subtile et ombre douce haute parfumerie.
-  - [x] [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx) : Continuité visuelle parfaite avec le Hero.
+- [x] Section Hero Plein Écran & Navbar Flottante sans Bande Supérieure :
+  - [x] [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx) : Positionnement fixe (`fixed top-0`) au-dessus du Hero sans décalage de flux, éliminant totalement la bande crème/blanche supérieure au-dessus du Hero.
+  - [x] [`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx) : La section Hero et son animation cinématique démarrent désormais dès le pixel 0 au sommet de la fenêtre et occupent 100% de la surface avec effet Ken Burns continu (`scale-105`), transitions de fondu doux et halos dorés.
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Barre de navigation flottante maintenue en permanence en pastille élégamment arrondie (`rounded-full`), centrée (`max-w-6xl`), avec verre dépoli (`backdrop-blur-2xl`), bordure subtile et ombre douce haute parfumerie.
+  - [x] Ajustement du padding supérieur (`pt-20 sm:pt-24`) sur les pages secondaires ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)).
 - [x] Définition et création des 4 compétences d'agent dans `.agents/skills/` :
   - [x] `luxury-nude-design-system` : Nuancier HSL / Hex nude, albâtre, sable et champagne.
   - [x] `editorial-luxury-typography` : Duo typographique Serif / Sans-Serif avec espacement tracking.

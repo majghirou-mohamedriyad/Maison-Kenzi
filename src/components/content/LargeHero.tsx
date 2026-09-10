@@ -122,7 +122,7 @@ const LargeHero = () => {
         </button>
 
         {/* Contenu Central de la Section Hero */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-8 max-w-4xl mx-auto pt-16 sm:pt-20 pb-12">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-8 max-w-4xl mx-auto pt-28 sm:pt-36 md:pt-40 pb-16 sm:pb-20">
           
           {/* Badge / Surtitre Doré */}
           <div
