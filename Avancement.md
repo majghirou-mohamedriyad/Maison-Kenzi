@@ -9,6 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Masquage Temporaire du Bouton « Besoin d'Aide ? » / ChatBot :
+  - [x] [`src/components/ChatBotMount.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ChatBotMount.tsx) : Désactivation temporaire du montage du chatbot et du bouton d'assistance flottant pour laisser la priorité visuelle à la navigation et au bouton de panier.
+
 - [x] Bouton & Indicateur Flottant de Panier (Bottom-Left avec Clignotement Feutré) :
   - [x] [`src/components/cart/FloatingCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/cart/FloatingCartButton.tsx) : Bouton flottant de prestige positionné en bas à gauche de l'écran (`fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-40`), qui s'active automatiquement dès que le panier contient au moins 1 article.
   - [x] **Clignotement & Pulsation Feutrée Haute Couture** : Onde radar dorée scintillante en arrière-plan (`animate-radar-ping`), pulsation lumineuse douce de la bordure et de l'ombre portée (`animate-luxury-blink`), balise lumineuse clignotante (`animate-ping`) et badge compteur dynamique.

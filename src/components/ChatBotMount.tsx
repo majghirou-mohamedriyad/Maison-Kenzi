@@ -1,10 +1,11 @@
-import { useLocation } from "react-router-dom";
-import ChatBot from "./ChatBot";
-
+/**
+ * Composant de montage du ChatBot et du bouton d'aide flottant.
+ * Temporairement désactivé à la demande de l'utilisateur.
+ */
 const ChatBotMount = () => {
-  const { pathname } = useLocation();
-  if (pathname.startsWith("/admin")) return null;
-  return <ChatBot />;
+  // Désactivé temporairement
+  return null;
 };
 
 export default ChatBotMount;
+
