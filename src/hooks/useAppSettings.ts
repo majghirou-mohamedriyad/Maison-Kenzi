@@ -118,6 +118,8 @@ if (typeof window !== "undefined") {
   } catch {}
 }
 
+export const getAppSettings = (): AppSettings => state;
+
 export const updateAppSettings = async (patch: Partial<AppSettings>) => {
   state = { ...state, ...patch };
   notify();
