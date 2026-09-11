@@ -9,8 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Bannière Panoramique de Catégorie / Univers Olfactif (Boutique) :
-  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Remplacement de l'encart miniature par une **bannière panoramique immersive haute définition** (`object-cover`, voiles de contraste cinématographiques multi-niveaux, fil d'ariane en verre dépoli, typographie de prestige Serif en blanc pur et halo doré champagne). Fallback automatique sur l'en-tête épuré standard lorsque la catégorie ne comporte pas d'image.
+- [x] Bannière Panoramique & Contenu 100% Dynamique des Catégories (Boutique) :
+  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Suppression intégrale des textes, sous-titres et tags statiques codés en dur (« Collection Spéciale », « Sélection Exclusive », « Haute Parfumerie Masculine », etc.). L'affichage repose désormais **exclusivement et à 100% sur les données réelles saisies dans le panneau d'administration** (nom, description, photo et statut « À Venir »).
+  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Bannière panoramique immersive haute définition (`object-cover`, voiles de contraste cinématographiques multi-niveaux, fil d'ariane en verre dépoli, typographie de prestige Serif en blanc pur et halo doré champagne). Fallback automatique sur l'en-tête épuré standard lorsque la catégorie ne comporte pas d'image.
 
 - [x] Sélection Multi-Catégories pour les Parfums (Admin & Boutique) :
   - [x] [`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts) : Création du module utilitaire d'extraction (`getParfumCategories`) et de filtrage unifié (`isParfumInCategory`) gérant les tableaux `categories`, les slugs et la compatibilité rétroactive.

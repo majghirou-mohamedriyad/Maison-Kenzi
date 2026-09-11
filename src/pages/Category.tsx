@@ -61,53 +61,26 @@ const filterToSlug = (key: FilterKey): string => {
   return key;
 };
 
-const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDesc?: string, isComingSoon?: boolean) => {
-  const f = filter.toLowerCase();
-  if (f === "homme") {
+const collectionHeroInfo = (
+  filter: FilterKey,
+  categoryName?: string,
+  categoryDesc?: string,
+  isComingSoon?: boolean
+) => {
+  if (filter === "Toutes" || filter === "all") {
     return {
-      title: categoryName || "Parfums Homme",
-      subtitle: "Haute Parfumerie Masculine",
-      description: categoryDesc || "Une sélection d'exception de fragrances masculines : sillages boisés, ambrés, cuirés et orientaux des plus grandes maisons, décantés artisanalement en flacons stérilisés.",
-      badge: isComingSoon ? "Collection à Venir" : "Sélection Pour Homme",
+      title: "Toutes les Collections",
+      subtitle: "",
+      description: "",
+      badge: "",
     };
   }
-  if (f === "femme") {
-    return {
-      title: categoryName || "Parfums Femme",
-      subtitle: "Haute Parfumerie Féminine",
-      description: categoryDesc || "Des créations olfactives envoûtantes aux accords floraux, gourmands et poudrés pour révéler votre signature avec élégance et distinction.",
-      badge: isComingSoon ? "Collection à Venir" : "Sélection Pour Femme",
-    };
-  }
-  if (f.includes("deodorant")) {
-    return {
-      title: categoryName || "Déodorants Stick",
-      subtitle: "Soin & Fraîcheur Longue Durée",
-      description: categoryDesc || "La sélection officielle des déodorants en stick haute efficacité, apportant confort et fraîcheur absolue tout au long de la journée.",
-      badge: isComingSoon ? "Collection à Venir" : "Protection 48h",
-    };
-  }
-  if (f.includes("pack")) {
-    return {
-      title: categoryName || "Les Packs & Coffrets",
-      subtitle: "Offres Signatures Exclusives",
-      description: categoryDesc || "Découvrez nos coffrets thématiques et nos duos/trios d'exception pour explorer plusieurs univers olfactifs à prix privilégié.",
-      badge: isComingSoon ? "Collection à Venir" : "Offres Limitées",
-    };
-  }
-  if (filter !== "Toutes" && categoryName) {
-    return {
-      title: categoryName,
-      subtitle: isComingSoon ? "Collection Bientôt Disponible" : "Collection Spéciale",
-      description: categoryDesc || "",
-      badge: isComingSoon ? "Collection à Venir" : "Sélection Exclusive",
-    };
-  }
+
   return {
-    title: "Toutes les Collections",
-    subtitle: "Maison de Haute Parfumerie",
-    description: "",
-    badge: "",
+    title: categoryName || filter,
+    subtitle: "",
+    description: (categoryDesc || "").trim(),
+    badge: isComingSoon ? "À Venir" : "",
   };
 };
 
