@@ -9,6 +9,15 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Refonte & Sublimation du Sélecteur de Statut de Commande ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
+  - [x] **Remplacement du Select Natif par un Dropdown Menu de Prestige** : Conception d'un sélecteur interactif haute parfumerie avec pastille lumineuse animée, icônes vectorielles `lucide-react` et chevron fluide avec micro-animations.
+  - [x] **Badges de Statuts Raffinés** :
+    - *En attente* : Badge ambré avec pulsation radar douce et icône `Clock`.
+    - *Confirmée* : Badge bleu royal avec icône `Package` et note de préparation en atelier.
+    - *Livrée* : Badge vert émeraude avec icône `CheckCircle2` et encaissement validé.
+    - *Annulée* : Badge rose carmin sobre avec icône `XCircle`.
+  - [x] **Menu Déroulant avec Descriptions Explicatives** : Sous-titre descriptif pour chaque statut (étape atelier, transport, encaissement) et coche de sélection dorée champagne.
+
 - [x] Unification Typographique des Prix & Métriques dans l'Espace Administrateur :
   - [x] [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx) : Remplacement de la police avec empattement par la typographie géométrique épurée (`font-bold tracking-tight text-primary`) sur la liste et les cartes produits.
   - [x] [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx) : Harmonisation des montants de commandes (KPIs, tableau récapitulatif, cartes mobiles et modale de détail).
