@@ -4,6 +4,10 @@
  * Permet aux clients d'ajouter instantanément un parfum au panier directement
  * depuis les cartes du catalogue, carrousels et sélections, avec micro-animation
  * et confirmation toast immédiate sans quitter la page.
+ *
+ * Supporte 2 modes :
+ * - variant="button" : Bouton complet avec texte « Ajouter au panier » et icône
+ * - variant="icon" : Bouton d'action circulaire en verre dépoli
  */
 
 import React, { useState } from "react";
@@ -16,12 +20,14 @@ import { toast } from "sonner";
 interface QuickAddToCartButtonProps {
   parfum: Parfum;
   className?: string;
+  variant?: "button" | "icon";
   size?: "sm" | "md";
 }
 
 export const QuickAddToCartButton = ({
   parfum,
   className = "",
+  variant = "button",
   size = "md",
 }: QuickAddToCartButtonProps) => {
   const { addItem } = useCart();
@@ -85,7 +91,7 @@ export const QuickAddToCartButton = ({
     });
 
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1200);
+    setTimeout(() => setIsAdded(false), 1400);
 
     toast.success("Ajouté au panier", {
       description: `${parfum.name} · ${sizeLabel} (${formatMAD(chosenPrice)})`,
@@ -93,6 +99,33 @@ export const QuickAddToCartButton = ({
   };
 
   const isSmall = size === "sm";
+
+  if (variant === "button") {
+    return (
+      <button
+        type="button"
+        onClick={handleQuickAdd}
+        aria-label={`Ajouter ${parfum.name} au panier`}
+        className={`w-full h-8 sm:h-9 rounded-xl flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-300 shadow-xs cursor-pointer ${
+          isAdded
+            ? "bg-emerald-600 text-white border border-emerald-600 shadow-emerald-500/20"
+            : "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 hover:border-primary hover:shadow-md active:scale-95"
+        } ${className}`}
+      >
+        {isAdded ? (
+          <>
+            <Check className="w-3.5 h-3.5" />
+            <span>Ajouté au panier</span>
+          </>
+        ) : (
+          <>
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Ajouter au panier</span>
+          </>
+        )}
+      </button>
+    );
+  }
 
   return (
     <button

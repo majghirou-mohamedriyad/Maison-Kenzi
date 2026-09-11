@@ -644,6 +644,16 @@ const Collection = () => {
                           {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
                         </span>
                       </div>
+
+                      {/* Bouton d'Action Directe Ajouter au Panier */}
+                      {!outOfStock && (
+                        <div className="mt-2.5">
+                          <QuickAddToCartButton
+                            parfum={p}
+                            variant="button"
+                          />
+                        </div>
+                      )}
                     </Link>
                   );
                 })}
