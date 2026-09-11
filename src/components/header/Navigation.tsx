@@ -16,7 +16,6 @@ import {
   Truck,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
-import OrderTrackingModal from "@/components/orders/OrderTrackingModal";
 import { useCart } from "@/store/cart";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useParfums } from "@/hooks/useParfums";
@@ -28,7 +27,6 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBagOpen, setIsBagOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { totalItems } = useCart();
@@ -52,7 +50,6 @@ const Navigation = () => {
       } else if (e.key === "Escape") {
         setIsSearchOpen(false);
         setIsMobileMenuOpen(false);
-        setIsTrackingOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -167,10 +164,9 @@ const Navigation = () => {
         {/* Right Side: Suivi Commande, À Propos, Theme, Search, Cart */}
         <div className="flex items-center gap-1 sm:gap-1.5 z-10">
 
-          {/* Desktop Suivi Commande Button */}
-          <button
-            type="button"
-            onClick={() => setIsTrackingOpen(true)}
+          {/* Desktop Suivi Commande Link */}
+          <Link
+            to="/suivi-commande"
             className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
               location.pathname === "/suivi-commande"
                 ? "bg-primary text-primary-foreground shadow-xs"
@@ -180,7 +176,7 @@ const Navigation = () => {
           >
             <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="hidden lg:inline">Suivi</span>
-          </button>
+          </Link>
 
           {/* Desktop À Propos Link */}
           <Link
@@ -244,26 +240,20 @@ const Navigation = () => {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un parfum, une maison (ex: Baccarat, Gris Charnel)..."
+                placeholder="Rechercher un parfum, une maison..."
                 className="w-full bg-transparent text-xs sm:text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
-                  className="text-muted-foreground hover:text-foreground text-xs px-1 cursor-pointer"
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery("");
+                  }}
+                  className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
                 >
-                  Effacer
+                  <X size={16} />
                 </button>
               )}
-              <button
-                onClick={() => {
-                  setIsSearchOpen(false);
-                  setSearchQuery("");
-                }}
-                className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
             </div>
 
             {/* Quick Suggestions */}
@@ -385,19 +375,20 @@ const Navigation = () => {
             </div>
 
             <div className="pt-2 border-t border-border/60 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsTrackingOpen(true);
-                }}
-                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors text-left cursor-pointer"
+              <Link
+                to="/suivi-commande"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors text-left ${
+                  location.pathname === "/suivi-commande"
+                    ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                    : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+                }`}
               >
                 <span className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-primary" /> Suivre ma Commande
+                  <Truck className="w-4 h-4" /> Suivre ma Commande
                 </span>
-                <ChevronRight className="w-3.5 h-3.5 text-primary" />
-              </button>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
 
               <Link
                 to="/about"
@@ -423,12 +414,6 @@ const Navigation = () => {
           </div>
         </div>
       )}
-
-      {/* Order Tracking Modal */}
-      <OrderTrackingModal
-        isOpen={isTrackingOpen}
-        onClose={() => setIsTrackingOpen(false)}
-      />
 
       {/* Shopping Bag Drawer */}
       <ShoppingBag isOpen={isBagOpen} onClose={() => setIsBagOpen(false)} />

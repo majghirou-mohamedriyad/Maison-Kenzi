@@ -94,6 +94,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/suivi-commande" className="hover:text-primary transition-colors flex items-center gap-1.5 font-medium text-foreground">
+                  <Truck className="w-3.5 h-3.5 text-primary" />
+                  <span>Suivre ma Commande</span>
+                </Link>
+              </li>
+              <li>
                 <Link to="/about/service-client" className="hover:text-primary transition-colors flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-primary" />
                   <span>Service Client & Contact</span>

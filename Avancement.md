@@ -10,6 +10,9 @@
 ## Historique des Tâches Réalisées
 
 - [x] Suivi de Commande en Temps Réel dans la Navbar & Tunnel de Vente (`/suivi-commande` & `/tracking`) :
+  - [x] [`src/pages/OrderTracking.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/OrderTracking.tsx) & [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Page dédiée immersive avec gestion des paramètres d'URL (`?code=MK-XXXXXX`) accessible via `/suivi-commande` et `/tracking`.
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Redirection directe par lien de navigation standard vers la page `/suivi-commande` (desktop & mobile) en remplacement du modal flottant.
+  - [x] [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx) : Ajout du lien direct vers la page de suivi dans la colonne Informations du pied de page.
   - [x] [`src/hooks/useOrderTracking.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useOrderTracking.ts) : Hook sur-mesure de recherche de commande par code de référence (`MK-XXXXXX`), avec normalisation automatique des codes saisis (gestion de la casse et ajout automatique du préfixe `MK-` si omis), persistance du dernier numéro de commande dans le `localStorage` (`mk_last_order_number`), et souscription **Supabase Realtime** (`postgres_changes` sur la table `orders`) pour refléter instantanément en direct sur l'écran du client tout changement de statut opéré par l'administrateur dans [`/admin/commandes`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx).
   - [x] [`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx) : Interface Haute Parfumerie de consultation du statut :
     - Champ de recherche épuré avec bouton d'action et suggestions rapides.
