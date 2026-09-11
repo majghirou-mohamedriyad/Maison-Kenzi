@@ -66,13 +66,12 @@
   - [x] Standardisation complète du format des cartes produits sur **Portrait 4:5 (800 × 1000 px)** avec remplissage haute précision (`object-cover` / `aspect-[4/5]`) sur toutes les sections (Accueil, Univers/Catégories, Saisons, Découverte Olfactive et Placeholders).
   - [x] [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Suppression de la limite restrictive de 200 caractères sur le champ Description olfactive pour permettre la saisie de récits et descriptions détaillées avec zone de texte redimensionnable.
   - [x] [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx) : Ajout des filtres par **Genre** (`Homme`, `Femme`, `Mixte`) et par **Saison d'utilisation** (`Printemps`, `Été`, `Automne`, `Hiver`) dans la barre de recherche et de filtres de la gestion des parfums avec réinitialisation dynamique.
-  - [x] [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) & [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) : Résolution intégrale de la persistance des photos et produits dans la base de données PostgreSQL / Supabase : compression WebP légère de secours pour éliminer les erreurs HTTP 413, script SQL d'initialisation du bucket de stockage public `product-images` et ajout des colonnes `seasons` et `images` avec repli de compatibilité.
+  - [x] [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) & [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) : Résolution intégrale de la persistance des photos et produits dans la base de données PostgreSQL / Supabase : exécution du script SQL d'initialisation du bucket de stockage public `product-images` et ajout des colonnes `seasons` et `images`.
 
 ---
 
 ## Prochaines Tâches Planifiées
 
-- [ ] Exécuter le script SQL de configuration du bucket de stockage dans Supabase (sur le VPS).
 - [ ] Saisie des premiers parfums de niche réels via [`/admin/produits`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits).
 - [ ] Personnalisation des sections et catégories depuis le panneau d'administration.
 - [ ] Test d'une commande test en direct pour valider le flux complet.
