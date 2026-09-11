@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     maison TEXT NOT NULL,
     gender maisonkenzi.parfum_gender NOT NULL DEFAULT 'Homme',
     category TEXT,
+    seasons TEXT[] DEFAULT '{}',
+    images TEXT[] DEFAULT '{}',
     description TEXT,
     notes_tete TEXT[] DEFAULT '{}',
     notes_coeur TEXT[] DEFAULT '{}',
@@ -57,7 +59,7 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     price_5ml NUMERIC NOT NULL DEFAULT 0,
     price_10ml NUMERIC NOT NULL DEFAULT 0,
     price_20ml NUMERIC NOT NULL DEFAULT 0,
-    image_label TEXT NOT NULL,
+    image_label TEXT NOT NULL DEFAULT '',
     image_url TEXT,
     is_active BOOLEAN NOT NULL DEFAULT true,
     is_new BOOLEAN NOT NULL DEFAULT false,
@@ -71,6 +73,10 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Assurer la présence des colonnes images & seasons pour les bases existantes
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS seasons TEXT[] DEFAULT '{}';
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}';
 
 -- Table: app_settings (Configuration de la Maison)
 CREATE TABLE IF NOT EXISTS maisonkenzi.app_settings (
@@ -185,7 +191,39 @@ CREATE POLICY "Admin full expenses" ON maisonkenzi.expenses FOR ALL USING (true)
 CREATE POLICY "Admin full flaconnage" ON maisonkenzi.flaconnage FOR ALL USING (true);
 CREATE POLICY "Admin full bot_qa" ON maisonkenzi.bot_qa FOR ALL USING (true);
 
--- 6. CONFIGURATION MINIMALE REQUISE (Paramètres Boutique)
+-- 6. CONFIGURATION DU STOCKAGE SUPABASE (STORAGE BUCKET 'product-images')
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('product-images', 'product-images', true, 10485760, ARRAY['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
+ON CONFLICT (id) DO UPDATE SET 
+    public = true,
+    file_size_limit = 10485760,
+    allowed_mime_types = ARRAY['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
+
+DO $$ BEGIN
+    DROP POLICY IF EXISTS "Public storage access" ON storage.objects;
+    CREATE POLICY "Public storage access" ON storage.objects FOR SELECT USING (bucket_id = 'product-images');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    DROP POLICY IF EXISTS "Public storage insert" ON storage.objects;
+    CREATE POLICY "Public storage insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'product-images');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    DROP POLICY IF EXISTS "Public storage update" ON storage.objects;
+    CREATE POLICY "Public storage update" ON storage.objects FOR UPDATE USING (bucket_id = 'product-images');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    DROP POLICY IF EXISTS "Public storage delete" ON storage.objects;
+    CREATE POLICY "Public storage delete" ON storage.objects FOR DELETE USING (bucket_id = 'product-images');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+-- 7. CONFIGURATION MINIMALE REQUISE (Paramètres Boutique)
 INSERT INTO maisonkenzi.app_settings (id, maintenance_mode, maintenance_message, instagram_url, whatsapp_phone, bot_enabled, bot_name, bot_welcome)
 VALUES (true, false, 'Maison Kenzi prépare de nouvelles créations. Revenez très bientôt.', 'https://instagram.com/maisonkenzi', '212752850156', true, 'Conseillère Maison Kenzi', 'Bienvenue chez Maison Kenzi. Comment puis-je vous orienter parmi nos créations de niche ?')
 ON CONFLICT (id) DO NOTHING;

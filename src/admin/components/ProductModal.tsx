@@ -399,17 +399,19 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       // 1. Mise à jour instantanée du store local
       if (initial) {
         updateProduct(initial.id, payload);
-        toast.success("Produit mis à jour avec succès");
       } else {
         addProduct(payload);
-        toast.success("Nouveau produit ajouté avec succès");
       }
 
-      // 2. Synchronisation Supabase en arrière-plan
+      // 2. Synchronisation avec la base de données Supabase
       try {
         await upsertParfumToSupabase(payload, primaryImageUrl, finalImages);
-      } catch (dbErr) {
-        console.warn("Supabase upsert note:", dbErr);
+        toast.success(initial ? "Produit mis à jour et synchronisé avec la base de données" : "Nouveau parfum enregistré dans la base de données");
+      } catch (dbErr: any) {
+        console.error("Erreur synchronisation Supabase:", dbErr);
+        toast.warning("Produit enregistré localement", {
+          description: "La synchronisation avec la base de données distante a échoué. Vérifiez vos permissions ou le script SQL.",
+        });
       }
 
       onOpenChange(false);
