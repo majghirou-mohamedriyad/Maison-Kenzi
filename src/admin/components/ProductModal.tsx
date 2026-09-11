@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
+import { getParfumCategories } from "@/lib/productCategories";
 
 type Props = {
   open: boolean;
@@ -66,6 +67,7 @@ const emptyForm = {
   maison: "",
   gender: "" as unknown as Gender,
   category: "",
+  categories: [] as string[],
   seasons: [] as string[],
   price: "",
   volume: "",
@@ -105,9 +107,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     return availableCategories.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q));
   }, [availableCategories, categorySearch]);
 
-  const selectedCategoryObj = useMemo(() => {
-    return availableCategories.find((c) => c.slug === f.category);
-  }, [availableCategories, f.category]);
+  const selectedCategoriesCount = (f.categories || []).length;
 
   useEffect(() => {
     if (open) {
@@ -142,12 +142,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
         const initialSeasons = getParfumSeasons(initial);
         const initialImages = getParfumImages(initial);
+        const initialCategories = getParfumCategories(initial);
 
         setF({
           name: initial.name || "",
           maison: initial.maison || "",
           gender: initial.gender || ("" as unknown as Gender),
-          category: (initial.category as string) || "",
+          category: initialCategories[0] || (initial.category as string) || "",
+          categories: initialCategories,
           seasons: initialSeasons,
           price: initialPrice,
           volume: initialVolume,
@@ -195,6 +197,31 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       setErrors((prev) => {
         const next = { ...prev };
         delete next.seasons;
+        return next;
+      });
+    }
+  };
+
+  const toggleCategory = (catSlug: string) => {
+    setF((prev) => {
+      const current = Array.isArray(prev.categories) && prev.categories.length > 0
+        ? prev.categories
+        : (prev.category ? [prev.category] : []);
+      const exists = current.includes(catSlug);
+      const next = exists
+        ? current.filter((s) => s !== catSlug)
+        : [...current, catSlug];
+      return {
+        ...prev,
+        categories: next,
+        category: next[0] || "",
+      };
+    });
+    if (errors.categories || errors.category) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.categories;
+        delete next.category;
         return next;
       });
     }
@@ -324,8 +351,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
     }
 
-    if (!f.category) {
-      errs.category = "Veuillez sélectionner une catégorie pour le parfum";
+    const currentCategories = Array.isArray(f.categories) && f.categories.length > 0
+      ? f.categories
+      : (f.category ? [f.category] : []);
+
+    if (currentCategories.length === 0) {
+      errs.category = "Veuillez sélectionner au moins une catégorie pour le parfum";
     }
 
     const numVolume = Number(f.volume);
@@ -364,7 +395,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       name: f.name.trim(),
       maison: f.maison.trim(),
       gender: f.gender,
-      category: f.category as any,
+      category: (currentCategories[0] || "") as any,
+      categories: currentCategories,
       seasons: currentSeasons,
       description: (f.description || "").trim(),
       notes: {
@@ -840,15 +872,19 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 </div>
               </section>
 
-              {/* Section Sélecteur de Catégorie Haute Parfumerie (Positionnée au-dessus de Visibilité & Badges) */}
+              {/* Section Sélecteur Multi-Catégories Haute Parfumerie (Positionnée au-dessus de Visibilité & Badges) */}
               <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <span>Catégorie du parfum *</span>
+                    <span>Catégories du parfum *</span>
                   </h3>
                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
-                    {selectedCategoryObj ? selectedCategoryObj.name : "Sélectionner"}
+                    {selectedCategoriesCount === 0
+                      ? "Sélectionner"
+                      : selectedCategoriesCount === 1
+                      ? availableCategories.find((c) => c.slug === f.categories[0])?.name || f.categories[0]
+                      : `${selectedCategoriesCount} sélectionnées`}
                   </span>
                 </div>
 
@@ -877,14 +913,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                 {/* Grille des catégories dynamiques issues de Supabase */}
                 {filteredCategories.length > 0 ? (
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category ? "ring-1 ring-red-500/50" : ""}`}>
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[190px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category || errors.categories ? "ring-1 ring-red-500/50" : ""}`}>
                     {filteredCategories.map((cat) => {
-                      const isSelected = f.category === cat.slug;
+                      const isSelected = (f.categories || []).includes(cat.slug);
+                      const isPrimary = (f.categories || [])[0] === cat.slug;
                       return (
                         <button
                           key={cat.id || cat.slug}
                           type="button"
-                          onClick={() => set("category", cat.slug)}
+                          onClick={() => toggleCategory(cat.slug)}
                           className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
                             isSelected
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
@@ -896,8 +933,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             <span className="text-xs truncate font-medium">{cat.name}</span>
                           </div>
                           {isSelected && (
-                            <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center shrink-0">
-                              <Check className="w-2.5 h-2.5" />
+                            <div className="flex items-center gap-1 shrink-0">
+                              {isPrimary && (
+                                <span className="text-[9px] px-1 py-0.2 rounded bg-[#C9A96E] text-[#111827] dark:bg-black dark:text-[#C9A96E] font-bold">
+                                  Principal
+                                </span>
+                              )}
+                              <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center">
+                                <Check className="w-2.5 h-2.5" />
+                              </div>
                             </div>
                           )}
                         </button>
@@ -914,10 +958,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     </p>
                   </div>
                 )}
-                {errors.category && (
+
+                <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
+                  Sélection multiple autorisée. La première catégorie cochée sert de référence principale.
+                </p>
+
+                {(errors.category || errors.categories) && (
                   <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{errors.category}</span>
+                    <span>{errors.category || errors.categories}</span>
                   </div>
                 )}
               </section>

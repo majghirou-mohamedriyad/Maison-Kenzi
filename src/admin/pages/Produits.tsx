@@ -35,6 +35,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons } from "@/lib/seasonsStore";
+import { isParfumInCategory, getParfumCategories } from "@/lib/productCategories";
 
 type StatusFilter = "Tous" | "in_stock" | "out_of_stock";
 type SortOption = "name_asc" | "name_desc" | "maison_asc" | "price_asc" | "price_desc" | "stock_asc" | "stock_desc";
@@ -160,9 +161,7 @@ const Produits = () => {
 
       // Filtre catégorie dynamique
       if (categoryFilter !== "Tous") {
-        const matchesCategory = p.category === categoryFilter;
-        const matchesGender = p.gender?.toLowerCase() === categoryFilter.toLowerCase();
-        if (!matchesCategory && !matchesGender) return false;
+        if (!isParfumInCategory(p, categoryFilter)) return false;
       }
 
       // Filtre maison
@@ -185,7 +184,8 @@ const Produits = () => {
       if (q) {
         const matchesName = p.name.toLowerCase().includes(q);
         const matchesMaison = p.maison.toLowerCase().includes(q);
-        const matchesCat = p.category?.toLowerCase().includes(q);
+        const cats = getParfumCategories(p);
+        const matchesCat = cats.some((c) => c.toLowerCase().includes(q)) || (p.category || "").toLowerCase().includes(q);
         if (!matchesName && !matchesMaison && !matchesCat) return false;
       }
 

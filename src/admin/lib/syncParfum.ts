@@ -123,12 +123,22 @@ export const upsertParfumToSupabase = async (
 
   const numPrice = Number(p.full_bottle_price ?? p.prices?.["5ml"] ?? p.prices?.["100ml"] ?? 0);
 
+  const allCategories =
+    Array.isArray(p.categories) && p.categories.length > 0
+      ? p.categories
+      : p.category
+      ? [p.category]
+      : [];
+
+  const primaryCategory = allCategories[0] || p.category || null;
+
   const row: Record<string, any> = {
     id: p.id,
     name: p.name.trim(),
     maison: p.maison.trim(),
     gender: p.gender || "Mixte",
-    category: p.category || null,
+    category: primaryCategory,
+    categories: allCategories,
     seasons: currentSeasons,
     images: allImages,
     description: p.description || "",
@@ -151,12 +161,12 @@ export const upsertParfumToSupabase = async (
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (images, seasons incluses)
+  // 1. Tentative avec toutes les colonnes modernes (categories, images, seasons incluses)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
     console.warn("Supabase upsert - tentative sans colonnes additionnelles:", error.message);
-    // 2. Repli de compatibilité sans les colonnes `seasons` ou `images` si non encore migrées sur le VPS
-    const { seasons: _sea, images: _img, ...fallbackRow } = row;
+    // 2. Repli de compatibilité sans les colonnes `categories`, `seasons` ou `images` si non encore migrées sur le VPS
+    const { categories: _cat, seasons: _sea, images: _img, ...fallbackRow } = row;
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
       console.error("Erreur critique Supabase parfums upsert:", err2);

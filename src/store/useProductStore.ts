@@ -26,20 +26,30 @@ type ExtraMeta = {
 
 export type AdminParfum = Parfum & ExtraMeta;
 
-const withDefaults = (p: AdminParfum): AdminParfum => ({
-  ...p,
-  active: p.active ?? true,
-  stock_5ml: p.stock_5ml ?? 20,
-  stock_10ml: p.stock_10ml ?? 20,
-  stock: p.stock ?? 20,
-  sale_mode: p.sale_mode ?? "decant",
-  seasons: p.seasons ?? [],
-  images: Array.isArray(p.images) ? p.images : p.image_url ? [p.image_url] : [],
-  full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
-  full_bottle_price: p.full_bottle_price ?? null,
-  full_bottle_stock: p.full_bottle_stock ?? 0,
-  full_bottle_limited: p.full_bottle_limited ?? false,
-});
+const withDefaults = (p: AdminParfum): AdminParfum => {
+  const cats = Array.isArray(p.categories) && p.categories.length > 0
+    ? p.categories
+    : p.category
+    ? [p.category]
+    : [];
+
+  return {
+    ...p,
+    active: p.active ?? true,
+    categories: cats,
+    category: p.category || cats[0] || "",
+    stock_5ml: p.stock_5ml ?? 20,
+    stock_10ml: p.stock_10ml ?? 20,
+    stock: p.stock ?? 20,
+    sale_mode: p.sale_mode ?? "decant",
+    seasons: p.seasons ?? [],
+    images: Array.isArray(p.images) ? p.images : p.image_url ? [p.image_url] : [],
+    full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
+    full_bottle_price: p.full_bottle_price ?? null,
+    full_bottle_stock: p.full_bottle_stock ?? 0,
+    full_bottle_limited: p.full_bottle_limited ?? false,
+  };
+};
 
 const load = (): AdminParfum[] => {
   if (typeof window === "undefined") return [];

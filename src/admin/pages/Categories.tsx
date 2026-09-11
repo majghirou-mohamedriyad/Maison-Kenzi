@@ -35,6 +35,7 @@ import {
   type AdminCategory,
 } from "@/store/useCategoryStore";
 import { useProducts } from "@/store/useProductStore";
+import { isParfumInCategory } from "@/lib/productCategories";
 import {
   Dialog,
   DialogContent,
@@ -114,14 +115,7 @@ const CategoriesAdmin = () => {
   const categoryStats = useMemo(() => {
     const counts: Record<string, number> = {};
     categories.forEach((cat) => {
-      counts[cat.slug] = products.filter((p) => {
-        if (cat.slug === "homme") return p.gender === "Homme";
-        if (cat.slug === "femme") return p.gender === "Femme";
-        if (cat.slug === "mixte") return p.gender === "Mixte";
-        if (cat.slug === "deodorants-stick") return p.category === "deodorants-stick";
-        if (cat.slug === "packs") return p.category === "packs";
-        return p.category === cat.slug;
-      }).length;
+      counts[cat.slug] = products.filter((p) => isParfumInCategory(p, cat.slug)).length;
     });
     return counts;
   }, [categories, products]);

@@ -11,6 +11,7 @@ import type { Gender, Parfum } from "@/types/database";
 import { getProducts, setProducts, type AdminParfum } from "@/store/useProductStore";
 import { getParfumSeasons } from "@/lib/seasonsStore";
 import { getParfumImages, getPrimaryImage } from "@/lib/productImages";
+import { getParfumCategories } from "@/lib/productCategories";
 
 export type ParfumFilter = {
   gender?: Gender;
@@ -29,13 +30,15 @@ const mapRowToParfum = (row: any): Parfum => {
   const inStock = (row.is_active ?? true) && (totalStock > 0 || (row.stock_status === 'actif'));
   const images = getParfumImages(row);
   const primaryImg = images[0] || row.image_url || null;
+  const categoriesList = getParfumCategories(row);
 
   return {
     id: row.id,
     name: row.name,
     maison: row.maison,
     gender: row.gender as Gender,
-    category: row.category,
+    category: row.category || categoriesList[0] || "",
+    categories: categoriesList,
     seasons: getParfumSeasons(row),
     description: row.description || "",
     notes_tete: row.notes_tete ?? [],
@@ -69,13 +72,15 @@ const mapLocalToParfum = (p: AdminParfum): Parfum => {
   const inStock = (p.active ?? true) && totalStock > 0;
   const images = getParfumImages(p);
   const primaryImg = images[0] || p.image_url || null;
+  const categoriesList = getParfumCategories(p);
 
   return {
     id: p.id,
     name: p.name,
     maison: p.maison,
     gender: p.gender,
-    category: p.category,
+    category: p.category || categoriesList[0] || "",
+    categories: categoriesList,
     seasons: Array.isArray(p.seasons) ? p.seasons : [],
     description: p.description,
     notes_tete: p.notes?.tete ?? [],

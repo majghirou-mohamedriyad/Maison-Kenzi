@@ -37,6 +37,7 @@ import {
 
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
+import { isParfumInCategory } from "@/lib/productCategories";
 
 type FilterKey = string;
 type SortOption = "featured" | "price_asc" | "price_desc" | "newest" | "name_asc";
@@ -180,25 +181,7 @@ const Collection = () => {
     let list = parfums.filter((p) => {
       // Category filter
       if (filter !== "Toutes") {
-        const catObj = activeAdminCategories.find((c) => c.slug.toLowerCase() === filter.toLowerCase());
-        if (catObj) {
-          if (catObj.gender) {
-            if (p.gender?.toLowerCase() !== catObj.gender.toLowerCase()) return false;
-          } else if (catObj.slug === "deodorants-stick") {
-            if (p.category !== "deodorants-stick" && !p.id.includes("old-spice")) return false;
-          } else if (catObj.slug === "packs") {
-            if (p.category !== "packs" && !p.id.includes("pack")) return false;
-          } else {
-            if (p.category?.toLowerCase() !== catObj.slug.toLowerCase()) return false;
-          }
-        } else {
-          // fallback checks by filter key string
-          const f = filter.toLowerCase();
-          if (f === "homme" && p.category !== "homme") return false;
-          if (f === "femme" && p.category !== "femme") return false;
-          if (f.includes("deodorant") && p.category !== "deodorants-stick" && !p.id.includes("old-spice")) return false;
-          if (f.includes("pack") && p.category !== "packs" && !p.id.includes("pack")) return false;
-        }
+        if (!isParfumInCategory(p, filter)) return false;
       }
 
       // In stock filter
@@ -244,12 +227,7 @@ const Collection = () => {
       Toutes: parfums.length,
     };
     activeAdminCategories.forEach((cat) => {
-      map[cat.slug] = parfums.filter((p) => {
-        if (cat.gender) return p.gender?.toLowerCase() === cat.gender.toLowerCase();
-        if (cat.slug === "deodorants-stick") return p.category === "deodorants-stick" || p.id.includes("old-spice");
-        if (cat.slug === "packs") return p.category === "packs" || p.id.includes("pack");
-        return p.category?.toLowerCase() === cat.slug.toLowerCase();
-      }).length;
+      map[cat.slug] = parfums.filter((p) => isParfumInCategory(p, cat.slug)).length;
     });
     return map;
   }, [parfums, activeAdminCategories]);

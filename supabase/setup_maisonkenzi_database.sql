@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     maison TEXT NOT NULL,
     gender maisonkenzi.parfum_gender NOT NULL DEFAULT 'Homme',
     category TEXT,
+    categories TEXT[] DEFAULT '{}',
     seasons TEXT[] DEFAULT '{}',
     images TEXT[] DEFAULT '{}',
     description TEXT,
@@ -74,7 +75,8 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Assurer la présence des colonnes images & seasons pour les bases existantes
+-- Assurer la présence des colonnes images, seasons & categories pour les bases existantes
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS categories TEXT[] DEFAULT '{}';
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS seasons TEXT[] DEFAULT '{}';
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}';
 

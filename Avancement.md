@@ -3,11 +3,20 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Gestion des Catégories à Venir / Teasers de collections, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
+- **Statut général** : Sélection Multi-Catégories des Parfums, Gestion des Catégories à Venir, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Sélection Multi-Catégories pour les Parfums (Admin & Boutique) :
+  - [x] [`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts) : Création du module utilitaire d'extraction (`getParfumCategories`) et de filtrage unifié (`isParfumInCategory`) gérant les tableaux `categories`, les slugs et la compatibilité rétroactive.
+  - [x] [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts) & [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts) : Ajout du champ `categories?: string[]` sur les types et normalisation automatique des tableaux dans le store.
+  - [x] [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx) : Sélecteur multi-catégories dynamique avec bascule au clic (`toggleCategory`), compteur en temps réel (« X sélectionnées »), mise en valeur de la catégorie principale (« Principal ») et validation obligatoire.
+  - [x] [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts) : Synchronisation bidirectionnelle Supabase du tableau `categories` avec fallback sécurisé sans crash si la colonne SQL n'a pas encore été créée sur le VPS.
+  - [x] [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx) & [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Prise en charge du multi-catégories dans les filtres du catalogue admin et le comptage précis du nombre de parfums par univers.
+  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Filtrage et comptage réactifs sur la boutique pour les parfums assignés à plusieurs univers olfactifs simultanément.
+  - [x] [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) : Ajout de la colonne `categories TEXT[] DEFAULT '{}'` et de l'instruction `ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS categories TEXT[] DEFAULT '{}';`.
 
 - [x] Refonte Haute Parfumerie de la Gestion des Catégories (Design aligné sur la Gestion des Parfums) :
   - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Alignement visuel intégral sur le design de la Gestion des Parfums (en-tête de prestige avec overline champagne, double affichage interactif Tableau / Grille de Cartes avec persistance, barre de recherche et sélecteur de statut, cartes en verre dépoli, modale d'édition et dialogue de suppression avec `AlertDialog`).

@@ -12,6 +12,7 @@ export type Parfum = {
   maison: string;
   gender: Gender;
   category?: CollectionCategory | string;
+  categories?: string[];
   seasons?: string[];
   description: string;
   notes_tete: string[];
