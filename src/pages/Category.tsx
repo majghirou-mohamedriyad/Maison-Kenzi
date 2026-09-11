@@ -225,18 +225,16 @@ const Collection = () => {
         {/* Luxury Category Hero Banner */}
         {categoryBanner ? (
           <section className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20">
-            {/* Image de fond plein écran en bannière avec voiles cinématiques */}
+            {/* Image de fond plein écran en bannière avec voile ultra-léger */}
             <div className="absolute inset-0 z-0">
               <img
                 src={categoryBanner}
                 alt={hero.title}
-                className="w-full h-full object-cover object-center scale-105 transition-transform duration-1000 ease-out"
+                className="w-full h-full object-cover object-center"
               />
-              {/* Dégradés d'ombrage et de contraste pour lisibilité éditoriale */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
-              {/* Halo d'ambiance doré champagne */}
-              <div className="absolute -bottom-10 left-1/4 w-96 h-48 bg-[#C9A96E]/15 blur-3xl rounded-full pointer-events-none" />
+              {/* Voile ultra-léger pour préserver l'éclat de la photo tout en assurant la lisibilité */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
             </div>
 
             {/* Contenu de la Bannière de Catégorie */}
