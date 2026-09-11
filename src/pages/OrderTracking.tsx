@@ -57,7 +57,7 @@ const OrderTracking = () => {
               </div>
               <h4 className="font-serif text-sm font-semibold text-foreground">Préparation Soignée</h4>
               <p className="text-xs text-muted-foreground font-light leading-relaxed">
-                Décantage stérile et conditionnement antichoc à l'atelier sous 24h.
+                Contrôle d'intégrité du scellé et emballage haute protection sous 24h.
               </p>
             </div>
 

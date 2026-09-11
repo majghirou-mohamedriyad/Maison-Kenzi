@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useCategories } from "@/store/useCategoryStore";
 
 const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
@@ -15,6 +17,11 @@ const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 
 const Footer = () => {
   const { settings } = useAppSettings();
+  const categories = useCategories();
+  const activeCategories = useMemo(
+    () => categories.filter((c) => c.is_active),
+    [categories]
+  );
 
   const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
   const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
@@ -40,44 +47,57 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-              Haute Parfumerie & Décantation
+              Haute Parfumerie & Flacons Originaux
             </p>
             <p className="text-xs font-light text-muted-foreground leading-relaxed max-w-xs">
-              Sélection exclusive des plus grandes maisons de parfum. Flacons originaux & décants nomades 5ml & 10ml livrés partout au Maroc.
+              Sélection exclusive des plus grands chefs-d'œuvre de la parfumerie mondiale. Flacons 100% originaux scellés livrés partout au Maroc.
             </p>
           </div>
 
-          {/* Col 2: Collections Links */}
+          {/* Col 2: Collections Links (Catégories Dynamiques) */}
           <div>
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
               Collections
             </h4>
             <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
               <li>
-                <Link to="/collection/homme" className="hover:text-primary transition-colors">
-                  Parfums Niche Homme
+                <Link
+                  to="/collection/all"
+                  className="hover:text-primary transition-colors font-medium text-foreground"
+                >
+                  Tous les Parfums (Catalogue)
                 </Link>
               </li>
-              <li>
-                <Link to="/collection/femme" className="hover:text-primary transition-colors">
-                  Parfums Niche Femme
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/all" className="hover:text-primary transition-colors">
-                  Créations Rares & Unisexe
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/all" className="hover:text-primary transition-colors font-medium text-primary">
-                  Décants Nomades 5ml & 10ml
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/all" className="hover:text-primary transition-colors">
-                  Tous les Parfums de Niche
-                </Link>
-              </li>
+              {activeCategories.length > 0 ? (
+                activeCategories.map((cat) => (
+                  <li key={cat.id}>
+                    <Link
+                      to={`/collection/${cat.slug}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li>
+                    <Link to="/collection/homme" className="hover:text-primary transition-colors">
+                      Parfums Homme
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/collection/femme" className="hover:text-primary transition-colors">
+                      Parfums Femme
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/collection/unisexe" className="hover:text-primary transition-colors">
+                      Parfums Unisexe
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 

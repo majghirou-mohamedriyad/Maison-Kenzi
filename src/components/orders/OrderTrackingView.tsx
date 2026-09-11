@@ -62,7 +62,7 @@ const STATUS_STEPS = [
     key: "confirmee" as OrderStatus,
     stepNumber: "02",
     label: "Confirmée & En Préparation",
-    sublabel: "Décantage minutieux & conditionnement à l'atelier",
+    sublabel: "Vérification du scellé & conditionnement soigné à l'atelier",
     icon: Package,
   },
   {

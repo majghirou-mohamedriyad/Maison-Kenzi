@@ -207,7 +207,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                   Votre panier est vide
                 </h3>
                 <p className="text-xs text-muted-foreground font-light leading-relaxed">
-                  Explorez nos sillages d'exception en décants ou flacons et composez votre garde-robe olfactive.
+                  Explorez nos sillages d'exception en flacons complets scellés et composez votre garde-robe olfactive.
                 </p>
               </div>
 

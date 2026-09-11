@@ -31,7 +31,7 @@ const ProductCarousel = () => {
             Nos Meilleures Ventes
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground font-light mt-1 max-w-xl">
-            Les créations olfactives les plus plébiscitées par nos connaisseurs, disponibles en décants d'exception ou flacons complets.
+            Les créations olfactives les plus plébiscitées par nos connaisseurs, en flacons complets 100% originaux et scellés.
           </p>
         </div>
         <Link

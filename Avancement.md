@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Dynamisation de la Section « Collections » du Footer ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
+  - [x] **Affichage Automatique des Catégories Réelles** : Remplacement des liens statiques par la récupération en direct des catégories actives de la boutique via `useCategories()`.
+  - [x] **Catalogue Complet & Navigation Dédiée** : Ajout du lien direct vers le catalogue global (`/collection/all`) et vers chaque univers actif (`/collection/:slug`).
+  - [x] **Nettoyage Éditorial** : Alignement complet sur les flacons complets 100% originaux scellés et suppression des anciennes mentions de décantation.
+
 - [x] Refonte & Sublimation de la Page « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
   - [x] **Repositionnement Haute Parfumerie & Flacons Complets** : Élimination de toute référence aux décants au profit des **Flacons Complets 100% Originaux Scellés**, Eaux de Parfum & Extraits nobles.
   - [x] **4 Piliers d'Excellence Visuels** : Origine 100% Garantie sous blister officiel, Pureté & Tenue longue durée, Livraison Express 24-48h partout au Maroc, Paiement en espèces à la livraison.

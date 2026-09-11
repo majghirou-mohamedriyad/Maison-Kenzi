@@ -12,7 +12,7 @@ const StatusBar = () => {
 
   const usps = [
     { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc", icon: Sparkles },
-    { text: "Flacons Originaux & Décants Précision 5ml & 10ml", icon: Award },
+    { text: "100% Flacons Complets & Scellés d'Origine", icon: Award },
     { text: "Livraison Express 24–48h partout au Maroc", icon: Truck },
     { text: "Paiement à la Livraison — 100% Parfums Authentiques", icon: ShieldCheck },
   ];
