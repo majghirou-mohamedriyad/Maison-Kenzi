@@ -55,7 +55,7 @@ const ParfumDetail = () => {
   const { parfumId } = useParams();
   const navigate = useNavigate();
   const { data: parfum, loading, error } = useParfum(parfumId);
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
 
   // State des quantités initialisé pour chaque format
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -223,6 +223,7 @@ const ParfumDetail = () => {
     toast.success("Ajouté au panier", {
       description: `${parfum.name} (${summary})`,
     });
+    openCart();
   };
 
   const seoTitle = `${parfum.name} — ${parfum.maison} | Maison Kenzi`.slice(0, 70);

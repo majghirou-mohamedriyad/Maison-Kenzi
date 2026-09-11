@@ -9,6 +9,17 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Refonte & Optimisation Haute Parfumerie du Panier d'Achat :
+  - [x] [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx) : Persistance automatique du panier dans le `localStorage` (`mk_cart_items`), empêchant toute perte des articles sélectionnés lors du rechargement ou de la navigation.
+  - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : Refonte intégrale du tiroir latéral :
+    - Jauge interactive de palier pour la **livraison offerte** partout au Maroc (dès 500 MAD) avec calcul en direct du montant restant et passage à l'état validé en émeraude.
+    - Miniatures de flacons protégées avec effet de zoom au survol et gestion des visuels de remplacement.
+    - Bouton de purge complète du panier avec confirmation intégrée (« Vider » -> « Confirmer ? »).
+    - Amélioration des sélecteurs de quantité `+` / `-` et bouton de suppression tactile explicite.
+    - Badges de réassurance de conciergerie (100% Authentique, Paiement Cash à la Réception).
+    - Transition fluide vers la page de commande [`/checkout`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx).
+  - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx) : Ouverture automatique et fluide du tiroir de panier dès l'ajout d'un produit depuis la fiche produit.
+
 - [x] Masquage Temporaire du Bouton « Besoin d'Aide ? » / ChatBot :
   - [x] [`src/components/ChatBotMount.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ChatBotMount.tsx) : Désactivation temporaire du montage du chatbot et du bouton d'assistance flottant pour laisser la priorité visuelle à la navigation et au bouton de panier.
 
