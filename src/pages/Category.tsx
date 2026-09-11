@@ -582,14 +582,6 @@ const Collection = () => {
                           </span>
                         )}
 
-                        {/* Bouton d'Ajout Rapide au Panier */}
-                        {!outOfStock && (
-                          <QuickAddToCartButton
-                            parfum={p}
-                            className="absolute bottom-2.5 right-2.5 z-20"
-                          />
-                        )}
-
                         {/* Light Sweep Shimmer Effect */}
                         {!outOfStock && (
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
@@ -600,11 +592,21 @@ const Collection = () => {
                       <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                         {p.maison}
                       </p>
-                      <h3 className={`font-serif text-sm sm:text-base font-medium truncate mt-0.5 transition-colors duration-300 ${
-                        outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                      }`}>
-                        {p.name}
-                      </h3>
+
+                      {/* Titre et Bouton Panier sur la même ligne */}
+                      <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
+                        <h3 className={`font-serif text-sm sm:text-base font-medium truncate transition-colors duration-300 flex-1 ${
+                          outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                        }`}>
+                          {p.name}
+                        </h3>
+                        {!outOfStock && (
+                          <QuickAddToCartButton
+                            parfum={p}
+                            size="sm"
+                          />
+                        )}
+                      </div>
 
                       {/* Étiquettes Genre & Saisons d'utilisation */}
                       <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">

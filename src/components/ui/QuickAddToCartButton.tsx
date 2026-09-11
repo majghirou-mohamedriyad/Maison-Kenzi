@@ -94,17 +94,17 @@ export const QuickAddToCartButton = ({
 
   const dimensions =
     size === "sm"
-      ? "w-8 h-8"
+      ? "w-7 h-7 sm:w-7.5 sm:h-7.5"
       : size === "lg"
-      ? "w-10 h-10"
-      : "w-8.5 h-8.5 sm:w-9 sm:h-9";
+      ? "w-9 h-9 sm:w-10 sm:h-10"
+      : "w-8 h-8 sm:w-8.5 sm:h-8.5";
 
   const iconSize =
     size === "sm"
-      ? "w-3.5 h-3.5"
+      ? "w-3 h-3 sm:w-3.5 sm:h-3.5"
       : size === "lg"
       ? "w-4.5 h-4.5"
-      : "w-4 h-4";
+      : "w-3.5 h-3.5 sm:w-4 sm:h-4";
 
   return (
     <button
@@ -112,10 +112,10 @@ export const QuickAddToCartButton = ({
       onClick={handleQuickAdd}
       aria-label={`Ajouter ${parfum.name} au panier`}
       title={`Ajouter au panier (${isFull ? "Flacon" : "Décant 5ml"})`}
-      className={`relative z-20 flex items-center justify-center rounded-full transition-all duration-300 shadow-md cursor-pointer select-none ${
+      className={`relative z-20 flex items-center justify-center rounded-full transition-all duration-300 shadow-sm cursor-pointer select-none shrink-0 ${
         isAdded
-          ? "bg-emerald-600 text-white scale-110 shadow-emerald-500/30"
-          : "bg-background/95 dark:bg-[#1A1815]/95 text-foreground hover:bg-primary hover:text-primary-foreground border border-border/90 dark:border-white/15 hover:border-primary/60 backdrop-blur-md hover:scale-110 active:scale-90 hover:shadow-lg"
+          ? "bg-emerald-600 text-white scale-105 shadow-emerald-500/30"
+          : "bg-background/90 dark:bg-[#1A1815]/90 text-foreground hover:bg-primary hover:text-primary-foreground border border-border/80 dark:border-white/15 hover:border-primary/60 backdrop-blur-md hover:scale-105 active:scale-95 hover:shadow-md"
       } ${dimensions} ${className}`}
     >
       {isAdded ? (

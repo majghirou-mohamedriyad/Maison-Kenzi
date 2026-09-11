@@ -88,24 +88,26 @@ const ProductCarousel = () => {
                       Rupture
                     </span>
                   )}
-
-                  {/* Bouton d'Ajout Rapide au Panier */}
-                  {!outOfStock && (
-                    <QuickAddToCartButton
-                      parfum={p}
-                      className="absolute bottom-2.5 right-2.5 z-20"
-                    />
-                  )}
                 </div>
 
                 {/* Détails Typographiques */}
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
                   {p.maison}
                 </p>
-                <h3 className={`font-serif text-sm sm:text-base mt-0.5 truncate font-normal transition-colors duration-300 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                  }`}>
-                  {p.name}
-                </h3>
+
+                {/* Titre et Bouton Panier sur la même ligne */}
+                <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
+                  <h3 className={`font-serif text-sm sm:text-base truncate font-normal transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                    }`}>
+                    {p.name}
+                  </h3>
+                  {!outOfStock && (
+                    <QuickAddToCartButton
+                      parfum={p}
+                      size="sm"
+                    />
+                  )}
+                </div>
 
                 {/* Étiquettes Genre & Saisons d'utilisation */}
                 <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">

@@ -109,20 +109,21 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                     fitMode="cover"
                     className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                   />
-
-                  {/* Bouton d'Ajout Rapide au Panier */}
-                  <QuickAddToCartButton
-                    parfum={p}
-                    size="sm"
-                    className="absolute bottom-2 right-2 z-20"
-                  />
                 </div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
                   {p.maison}
                 </p>
-                <h3 className="font-serif text-xs sm:text-sm font-medium truncate mt-0.5 text-foreground">
-                  {p.name}
-                </h3>
+
+                {/* Titre et Bouton Panier sur la même ligne */}
+                <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[30px]">
+                  <h3 className="font-serif text-xs sm:text-sm font-medium truncate text-foreground flex-1">
+                    {p.name}
+                  </h3>
+                  <QuickAddToCartButton
+                    parfum={p}
+                    size="sm"
+                  />
+                </div>
 
                 {/* Étiquettes Genre & Saisons d'utilisation */}
                 <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
