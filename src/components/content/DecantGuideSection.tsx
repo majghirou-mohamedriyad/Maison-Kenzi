@@ -1,40 +1,39 @@
 /**
- * Section L'Art du Décantage & Guide des Formats — Maison Kenzi
+ * Section L'Excellence des Flacons Complets & Savoir-Faire Olfactif — Maison Kenzi
  *
- * Remplace l'ancienne vitrine saisonnière d'automne par une présentation éditoriale prestigieuse
- * expliquant le savoir-faire du décantage de haute parfumerie, les contenances disponibles (5ml, 10ml, Flacon)
- * et les raisons pour lesquelles collectionner en décants est le choix des connaisseurs.
+ * Met en valeur l'authenticité de nos flacons scellés, la noblesse des matières premières,
+ * la concentration en extrait de parfum et la livraison soignée partout au Maroc.
  */
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, Droplets, ShieldCheck, ArrowRight, Compass, Flame } from "lucide-react";
+import { Sparkles, Crown, ShieldCheck, ArrowRight, Flame, Gem } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const decantAdvantages = [
+const flaconPillars = [
   {
-    icon: Droplets,
-    badge: "5 ml · 75+ vaporisations",
-    title: "Format Découverte",
-    subtitle: "L'Essai Précis",
+    icon: Crown,
+    badge: "100% Flacons Scellés",
+    title: "Grands Flacons d'Origine",
+    subtitle: "Flacons Complets",
     description:
-      "Idéal pour tester l'évolution d'un sillage sur votre peau pendant 15 jours sans engagement sur un flacon complet.",
+      "Chaque création est livrée dans son flacon d'origine sous blister, avec packaging complet de la maison de parfum et vaporisateur d'origine.",
   },
   {
-    icon: Sparkles,
-    badge: "10 ml · 150+ vaporisations",
-    title: "Format Voyage & Nomade",
-    subtitle: "Le Compagnon Idéal",
+    icon: Gem,
+    badge: "Extraits & Eaux de Parfum",
+    title: "Haute Concentration",
+    subtitle: "Matières Premières Nobles",
     description:
-      "Un atomiseur en verre épais à emporter partout, pour porter votre signature olfactive pendant plus d'un mois.",
+      "Des sillages intenses formulés avec de précieux concentrés de parfum pour une tenue remarquable et une diffusion enveloppante sur la peau.",
   },
   {
-    icon: Compass,
-    badge: "Flacons Purs 100% Authentiques",
-    title: "Haute Conservation",
-    subtitle: "Flacons Verre & Sertissage Soigné",
+    icon: ShieldCheck,
+    badge: "Origine Certifiée",
+    title: "Authenticité Garantie",
+    subtitle: "Sélection Rigoureuse",
     description:
-      "Prélevé à la commande selon les règles de l'art dans des flacons en verre neutre garantissant la pureté des huiles et molécules rares.",
+      "Une traçabilité irréprochable auprès des distributeurs officiels et grandes maisons pour vous garantir une signature olfactive intacte et pure.",
   },
 ];
 
@@ -50,23 +49,23 @@ export const DecantGuideSection = () => {
       <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-semibold tracking-[0.25em] uppercase mb-3 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-          <span>Savoir-Faire & Découverte</span>
+          <span>Haute Création Olfactive</span>
         </div>
 
         <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-normal tracking-tight leading-tight">
-          L'Art du Décantage de <span className="text-primary italic font-serif">Haute Parfumerie</span>
+          L'Excellence des <span className="text-primary italic font-serif">Grands Flacons</span>
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed mt-3 max-w-2xl mx-auto">
-          Pourquoi choisir un seul flacon quand vous pouvez explorer les plus grands chefs-d'œuvre de la parfumerie mondiale ? Découvrez notre rituel de prélèvement sur-mesure.
+          Maison Kenzi sélectionne les plus belles signatures de la parfumerie mondiale en flacons complets originaux, pour une expérience olfactive luxueuse et durable.
         </p>
 
         <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-4 rounded-full" />
       </div>
 
-      {/* Grille 3 Colonnes des Formats & Avantages */}
+      {/* Grille 3 Piliers */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mb-10">
-        {decantAdvantages.map((item, idx) => {
+        {flaconPillars.map((item, idx) => {
           const IconComp = item.icon;
           return (
             <div
@@ -99,7 +98,7 @@ export const DecantGuideSection = () => {
 
               {/* Liseré inférieur de finition */}
               <div className="pt-5 mt-6 border-t border-border/60 flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
-                <span>100% Authentique & Précis</span>
+                <span>Flacon Neuf & Scellé</span>
                 <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
               </div>
             </div>
@@ -107,14 +106,14 @@ export const DecantGuideSection = () => {
         })}
       </div>
 
-      {/* Bannière Call To Action d'exploration */}
+      {/* Bannière Call To Action */}
       <div className="rounded-2xl sm:rounded-3xl border border-primary/30 bg-gradient-to-r from-card/90 via-card/60 to-card/90 backdrop-blur-xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left shadow-sm">
         <div className="space-y-1 max-w-xl">
           <h4 className="font-serif text-base sm:text-xl font-bold text-foreground">
-            Composez votre garde-robe olfactive
+            Trouvez votre sillage signature
           </h4>
           <p className="text-xs text-muted-foreground font-light">
-            Découvrez nos créations exclusives disponibles immédiatement avec livraison express partout au Maroc.
+            Découvrez nos flacons de prestige disponibles immédiatement avec livraison rapide et paiement à la livraison au Maroc.
           </p>
         </div>
 
@@ -123,7 +122,7 @@ export const DecantGuideSection = () => {
           className="rounded-full bg-primary hover:bg-primary-hover text-primary-foreground text-xs uppercase tracking-[0.18em] font-bold px-7 h-11 shadow-md hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 shrink-0 cursor-pointer"
         >
           <Link to="/collection/all" className="flex items-center gap-2">
-            <span>Explorer le Catalogue</span>
+            <span>Explorer la Collection</span>
             <ArrowRight className="w-4 h-4 ml-0.5" />
           </Link>
         </Button>
@@ -133,3 +132,4 @@ export const DecantGuideSection = () => {
 };
 
 export default DecantGuideSection;
+

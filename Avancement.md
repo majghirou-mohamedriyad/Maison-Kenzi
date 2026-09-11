@@ -9,9 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Remplacement de la Section Saisonnière par « L'Art du Décantage & Guide des Formats » :
-  - [x] [`src/components/content/DecantGuideSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/DecantGuideSection.tsx) : Conception d'une section éditoriale de prestige présentant le rituel du décantage sur-mesure (format Découverte 5ml, format Voyage 10ml, flacons purs 100% authentiques), avec typographie éditoriale raffinée, carte interactive et bouton vers le catalogue.
-  - [x] [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx) : Suppression de l'ancienne section `SeasonalSection` (« Les Notes d'Automne ») et intégration harmonieuse de `DecantGuideSection`.
+- [x] Remplacement de la Section Saisonnière par « L'Excellence des Grands Flacons Complets » :
+  - [x] [`src/components/content/DecantGuideSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/DecantGuideSection.tsx) : Conception d'une section éditoriale de prestige présentant les **flacons complets d'origine 100% scellés sous blister**, la haute concentration en extraits / eaux de parfum nobles et la garantie d'authenticité certifiée.
+  - [x] [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx) : Suppression de l'ancienne section saisonnière et intégration harmonieuse de la section des Grands Flacons.
 
 - [x] Suppression de la Page & Menu Administrateur « Configuration du Conseiller Virtuel » :
   - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Retrait du lien « Conseiller Olfactif IA » (`/admin/bot`) du menu latéral de navigation et du dictionnaire des titres.
