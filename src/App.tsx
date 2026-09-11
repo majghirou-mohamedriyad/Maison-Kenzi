@@ -8,6 +8,7 @@ import { CartProvider } from "./store/cart";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import MaintenanceGate from "./components/MaintenanceGate";
 import ChatBotMount from "./components/ChatBotMount";
+import FloatingCartButton from "./components/cart/FloatingCartButton";
 
 import Index from "./pages/Index";
 import Collection from "./pages/Category";
@@ -69,6 +70,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <FloatingCartButton />
             <ChatBotMount />
             </MaintenanceGate>
 

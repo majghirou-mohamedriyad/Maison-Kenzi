@@ -27,11 +27,10 @@ import { useCategories } from "@/store/useCategoryStore";
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isBagOpen, setIsBagOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { totalItems } = useCart();
+  const { totalItems, isOpen: isBagOpen, setIsOpen: setIsBagOpen } = useCart();
   const { data: allParfums } = useParfums();
   const { settings } = useAppSettings();
   const adminCategories = useCategories();
