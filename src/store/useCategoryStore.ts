@@ -62,31 +62,35 @@ const load = (): AdminCategory[] => {
 let state: AdminCategory[] = load();
 const listeners = new Set<() => void>();
 
+// Fonction de rechargement depuis Supabase
+export const fetchCategoriesFromSupabase = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order", { ascending: true });
+
+    if (!error && Array.isArray(data)) {
+      state = data.map((c: any, index: number) => ({
+        id: c.id || c.slug || `cat_${index}`,
+        slug: c.slug,
+        name: c.name,
+        description: c.description || "",
+        image: c.image || c.icon || "",
+        icon: c.icon || c.image || "",
+        gender: c.gender,
+        is_active: c.is_active ?? true,
+        is_coming_soon: !!c.is_coming_soon,
+        order_index: c.sort_order ?? index,
+      }));
+      notify();
+    }
+  } catch {}
+};
+
 // Synchronisation initiale avec la table Supabase categories
 if (typeof window !== "undefined") {
-  (async () => {
-    try {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .order("sort_order", { ascending: true });
-
-      if (!error && Array.isArray(data)) {
-        state = data.map((c: any, index: number) => ({
-          id: c.id || c.slug || `cat_${index}`,
-          slug: c.slug,
-          name: c.name,
-          description: c.description || "",
-          image: c.image || c.icon || "",
-          icon: c.icon || c.image || "",
-          is_active: c.is_active ?? true,
-          is_coming_soon: !!c.is_coming_soon,
-          order_index: c.sort_order ?? index,
-        }));
-        notify();
-      }
-    } catch {}
-  })();
+  fetchCategoriesFromSupabase();
 }
 
 // Canal de diffusion temps réel inter-onglets
@@ -106,11 +110,40 @@ if (typeof window !== "undefined" && "BroadcastChannel" in window) {
   } catch {}
 }
 
+// Écouteur des changements de localStorage entre onglets
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY && e.newValue) {
+      try {
+        state = JSON.parse(e.newValue);
+        listeners.forEach((l) => l());
+      } catch {}
+    }
+  });
+}
+
+// Souscription Supabase Realtime pour synchroniser instantanément toute modification distante
+if (typeof window !== "undefined") {
+  try {
+    supabase
+      .channel("maisonkenzi_categories_realtime_store")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "maisonkenzi", table: "categories" },
+        () => {
+          fetchCategoriesFromSupabase();
+        }
+      )
+      .subscribe();
+  } catch {}
+}
+
 const notify = () => {
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       broadcastChannel?.postMessage({ type: "UPDATE_CATEGORIES" });
+      window.dispatchEvent(new CustomEvent("maisonkenzi_categories_updated", { detail: state }));
     } catch {}
   }
   listeners.forEach((l) => l());

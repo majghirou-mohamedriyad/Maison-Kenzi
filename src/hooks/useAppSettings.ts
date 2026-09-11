@@ -15,25 +15,26 @@ export type AppSettings = {
 
 const DEFAULTS: AppSettings = {
   maintenance_mode: false,
-  maintenance_message: "Nous améliorons votre expérience. Revenez très bientôt.",
+  maintenance_message: "Nous préparons une nouvelle collection. Revenez très bientôt.",
   instagram_url: "https://instagram.com/maisonkenzi",
   whatsapp_phone: "212752850156",
   bot_enabled: true,
-  bot_name: "Assistante Maison Kenzi",
-  bot_welcome: "Bonjour 👋 Bienvenue chez Maison Kenzi. Comment puis-je vous aider aujourd'hui ?",
+  bot_name: "Conseillère Maison Kenzi",
+  bot_welcome: "Bienvenue chez Maison Kenzi. Comment puis-je vous guider dans votre découverte olfactive ?",
   store_name: "Maison Kenzi",
 };
 
+const STORAGE_KEY = "maisonkenzi_app_settings";
+const UPDATE_EVENT = "maisonkenzi_settings_updated";
+
 const getLocalSettings = (): AppSettings => {
   try {
-    const saved = localStorage.getItem("tabat_app_settings");
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
       return { ...DEFAULTS, ...parsed };
     }
-  } catch {
-    // ignore
-  }
+  } catch {}
   return DEFAULTS;
 };
 
@@ -50,8 +51,12 @@ export const useAppSettings = () => {
       }
     };
 
-    window.addEventListener("tabat_settings_updated", handleLocalUpdate);
-    window.addEventListener("storage", handleLocalUpdate);
+    window.addEventListener(UPDATE_EVENT, handleLocalUpdate);
+    window.addEventListener("storage", (e) => {
+      if (e.key === STORAGE_KEY && active) {
+        setSettings(getLocalSettings());
+      }
+    });
 
     const fetchSettings = async () => {
       try {
@@ -61,18 +66,12 @@ export const useAppSettings = () => {
           .eq("id", true)
           .maybeSingle();
 
-        if (error) {
-          console.warn("Fetch app_settings error:", error);
-        }
-
-        if (active && data) {
+        if (active && data && !error) {
           const merged = { ...DEFAULTS, ...getLocalSettings(), ...(data as Partial<AppSettings>) };
           setSettings(merged);
           try {
-            localStorage.setItem("tabat_app_settings", JSON.stringify(merged));
-          } catch {
-            // ignore
-          }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          } catch {}
         }
       } catch (err) {
         console.warn("Exception fetching app_settings:", err);
@@ -83,10 +82,28 @@ export const useAppSettings = () => {
 
     fetchSettings();
 
+    // Souscription Supabase Realtime pour synchronisation instantanée des réglages
+    const channel = supabase
+      .channel("maisonkenzi_settings_realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "maisonkenzi", table: "app_settings" },
+        (payload) => {
+          if (active && payload.new) {
+            const merged = { ...DEFAULTS, ...getLocalSettings(), ...(payload.new as Partial<AppSettings>) };
+            setSettings(merged);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+            } catch {}
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       active = false;
-      window.removeEventListener("tabat_settings_updated", handleLocalUpdate);
-      window.removeEventListener("storage", handleLocalUpdate);
+      window.removeEventListener(UPDATE_EVENT, handleLocalUpdate);
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -94,21 +111,19 @@ export const useAppSettings = () => {
     const next = { ...settings, ...patch };
     setSettings(next);
     try {
-      localStorage.setItem("tabat_app_settings", JSON.stringify(next));
-      window.dispatchEvent(new Event("tabat_settings_updated"));
-    } catch {
-      // ignore
-    }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      window.dispatchEvent(new Event(UPDATE_EVENT));
+    } catch {}
 
-    // Upsert into Supabase for persistence across devices
+    // Upsert dans Supabase pour persistance sur le serveur
     try {
       const { store_name, store_phone, ...dbPayload } = patch;
       const { error } = await supabase
         .from("app_settings")
-        .upsert({ id: true, ...dbPayload });
+        .upsert({ id: true, ...dbPayload } as any);
 
       if (error) {
-        console.error("Erreur mise a jour maintenance/settings Supabase:", error);
+        console.error("Erreur mise à jour settings Supabase:", error);
       }
       return { error };
     } catch (err) {

@@ -6,6 +6,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { Parfum } from "@/data/parfums";
+import { supabase } from "@/lib/supabase";
 
 const STORAGE_KEY = "maisonkenzi_products";
 const CHANNEL_NAME = "maisonkenzi_realtime_channel";
@@ -54,7 +55,6 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
 const load = (): AdminParfum[] => {
   if (typeof window === "undefined") return [];
   try {
-    // Nettoyer l'ancienne clé legacy de démo
     localStorage.removeItem("ne_products");
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -87,11 +87,24 @@ if (typeof window !== "undefined" && "BroadcastChannel" in window) {
   } catch {}
 }
 
+// Écouteur des changements de localStorage entre onglets
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY && e.newValue) {
+      try {
+        state = (JSON.parse(e.newValue) as AdminParfum[]).map(withDefaults);
+        listeners.forEach((l) => l());
+      } catch {}
+    }
+  });
+}
+
 const notify = () => {
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       broadcastChannel?.postMessage({ type: "UPDATE_PRODUCTS" });
+      window.dispatchEvent(new CustomEvent("maisonkenzi_products_updated", { detail: state }));
     } catch {}
   }
   listeners.forEach((l) => l());
@@ -105,7 +118,7 @@ export const setProducts = (products: AdminParfum[]) => {
 };
 
 export const addProduct = (product: AdminParfum) => {
-  state = [withDefaults(product), ...state];
+  state = [withDefaults(product), ...state.filter((p) => p.id !== product.id)];
   notify();
 };
 
@@ -127,3 +140,64 @@ export const subscribe = (listener: () => void) => {
 export const useProducts = (): AdminParfum[] => {
   return useSyncExternalStore(subscribe, getProducts, () => []);
 };
+
+// Souscription Supabase Realtime pour synchroniser instantanément toute modification distante
+if (typeof window !== "undefined") {
+  try {
+    supabase
+      .channel("maisonkenzi_parfums_realtime_store")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "maisonkenzi", table: "parfums" },
+        async () => {
+          try {
+            const { data, error } = await supabase
+              .from("parfums")
+              .select("*")
+              .order("created_at", { ascending: false });
+
+            if (!error && Array.isArray(data)) {
+              const currentLocal = getProducts();
+              const mapped: AdminParfum[] = data.map((r: any) => {
+                const localMatch = currentLocal.find((lp) => lp.id === r.id);
+                return {
+                  id: r.id,
+                  name: r.name,
+                  maison: r.maison,
+                  gender: r.gender,
+                  category: r.category ?? localMatch?.category,
+                  categories: Array.isArray(r.categories) ? r.categories : (r.category ? [r.category] : []),
+                  seasons: Array.isArray(r.seasons) ? r.seasons : (localMatch?.seasons ?? []),
+                  description: r.description || "",
+                  notes: {
+                    tete: r.notes_tete ?? localMatch?.notes?.tete ?? [],
+                    coeur: r.notes_coeur ?? localMatch?.notes?.coeur ?? [],
+                    fond: r.notes_fond ?? localMatch?.notes?.fond ?? [],
+                  },
+                  prices: {
+                    "5ml": Number(r.price_5ml ?? localMatch?.prices?.["5ml"] ?? 0),
+                    "10ml": Number(r.price_10ml ?? localMatch?.prices?.["10ml"] ?? 0),
+                  },
+                  imageLabel: r.image_label || localMatch?.imageLabel || r.id,
+                  image_url: r.image_url ?? localMatch?.image_url ?? null,
+                  images: Array.isArray(r.images) && r.images.length > 0 ? r.images : (r.image_url ? [r.image_url] : (localMatch?.images ?? [])),
+                  isNew: !!r.is_new,
+                  isBestseller: !!r.is_bestseller,
+                  sale_mode: r.sale_mode ?? localMatch?.sale_mode ?? "decant",
+                  full_bottle_price: r.full_bottle_price ? Number(r.full_bottle_price) : localMatch?.full_bottle_price ?? null,
+                  full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : localMatch?.full_bottle_volume_ml ?? null,
+                  full_bottle_stock: Number(r.full_bottle_stock ?? localMatch?.full_bottle_stock ?? 0),
+                  full_bottle_limited: !!r.full_bottle_limited,
+                  stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
+                  stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
+                  active: r.is_active ?? localMatch?.active ?? true,
+                };
+              });
+              setProducts(mapped);
+            }
+          } catch {}
+        }
+      )
+      .subscribe();
+  } catch {}
+}

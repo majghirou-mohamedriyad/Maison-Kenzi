@@ -3,11 +3,17 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Gestion des Catégories à Venir, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
+- **Statut général** : Synchronisation Temps Réel Instantanée (Admin & Boutique 0ms), Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Espace Admin Haute Parfumerie opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Synchronisation Temps Réel Instantanée Boutique & Administration (Zéro Rechargement de Page) :
+  - [x] [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts) : Raccordement direct et réactif de `useParfums` et `useParfum` au store central via `useProducts()` et `useSyncExternalStore`. Toute modification dans l'administration (ajout, modification, suppression de parfum, changement de stock ou de prix) se répercute **immédiatement (en 0ms)** sur l'ensemble de la boutique sans nécessiter d'actualisation de page.
+  - [x] [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts) : Intégration d'un écouteur `storage` multi-onglets, diffusion `BroadcastChannel` et souscription Supabase Realtime (`postgres_changes` sur `parfums`) pour synchroniser tous les appareils et onglets en temps réel.
+  - [x] [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts) : Synchronisation temps réel pour les univers olfactifs avec diffusion locale, inter-onglets et souscription Supabase Realtime (`postgres_changes` sur `categories`).
+  - [x] [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts) : Réactivité instantanée des réglages de la maison (maintenance, WhatsApp, informations) avec souscription Realtime Supabase et conformité zéro emoji.
 
 - [x] Bannière Panoramique & Contenu 100% Dynamique des Catégories (Boutique) :
   - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Suppression intégrale des textes, sous-titres et tags statiques codés en dur (« Collection Spéciale », « Sélection Exclusive », « Haute Parfumerie Masculine », etc.). L'affichage repose désormais **exclusivement et à 100% sur les données réelles saisies dans le panneau d'administration** (nom, description, photo et statut « À Venir »).
