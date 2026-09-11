@@ -153,10 +153,10 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
 
                 {/* Prix et Contenance en ML */}
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
-                  <span className="text-xs sm:text-sm font-serif font-medium text-foreground">
+                  <span className="text-xs sm:text-sm font-semibold tracking-tight text-foreground">
                     {pricing.priceText}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-medium bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
                     {pricing.volumeText}
                   </span>
                 </div>

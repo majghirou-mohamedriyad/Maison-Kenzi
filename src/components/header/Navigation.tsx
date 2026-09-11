@@ -396,7 +396,7 @@ const Navigation = () => {
                         </h4>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-xs font-serif font-bold text-primary">
+                        <span className="text-xs font-semibold tracking-tight text-primary">
                           {formatMAD(product.price_5ml)}
                         </span>
                       </div>

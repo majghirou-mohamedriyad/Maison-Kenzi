@@ -219,7 +219,7 @@ const Checkout = () => {
                   </h1>
                   <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed max-w-lg mx-auto">
                     Votre commande a été enregistrée sous la référence{" "}
-                    <span className="font-serif font-bold text-primary">{completeOrder.orderNumber}</span>. Notre équipe prépare votre colis pour expédition sous 24 à 48 heures.
+                    <span className="font-semibold text-primary">{completeOrder.orderNumber}</span>. Notre équipe prépare votre colis pour expédition sous 24 à 48 heures.
                   </p>
                 </div>
 
@@ -228,11 +228,11 @@ const Checkout = () => {
                   <div className="flex justify-between items-center pb-3 border-b border-border/60 text-xs">
                     <div>
                       <span className="text-muted-foreground block text-[10px]">Numéro de commande</span>
-                      <span className="font-serif font-bold text-foreground">{completeOrder.orderNumber}</span>
+                      <span className="font-semibold text-foreground">{completeOrder.orderNumber}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-muted-foreground block text-[10px]">Total à régler</span>
-                      <span className="font-serif font-bold text-primary text-sm">{formatMAD(completeOrder.total)}</span>
+                      <span className="font-bold tracking-tight text-primary text-sm">{formatMAD(completeOrder.total)}</span>
                     </div>
                   </div>
 
@@ -573,7 +573,7 @@ const Checkout = () => {
                         </div>
 
                         {/* Price */}
-                        <span className="text-xs font-serif font-bold text-primary shrink-0">
+                        <span className="text-xs font-semibold tracking-tight text-primary shrink-0">
                           {formatMAD(item.price * item.quantity)}
                         </span>
                       </div>
@@ -584,7 +584,7 @@ const Checkout = () => {
                   <div className="border-t border-border/60 pt-4 space-y-2 text-xs">
                     <div className="flex justify-between text-muted-foreground font-light">
                       <span>Sous-total articles</span>
-                      <span className="font-serif font-medium text-foreground">{formatMAD(subtotal)}</span>
+                      <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                     </div>
 
                     <div className="flex justify-between text-muted-foreground font-light">
@@ -595,7 +595,7 @@ const Checkout = () => {
                     <div className="border-t border-border/60 pt-3 mt-2 space-y-1">
                       <div className="flex justify-between text-xs font-bold text-foreground">
                         <span>Sous-total Panier</span>
-                        <span className="text-primary font-serif">{formatMAD(subtotal)}</span>
+                        <span className="text-primary font-bold tracking-tight">{formatMAD(subtotal)}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground italic">
                         * Le total final (avec frais de livraison) vous sera confirmé sur WhatsApp selon votre ville.

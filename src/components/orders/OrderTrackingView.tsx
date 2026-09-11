@@ -358,7 +358,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
                         </div>
                       </div>
 
-                      <span className="font-serif font-bold text-primary shrink-0 text-xs sm:text-sm">
+                      <span className="font-semibold tracking-tight text-primary shrink-0 text-xs sm:text-sm">
                         {formatMAD(itemPrice * itemQty)}
                       </span>
                     </div>
@@ -369,7 +369,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
               {/* Total Row */}
               <div className="bg-secondary/40 p-3.5 flex items-center justify-between border-t border-border/70 text-xs sm:text-sm font-bold">
                 <span className="text-foreground">Montant à régler à la livraison (COD) :</span>
-                <span className="font-serif text-base sm:text-lg text-primary">
+                <span className="text-base sm:text-lg font-bold tracking-tight text-primary">
                   {formatMAD(order.total_amount)}
                 </span>
               </div>

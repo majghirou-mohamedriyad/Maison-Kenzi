@@ -261,7 +261,7 @@ const ExpressOrderForm = ({
           <span className="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block">
             Prix Total
           </span>
-          <span className="text-sm sm:text-lg font-serif font-bold text-primary">
+          <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
             {formatMAD(totalPrice)}
           </span>
         </div>

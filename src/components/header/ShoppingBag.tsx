@@ -160,7 +160,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                           </div>
 
                           {/* Line Total */}
-                          <p className="text-xs sm:text-sm font-serif font-bold text-primary whitespace-nowrap">
+                          <p className="text-xs sm:text-sm font-semibold tracking-tight text-primary whitespace-nowrap">
                             {formatMAD(item.price * item.quantity)}
                           </p>
                         </div>
@@ -183,7 +183,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                           >
                             <Minus size={11} />
                           </button>
-                          <span className="px-2 text-xs font-serif font-bold text-foreground min-w-[24px] text-center select-none">
+                          <span className="px-2 text-xs font-semibold text-foreground min-w-[24px] text-center select-none">
                             {item.quantity}
                           </span>
                           <button
@@ -214,7 +214,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 <div className="space-y-1 bg-card/60 border border-border/60 rounded-xl p-3">
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
                     <span>Sous-total</span>
-                    <span className="font-serif text-foreground font-medium">{formatMAD(subtotal)}</span>
+                    <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
                     <span>Livraison Maroc</span>
@@ -222,7 +222,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-border/40">
                     <span className="text-xs font-bold uppercase tracking-wider text-foreground">Total Estimé</span>
-                    <span className="text-base font-serif font-bold text-primary">{formatMAD(subtotal)}</span>
+                    <span className="text-base font-bold tracking-tight text-primary">{formatMAD(subtotal)}</span>
                   </div>
                 </div>
 

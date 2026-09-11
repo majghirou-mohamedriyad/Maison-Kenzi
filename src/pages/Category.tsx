@@ -352,7 +352,7 @@ const Collection = () => {
                 <span className="text-xs uppercase tracking-wider font-semibold text-foreground truncate">
                   {currentOption.label}
                 </span>
-                <span className="text-xs font-serif font-bold text-primary">
+                <span className="text-xs font-semibold text-primary">
                   ({counts[filter] ?? 0})
                 </span>
               </div>
@@ -393,7 +393,7 @@ const Collection = () => {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-serif font-bold opacity-90">({count})</span>
+                          <span className="text-xs font-semibold opacity-90">({count})</span>
                           {active && <Check className="w-4 h-4 text-primary-foreground" />}
                         </div>
                       </button>
@@ -439,7 +439,7 @@ const Collection = () => {
                   )}
                   {count > 0 && (
                     <span
-                      className={`text-[10px] font-serif font-bold px-1.5 py-0.2 rounded-full ${
+                      className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                         active
                           ? "bg-black/20 text-primary-foreground"
                           : "bg-secondary text-muted-foreground"
@@ -641,13 +641,13 @@ const Collection = () => {
 
                       {/* Prix et Contenance en ML */}
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
-                        <span className={`text-xs sm:text-sm font-medium ${
-                          outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground font-serif"
+                        <span className={`text-xs sm:text-sm font-semibold tracking-tight ${
+                          outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
                         }`}>
                           {outOfStock ? "Rupture de stock" : pricing.priceText}
                         </span>
 
-                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-medium bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
                           {pricing.volumeText}
                         </span>
                       </div>

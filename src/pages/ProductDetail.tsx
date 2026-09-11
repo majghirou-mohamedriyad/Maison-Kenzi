@@ -605,10 +605,10 @@ const ParfumDetail = () => {
                           }}
                         >
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className={`font-serif text-sm sm:text-base font-bold ${isFormatOutOfStock ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                            <span className={`text-sm sm:text-base font-semibold ${isFormatOutOfStock ? "text-muted-foreground line-through" : "text-foreground"}`}>
                               {formatLabel}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
+                            <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
                               {formatSub}
                             </span>
                             {isFormatOutOfStock && (
@@ -617,7 +617,7 @@ const ParfumDetail = () => {
                               </span>
                             )}
                           </div>
-                          <div className={`text-xs font-serif font-bold mt-0.5 ${isFormatOutOfStock ? "text-muted-foreground" : "text-primary"}`}>
+                          <div className={`text-xs sm:text-sm font-semibold tracking-tight mt-0.5 ${isFormatOutOfStock ? "text-muted-foreground" : "text-primary"}`}>
                             {isFormatOutOfStock ? "Indisponible" : `${formatMAD(unitPrice)} `}
                             {!isFormatOutOfStock && <span className="text-[10px] font-normal text-muted-foreground">/ unité</span>}
                           </div>
