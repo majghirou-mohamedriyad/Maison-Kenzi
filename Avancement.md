@@ -15,7 +15,7 @@
   - [x] Trio de cartes de contact de luxe : Conciergerie WhatsApp directe avec badge « Réponse Instantanée », Ligne Directe & Horaires d'Atelier, Univers Instagram `@maisonkenzi`.
   - [x] Formulaire de conciergerie interactif avec sélection d'objet sur-mesure (Conseil olfactif personnalisé, Suivi de commande, Flaconnage & décants, Disponibilité de parfum) et double canal de transmission (formulaire élégant + pont direct vers WhatsApp avec message pré-formaté).
   - [x] Section **Questions Fréquentes (FAQ) Haute Couture** :
-    - Filtres par onglets thématiques interactifs (*Toutes les questions*, *Authenticité & Décants*, *Livraison & Paiement*, *Conseil & Formats*, *Garanties & Retours*).
+    - Présentation sobre, fluide et directe de l'ensemble des questions sans filtres superflus.
     - Cartes accordéons en verre dépoli avec pastilles iconographiques or champagne, numérotation fine (*01*, *02*, ...), lueurs douces et micro-interactions au survol/dépliage.
     - Contenu enrichi et précis (procédé de décantage stérile, atomiseur brume fine, contenance en pulvérisations 5ml/10ml, livraison express 24-48h cash à la livraison, conseils et retours).
     - Encadré d'assistance en bas de page avec double bouton d'appel direct vers l'atelier et la conciergerie WhatsApp.

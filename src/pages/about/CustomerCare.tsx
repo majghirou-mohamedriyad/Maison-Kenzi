@@ -84,15 +84,11 @@ const CustomerCare = () => {
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(defaultText)}`, "_blank");
   };
 
-  // Questions Fréquentes enrichies par catégorie
-  const [activeFaqCategory, setActiveFaqCategory] = useState<string>("all");
-  const [faqSearch, setFaqSearch] = useState<string>("");
-
-  const allFaqItems = [
+  // Questions Fréquentes de la Maison
+  const faqItems = [
     {
       id: 1,
-      category: "authenticite",
-      categoryLabel: "Authenticité & Flacons",
+      categoryLabel: "Authenticité & Décants",
       icon: ShieldCheck,
       question: "Comment garantissez-vous l'authenticité des parfums ?",
       answer:
@@ -100,8 +96,7 @@ const CustomerCare = () => {
     },
     {
       id: 2,
-      category: "authenticite",
-      categoryLabel: "Authenticité & Flacons",
+      categoryLabel: "Authenticité & Décants",
       icon: Sparkles,
       question: "Quelle est la qualité des flacons décants nomades ?",
       answer:
@@ -109,7 +104,6 @@ const CustomerCare = () => {
     },
     {
       id: 3,
-      category: "conseil",
       categoryLabel: "Conseils & Formats",
       icon: Clock,
       question: "Combien de vaporisations permet un décant 5ml et 10ml ?",
@@ -118,7 +112,6 @@ const CustomerCare = () => {
     },
     {
       id: 4,
-      category: "livraison",
       categoryLabel: "Commandes & Livraison",
       icon: Truck,
       question: "Quels sont les délais et modalités de livraison au Maroc ?",
@@ -127,7 +120,6 @@ const CustomerCare = () => {
     },
     {
       id: 5,
-      category: "conseil",
       categoryLabel: "Conseils & Formats",
       icon: Sparkles,
       question: "Puis-je bénéficier d'une consultation olfactive personnalisée ?",
@@ -136,31 +128,13 @@ const CustomerCare = () => {
     },
     {
       id: 6,
-      category: "retours",
-      categoryLabel: "Retours & Garanties",
+      categoryLabel: "Garanties & Retours",
       icon: RotateCcw,
       question: "Quelle est votre politique d'échange et de rétractation ?",
       answer:
         "Pour des raisons d'hygiène et afin de garantir l'authenticité irréprochable de chaque essence pour l'ensemble de notre clientèle, les retours sont acceptés sous un délai de 7 jours après réception, exclusivement pour les articles non ouverts, non vaporisés et toujours dans leur opercule de protection d'origine.",
     },
   ];
-
-  const faqCategories = [
-    { id: "all", label: "Toutes les questions" },
-    { id: "authenticite", label: "Authenticité & Décants" },
-    { id: "livraison", label: "Livraison & Paiement" },
-    { id: "conseil", label: "Conseil & Formats" },
-    { id: "retours", label: "Garanties & Retours" },
-  ];
-
-  const filteredFaq = allFaqItems.filter((item) => {
-    const matchCategory = activeFaqCategory === "all" || item.category === activeFaqCategory;
-    const matchSearch =
-      faqSearch.trim() === "" ||
-      item.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
-      item.answer.toLowerCase().includes(faqSearch.toLowerCase());
-    return matchCategory && matchSearch;
-  });
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20">
@@ -451,7 +425,7 @@ const CustomerCare = () => {
           </div>
 
           {/* =========================================================================
-              4. FOIRE AUX QUESTIONS & ENGAGEMENTS (DESIGN LUXE AVANCÉ)
+              4. FOIRE AUX QUESTIONS & ENGAGEMENTS (DESIGN ÉPURÉ ET SANS FILTRE)
              ========================================================================= */}
           <div className="max-w-4xl mx-auto">
             {/* Header FAQ */}
@@ -469,107 +443,68 @@ const CustomerCare = () => {
               <div className="w-14 h-[1px] bg-primary/40 mx-auto mt-5" />
             </div>
 
-            {/* Onglets Filtres de Catégories FAQ */}
-            <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-              {faqCategories.map((cat) => {
-                const isActive = activeFaqCategory === cat.id;
+            {/* Liste des Accordéons de la FAQ */}
+            <div className="space-y-4">
+              {faqItems.map((item, idx) => {
+                const Icon = item.icon;
+                const isOpen = openFaq === item.id;
+                const itemNumber = String(idx + 1).padStart(2, "0");
+
                 return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveFaqCategory(cat.id)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-sm scale-105"
-                        : "bg-card/60 text-muted-foreground hover:text-foreground border border-border/60 hover:border-primary/30"
+                  <div
+                    key={item.id}
+                    className={`group rounded-2xl border transition-all duration-300 backdrop-blur-md overflow-hidden ${
+                      isOpen
+                        ? "border-primary/50 bg-card/80 shadow-md ring-1 ring-primary/20"
+                        : "border-primary/15 bg-card/40 hover:border-primary/35 hover:bg-card/60"
                     }`}
                   >
-                    {cat.label}
-                  </button>
+                    <button
+                      onClick={() => toggleFaq(item.id)}
+                      className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left gap-4 cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+                        {/* Numérotation ou Icône avec effet doré */}
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                            isOpen
+                              ? "bg-primary text-primary-foreground shadow-sm scale-110"
+                              : "bg-primary/10 text-primary border border-primary/20 group-hover:scale-105"
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <span className="block text-[10px] uppercase tracking-[0.2em] text-primary/80 font-semibold mb-1">
+                            {item.categoryLabel} · {itemNumber}
+                          </span>
+                          <h3 className="font-serif text-base sm:text-lg text-foreground font-medium tracking-tight">
+                            {item.question}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          isOpen ? "bg-primary/15 rotate-180" : "bg-background/50 group-hover:border-primary/40"
+                        }`}
+                      >
+                        <ChevronDown className="w-4 h-4 text-primary" />
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-5 sm:px-8 pb-6 pt-0 text-sm sm:text-[15px] font-light text-muted-foreground leading-relaxed border-t border-border/30 mt-1 animate-fade-in">
+                        <div className="pt-4 pl-0 sm:pl-[3.75rem]">
+                          <p>{item.answer}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-
-            {/* Liste des Accordéons Sublimés */}
-            {filteredFaq.length === 0 ? (
-              <div className="text-center py-12 rounded-2xl border border-primary/20 bg-card/30 backdrop-blur-sm">
-                <p className="text-muted-foreground text-sm font-light mb-4">
-                  Aucune réponse ne correspond à ce critère.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setActiveFaqCategory("all");
-                    setFaqSearch("");
-                  }}
-                  className="rounded-full text-xs uppercase tracking-wider border-primary/30"
-                >
-                  Réinitialiser le filtre
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredFaq.map((item, idx) => {
-                  const Icon = item.icon;
-                  const isOpen = openFaq === item.id;
-                  const itemNumber = String(idx + 1).padStart(2, "0");
-
-                  return (
-                    <div
-                      key={item.id}
-                      className={`group rounded-2xl border transition-all duration-300 backdrop-blur-md overflow-hidden ${
-                        isOpen
-                          ? "border-primary/50 bg-card/80 shadow-md ring-1 ring-primary/20"
-                          : "border-primary/15 bg-card/40 hover:border-primary/35 hover:bg-card/60"
-                      }`}
-                    >
-                      <button
-                        onClick={() => toggleFaq(item.id)}
-                        className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left gap-4 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-                          {/* Numérotation ou Icône avec effet doré */}
-                          <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
-                              isOpen
-                                ? "bg-primary text-primary-foreground shadow-sm scale-110"
-                                : "bg-primary/10 text-primary border border-primary/20 group-hover:scale-105"
-                            }`}
-                          >
-                            <Icon className="w-4 h-4" />
-                          </div>
-
-                          <div className="min-w-0">
-                            <span className="block text-[10px] uppercase tracking-[0.2em] text-primary/80 font-semibold mb-1">
-                              {item.categoryLabel} · {itemNumber}
-                            </span>
-                            <h3 className="font-serif text-base sm:text-lg text-foreground font-medium tracking-tight">
-                              {item.question}
-                            </h3>
-                          </div>
-                        </div>
-
-                        <div
-                          className={`w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center shrink-0 transition-all duration-300 ${
-                            isOpen ? "bg-primary/15 rotate-180" : "bg-background/50 group-hover:border-primary/40"
-                          }`}
-                        >
-                          <ChevronDown className="w-4 h-4 text-primary" />
-                        </div>
-                      </button>
-
-                      {isOpen && (
-                        <div className="px-5 sm:px-8 pb-6 pt-0 text-sm sm:text-[15px] font-light text-muted-foreground leading-relaxed border-t border-border/30 mt-1 animate-fade-in">
-                          <div className="pt-4 pl-0 sm:pl-[3.75rem]">
-                            <p>{item.answer}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
 
             {/* Encadré d'Assistance / Contact direct bas de page */}
             <div className="mt-14 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-card/50 to-primary/10 backdrop-blur-md p-8 sm:p-10 text-center relative overflow-hidden">
