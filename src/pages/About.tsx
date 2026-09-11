@@ -1,3 +1,10 @@
+/**
+ * Page À Propos — Maison Kenzi
+ *
+ * Présentation de l'histoire, des engagements d'authenticité (Flacons Complets 100% Scellés),
+ * de la sélection des matières premières et du service de conciergerie au Maroc.
+ */
+
 import { useState } from "react";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
@@ -8,65 +15,62 @@ import {
   Sparkles,
   ShieldCheck,
   Truck,
-  CreditCard,
-  Headphones,
-  HeartHandshake,
-  ArrowRight,
-  CheckCircle2,
   Crown,
-  Droplets,
+  Gem,
   HelpCircle,
   ChevronDown,
   MessageCircle,
-  Award,
+  ArrowRight,
   Flame,
   Flower2,
+  PackageCheck,
+  CheckCircle2,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 
 const pillars = [
   {
-    icon: Droplets,
-    title: "Décantation Artisanale & Stérilisée",
-    desc: "Chaque parfum est prélevé à la commande à l'aide de matériel de précision à usage unique. Le liquide est transféré dans des atomiseurs en verre hermétiques pour préserver l'intégrité de la pyramide olfactive.",
-    tag: "Précision Médicale",
-  },
-  {
-    icon: ShieldCheck,
-    title: "100% Authenticité Garantie",
-    desc: "Nous nous approvisionnons exclusivement auprès des circuits officiels et distributeurs agréés des plus grandes maisons de niche et de luxe. Zéro contrefaçon, zéro imitation.",
-    tag: "Flacons Originaux",
-  },
-  {
     icon: Crown,
-    title: "Formats Idéaux (5ml & 10ml)",
-    desc: "Testez les plus grands chefs-d'œuvre de la parfumerie sur votre peau pendant plusieurs semaines avant d'investir dans un flacon complet. Environ 70 pulvérisations pour 5ml et 140 pour 10ml.",
-    tag: "Découverte Nomade",
+    title: "100% Flacons Complets & Scellés",
+    desc: "Chaque parfum est livré dans son flacon d'origine scellé sous blister avec packaging officiel complet. Zéro contrefaçon, zéro imitation : uniquement des pièces authentiques.",
+    tag: "Origine Garantie",
+  },
+  {
+    icon: Gem,
+    title: "Haute Concentration & Extraits Nobles",
+    desc: "Nous sélectionnons rigoureusement des Eaux de Parfum et Extraits de Parfum aux matières premières précieuses, garantissant un sillage mémorable et une tenue remarquable tout au long de la journée.",
+    tag: "Pureté & Tenue",
   },
   {
     icon: Truck,
-    title: "Livraison Rapide Partout au Maroc",
-    desc: "Vos précieux flacons sont emballés dans des écrins protecteurs anti-chocs et expédiés sous 24 à 48 heures avec paiement à la livraison à Casablanca, Rabat, Marrakech, Tanger et dans toutes les villes du Royaume.",
+    title: "Livraison Express Partout au Maroc",
+    desc: "Expédition sécurisée sous 24 à 48 heures dans toutes les villes du Royaume (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir...) avec emballage haute protection anti-choc.",
     tag: "24–48h à Domicile",
+  },
+  {
+    icon: PackageCheck,
+    title: "Paiement en Espèces à la Réception",
+    desc: "Commandez en toute confiance : vous ne réglez votre achat qu'au moment où le livreur vous remet votre précieux colis en mains propres à votre adresse.",
+    tag: "Sérénité Totale",
   },
 ];
 
 const faqs = [
   {
-    q: "Qu'est-ce qu'un décant de parfum ?",
-    a: "Un décant est une fraction d'un flacon original de parfum, prélevée minutieusement et transférée dans un atomiseur compact en verre de haute qualité. Cela vous permet d'accéder aux plus grandes créations de luxe à une fraction du prix d'un flacon complet.",
+    q: "Les parfums vendus par Maison Kenzi sont-ils 100% originaux ?",
+    a: "Absolument. Chez Maison Kenzi, l'authenticité est notre premier engagement. Tous nos parfums sont des flacons complets originaux scellés dans leur boîte d'origine sous blister, issus directement des circuits officiels des plus grandes maisons de création.",
   },
   {
-    q: "Les parfums sont-ils vraiment originaux ?",
-    a: "Absolument. Chez Maison Kenzi, nous n'utilisons aucun clone ni parfum générique. Tous nos décants proviennent directement des flacons d'origine des marques officielles (Maison Francis Kurkdjian, BDK, Creed, Tom Ford, Initio, Xerjoff...).",
+    q: "Sous quel délai ma commande est-elle livrée au Maroc ?",
+    a: "Nos commandes sont traitées le jour même et livrées en 24 à 48 heures partout au Maroc. Vous recevez un numéro de suivi de commande en direct (`MK-XXXXXX`) pour suivre l'acheminement de votre colis en temps réel.",
   },
   {
-    q: "Combien de temps durent les formats 5ml et 10ml ?",
-    a: "Un format 5ml offre environ 70 à 80 vaporisations (soit environ 3 à 4 semaines d'utilisation quotidienne). Le format 10ml offre entre 140 et 160 vaporisations (environ 2 mois d'usage régulier).",
+    q: "Quels sont les modes de paiement acceptés ?",
+    a: "Nous privilégions le paiement en espèces à la livraison (Cash on Delivery). Vous payez le montant exact de votre commande directement au livreur lors de la remise en mains propres.",
   },
   {
-    q: "Comment sont protégés les flacons durant l'expédition ?",
-    a: "Chaque atomiseur est scellé avec un film étanche et conditionné dans un emballage rembourré sur-mesure pour empêcher toute évaporation ou casse durant le transport.",
+    q: "Comment puis-je être conseillé pour choisir mon parfum ?",
+    a: "Notre service de conciergerie privée est disponible 7j/7 sur WhatsApp pour vous orienter selon vos notes olfactives de prédilection, la saison, l'occasion ou pour vous aider à composer un cadeau d'exception.",
   },
 ];
 
@@ -76,13 +80,15 @@ const About = () => {
 
   const rawPhone = settings.whatsapp_phone || "212752850156";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
-  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, j'aimerais avoir des informations sur vos parfums.")}`;
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+    "Bonjour Maison Kenzi, j'aimerais avoir des conseils sur vos collections de parfums."
+  )}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo
-        title="À Propos de Maison Kenzi | Maison de Haute Parfumerie & Décantation au Maroc"
-        description="Découvrez l'univers Maison Kenzi : l'art de la haute parfumerie accessible au Maroc grâce à la décantation artisanale de fragrances 100% authentiques."
+        title="À Propos de Maison Kenzi | Haute Parfumerie & Flacons Originaux au Maroc"
+        description="Découvrez l'univers Maison Kenzi : l'exigence de la haute parfumerie au Maroc. Flacons complets 100% originaux scellés, livraison express 24-48h et paiement à la livraison."
         path="/about"
       />
       <Header />
@@ -105,7 +111,7 @@ const About = () => {
             </h1>
 
             <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
-              Chez Maison Kenzi, nous croyons qu'un parfum est bien plus qu'une fragrance. C'est une émotion vivante, un sillage inoubliable et l'expression la plus intime de votre personnalité.
+              Chez Maison Kenzi, nous sélectionnons les plus grands chefs-d'œuvre de la parfumerie mondiale en flacons complets originaux, pour sublimer chaque instant d'un sillage inoubliable.
             </p>
 
             {/* Quick Actions */}
@@ -138,7 +144,7 @@ const About = () => {
           <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-card/80 backdrop-blur-xl p-8 sm:p-12 text-center shadow-lg">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
             <blockquote className="relative z-10 font-serif text-lg sm:text-2xl text-foreground italic font-light max-w-3xl mx-auto leading-relaxed">
-              « Démocratiser l'accès aux plus grands trésors de la haute parfumerie mondiale au Maroc, en garantissant une authenticité absolue et une expérience olfactive d'exception. »
+              « Offrir à chaque passionné au Maroc l'accès aux plus pures créations olfactives mondiales, avec la certitude d'un flacon d'origine scellé et l'excellence d'un service attentionné. »
             </blockquote>
             <div className="mt-4 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-primary font-bold">
               <span>— Philosophie de la Maison Kenzi</span>
@@ -152,10 +158,10 @@ const About = () => {
                 Excellence & Rigueur
               </span>
               <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-bold tracking-tight">
-                Les 4 Piliers de l'Engagement Maison Kenzi
+                Nos 4 Engagements Majeurs
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground font-light">
-                Un processus rigoureux à chaque étape pour vous garantir le meilleur de la décantation artisanale.
+                Une traçabilité totale et un service haut de gamme pensé pour votre satisfaction.
               </p>
             </div>
 
@@ -197,10 +203,10 @@ const About = () => {
                 Foire Aux Questions
               </span>
               <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-bold tracking-tight">
-                Tout Savoir sur nos Décants
+                Vos Questions Fréquentes
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground font-light">
-                Des réponses transparentes à toutes vos interrogations sur la provenance et l'utilisation.
+                Tout ce que vous souhaitez savoir sur nos parfums, la livraison et nos garanties.
               </p>
             </div>
 
@@ -238,7 +244,7 @@ const About = () => {
             </div>
           </div>
 
-          {/* Bottom Luxury VIP Invitation Card */}
+          {/* Bottom VIP Invitation Card */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-card via-card/90 to-background border border-primary/30 p-8 sm:p-12 text-center space-y-6 shadow-xl">
             <div className="max-w-2xl mx-auto space-y-3">
               <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary mx-auto">
@@ -248,7 +254,7 @@ const About = () => {
                 Prêt à Trouver Votre Prochaine Signature ?
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed">
-                Explorez nos collections masculines, féminines et coffrets exclusifs, ou laissez notre conseiller vous orienter selon vos goûts.
+                Explorez nos collections masculines, féminines et soins d'exception, ou contactez notre conciergerie privée.
               </p>
             </div>
 
@@ -294,3 +300,4 @@ const About = () => {
 };
 
 export default About;
+

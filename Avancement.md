@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Refonte & Sublimation de la Page « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
+  - [x] **Repositionnement Haute Parfumerie & Flacons Complets** : Élimination de toute référence aux décants au profit des **Flacons Complets 100% Originaux Scellés**, Eaux de Parfum & Extraits nobles.
+  - [x] **4 Piliers d'Excellence Visuels** : Origine 100% Garantie sous blister officiel, Pureté & Tenue longue durée, Livraison Express 24-48h partout au Maroc, Paiement en espèces à la livraison.
+  - [x] **Foire Aux Questions (FAQ Accordéon)** : Réponses détaillées et transparentes sur l'authenticité, les délais de livraison au Royaume, le règlement Cash on Delivery et les conseils sur mesure.
+  - [x] **Invitation VIP & Conciergerie WhatsApp** : Accès rapide aux collections Homme, Femme et contact direct avec l'équipe de conciergerie olfactive.
+
 - [x] Sublimation de la Section Éditoriale « Pourquoi Choisir Maison Kenzi » :
   - [x] [`src/components/content/EditorialSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/EditorialSection.tsx) : Refonte en 4 piliers d'excellence (100% Flacons Originaux Scellés, Livraison Express 24–48h partout au Maroc, Paiement en Espèces à la Réception, Conciergerie WhatsApp Dédiée), typographie éditoriale de prestige et boutons de contact direct.
 
