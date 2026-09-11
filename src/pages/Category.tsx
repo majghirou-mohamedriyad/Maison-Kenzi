@@ -241,47 +241,109 @@ const Collection = () => {
     : "Catalogue officiel Maison Kenzi - Parfums d'exception, décants et soins au Maroc.";
   const canonical = `/collection/${(collection ?? "all").toLowerCase()}`;
 
+  const categoryBanner = currentCategoryObj?.image || currentCategoryObj?.icon;
+
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo title={title} description={description} path={canonical} />
       <Header />
 
       <main className="flex-1 pb-16">
-        {/* Luxury Category Hero Section */}
-        <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
-          {/* Image d'ambiance de catégorie si définie */}
-          {(currentCategoryObj?.image || currentCategoryObj?.icon) && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10 dark:opacity-15">
+        {/* Luxury Category Hero Banner */}
+        {categoryBanner ? (
+          <section className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20">
+            {/* Image de fond plein écran en bannière avec voiles cinématiques */}
+            <div className="absolute inset-0 z-0">
               <img
-                src={currentCategoryObj?.image || currentCategoryObj?.icon}
+                src={categoryBanner}
                 alt={hero.title}
-                className="w-full h-full object-cover blur-sm scale-105"
+                className="w-full h-full object-cover object-center scale-105 transition-transform duration-1000 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/50" />
+              {/* Dégradés d'ombrage et de contraste pour lisibilité éditoriale */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+              {/* Halo d'ambiance doré champagne */}
+              <div className="absolute -bottom-10 left-1/4 w-96 h-48 bg-[#C9A96E]/15 blur-3xl rounded-full pointer-events-none" />
             </div>
-          )}
 
-          {/* Subtle Ambient Glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+            {/* Contenu de la Bannière de Catégorie */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col justify-end min-h-[280px] sm:min-h-[340px] md:min-h-[380px]">
+              <div className="space-y-3.5 max-w-3xl">
+                {/* Fil d'ariane en verre dépoli */}
+                <Breadcrumb>
+                  <BreadcrumbList className="text-[10px] sm:text-xs">
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link to="/" className="text-white/70 hover:text-[#C9A96E] transition-colors">
+                          Accueil
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator className="text-white/40" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage className="text-[#C9A96E] font-medium">
+                        {hero.title}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
 
-          <div className="max-w-7xl mx-auto relative z-10 space-y-4">
-            {/* Breadcrumb */}
-            <Breadcrumb>
-              <BreadcrumbList className="text-[10px] sm:text-xs">
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">Accueil</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-foreground font-medium">{hero.title}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+                {/* Badges d'univers & sous-titre */}
+                <div className="flex items-center gap-2 flex-wrap pt-1">
+                  {hero.badge && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A96E]/20 border border-[#C9A96E]/40 text-[#C9A96E] text-[10px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-md shadow-xs">
+                      <Sparkles className="w-3 h-3 text-[#C9A96E]" />
+                      <span>{hero.badge}</span>
+                    </div>
+                  )}
+                  {hero.subtitle && (
+                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/75 font-medium px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
+                      {hero.subtitle}
+                    </span>
+                  )}
+                </div>
 
-            {/* Header Content with optional category visual */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                {/* Titre éditorial de la Collection */}
+                <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-white font-normal tracking-tight drop-shadow-md leading-[1.1]">
+                  {hero.title}
+                </h1>
+
+                {/* Description de l'univers olfactif */}
+                {hero.description && (
+                  <p className="text-xs sm:text-sm md:text-base text-white/85 leading-relaxed font-light max-w-2xl pt-1 drop-shadow-xs">
+                    {hero.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        ) : (
+          /* En-tête épuré standard lorsque la catégorie n'a pas d'image */
+          <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
+            {/* Subtle Ambient Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+
+            <div className="max-w-7xl mx-auto relative z-10 space-y-4">
+              {/* Breadcrumb */}
+              <Breadcrumb>
+                <BreadcrumbList className="text-[10px] sm:text-xs">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+                        Accueil
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-foreground font-medium">
+                      {hero.title}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+
+              {/* Header Content */}
               <div className="max-w-3xl space-y-2">
                 {hero.badge && (
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
@@ -298,19 +360,9 @@ const Collection = () => {
                   </p>
                 )}
               </div>
-
-              {(currentCategoryObj?.image || currentCategoryObj?.icon) && (
-                <div className="hidden md:block w-28 h-28 lg:w-36 lg:h-36 rounded-2xl overflow-hidden border border-border/80 shadow-md shrink-0 bg-card">
-                  <img
-                    src={currentCategoryObj?.image || currentCategoryObj?.icon}
-                    alt={hero.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Collection Selector & Filter Navigation */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6 mb-4 sm:mb-6">

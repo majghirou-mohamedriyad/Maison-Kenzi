@@ -3,11 +3,14 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Sélection Multi-Catégories des Parfums, Gestion des Catégories à Venir, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
+- **Statut général** : Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Gestion des Catégories à Venir, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Bannière Panoramique de Catégorie / Univers Olfactif (Boutique) :
+  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Remplacement de l'encart miniature par une **bannière panoramique immersive haute définition** (`object-cover`, voiles de contraste cinématographiques multi-niveaux, fil d'ariane en verre dépoli, typographie de prestige Serif en blanc pur et halo doré champagne). Fallback automatique sur l'en-tête épuré standard lorsque la catégorie ne comporte pas d'image.
 
 - [x] Sélection Multi-Catégories pour les Parfums (Admin & Boutique) :
   - [x] [`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts) : Création du module utilitaire d'extraction (`getParfumCategories`) et de filtrage unifié (`isParfumInCategory`) gérant les tableaux `categories`, les slugs et la compatibilité rétroactive.
