@@ -17,7 +17,6 @@ import {
   LogOut,
   Menu,
   X,
-  Bot,
   Wallet,
   ExternalLink,
   ShieldCheck,
@@ -60,7 +59,6 @@ const NAV_GROUPS = [
   {
     title: "Maison & Outils",
     items: [
-      { to: "/admin/bot", label: "Conseiller Olfactif IA", icon: Bot },
       { to: "/admin/parametres", label: "Paramètres de la Boutique", icon: Settings },
     ],
   },
@@ -73,7 +71,6 @@ const TITLES: Record<string, string> = {
   "/admin/commandes": "Gestion des Commandes Clients",
   "/admin/finances": "Statistiques Financières & Revenus",
   "/admin/clients": "Base de Données Clients",
-  "/admin/bot": "Configuration du Conseiller Virtuel",
   "/admin/parametres": "Paramètres & Statut de la Maison",
 };
 

@@ -27,7 +27,6 @@ import CategoriesAdmin from "./admin/pages/Categories";
 import Commandes from "./admin/pages/Commandes";
 import Clients from "./admin/pages/Clients";
 import Parametres from "./admin/pages/Parametres";
-import BotAdmin from "./admin/pages/Bot";
 import Finances from "./admin/pages/Finances";
 
 const queryClient = new QueryClient();
@@ -63,7 +62,6 @@ const App = () => (
                   <Route path="/admin/commandes" element={<Commandes />} />
                   <Route path="/admin/clients" element={<Clients />} />
                   <Route path="/admin/finances" element={<Finances />} />
-                  <Route path="/admin/bot" element={<BotAdmin />} />
                   <Route path="/admin/parametres" element={<Parametres />} />
                 </Route>
               </Route>

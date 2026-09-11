@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suppression de la Page & Menu Administrateur « Configuration du Conseiller Virtuel » :
+  - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Retrait du lien « Conseiller Olfactif IA » (`/admin/bot`) du menu latéral de navigation et du dictionnaire des titres.
+  - [x] [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Suppression de la route `/admin/bot` et nettoyage des imports.
+
 - [x] Refonte & Optimisation Haute Parfumerie du Panier d'Achat :
   - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : **Animation de fermeture cinématographique fluide** (`animate-out slide-out-to-right` et `fade-out-0` sur 280ms) symétrique à l'animation d'ouverture pour tous les déclencheurs de fermeture (croix, backdrop, redirection vers le catalogue ou le checkout).
   - [x] [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx) & [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts) : Ajout de la configuration dynamique du **seuil de livraison offerte** (`free_shipping_threshold` en MAD) modifiable à tout moment depuis le tableau de bord administrateur avec synchronisation temps réel (Supabase & Realtime Broadcast).
