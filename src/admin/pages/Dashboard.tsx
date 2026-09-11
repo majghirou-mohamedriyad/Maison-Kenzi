@@ -63,13 +63,13 @@ const BottleCard = ({
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Disponibles</p>
-          <p className={`text-2xl font-serif mt-1 font-medium ${isLow ? "text-rose-500" : "text-[#1A1816] dark:text-[#FAF7F2]"}`}>
+          <p className={`text-2xl font-bold tracking-tight mt-1 ${isLow ? "text-rose-500" : "text-[#1A1816] dark:text-[#FAF7F2]"}`}>
             {available}
           </p>
         </div>
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Utilisées</p>
-          <p className="text-2xl font-serif text-[#C9A96E] mt-1 font-medium">{used}</p>
+          <p className="text-2xl font-bold tracking-tight text-[#C9A96E] mt-1">{used}</p>
         </div>
       </div>
 
@@ -287,7 +287,7 @@ const Dashboard = () => {
                     <td className="py-3.5 font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.parfum_name}</td>
                     <td className="py-3.5 text-xs text-[#7A726A] dark:text-[#A39B91]">{s.size}</td>
                     <td className="py-3.5 text-right font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.qty}</td>
-                    <td className="py-3.5 text-right font-serif text-[#C9A96E] font-medium">{fmtMad(s.revenue)}</td>
+                    <td className="py-3.5 text-right font-bold tracking-tight text-[#C9A96E]">{fmtMad(s.revenue)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -303,7 +303,7 @@ const Dashboard = () => {
             <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
             <span>Revenus mois précédent</span>
           </div>
-          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{fmtMad(kpis?.revenueLastMonth ?? 0)}</p>
+          <p className="text-2xl font-bold tracking-tight text-[#1A1816] dark:text-[#FAF7F2] mt-2">{fmtMad(kpis?.revenueLastMonth ?? 0)}</p>
         </div>
 
         <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-xs">
@@ -311,7 +311,7 @@ const Dashboard = () => {
             <ShoppingBag className="w-4 h-4 text-[#C9A96E] stroke-[1.75]" />
             <span>Commandes en attente</span>
           </div>
-          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{kpis?.ordersInProgress ?? 0}</p>
+          <p className="text-2xl font-bold tracking-tight text-[#1A1816] dark:text-[#FAF7F2] mt-2">{kpis?.ordersInProgress ?? 0}</p>
         </div>
 
         <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-xs">
@@ -319,7 +319,7 @@ const Dashboard = () => {
             <TrendingDown className="w-4 h-4 text-rose-500 stroke-[1.75]" />
             <span>Parfums en rupture</span>
           </div>
-          <p className="text-2xl font-serif text-[#1A1816] dark:text-[#FAF7F2] mt-2 font-medium">{rupture}</p>
+          <p className="text-2xl font-bold tracking-tight text-[#1A1816] dark:text-[#FAF7F2] mt-2">{rupture}</p>
         </div>
       </div>
     </div>

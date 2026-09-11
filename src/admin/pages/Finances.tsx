@@ -66,7 +66,7 @@ const StatCard = ({
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <div className="text-2xl font-serif text-foreground">{value}</div>
+      <div className="text-2xl font-bold tracking-tight text-foreground">{value}</div>
       {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
     </div>
   );
@@ -209,7 +209,7 @@ const Finances = () => {
               </span>
             </div>
 
-            <p className="text-4xl md:text-5xl font-serif font-bold text-foreground mt-2">
+            <p className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mt-2">
               {loading ? "…" : fmtMad(kpis?.netProfit ?? 0)}
             </p>
 

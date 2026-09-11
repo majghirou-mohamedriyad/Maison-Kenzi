@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Unification Typographique des Prix & Métriques dans l'Espace Administrateur :
+  - [x] [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx) : Remplacement de la police avec empattement par la typographie géométrique épurée (`font-bold tracking-tight text-primary`) sur la liste et les cartes produits.
+  - [x] [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx) : Harmonisation des montants de commandes (KPIs, tableau récapitulatif, cartes mobiles et modale de détail).
+  - [x] [`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx) : Harmonisation des chiffres d'affaires clients, paniers moyens et dépenses totales.
+  - [x] [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx) & [`src/admin/pages/Finances.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Finances.tsx) : Harmonisation des jauges de stock, de la trésorerie nette et des graphiques de revenus.
+
 - [x] Synchronisation Automatique & Temps Réel de la Base de Données Clients ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx) & [`src/hooks/useAdminCustomers.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAdminCustomers.ts)) :
   - [x] **Enregistrement Automatique lors des Commandes** : Ajout de l'upsert automatique du client (`customers`) dès la validation d'une commande via [`Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx) ou commande express [`ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx) (nom, téléphone, adresse, total commandes, total dépensé).
   - [x] **Agrégation Dynamique depuis la table Commandes** : Récupération immédiate des coordonnées clients depuis toutes les commandes même si elles sont en attente ou sans compte préalable.

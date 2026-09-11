@@ -153,7 +153,7 @@ const ProductTable = ({
                   <div className="bg-background/80 rounded-xl p-2.5 flex items-center justify-between text-xs border border-border/50">
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Prix Vente</span>
-                      <span className="font-serif font-bold text-primary">
+                      <span className="font-bold tracking-tight text-primary">
                         {isFull
                           ? fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)
                           : `${fmt(p.prices["5ml"])}`}
@@ -363,11 +363,11 @@ const ProductTable = ({
                       </td>
                       <td className="px-4 py-3.5 text-right font-medium text-foreground">
                         {isFull ? (
-                          <span className="font-serif font-bold text-primary">{fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)}</span>
+                          <span className="font-bold tracking-tight text-primary text-sm">{fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)}</span>
                         ) : (
                           <div className="text-xs">
-                            <div className="font-serif font-bold text-primary">{fmt(p.prices["5ml"])} <span className="text-[10px] text-muted-foreground font-sans">(5ml)</span></div>
-                            <div className="text-muted-foreground text-[11px]">{fmt(p.prices["10ml"])} (10ml)</div>
+                            <div className="font-bold tracking-tight text-primary">{fmt(p.prices["5ml"])} <span className="text-[10px] text-muted-foreground font-normal">(5ml)</span></div>
+                            <div className="text-muted-foreground text-[11px] font-medium tracking-tight">{fmt(p.prices["10ml"])} (10ml)</div>
                           </div>
                         )}
                       </td>

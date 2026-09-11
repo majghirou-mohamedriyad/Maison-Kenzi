@@ -219,7 +219,7 @@ const Commandes = () => {
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Total Commandes</span>
-            <div className="text-2xl font-serif font-bold text-foreground mt-1">{stats.total}</div>
+            <div className="text-2xl font-bold tracking-tight text-foreground mt-1">{stats.total}</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <Layers className="w-5 h-5" />
@@ -229,7 +229,7 @@ const Commandes = () => {
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-amber-500 font-semibold">En Attente</span>
-            <div className="text-2xl font-serif font-bold text-amber-500 mt-1">{stats.pending}</div>
+            <div className="text-2xl font-bold tracking-tight text-amber-500 mt-1">{stats.pending}</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
             <Clock className="w-5 h-5" />
@@ -239,7 +239,7 @@ const Commandes = () => {
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-emerald-500 font-semibold">Livrées</span>
-            <div className="text-2xl font-serif font-bold text-emerald-500 mt-1">{stats.delivered}</div>
+            <div className="text-2xl font-bold tracking-tight text-emerald-500 mt-1">{stats.delivered}</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <CheckCircle2 className="w-5 h-5" />
@@ -249,7 +249,7 @@ const Commandes = () => {
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-primary font-semibold">Chiffre d'Affaires</span>
-            <div className="text-xl font-serif font-bold text-primary mt-1">
+            <div className="text-xl font-bold tracking-tight text-primary mt-1">
               {stats.revenue.toLocaleString("fr-FR")} MAD
             </div>
           </div>
@@ -350,7 +350,7 @@ const Commandes = () => {
                     <td className="px-4 py-3 text-muted-foreground text-xs max-w-[280px] leading-relaxed">
                       {summarizeItems(o.items)}
                     </td>
-                    <td className="px-4 py-3 text-right font-serif font-bold text-foreground whitespace-nowrap">
+                    <td className="px-4 py-3 text-right font-bold tracking-tight text-foreground whitespace-nowrap">
                       {Number(o.total_amount).toLocaleString("fr-FR")} MAD
                     </td>
                     <td className="px-4 py-3"><StatusSelect id={o.id} status={o.status} /></td>
@@ -397,7 +397,7 @@ const Commandes = () => {
               </div>
               <div className="flex items-center justify-between pt-1">
                 <span className="text-xs text-muted-foreground font-semibold">Total à payer</span>
-                <span className="font-serif font-bold text-foreground text-base">{Number(o.total_amount).toLocaleString("fr-FR")} MAD</span>
+                <span className="font-bold tracking-tight text-foreground text-base">{Number(o.total_amount).toLocaleString("fr-FR")} MAD</span>
               </div>
               <div className="flex justify-end pt-2 border-t border-border"><Actions o={o} /></div>
             </div>
@@ -507,7 +507,7 @@ const Commandes = () => {
                           </div>
                         </div>
 
-                        <div className="font-serif font-bold text-foreground text-sm text-right shrink-0">
+                        <div className="font-bold tracking-tight text-foreground text-sm text-right shrink-0">
                           {subtotal.toLocaleString("fr-FR")} MAD
                         </div>
                       </div>
@@ -523,7 +523,7 @@ const Commandes = () => {
                   </div>
                   <div className="flex justify-between text-base font-bold pt-1 border-t border-border">
                     <span className="text-foreground">Total à encaisser (COD)</span>
-                    <span className="font-serif text-primary">
+                    <span className="font-bold tracking-tight text-primary">
                       {Number(viewingOrder.total_amount).toLocaleString("fr-FR")} MAD
                     </span>
                   </div>
