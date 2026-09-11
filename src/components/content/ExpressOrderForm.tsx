@@ -448,9 +448,10 @@ const ExpressOrderForm = ({
           <Button
             type="button"
             onClick={onAddToCart}
-            className="w-full h-10 sm:h-11 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:scale-[1.01] transition-all gap-2 cursor-pointer"
+            className="w-full h-10 sm:h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:shadow-lg hover:shadow-primary/25 border border-primary/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer select-none"
           >
-            <ShoppingBag className="w-3.5 h-3.5" /> Ajouter au Panier
+            <ShoppingBag className="w-4 h-4 stroke-[2]" />
+            <span>Ajouter au Panier</span>
           </Button>
         )}
 
