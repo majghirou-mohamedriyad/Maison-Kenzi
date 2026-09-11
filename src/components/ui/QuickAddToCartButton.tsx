@@ -1,13 +1,9 @@
 /**
- * Bouton d'Ajout Rapide au Panier — Maison Kenzi
+ * Bouton Rond d'Ajout Rapide au Panier — Maison Kenzi
  *
- * Permet aux clients d'ajouter instantanément un parfum au panier directement
- * depuis les cartes du catalogue, carrousels et sélections, avec micro-animation
- * et confirmation toast immédiate sans quitter la page.
- *
- * Supporte 2 modes :
- * - variant="button" : Bouton complet avec texte « Ajouter au panier » et icône
- * - variant="icon" : Bouton d'action circulaire en verre dépoli
+ * Bouton d'action circulaire sans texte avec icône vectorielle ShoppingBag,
+ * fond en verre dépoli (glassmorphism), halo doré champagne et micro-animation
+ * de confirmation visuelle (coche Check) au clic.
  */
 
 import React, { useState } from "react";
@@ -20,14 +16,12 @@ import { toast } from "sonner";
 interface QuickAddToCartButtonProps {
   parfum: Parfum;
   className?: string;
-  variant?: "button" | "icon";
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 }
 
 export const QuickAddToCartButton = ({
   parfum,
   className = "",
-  variant = "button",
   size = "md",
 }: QuickAddToCartButtonProps) => {
   const { addItem } = useCart();
@@ -91,41 +85,26 @@ export const QuickAddToCartButton = ({
     });
 
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1400);
+    setTimeout(() => setIsAdded(false), 1300);
 
     toast.success("Ajouté au panier", {
       description: `${parfum.name} · ${sizeLabel} (${formatMAD(chosenPrice)})`,
     });
   };
 
-  const isSmall = size === "sm";
+  const dimensions =
+    size === "sm"
+      ? "w-8 h-8"
+      : size === "lg"
+      ? "w-10 h-10"
+      : "w-8.5 h-8.5 sm:w-9 sm:h-9";
 
-  if (variant === "button") {
-    return (
-      <button
-        type="button"
-        onClick={handleQuickAdd}
-        aria-label={`Ajouter ${parfum.name} au panier`}
-        className={`w-full h-8 sm:h-9 rounded-xl flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-300 shadow-xs cursor-pointer ${
-          isAdded
-            ? "bg-emerald-600 text-white border border-emerald-600 shadow-emerald-500/20"
-            : "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 hover:border-primary hover:shadow-md active:scale-95"
-        } ${className}`}
-      >
-        {isAdded ? (
-          <>
-            <Check className="w-3.5 h-3.5" />
-            <span>Ajouté au panier</span>
-          </>
-        ) : (
-          <>
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Ajouter au panier</span>
-          </>
-        )}
-      </button>
-    );
-  }
+  const iconSize =
+    size === "sm"
+      ? "w-3.5 h-3.5"
+      : size === "lg"
+      ? "w-4.5 h-4.5"
+      : "w-4 h-4";
 
   return (
     <button
@@ -133,20 +112,16 @@ export const QuickAddToCartButton = ({
       onClick={handleQuickAdd}
       aria-label={`Ajouter ${parfum.name} au panier`}
       title={`Ajouter au panier (${isFull ? "Flacon" : "Décant 5ml"})`}
-      className={`relative z-20 flex items-center justify-center rounded-full transition-all duration-300 shadow-md cursor-pointer ${
+      className={`relative z-20 flex items-center justify-center rounded-full transition-all duration-300 shadow-md cursor-pointer select-none ${
         isAdded
-          ? "bg-emerald-600 text-white scale-110 shadow-emerald-500/20"
-          : "bg-background/90 dark:bg-[#1A1815]/90 text-foreground hover:bg-primary hover:text-primary-foreground border border-border/80 hover:border-primary/50 backdrop-blur-md hover:scale-105 active:scale-95 hover:shadow-lg"
-      } ${
-        isSmall
-          ? "w-8 h-8 text-xs"
-          : "w-8.5 h-8.5 sm:w-9 sm:h-9 text-xs"
-      } ${className}`}
+          ? "bg-emerald-600 text-white scale-110 shadow-emerald-500/30"
+          : "bg-background/95 dark:bg-[#1A1815]/95 text-foreground hover:bg-primary hover:text-primary-foreground border border-border/90 dark:border-white/15 hover:border-primary/60 backdrop-blur-md hover:scale-110 active:scale-90 hover:shadow-lg"
+      } ${dimensions} ${className}`}
     >
       {isAdded ? (
-        <Check className={isSmall ? "w-3.5 h-3.5" : "w-4 h-4"} />
+        <Check className={`${iconSize} stroke-[2.2] animate-in zoom-in duration-150`} />
       ) : (
-        <ShoppingBag className={isSmall ? "w-3.5 h-3.5" : "w-4 h-4"} />
+        <ShoppingBag className={`${iconSize} stroke-[1.8]`} />
       )}
     </button>
   );

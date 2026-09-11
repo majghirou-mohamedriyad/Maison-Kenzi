@@ -9,9 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Bouton d'Ajout Rapide Direct au Panier sur les Cartes Produits :
-  - [x] [`src/components/ui/QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx) : Bouton d'action explicite « Ajouter au panier » avec icône `ShoppingBag`, typographie soignée et micro-animation de confirmation (`Check` vert).
-  - [x] Intégration sous le prix de chaque carte produit avant d'entrer dans la fiche détaillée sur l'ensemble des pages ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx) et [`RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx)).
+- [x] Bouton Rond d'Ajout Rapide Direct au Panier (Cartes Produits) :
+  - [x] [`src/components/ui/QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx) : Bouton d'action circulaire épuré sans texte avec icône vectorielle `ShoppingBag`, verre dépoli (`backdrop-blur-md`), halo champagne et micro-animation de confirmation (`Check` vert).
+  - [x] Positionnement direct en bas à droite de l'image de chaque carte produit ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx) et [`RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx)).
   - [x] Détection intelligente du format par défaut (5ml / 10ml / Flacon) et notification Toast instantanée sans quitter la page.
 
 - [x] Optimisation de la Barre de Recherche Flottante (Navbar) :
