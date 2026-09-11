@@ -3,7 +3,7 @@ import Footer from "../components/footer/Footer";
 import LargeHero from "../components/content/LargeHero";
 import FiftyFiftySection from "../components/content/FiftyFiftySection";
 import ProductCarousel from "../components/content/ProductCarousel";
-import SeasonalSection from "../components/content/SeasonalSection";
+import DecantGuideSection from "../components/content/DecantGuideSection";
 import EditorialSection from "../components/content/EditorialSection";
 import HomeContactForm from "../components/content/HomeContactForm";
 import Seo from "../components/Seo";
@@ -22,7 +22,7 @@ const Index = () => {
         <LargeHero />
         <FiftyFiftySection />
         <ProductCarousel />
-        <SeasonalSection />
+        <DecantGuideSection />
         <EditorialSection />
         <HomeContactForm />
       </main>
