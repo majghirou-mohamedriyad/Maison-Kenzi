@@ -9,8 +9,8 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Gestion des Catégories & Univers Olfactifs « À Venir / Bientôt Disponible » & Filtres par Colonne :
-  - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Épuration de la barre de recherche (champ unique global avec effacement instantané) et ligne de filtres par colonne sobre (Genre, Nombre de produits, Statut), sans duplication de champs de texte, avec tri multi-colonnes interactif et bouton de réinitialisation.
+- [x] Gestion des Catégories & Univers Olfactifs « À Venir / Bientôt Disponible » & Tri Multi-Colonnes :
+  - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Épuration complète du tableau avec barre de recherche globale unique réactive, suppression des listes déroulantes de filtres superflues et conservation du tri interactif multi-colonnes (Catégorie, Description, Produits, Statut).
   - [x] [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts) : Ajout du champ `is_coming_soon?: boolean` avec synchronisation bidirectionnelle Supabase et repli gracieux sans erreur si la colonne SQL n'a pas encore été créée sur le VPS.
   - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Ajout de l'interrupteur « À venir / Teaser » dans la modale de création/édition et affichage de la pastille dorée « À venir » avec icône `Clock` dans la table des catégories.
   - [x] [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx) : Affichage d'un badge de prestige « À Venir » sur les cartes d'univers olfactifs en page d'accueil avec incitation « Découvrir l'univers ».

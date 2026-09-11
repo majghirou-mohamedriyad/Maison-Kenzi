@@ -62,11 +62,6 @@ const CategoriesAdmin = () => {
   const [deletingCat, setDeletingCat] = useState<AdminCategory | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Column Filters State (Sélecteurs dédiés par colonne)
-  const [genderFilter, setGenderFilter] = useState<string>("Tous");
-  const [productsFilter, setProductsFilter] = useState<string>("Tous");
-  const [statusFilter, setStatusFilter] = useState<string>("Tous");
-
   // Column Sorting State
   type SortField = "name" | "description" | "products" | "status" | "default";
   type SortDirection = "asc" | "desc";
@@ -102,19 +97,10 @@ const CategoriesAdmin = () => {
     return counts;
   }, [categories, products]);
 
-  const hasActiveFilters = Boolean(
-    search.trim() ||
-    genderFilter !== "Tous" ||
-    productsFilter !== "Tous" ||
-    statusFilter !== "Tous" ||
-    sortField !== "default"
-  );
+  const hasActiveFilters = Boolean(search.trim() || sortField !== "default");
 
   const resetAllFilters = () => {
     setSearch("");
-    setGenderFilter("Tous");
-    setProductsFilter("Tous");
-    setStatusFilter("Tous");
     setSortField("default");
     setSortDirection("asc");
   };
@@ -135,7 +121,7 @@ const CategoriesAdmin = () => {
 
   const filteredCategories = useMemo(() => {
     let list = categories.filter((c) => {
-      // 1. Recherche globale rapide (nom, slug, description)
+      // Recherche globale rapide (nom, slug, description)
       const qGlobal = search.trim().toLowerCase();
       if (qGlobal) {
         const matchGlobal =
@@ -144,27 +130,6 @@ const CategoriesAdmin = () => {
           (c.description && c.description.toLowerCase().includes(qGlobal));
         if (!matchGlobal) return false;
       }
-
-      // 2. Filtre colonne Genre
-      if (genderFilter !== "Tous") {
-        if (genderFilter === "Sans genre") {
-          if (c.gender) return false;
-        } else {
-          if ((c.gender || "").toLowerCase() !== genderFilter.toLowerCase()) return false;
-        }
-      }
-
-      // 3. Filtre colonne Nombre de produits
-      const count = categoryStats[c.slug] ?? 0;
-      if (productsFilter === "with_products" && count === 0) return false;
-      if (productsFilter === "no_products" && count > 0) return false;
-
-      // 4. Filtre colonne Statut
-      if (statusFilter === "active" && !c.is_active) return false;
-      if (statusFilter === "inactive" && c.is_active) return false;
-      if (statusFilter === "coming_soon" && !c.is_coming_soon) return false;
-      if (statusFilter === "ready" && (!c.is_active || c.is_coming_soon)) return false;
-
       return true;
     });
 
@@ -190,16 +155,7 @@ const CategoriesAdmin = () => {
     }
 
     return list;
-  }, [
-    categories,
-    search,
-    genderFilter,
-    productsFilter,
-    statusFilter,
-    sortField,
-    sortDirection,
-    categoryStats,
-  ]);
+  }, [categories, search, sortField, sortDirection, categoryStats]);
 
   const openAddModal = () => {
     setEditingCat(null);
@@ -483,74 +439,6 @@ const CategoriesAdmin = () => {
                 </th>
 
                 <th className="text-right px-5 py-3">Actions</th>
-              </tr>
-
-              {/* Row 2: Column Filter Selectors (Genre, Produits, Statut) */}
-              <tr className="bg-muted/30 border-t border-border/70 font-normal">
-                {/* Filter: Genre de la catégorie */}
-                <th className="px-5 py-2">
-                  <select
-                    value={genderFilter}
-                    onChange={(e) => setGenderFilter(e.target.value)}
-                    className="px-2.5 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
-                  >
-                    <option value="Tous">Genre: Tous</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
-                    <option value="Mixte">Mixte</option>
-                    <option value="Sans genre">Sans genre</option>
-                  </select>
-                </th>
-
-                {/* Description (Pas de filtre textuel redondant) */}
-                <th className="px-5 py-2 text-muted-foreground/40 font-normal text-[10px]">
-                  —
-                </th>
-
-                {/* Filter: Nombre de Produits */}
-                <th className="px-4 py-2 text-center">
-                  <select
-                    value={productsFilter}
-                    onChange={(e) => setProductsFilter(e.target.value)}
-                    className="w-full max-w-[130px] mx-auto px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
-                  >
-                    <option value="Tous">Tous</option>
-                    <option value="with_products">&gt; 0 parfum</option>
-                    <option value="no_products">0 parfum</option>
-                  </select>
-                </th>
-
-                {/* Filter: Statut */}
-                <th className="px-4 py-2 text-center">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full max-w-[130px] mx-auto px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
-                  >
-                    <option value="Tous">Tous</option>
-                    <option value="active">Actif</option>
-                    <option value="inactive">Masqué</option>
-                    <option value="coming_soon">À venir</option>
-                    <option value="ready">Prêt (Actif)</option>
-                  </select>
-                </th>
-
-                {/* Actions / Reset */}
-                <th className="px-5 py-2 text-right">
-                  {hasActiveFilters ? (
-                    <button
-                      type="button"
-                      onClick={resetAllFilters}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-md transition-colors cursor-pointer"
-                      title="Effacer les filtres"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Effacer</span>
-                    </button>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground/60 font-normal">—</span>
-                  )}
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
