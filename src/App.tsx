@@ -28,7 +28,6 @@ import Parametres from "./admin/pages/Parametres";
 import BotAdmin from "./admin/pages/Bot";
 import Finances from "./admin/pages/Finances";
 
-import BestSellersAdmin from "./admin/pages/BestSellers";
 import SeasonalAdmin from "./admin/pages/SeasonalAdmin";
 
 const queryClient = new QueryClient();
@@ -59,7 +58,6 @@ const App = () => (
                   <Route path="/admin" element={<Dashboard />} />
                   <Route path="/admin/produits" element={<Produits />} />
                   <Route path="/admin/categories" element={<CategoriesAdmin />} />
-                  <Route path="/admin/bestsellers" element={<BestSellersAdmin />} />
                   <Route path="/admin/saison" element={<SeasonalAdmin />} />
                   <Route path="/admin/commandes" element={<Commandes />} />
                   <Route path="/admin/clients" element={<Clients />} />

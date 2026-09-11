@@ -19,7 +19,6 @@ import {
   X,
   Bot,
   Wallet,
-  Flame,
   Sparkles,
   ExternalLink,
   ShieldCheck,
@@ -49,7 +48,6 @@ const NAV_GROUPS = [
     items: [
       { to: "/admin/produits", label: "Tous les Parfums", icon: Package },
       { to: "/admin/categories", label: "Catégories & Univers", icon: FolderTree },
-      { to: "/admin/bestsellers", label: "Best Sellers", icon: Flame, badge: "Vedettes" },
       { to: "/admin/saison", label: "Parfums de Saison", icon: Sparkles },
     ],
   },
@@ -74,7 +72,6 @@ const TITLES: Record<string, string> = {
   "/admin": "Tableau de Bord Privé",
   "/admin/produits": "Catalogue des Parfums de Niche",
   "/admin/categories": "Univers & Familles Olfactives",
-  "/admin/bestsellers": "Sélections Phares & Best Sellers",
   "/admin/saison": "Éditions & Parfums de Saison",
   "/admin/commandes": "Gestion des Commandes Clients",
   "/admin/finances": "Statistiques Financières & Revenus",
