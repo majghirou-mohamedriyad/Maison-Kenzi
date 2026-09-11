@@ -237,7 +237,7 @@ const Navigation = () => {
               <Search size={16} className="text-primary mr-2 shrink-0" />
               <input
                 ref={searchInputRef}
-                type="search"
+                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un parfum, une maison..."
@@ -245,13 +245,16 @@ const Navigation = () => {
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => {
-                    setIsSearchOpen(false);
                     setSearchQuery("");
+                    searchInputRef.current?.focus();
                   }}
-                  className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted/60 transition-colors cursor-pointer"
+                  aria-label="Effacer le champ"
+                  title="Effacer"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               )}
             </div>

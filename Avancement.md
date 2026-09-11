@@ -9,6 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Optimisation de la Barre de Recherche Flottante (Navbar) :
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Suppression du double bouton de fermeture/annulation (suppression du bouton natif `type="search"` du navigateur Webkit/Blink au profit de `type="text"`) et conservation d'un unique bouton d'effacement `X` sobre qui réinitialise le texte et replace automatiquement le curseur dans le champ de saisie (`searchInputRef.focus()`).
+
 - [x] Suivi de Commande en Temps Réel dans la Navbar & Tunnel de Vente (`/suivi-commande` & `/tracking`) :
   - [x] [`src/pages/OrderTracking.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/OrderTracking.tsx) & [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Page dédiée immersive avec gestion des paramètres d'URL (`?code=MK-XXXXXX`) accessible via `/suivi-commande` et `/tracking`.
   - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Redirection directe par lien de navigation standard vers la page `/suivi-commande` (desktop & mobile) en remplacement du modal flottant.
