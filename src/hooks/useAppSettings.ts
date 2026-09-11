@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { supabase } from "@/lib/supabase";
 
 export type AppSettings = {
@@ -25,9 +25,10 @@ const DEFAULTS: AppSettings = {
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";
-const UPDATE_EVENT = "maisonkenzi_settings_updated";
+const CHANNEL_NAME = "maisonkenzi_settings_channel";
 
 const getLocalSettings = (): AppSettings => {
+  if (typeof window === "undefined") return DEFAULTS;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -38,98 +39,114 @@ const getLocalSettings = (): AppSettings => {
   return DEFAULTS;
 };
 
-export const useAppSettings = () => {
-  const [settings, setSettings] = useState<AppSettings>(getLocalSettings);
-  const [loading, setLoading] = useState(false);
+let state: AppSettings = getLocalSettings();
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    let active = true;
-
-    const handleLocalUpdate = () => {
-      if (active) {
-        setSettings(getLocalSettings());
+// Canal de diffusion inter-onglets
+let broadcastChannel: BroadcastChannel | null = null;
+if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+  try {
+    broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+    broadcastChannel.onmessage = (event) => {
+      if (event.data?.type === "UPDATE_SETTINGS" && event.data.payload) {
+        state = { ...DEFAULTS, ...event.data.payload };
+        listeners.forEach((l) => l());
       }
     };
+  } catch {}
+}
 
-    window.addEventListener(UPDATE_EVENT, handleLocalUpdate);
-    window.addEventListener("storage", (e) => {
-      if (e.key === STORAGE_KEY && active) {
-        setSettings(getLocalSettings());
-      }
-    });
+const notify = () => {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      broadcastChannel?.postMessage({ type: "UPDATE_SETTINGS", payload: state });
+      window.dispatchEvent(new CustomEvent("maisonkenzi_settings_updated", { detail: state }));
+    } catch {}
+  }
+  listeners.forEach((l) => l());
+};
 
-    const fetchSettings = async () => {
+// Écouteur des changements de localStorage entre onglets
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY && e.newValue) {
       try {
-        const { data, error } = await supabase
-          .from("app_settings")
-          .select("*")
-          .eq("id", true)
-          .maybeSingle();
+        state = { ...DEFAULTS, ...JSON.parse(e.newValue) };
+        listeners.forEach((l) => l());
+      } catch {}
+    }
+  });
+}
 
-        if (active && data && !error) {
-          const merged = { ...DEFAULTS, ...getLocalSettings(), ...(data as Partial<AppSettings>) };
-          setSettings(merged);
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-          } catch {}
-        }
-      } catch (err) {
-        console.warn("Exception fetching app_settings:", err);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
+// Fonction de récupération depuis Supabase
+const fetchSettingsFromSupabase = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("*")
+      .eq("id", true)
+      .maybeSingle();
 
-    fetchSettings();
+    if (!error && data) {
+      state = { ...DEFAULTS, ...getLocalSettings(), ...(data as Partial<AppSettings>) };
+      notify();
+    }
+  } catch {}
+};
 
-    // Souscription Supabase Realtime pour synchronisation instantanée des réglages
-    const channel = supabase
-      .channel("maisonkenzi_settings_realtime")
+// Initialisation et souscription Supabase Realtime unique (Singleton)
+if (typeof window !== "undefined") {
+  fetchSettingsFromSupabase();
+
+  try {
+    supabase
+      .channel("maisonkenzi_settings_realtime_singleton")
       .on(
         "postgres_changes",
         { event: "*", schema: "maisonkenzi", table: "app_settings" },
         (payload) => {
-          if (active && payload.new) {
-            const merged = { ...DEFAULTS, ...getLocalSettings(), ...(payload.new as Partial<AppSettings>) };
-            setSettings(merged);
-            try {
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-            } catch {}
+          if (payload.new) {
+            state = { ...DEFAULTS, ...getLocalSettings(), ...(payload.new as Partial<AppSettings>) };
+            notify();
           }
         }
       )
       .subscribe();
+  } catch {}
+}
 
-    return () => {
-      active = false;
-      window.removeEventListener(UPDATE_EVENT, handleLocalUpdate);
-      supabase.removeChannel(channel);
-    };
-  }, []);
+export const getAppSettings = (): AppSettings => state;
 
-  const update = async (patch: Partial<AppSettings>) => {
-    const next = { ...settings, ...patch };
-    setSettings(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      window.dispatchEvent(new Event(UPDATE_EVENT));
-    } catch {}
+export const updateAppSettings = async (patch: Partial<AppSettings>) => {
+  state = { ...state, ...patch };
+  notify();
 
-    // Upsert dans Supabase pour persistance sur le serveur
-    try {
-      const { store_name, store_phone, ...dbPayload } = patch;
-      const { error } = await supabase
-        .from("app_settings")
-        .upsert({ id: true, ...dbPayload } as any);
+  // Persistance dans Supabase
+  try {
+    const { store_name, store_phone, ...dbPayload } = patch;
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ id: true, ...dbPayload } as any);
 
-      if (error) {
-        console.error("Erreur mise à jour settings Supabase:", error);
-      }
-      return { error };
-    } catch (err) {
-      return { error: err as Error };
+    if (error) {
+      console.error("Erreur mise à jour settings Supabase:", error);
     }
-  };
+    return { error };
+  } catch (err) {
+    return { error: err as Error };
+  }
+};
 
-  return { settings, loading, update };
+export const useAppSettings = () => {
+  const settings = useSyncExternalStore(
+    (callback) => {
+      listeners.add(callback);
+      return () => listeners.delete(callback);
+    },
+    getAppSettings,
+    () => DEFAULTS
+  );
+
+  return { settings, loading: false, update: updateAppSettings };
 };
