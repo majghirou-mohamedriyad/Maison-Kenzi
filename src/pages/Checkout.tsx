@@ -32,6 +32,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
 
 import { useRef, useEffect } from "react";
 import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
@@ -154,6 +155,8 @@ const Checkout = () => {
       items: [...items],
     };
 
+    saveLastOrderNumber(orderNumber);
+
     if (viaWhatsApp) {
       const url = `https://wa.me/${waNumber}?text=${buildWhatsAppMessage(orderNumber)}`;
       window.open(url, "_blank");
@@ -253,9 +256,20 @@ const Checkout = () => {
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <Button
                     asChild
-                    className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs uppercase tracking-wider font-semibold h-11 px-8 shadow-md cursor-pointer"
+                    className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs uppercase tracking-wider font-semibold h-11 px-6 shadow-md cursor-pointer gap-2"
                   >
-                    <Link to="/">Retour à l'Accueil</Link>
+                    <Link to={`/suivi-commande?code=${completeOrder.orderNumber}`}>
+                      <Truck className="w-4 h-4" />
+                      <span>Suivre ma Commande</span>
+                    </Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="rounded-full border-border hover:border-primary text-xs uppercase tracking-wider font-semibold h-11 px-6 cursor-pointer"
+                  >
+                    <Link to="/">Accueil</Link>
                   </Button>
 
                   <a

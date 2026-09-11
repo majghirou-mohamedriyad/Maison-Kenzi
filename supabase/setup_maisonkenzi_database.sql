@@ -173,11 +173,12 @@ ALTER TABLE maisonkenzi.expenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE maisonkenzi.flaconnage ENABLE ROW LEVEL SECURITY;
 ALTER TABLE maisonkenzi.bot_qa ENABLE ROW LEVEL SECURITY;
 
--- Lecture publique (Site Client)
+-- Lecture publique (Site Client & Suivi de Commande)
 CREATE POLICY "Public categories select" ON maisonkenzi.categories FOR SELECT USING (true);
 CREATE POLICY "Public parfums select" ON maisonkenzi.parfums FOR SELECT USING (true);
 CREATE POLICY "Public settings select" ON maisonkenzi.app_settings FOR SELECT USING (true);
 CREATE POLICY "Public bot_qa select" ON maisonkenzi.bot_qa FOR SELECT USING (true);
+CREATE POLICY "Public orders select" ON maisonkenzi.orders FOR SELECT USING (true);
 
 -- Insertion publique des commandes et clients (Tunnel de Vente)
 CREATE POLICY "Public insert orders" ON maisonkenzi.orders FOR INSERT WITH CHECK (true);

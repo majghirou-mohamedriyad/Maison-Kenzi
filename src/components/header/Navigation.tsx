@@ -13,8 +13,10 @@ import {
   Crown,
   Info,
   MessageCircle,
+  Truck,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
+import OrderTrackingModal from "@/components/orders/OrderTrackingModal";
 import { useCart } from "@/store/cart";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useParfums } from "@/hooks/useParfums";
@@ -26,6 +28,7 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBagOpen, setIsBagOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { totalItems } = useCart();
@@ -49,6 +52,7 @@ const Navigation = () => {
       } else if (e.key === "Escape") {
         setIsSearchOpen(false);
         setIsMobileMenuOpen(false);
+        setIsTrackingOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -160,13 +164,28 @@ const Navigation = () => {
           </Link>
         </div>
 
-        {/* Right Side: À Propos, Theme, Search, Cart */}
+        {/* Right Side: Suivi Commande, À Propos, Theme, Search, Cart */}
         <div className="flex items-center gap-1 sm:gap-1.5 z-10">
+
+          {/* Desktop Suivi Commande Button */}
+          <button
+            type="button"
+            onClick={() => setIsTrackingOpen(true)}
+            className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+              location.pathname === "/suivi-commande"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-foreground/80 hover:text-foreground hover:bg-primary/10 border border-primary/25"
+            }`}
+            title="Suivre ma commande en direct"
+          >
+            <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="hidden lg:inline">Suivi</span>
+          </button>
 
           {/* Desktop À Propos Link */}
           <Link
             to="/about"
-            className={`hidden lg:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
+            className={`hidden xl:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
               location.pathname === "/about"
                 ? "bg-foreground text-background"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
@@ -366,6 +385,20 @@ const Navigation = () => {
             </div>
 
             <div className="pt-2 border-t border-border/60 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsTrackingOpen(true);
+                }}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors text-left cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-primary" /> Suivre ma Commande
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-primary" />
+              </button>
+
               <Link
                 to="/about"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -390,6 +423,12 @@ const Navigation = () => {
           </div>
         </div>
       )}
+
+      {/* Order Tracking Modal */}
+      <OrderTrackingModal
+        isOpen={isTrackingOpen}
+        onClose={() => setIsTrackingOpen(false)}
+      />
 
       {/* Shopping Bag Drawer */}
       <ShoppingBag isOpen={isBagOpen} onClose={() => setIsBagOpen(false)} />

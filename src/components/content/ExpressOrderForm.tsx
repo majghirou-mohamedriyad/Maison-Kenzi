@@ -8,6 +8,7 @@ import { User, Phone, MapPin, Sparkles, CheckCircle2, ShoppingBag, AlertCircle, 
 import { supabase } from "@/lib/supabase";
 import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
 
 export interface OrderSelectionItem {
   size: string;
@@ -116,6 +117,7 @@ const ExpressOrderForm = ({
     const orderNumber = `MK-${randomSuffix}`;
     const cleanEmail = `${fullName.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
     const fullAddressText = `${address.trim()}, ${city.trim()}, Maroc`;
+    saveLastOrderNumber(orderNumber);
 
     // Save order record directly to Supabase database for /admin/commandes visibility
     try {

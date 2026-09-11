@@ -14,6 +14,7 @@ import Collection from "./pages/Category";
 import ParfumDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import OrderTracking from "./pages/OrderTracking";
 import ServiceClient from "./pages/about/CustomerCare";
 import About from "./pages/About";
 import AdminLogin from "./admin/AdminLogin";
@@ -48,6 +49,8 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/about/service-client" element={<ServiceClient />} />
               <Route path="/contact" element={<ServiceClient />} />
+              <Route path="/suivi-commande" element={<OrderTracking />} />
+              <Route path="/tracking" element={<OrderTracking />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />

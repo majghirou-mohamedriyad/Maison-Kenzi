@@ -3,11 +3,26 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Refonte Haute Parfumerie Service Client & Conciergerie, Synchronisation Temps Réel Instantanée (Admin & Boutique 0ms), Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Espace Admin opérationnels
+- **Statut général** : Suivi de Commande en Temps Réel (Navbar, Modale & Page Dédiée), Refonte Haute Parfumerie Service Client & Conciergerie, Synchronisation Instantanée Admin/Boutique (0ms), Bannière Panoramique de Catégorie, Espace Admin opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Suivi de Commande en Temps Réel dans la Navbar & Tunnel de Vente (`/suivi-commande` & `/tracking`) :
+  - [x] [`src/hooks/useOrderTracking.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useOrderTracking.ts) : Hook sur-mesure de recherche de commande par code de référence (`MK-XXXXXX`), avec normalisation automatique des codes saisis (gestion de la casse et ajout automatique du préfixe `MK-` si omis), persistance du dernier numéro de commande dans le `localStorage` (`mk_last_order_number`), et souscription **Supabase Realtime** (`postgres_changes` sur la table `orders`) pour refléter instantanément en direct sur l'écran du client tout changement de statut opéré par l'administrateur dans [`/admin/commandes`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx).
+  - [x] [`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx) : Interface Haute Parfumerie de consultation du statut :
+    - Champ de recherche épuré avec bouton d'action et suggestions rapides.
+    - Stepper / Frise chronologique de progression en 3 étapes de prestige (01 Reçue & Enregistrée, 02 Confirmée & Préparation en Atelier, 03 Expédiée / Livrée en mains propres) avec pastille lumineuse animée « Synchronisation en direct ».
+    - Prise en charge des statuts spéciaux (« Commande Annulée » avec alerte sobre).
+    - Récapitulatif détaillé du colis : date d'enregistrement, nom et adresse de livraison au Maroc, décomposition des flacons/décants commandés avec volumes et prix unitaire, total exact avec mode de paiement en espèces à la livraison.
+    - Bouton d'action directe vers la conciergerie WhatsApp pré-rempli avec le numéro de référence.
+  - [x] [`src/components/orders/OrderTrackingModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingModal.tsx) : Modale élégante en verre dépoli ouvrant instantanément le suivi sans quitter la page actuelle.
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Ajout du bouton « Suivi » dans la barre de navigation principale (desktop & tiroir mobile) avec icône vectorielle `Truck` et déclencheur de modale.
+  - [x] [`src/pages/OrderTracking.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/OrderTracking.tsx) & [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Page dédiée avec gestion des paramètres d'URL (`?code=MK-XXXXXX`) accessible via `/suivi-commande` et `/tracking`.
+  - [x] [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx) & [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx) : Mémorisation automatique du numéro de commande généré lors de la validation et bouton d'accès direct vers le suivi sur l'écran de confirmation.
+  - [x] [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) : Ajout de la politique de sécurité RLS `CREATE POLICY "Public orders select" ON maisonkenzi.orders FOR SELECT USING (true);`.
+  - [x] Conformité stricte aux règles du projet : **Zéro emoji**, icônes vectorielles `lucide-react` fines, typographie Serif / Manrope de luxe, code commenté en français.
 
 - [x] Refonte Haute Parfumerie de la Page Service Client & Contact (`/about/service-client` et `/contact`) :
   - [x] [`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx) : Redesign complet et immersif aligné sur le Luxury Nude Design System (Travertin, Albâtre, Or Champagne, typographie Serif prestigieuse, zéro emoji, icônes vectorielles `lucide-react`).
