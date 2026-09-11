@@ -11,6 +11,7 @@
 
 - [x] Bouton d'Ajout Rapide Direct au Panier sur les Cartes Produits :
   - [x] [`src/components/ui/QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx) : Composant d'action rapide haute parfumerie avec verre dépoli (`backdrop-blur`), détection intelligente du format par défaut (5ml / 10ml / Flacon), micro-interaction animée avec confirmation coche (`Check`) et notification Toast instantanée sans quitter la page.
+  - [x] Correction de la condition de rupture de stock sur les décants (`Category.tsx`, `ProductCarousel.tsx`, `SeasonalSection.tsx`, `QuickAddToCartButton.tsx`) permettant l'affichage permanent et réactif du bouton d'ajout rapide pour toutes les créations actives.
   - [x] Intégration harmonieuse sur l'ensemble des grilles et carrousels de la boutique ([`ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx) et [`RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx)).
 
 - [x] Optimisation de la Barre de Recherche Flottante (Navbar) :

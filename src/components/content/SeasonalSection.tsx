@@ -119,11 +119,11 @@ const SeasonalSection = () => {
           {featured.map((p, idx) => {
             if (!p) return null;
             const isFull = p.sale_mode === "full_bottle";
-            const decantStock = (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0);
+            const fullStock = p.full_bottle_stock ?? 0;
             const outOfStock =
-              !p.is_active ||
+              p.is_active === false ||
               p.stock_status === "rupture" ||
-              (isFull ? (p.full_bottle_stock ?? 0) <= 0 : decantStock <= 0);
+              (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
 
             return (
               <Link

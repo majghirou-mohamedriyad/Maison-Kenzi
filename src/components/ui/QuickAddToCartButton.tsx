@@ -29,11 +29,10 @@ export const QuickAddToCartButton = ({
 
   const isFull = parfum.sale_mode === "full_bottle";
   const fullStock = parfum.full_bottle_stock ?? 0;
-  const decantStock = (parfum.stock_5ml ?? 0) + (parfum.stock_10ml ?? 0);
   const outOfStock =
-    !parfum.is_active ||
+    parfum.is_active === false ||
     parfum.stock_status === "rupture" ||
-    (isFull ? fullStock <= 0 : decantStock <= 0);
+    (isFull && typeof parfum.full_bottle_stock === "number" && fullStock <= 0);
 
   if (outOfStock) return null;
 
@@ -54,11 +53,11 @@ export const QuickAddToCartButton = ({
       const price5 = priceFor(parfum, "5ml");
       const price10 = priceFor(parfum, "10ml");
 
-      if (price5 && price5 > 0 && (parfum.stock_5ml ?? 1) > 0) {
+      if (price5 && price5 > 0) {
         chosenSize = "5ml";
         chosenPrice = price5;
         sizeLabel = "5 ml";
-      } else if (price10 && price10 > 0 && (parfum.stock_10ml ?? 1) > 0) {
+      } else if (price10 && price10 > 0) {
         chosenSize = "10ml";
         chosenPrice = price10;
         sizeLabel = "10 ml";
