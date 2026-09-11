@@ -8,7 +8,7 @@
 import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
-import { formatMAD } from "@/lib/sizes";
+import { formatMAD, getParfumPricingSummary } from "@/lib/sizes";
 import { Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
@@ -39,39 +39,36 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
     (p) =>
       maison &&
       p.maison &&
-      p.maison.trim().toLowerCase() === maison.trim().toLowerCase()
+      p.maison.toLowerCase().trim() === maison.toLowerCase().trim()
   );
 
-  // 2. Filter products from the SAME gender (if different from maison)
+  // 2. Filter products with the same gender (excluding same maison)
   const sameGender = availableParfums.filter(
     (p) =>
-      gender &&
       p.gender === gender &&
-      (!maison || p.maison?.trim().toLowerCase() !== maison.trim().toLowerCase())
+      (!maison || p.maison.toLowerCase().trim() !== maison.toLowerCase().trim())
   );
 
-  // 3. Fallback: other active products
-  const remaining = availableParfums.filter(
+  // 3. Other remaining products
+  const others = availableParfums.filter(
     (p) =>
-      (!maison || p.maison?.trim().toLowerCase() !== maison.trim().toLowerCase()) &&
-      (!gender || p.gender !== gender)
+      p.gender !== gender &&
+      (!maison || p.maison.toLowerCase().trim() !== maison.toLowerCase().trim())
   );
 
-  // Combine to get up to 4 recommendations prioritizing same maison, then same gender
-  const related = [...sameMaison, ...sameGender, ...remaining].slice(0, 4);
+  // Combine to get a smart recommendation list: Maison first, then same gender, then others
+  const related = [...sameMaison, ...sameGender, ...others].slice(0, 4);
 
-  if (!loading && related.length === 0) {
-    return null;
-  }
+  if (loading || related.length === 0) return null;
 
   return (
-    <section className="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-border/60 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
+    <section className="mt-16 sm:mt-24 pt-12 border-t border-border max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-primary font-bold block">
-            Découverte Olfactive
-          </span>
-          <h2 className="font-serif text-lg sm:text-2xl text-foreground font-semibold">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-primary mb-1">
+            Recommandations
+          </p>
+          <h2 className="font-serif text-xl sm:text-2xl text-foreground font-light">
             Vous Aimerez Aussi
           </h2>
         </div>
@@ -80,17 +77,17 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse space-y-2">
-              <div className="aspect-[4/5] bg-muted rounded-2xl" />
-              <div className="h-3 w-20 bg-muted rounded" />
-              <div className="h-4 w-32 bg-muted rounded" />
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[4/5] bg-muted/60 mb-2 rounded-xl" />
+              <div className="h-3 w-16 bg-muted/60 mb-1 rounded" />
+              <div className="h-4 w-24 bg-muted/60 rounded" />
             </div>
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {related.map((p) => {
-            const isFull = p.sale_mode === "full_bottle";
+            const pricing = getParfumPricingSummary(p);
 
             return (
               <Link
@@ -125,6 +122,13 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                   />
                 </div>
 
+                {/* Extrait de Description */}
+                {p.description && (
+                  <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
+                    {p.description}
+                  </p>
+                )}
+
                 {/* Étiquettes Genre & Saisons d'utilisation */}
                 <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
                   {p.gender && (
@@ -147,14 +151,13 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                   })}
                 </div>
 
-                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/40">
-                  <span className="text-xs font-serif font-bold text-primary">
-                    {isFull
-                      ? formatMAD(p.full_bottle_price ?? 0)
-                      : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)}`}
+                {/* Prix et Contenance en ML */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
+                  <span className="text-xs sm:text-sm font-serif font-medium text-foreground">
+                    {pricing.priceText}
                   </span>
-                  <span className="text-[9px] uppercase tracking-wider text-primary font-medium">
-                    {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-medium bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                    {pricing.volumeText}
                   </span>
                 </div>
               </Link>

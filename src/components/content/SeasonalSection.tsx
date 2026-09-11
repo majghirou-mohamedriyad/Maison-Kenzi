@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { Sun, Leaf, Snowflake, Sparkles, Wind } from "lucide-react";
 import { useParfums } from "@/hooks/useParfums";
 import ProductImage from "@/components/ui/ProductImage";
-import { formatMAD } from "@/lib/sizes";
+import { formatMAD, getParfumPricingSummary } from "@/lib/sizes";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import {
   getSavedSeasonalSettings,
@@ -124,18 +124,18 @@ const SeasonalSection = () => {
               p.is_active === false ||
               p.stock_status === "rupture" ||
               (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
+            const pricing = getParfumPricingSummary(p);
 
             return (
               <Link
                 key={p.id}
                 to={`/parfum/${p.id}`}
-                className={`block group relative transition-all duration-500 hover:-translate-y-1 ${
+                className={`group block relative rounded-2xl p-2.5 sm:p-3 transition-all duration-500 hover:bg-card/40 ${
                   outOfStock ? "opacity-75" : ""
                 }`}
-                style={{ animationDelay: `${idx * 150}ms` }}
               >
-                {/* Image Container */}
-                <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5]">
+                {/* Visual Container */}
+                <div className="relative mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5]">
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
@@ -143,7 +143,7 @@ const SeasonalSection = () => {
                     label={p.image_label}
                     aspect="aspect-[4/5]"
                     fitMode="cover"
-                    className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+                    className={`w-full h-full transition-all duration-700 ease-out ${
                       outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
                     }`}
                   />
@@ -188,6 +188,13 @@ const SeasonalSection = () => {
                   )}
                 </div>
 
+                {/* Extrait de Description */}
+                {p.description && (
+                  <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
+                    {p.description}
+                  </p>
+                )}
+
                 {/* Étiquettes Genre & Saisons d'utilisation */}
                 <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
                   {p.gender && (
@@ -210,18 +217,15 @@ const SeasonalSection = () => {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t sm:border-t-0 border-border/30">
-                  <span className={`text-[11px] sm:text-xs font-light ${
-                    outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground/80 font-serif"
+                {/* Prix et Contenance en ML */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
+                  <span className={`text-xs sm:text-sm font-medium ${
+                    outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground font-serif"
                   }`}>
-                    {outOfStock
-                      ? "Rupture de stock"
-                      : isFull
-                      ? formatMAD(p.full_bottle_price ?? 0)
-                      : `À partir de ${formatMAD(p.price_5ml)}`}
+                    {outOfStock ? "Rupture de stock" : pricing.priceText}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-primary font-medium">
-                    {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-medium bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                    {pricing.volumeText}
                   </span>
                 </div>
               </Link>

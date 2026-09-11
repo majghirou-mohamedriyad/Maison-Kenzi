@@ -8,7 +8,7 @@
 import { Link } from "react-router-dom";
 import ProductImage from "@/components/ui/ProductImage";
 import { useParfums } from "@/hooks/useParfums";
-import { formatMAD } from "@/lib/sizes";
+import { formatMAD, getParfumPricingSummary } from "@/lib/sizes";
 import { Sparkles, Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
@@ -23,36 +23,39 @@ const ProductCarousel = () => {
       {/* En-tête de section */}
       <div className="flex items-end justify-between mb-8 sm:mb-12">
         <div>
-          <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-primary mb-1.5 flex items-center gap-2 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-primary" strokeWidth={1.5} />
-            <span>Sélection Privilège</span>
-          </p>
-          <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/80 border border-border text-xs uppercase tracking-widest text-muted-foreground mb-3 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span>Sélection Exclusive</span>
+          </div>
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-foreground font-normal">
             Nos Meilleures Ventes
           </h2>
+          <p className="text-sm sm:text-base text-muted-foreground font-light mt-1 max-w-xl">
+            Les créations olfactives les plus plébiscitées par nos connaisseurs, disponibles en décants d'exception ou flacons complets.
+          </p>
         </div>
-        {displayItems.length > 0 && (
-          <Link
-            to="/collection/all"
-            className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-primary hover:text-primary-hover border-b border-primary/30 pb-0.5 transition-all font-medium inline-flex items-center"
-          >
-            Voir tout
-          </Link>
-        )}
+        <Link
+          to="/collection/all"
+          className="hidden sm:inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-foreground hover:text-primary transition-colors py-2 border-b border-foreground/30 hover:border-primary"
+        >
+          Tout le catalogue
+        </Link>
       </div>
 
+      {/* Grille de Produits */}
       {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-[3/4] bg-muted/60 mb-3 rounded-2xl" />
-              <div className="h-3 w-20 bg-muted/60 mb-2 rounded" />
-              <div className="h-4 w-32 bg-muted/60 rounded" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="animate-pulse space-y-3">
+              <div className="aspect-[4/5] rounded-2xl bg-muted" />
+              <div className="h-3 w-1/3 bg-muted rounded" />
+              <div className="h-4 w-2/3 bg-muted rounded" />
+              <div className="h-3 w-1/2 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : displayItems.length > 0 ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {displayItems.map((p, idx) => {
             const isFull = p.sale_mode === "full_bottle";
             const fullStock = p.full_bottle_stock ?? 0;
@@ -60,6 +63,8 @@ const ProductCarousel = () => {
               p.is_active === false ||
               p.stock_status === "rupture" ||
               (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
+
+            const pricing = getParfumPricingSummary(p);
 
             return (
               <Link
@@ -97,7 +102,7 @@ const ProductCarousel = () => {
 
                 {/* Titre et Bouton Panier sur la même ligne */}
                 <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
-                  <h3 className={`font-serif text-sm sm:text-base truncate font-normal transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                  <h3 className={`font-serif text-sm sm:text-base truncate font-medium transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                     }`}>
                     {p.name}
                   </h3>
@@ -108,6 +113,13 @@ const ProductCarousel = () => {
                     />
                   )}
                 </div>
+
+                {/* Extrait de Description */}
+                {p.description && (
+                  <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
+                    {p.description}
+                  </p>
+                )}
 
                 {/* Étiquettes Genre & Saisons d'utilisation */}
                 <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
@@ -131,14 +143,15 @@ const ProductCarousel = () => {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/40">
-                  <span className="text-xs font-light text-foreground/90 font-serif">
-                    {isFull
-                      ? formatMAD(p.full_bottle_price ?? 0)
-                      : `Dès ${formatMAD(p.price_5ml || p.price_10ml || 0)}`}
+                {/* Prix et Contenance en ML */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
+                  <span className={`text-xs sm:text-sm font-medium ${
+                    outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground font-serif"
+                  }`}>
+                    {outOfStock ? "Rupture de stock" : pricing.priceText}
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider text-primary font-medium">
-                    {isFull ? (p.full_bottle_volume_ml ? `${p.full_bottle_volume_ml} ml` : "Flacon") : "Décant"}
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-medium bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                    {pricing.volumeText}
                   </span>
                 </div>
               </Link>
