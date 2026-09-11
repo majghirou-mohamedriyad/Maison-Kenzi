@@ -211,8 +211,8 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 </p>
               </div>
 
-              {/* Navigation Rapide vers les Collections */}
-              <div className="w-full pt-2 space-y-2 max-w-xs">
+              {/* Navigation Rapide vers le Catalogue */}
+              <div className="w-full pt-2 max-w-xs">
                 <Button
                   asChild
                   className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-bold uppercase tracking-wider h-11 shadow-md cursor-pointer"
@@ -223,30 +223,6 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     <span>Découvrir le Catalogue</span>
                   </Link>
                 </Button>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-xl border-border hover:border-primary/40 text-xs h-9 cursor-pointer"
-                    onClick={handleClose}
-                  >
-                    <Link to="/collection/homme" className="flex items-center justify-center gap-1.5">
-                      <Flame className="w-3 h-3 text-primary" /> Homme
-                    </Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-xl border-border hover:border-primary/40 text-xs h-9 cursor-pointer"
-                    onClick={handleClose}
-                  >
-                    <Link to="/collection/femme" className="flex items-center justify-center gap-1.5">
-                      <Flower2 className="w-3 h-3 text-primary" /> Femme
-                    </Link>
-                  </Button>
-                </div>
               </div>
             </div>
           ) : (
