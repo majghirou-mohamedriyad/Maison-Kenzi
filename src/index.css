@@ -252,3 +252,36 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Animations de clignotement / pulsation feutrée pour le bouton flottant de panier */
+@keyframes luxury-blink {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(201, 169, 110, 0), 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+    border-color: rgba(201, 169, 110, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 22px 5px rgba(201, 169, 110, 0.45), 0 15px 30px -5px rgba(0, 0, 0, 0.35);
+    border-color: rgba(201, 169, 110, 0.95);
+    transform: scale(1.03);
+  }
+}
+
+.animate-luxury-blink {
+  animation: luxury-blink 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  70%, 100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.animate-radar-ping {
+  animation: radar-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
