@@ -210,19 +210,19 @@ const Navigation = () => {
             to="/suivi-commande"
             className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
               location.pathname === "/suivi-commande"
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-foreground/80 hover:text-foreground hover:bg-primary/10 border border-primary/25"
+                ? "bg-foreground text-background"
+                : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
             }`}
             title="Suivre ma commande en direct"
           >
-            <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
+            <Truck className="w-3.5 h-3.5" />
             <span className="hidden lg:inline">Suivi</span>
           </Link>
 
           {/* Desktop À Propos Link */}
           <Link
             to="/about"
-            className={`hidden xl:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
+            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
               location.pathname === "/about"
                 ? "bg-foreground text-background"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
@@ -460,27 +460,33 @@ const Navigation = () => {
               <Link
                 to="/suivi-commande"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors text-left ${
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${
                   location.pathname === "/suivi-commande"
-                    ? "bg-primary text-primary-foreground border-primary shadow-xs"
-                    : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+                    ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                    : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <Truck className="w-4 h-4" /> Suivre ma Commande
+                  <Truck className={`w-4 h-4 ${location.pathname === "/suivi-commande" ? "text-background" : "text-primary"}`} />
+                  <span>Suivre ma Commande</span>
                 </span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
 
               <Link
                 to="/about"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-card/60 border border-border/60 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors"
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${
+                  location.pathname === "/about"
+                    ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                    : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
+                }`}
               >
                 <span className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-muted-foreground" /> À Propos de Maison Kenzi
+                  <Info className={`w-4 h-4 ${location.pathname === "/about" ? "text-background" : "text-primary"}`} />
+                  <span>À Propos de Maison Kenzi</span>
                 </span>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
 
               <a
