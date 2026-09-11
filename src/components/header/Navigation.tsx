@@ -14,6 +14,8 @@ import {
   Info,
   MessageCircle,
   Truck,
+  Tag,
+  Compass,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
@@ -40,8 +42,47 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchCardRef = useRef<HTMLDivElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Keyboard shortcut Ctrl+K / Cmd+K
+  // Suggestions dynamiques et aléatoires basées sur les données réelles du site
+  const randomCategorySuggestions = useMemo(() => {
+    if (!isSearchOpen || activeAdminCategories.length === 0) return [];
+    const shuffled = [...activeAdminCategories].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  }, [isSearchOpen, activeAdminCategories]);
+
+  const randomParfumSuggestions = useMemo(() => {
+    if (!isSearchOpen || allParfums.length === 0) return [];
+    const shuffled = [...allParfums].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 4);
+  }, [isSearchOpen, allParfums]);
+
+  // Fermeture automatique au clic en dehors de la boîte de recherche
+  useEffect(() => {
+    if (!isSearchOpen) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (
+        searchCardRef.current &&
+        !searchCardRef.current.contains(target) &&
+        searchButtonRef.current &&
+        !searchButtonRef.current.contains(target)
+      ) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isSearchOpen]);
+
+  // Raccourci clavier Ctrl+K / Cmd+K et touche Echap
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -198,6 +239,7 @@ const Navigation = () => {
 
           {/* Search Button */}
           <button
+            ref={searchButtonRef}
             onClick={() => {
               setIsMobileMenuOpen(false);
               setIsSearchOpen((v) => !v);
@@ -229,10 +271,22 @@ const Navigation = () => {
         </div>
       </nav>
 
+      {/* Backdrop sombre fermant la recherche au clic extérieur */}
+      {isSearchOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/50 backdrop-blur-[2px] animate-in fade-in-0 duration-150"
+          onClick={() => setIsSearchOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Floating Spotlight Search Card */}
       {isSearchOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-          <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-xl max-w-xl mx-auto space-y-3">
+          <div
+            ref={searchCardRef}
+            className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-xl max-w-xl mx-auto space-y-3"
+          >
             <div className="flex items-center bg-card/80 border border-border/80 focus-within:border-primary rounded-xl px-3 py-2 transition-all">
               <Search size={16} className="text-primary mr-2 shrink-0" />
               <input
@@ -259,37 +313,62 @@ const Navigation = () => {
               )}
             </div>
 
-            {/* Quick Suggestions */}
+            {/* Suggestions Dynamiques Aléatoires (Catégories & Parfums réels) */}
             {!searchQuery.trim() && (
-              <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-semibold text-muted-foreground mr-1">Suggestions :</span>
-                <button
-                  onClick={() => {
-                    setIsSearchOpen(false);
-                    navigate("/collection/packs");
-                  }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <Crown className="w-3 h-3" /> Les Packs
-                </button>
-                <button
-                  onClick={() => {
-                    setIsSearchOpen(false);
-                    navigate("/collection/homme");
-                  }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary text-foreground hover:bg-secondary/80 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <Flame className="w-3 h-3 text-primary" /> Homme
-                </button>
-                <button
-                  onClick={() => {
-                    setIsSearchOpen(false);
-                    navigate("/collection/femme");
-                  }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary text-foreground hover:bg-secondary/80 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <Flower2 className="w-3 h-3 text-primary" /> Femme
-                </button>
+              <div className="space-y-2.5 pt-1">
+                {/* Catégories réelles actives */}
+                {randomCategorySuggestions.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                      <Tag className="w-3 h-3 text-primary" />
+                      <span>Univers & Collections</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {randomCategorySuggestions.map((cat) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            setIsSearchOpen(false);
+                            navigate(`/collection/${cat.slug}`);
+                          }}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 text-foreground hover:bg-primary/15 hover:text-primary hover:border-primary/30 border border-border/70 transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Parfums réels actifs */}
+                {randomParfumSuggestions.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                      <Sparkles className="w-3 h-3 text-primary" />
+                      <span>Créations à Découvrir</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {randomParfumSuggestions.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => handleSelectProduct(p.id)}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <span className="font-semibold">{p.name}</span>
+                          <span className="text-[10px] text-muted-foreground font-normal">({p.maison})</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {randomCategorySuggestions.length === 0 && randomParfumSuggestions.length === 0 && (
+                  <p className="text-xs text-muted-foreground font-light py-1">
+                    Saisissez un nom de parfum ou une maison pour explorer la collection.
+                  </p>
+                )}
               </div>
             )}
 

@@ -10,7 +10,9 @@
 ## Historique des Tâches Réalisées
 
 - [x] Optimisation de la Barre de Recherche Flottante (Navbar) :
-  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Suppression du double bouton de fermeture/annulation (suppression du bouton natif `type="search"` du navigateur Webkit/Blink au profit de `type="text"`) et conservation d'un unique bouton d'effacement `X` sobre qui réinitialise le texte et replace automatiquement le curseur dans le champ de saisie (`searchInputRef.focus()`).
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Suggestions dynamiques et aléatoires générées à chaque ouverture à partir des données réelles de la base (catégories actives et créations de parfum réelles, éliminant tout contenu statique en dur).
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Fermeture fluide et instantanée au clic à l'extérieur de la modale de recherche (gestionnaire d'événements `mousedown`/`touchstart` et superposition de fond floutée `backdrop-blur`).
+  - [x] [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx) : Suppression du double bouton de fermeture/annulation au profit d'un unique bouton d'effacement `X` qui vide le texte et repositionne le focus.
 
 - [x] Suivi de Commande en Temps Réel dans la Navbar & Tunnel de Vente (`/suivi-commande` & `/tracking`) :
   - [x] [`src/pages/OrderTracking.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/OrderTracking.tsx) & [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Page dédiée immersive avec gestion des paramètres d'URL (`?code=MK-XXXXXX`) accessible via `/suivi-commande` et `/tracking`.

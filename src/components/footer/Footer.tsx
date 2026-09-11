@@ -153,11 +153,7 @@ const Footer = () => {
 
         {/* Bottom copyright bar */}
         <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
-          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>
-          <div className="flex items-center gap-2 text-[11px]">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Maison de Parfumerie au Maroc</span>
-          </div>
+          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>  
         </div>
       </div>
     </footer>
