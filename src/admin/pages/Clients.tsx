@@ -20,6 +20,7 @@ import {
   User,
   ShoppingBag,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -44,7 +45,7 @@ const formatDate = (iso: string) => {
 };
 
 const Clients = () => {
-  const { customers, loading, error, addCustomer, deleteCustomer } = useAdminCustomers();
+  const { customers, loading, error, refetch, addCustomer, deleteCustomer } = useAdminCustomers();
   const [search, setSearch] = useState("");
   const [viewingCustomer, setViewingCustomer] = useState<EnrichedCustomer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<EnrichedCustomer | null>(null);
@@ -221,6 +222,20 @@ const Clients = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              refetch();
+              toast.success("Base de données clients actualisée");
+            }}
+            title="Rafraîchir les données"
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground rounded-lg border border-border transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-primary" : ""}`} />
+            <span className="hidden sm:inline">Actualiser</span>
+          </button>
+
           <button
             type="button"
             onClick={handleExportCSV}

@@ -11,7 +11,7 @@ export type EnrichedCustomer = Customer & {
 
 const getHiddenCustomerKeys = (): Set<string> => {
   try {
-    const raw = localStorage.getItem("tabat_hidden_customers");
+    const raw = localStorage.getItem("mk_hidden_customers") || localStorage.getItem("tabat_hidden_customers");
     if (raw) return new Set(JSON.parse(raw));
   } catch {
     // ignore
@@ -25,7 +25,7 @@ const saveHiddenCustomerKey = (keys: string[]) => {
     keys.forEach((k) => {
       if (k) existing.add(k.trim().toLowerCase());
     });
-    localStorage.setItem("tabat_hidden_customers", JSON.stringify(Array.from(existing)));
+    localStorage.setItem("mk_hidden_customers", JSON.stringify(Array.from(existing)));
   } catch {
     // ignore
   }
@@ -48,23 +48,37 @@ export const useAdminCustomers = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (custErr) {
+        console.warn("Supabase customers query notice:", custErr.message);
+      }
+
       // 2. Fetch orders table to aggregate real purchases and history
       const { data: dbOrders, error: ordErr } = await supabase
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (ordErr) {
+        console.warn("Supabase orders query notice:", ordErr.message);
+      }
+
       const ordersList = (dbOrders ?? []) as unknown as Order[];
       const customersMap = new Map<string, EnrichedCustomer>();
 
       // Populate from customers table
-      if (!custErr && dbCustomers) {
+      if (dbCustomers && Array.isArray(dbCustomers)) {
         dbCustomers.forEach((c) => {
           const rawPhone = c.phone ? c.phone.replace(/[^0-9]/g, "") : "";
-          const key = rawPhone || c.email?.toLowerCase() || c.name?.toLowerCase();
+          const key = rawPhone || (c.email ? c.email.toLowerCase() : "") || (c.name ? c.name.toLowerCase() : "");
           
           // Check if hidden/deleted
-          if (key && !hidden.has(key) && !hidden.has(c.id) && !(c.phone && hidden.has(c.phone.toLowerCase())) && !(c.name && hidden.has(c.name.toLowerCase()))) {
+          if (
+            key &&
+            !hidden.has(key) &&
+            !hidden.has(c.id) &&
+            !(c.phone && hidden.has(c.phone.toLowerCase())) &&
+            !(c.name && hidden.has(c.name.toLowerCase()))
+          ) {
             customersMap.set(key, {
               ...c,
               total_orders: Number(c.total_orders || 0),
@@ -78,12 +92,23 @@ export const useAdminCustomers = () => {
       // Aggregate from all orders (even express checkout orders that didn't create a customer row yet)
       ordersList.forEach((ord) => {
         const rawPhone = ord.customer_phone ? ord.customer_phone.replace(/[^0-9]/g, "") : "";
-        const emailKey = ord.customer_email && !ord.customer_email.endsWith("@client.tabat.ma") ? ord.customer_email.toLowerCase() : "";
+        const emailKey =
+          ord.customer_email &&
+          !ord.customer_email.endsWith("@client.tabat.ma") &&
+          !ord.customer_email.endsWith("@client.maisonkenzi.ma") &&
+          !ord.customer_email.includes("client_")
+            ? ord.customer_email.toLowerCase()
+            : "";
         const nameKey = ord.customer_name?.trim().toLowerCase() || "client";
         const key = rawPhone || emailKey || nameKey;
 
         // Skip if customer was deleted by admin
-        if (hidden.has(key) || (ord.customer_phone && hidden.has(ord.customer_phone.toLowerCase())) || (ord.customer_name && hidden.has(ord.customer_name.toLowerCase())) || (rawPhone && hidden.has(rawPhone))) {
+        if (
+          hidden.has(key) ||
+          (ord.customer_phone && hidden.has(ord.customer_phone.toLowerCase())) ||
+          (ord.customer_name && hidden.has(ord.customer_name.toLowerCase())) ||
+          (rawPhone && hidden.has(rawPhone))
+        ) {
           return;
         }
 
@@ -105,7 +130,7 @@ export const useAdminCustomers = () => {
           customersMap.set(key, {
             id: `cust_${key}`,
             name: ord.customer_name || "Client Maison Kenzi",
-            email: ord.customer_email || `${nameKey.replace(/[^a-z0-9]/g, "") || "client"}@client.tabat.ma`,
+            email: ord.customer_email || `${nameKey.replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`,
             phone: ord.customer_phone,
             address: ord.customer_address,
             total_orders: 1,
@@ -147,6 +172,29 @@ export const useAdminCustomers = () => {
 
   useEffect(() => {
     load();
+
+    // Abonnement temps réel Supabase pour rafraîchir instantanément la base clients
+    const channel = supabase
+      .channel("admin-customers-live-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "maisonkenzi", table: "customers" },
+        () => {
+          load();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "maisonkenzi", table: "orders" },
+        () => {
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [load]);
 
   const addCustomer = async (cust: Partial<Customer>) => {
@@ -159,14 +207,14 @@ export const useAdminCustomers = () => {
         hidden.delete(cust.phone.replace(/[^0-9]/g, ""));
       }
       if (cust.email) hidden.delete(cust.email.toLowerCase());
-      localStorage.setItem("tabat_hidden_customers", JSON.stringify(Array.from(hidden)));
+      localStorage.setItem("mk_hidden_customers", JSON.stringify(Array.from(hidden)));
     } catch {
       // ignore
     }
 
     const safeEmail = cust.email && cust.email.trim().length > 0
       ? cust.email.trim().toLowerCase()
-      : `client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}@tabat.ma`;
+      : `client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}@maisonkenzi.ma`;
 
     const { error: err } = await supabase.from("customers").insert([
       {
@@ -235,3 +283,4 @@ export const useAdminCustomers = () => {
 
   return { customers, loading, error, refetch: load, addCustomer, deleteCustomer };
 };
+

@@ -142,8 +142,40 @@ const Checkout = () => {
       if (dbError) {
         console.error("Erreur enregistrement commande Supabase:", dbError);
       }
+
+      // Enregistrement et mise à jour automatique dans la base clients
+      const cleanPhone = phone.trim();
+      const { data: existingCust } = await supabase
+        .from("customers")
+        .select("*")
+        .or(`phone.eq.${cleanPhone},email.eq.${cleanEmail}`)
+        .maybeSingle();
+
+      if (existingCust) {
+        await supabase
+          .from("customers")
+          .update({
+            name: fullName.trim(),
+            address: fullAddressText,
+            phone: cleanPhone,
+            total_orders: (existingCust.total_orders || 0) + 1,
+            total_spent: Number(existingCust.total_spent || 0) + Number(total || 0),
+          })
+          .eq("id", existingCust.id);
+      } else {
+        await supabase.from("customers").insert([
+          {
+            name: fullName.trim(),
+            phone: cleanPhone,
+            address: fullAddressText,
+            email: cleanEmail,
+            total_orders: 1,
+            total_spent: Number(total || 0),
+          },
+        ]);
+      }
     } catch (err) {
-      console.warn("Supabase order recording note:", err);
+      console.warn("Supabase order/customer recording note:", err);
     }
 
     const completedState = {

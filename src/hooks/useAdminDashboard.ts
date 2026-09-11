@@ -62,7 +62,13 @@ export const useDashboardKPIs = () => {
 
         (allOrdersRes.data ?? []).forEach((o) => {
           const rawPhone = o.customer_phone ? o.customer_phone.replace(/[^0-9]/g, "") : "";
-          const emailKey = o.customer_email && !o.customer_email.endsWith("@client.tabat.ma") ? o.customer_email.toLowerCase() : "";
+          const emailKey =
+            o.customer_email &&
+            !o.customer_email.endsWith("@client.tabat.ma") &&
+            !o.customer_email.endsWith("@client.maisonkenzi.ma") &&
+            !o.customer_email.includes("client_")
+              ? o.customer_email.toLowerCase()
+              : "";
           const nameKey = o.customer_name?.trim().toLowerCase() || "client";
           const key = rawPhone || emailKey || nameKey;
           if (key) {

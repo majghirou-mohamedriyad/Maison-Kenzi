@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Synchronisation Automatique & Temps Réel de la Base de Données Clients ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx) & [`src/hooks/useAdminCustomers.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAdminCustomers.ts)) :
+  - [x] **Enregistrement Automatique lors des Commandes** : Ajout de l'upsert automatique du client (`customers`) dès la validation d'une commande via [`Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx) ou commande express [`ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx) (nom, téléphone, adresse, total commandes, total dépensé).
+  - [x] **Agrégation Dynamique depuis la table Commandes** : Récupération immédiate des coordonnées clients depuis toutes les commandes même si elles sont en attente ou sans compte préalable.
+  - [x] **Abonnement Supabase Realtime (0ms)** : Rafraîchissement instantané en direct de la base clients dès qu'une commande est passée sur la boutique ou modifiée dans l'administration.
+  - [x] **Bouton d'Actualisation & Nettoyage** : Ajout d'un bouton d'actualisation manuelle avec indicateur animé et mise à jour des identifiants vers l'écosystème Maison Kenzi.
+
 - [x] Dynamisation de la Section « Collections » du Footer ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
   - [x] **Affichage Automatique des Catégories Réelles** : Remplacement des liens statiques par la récupération en direct des catégories actives de la boutique via `useCategories()`.
   - [x] **Catalogue Complet & Navigation Dédiée** : Ajout du lien direct vers le catalogue global (`/collection/all`) et vers chaque univers actif (`/collection/:slug`).

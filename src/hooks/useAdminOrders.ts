@@ -34,15 +34,18 @@ export const useAdminOrders = () => {
       if (targetOrder) {
         const clientEmail =
           targetOrder.customer_email ||
-          `${targetOrder.customer_name.toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.tabat.ma`;
+          `${targetOrder.customer_name.toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
+        const clientPhone = targetOrder.customer_phone?.trim() || "";
 
         try {
           // Check if customer already exists in database
-          const { data: existingCustomer } = await supabase
-            .from("customers")
-            .select("*")
-            .eq("email", clientEmail)
-            .maybeSingle();
+          let query = supabase.from("customers").select("*");
+          if (clientPhone) {
+            query = query.or(`phone.eq.${clientPhone},email.eq.${clientEmail}`);
+          } else {
+            query = query.eq("email", clientEmail);
+          }
+          const { data: existingCustomer } = await query.maybeSingle();
 
           if (existingCustomer) {
             await supabase
