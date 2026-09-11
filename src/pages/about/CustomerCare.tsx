@@ -31,7 +31,7 @@ const ServiceClient = () => {
             <div className="grid md:grid-cols-2 gap-12 max-w-4xl">
               <div className="space-y-3">
                 <h3 className="font-serif text-xl text-primary">Téléphone & WhatsApp</h3>
-                <p className="text-foreground/75 font-light">+212 752-850156</p>
+                <p className="text-foreground/75 font-light">+{waNumber}</p>
               </div>
               <div className="space-y-3">
                 <h3 className="font-serif text-xl text-primary">Horaires</h3>
@@ -74,7 +74,7 @@ const ServiceClient = () => {
                   aria-label="Nous suivre sur Instagram"
                 >
                   <Instagram className="mr-2 h-5 w-5" />
-                  @{INSTAGRAM_HANDLE}
+                  Instagram
                 </a>
               </Button>
             </div>
