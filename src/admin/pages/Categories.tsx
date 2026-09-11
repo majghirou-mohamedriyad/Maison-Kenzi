@@ -1,8 +1,9 @@
 /**
  * Page d'Administration des Catégories & Univers — Maison Kenzi
  *
- * Permet la création, modification, réorganisation et suppression des catégories olfactives.
- * Synchronisation bidirectionnelle avec Supabase et le store réactif externe.
+ * Interface de consultation, filtrage, création, modification
+ * et suppression des univers et collections olfactives avec vue tableau ou cartes.
+ * Design aligné sur les standards Haute Parfumerie de la Gestion des Parfums.
  */
 
 import { useState, useMemo, useRef } from "react";
@@ -18,12 +19,13 @@ import {
   Image as ImageIcon,
   Loader2,
   Clock,
+  Table2,
+  LayoutGrid,
+  X,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Filter,
-  X,
-  RotateCcw,
+  Sparkles,
 } from "lucide-react";
 import {
   useCategories,
@@ -41,7 +43,18 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/admin/lib/syncParfum";
 
@@ -53,20 +66,36 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+type StatusFilter = "Tous" | "active" | "inactive" | "coming_soon";
+type SortOption = "name_asc" | "name_desc" | "products_asc" | "products_desc" | "status";
+
 const CategoriesAdmin = () => {
   const categories = useCategories();
   const products = useProducts();
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
+  const [sortOption, setSortOption] = useState<SortOption>("name_asc");
+
+  // Mémorisation du mode d'affichage (Tableau ou Grille de cartes)
+  const [viewMode, setViewMode] = useState<"table" | "grid">(() => {
+    try {
+      const saved = localStorage.getItem("mk_admin_category_view_mode");
+      if (saved === "grid" || saved === "table") return saved;
+    } catch {}
+    return "table";
+  });
+
+  const changeViewMode = (mode: "table" | "grid") => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem("mk_admin_category_view_mode", mode);
+    } catch {}
+  };
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCat, setEditingCat] = useState<AdminCategory | null>(null);
   const [deletingCat, setDeletingCat] = useState<AdminCategory | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-
-  // Column Sorting State
-  type SortField = "name" | "description" | "products" | "status" | "default";
-  type SortDirection = "asc" | "desc";
-  const [sortField, setSortField] = useState<SortField>("default");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // Form State
   const [name, setName] = useState("");
@@ -97,65 +126,64 @@ const CategoriesAdmin = () => {
     return counts;
   }, [categories, products]);
 
-  const hasActiveFilters = Boolean(search.trim() || sortField !== "default");
-
-  const resetAllFilters = () => {
-    setSearch("");
-    setSortField("default");
-    setSortDirection("asc");
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      if (sortDirection === "asc") {
-        setSortDirection("desc");
-      } else {
-        setSortField("default");
-        setSortDirection("asc");
-      }
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
+  const handleSortHeader = (field: "name" | "products" | "status") => {
+    if (field === "name") {
+      setSortOption((prev) => (prev === "name_asc" ? "name_desc" : "name_asc"));
+    } else if (field === "products") {
+      setSortOption((prev) => (prev === "products_desc" ? "products_asc" : "products_desc"));
+    } else if (field === "status") {
+      setSortOption("status");
     }
   };
 
-  const filteredCategories = useMemo(() => {
-    let list = categories.filter((c) => {
-      // Recherche globale rapide (nom, slug, description)
-      const qGlobal = search.trim().toLowerCase();
-      if (qGlobal) {
-        const matchGlobal =
-          c.name.toLowerCase().includes(qGlobal) ||
-          c.slug.toLowerCase().includes(qGlobal) ||
-          (c.description && c.description.toLowerCase().includes(qGlobal));
-        if (!matchGlobal) return false;
+  const filteredAndSorted = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    // 1. Filtrage
+    const result = categories.filter((c) => {
+      // Filtre Statut
+      if (statusFilter === "active" && !c.is_active) return false;
+      if (statusFilter === "inactive" && c.is_active) return false;
+      if (statusFilter === "coming_soon" && !c.is_coming_soon) return false;
+
+      // Recherche textuelle globale
+      if (q) {
+        const matchesName = c.name.toLowerCase().includes(q);
+        const matchesSlug = c.slug.toLowerCase().includes(q);
+        const matchesDesc = (c.description || "").toLowerCase().includes(q);
+        if (!matchesName && !matchesSlug && !matchesDesc) return false;
       }
+
       return true;
     });
 
-    // Tri par colonne
-    if (sortField !== "default") {
-      list = [...list].sort((a, b) => {
-        let comparison = 0;
-        if (sortField === "name") {
-          comparison = a.name.localeCompare(b.name, "fr", { sensitivity: "base" });
-        } else if (sortField === "description") {
-          comparison = (a.description || "").localeCompare(b.description || "", "fr", { sensitivity: "base" });
-        } else if (sortField === "products") {
-          const countA = categoryStats[a.slug] ?? 0;
-          const countB = categoryStats[b.slug] ?? 0;
-          comparison = countA - countB;
-        } else if (sortField === "status") {
-          const scoreA = (a.is_active ? 2 : 0) + (a.is_coming_soon ? 1 : 0);
-          const scoreB = (b.is_active ? 2 : 0) + (b.is_coming_soon ? 1 : 0);
-          comparison = scoreA - scoreB;
-        }
-        return sortDirection === "asc" ? comparison : -comparison;
-      });
-    }
+    // 2. Tri
+    result.sort((a, b) => {
+      const countA = categoryStats[a.slug] ?? 0;
+      const countB = categoryStats[b.slug] ?? 0;
 
-    return list;
-  }, [categories, search, sortField, sortDirection, categoryStats]);
+      if (sortOption === "name_asc") return a.name.localeCompare(b.name, "fr", { sensitivity: "base" });
+      if (sortOption === "name_desc") return b.name.localeCompare(a.name, "fr", { sensitivity: "base" });
+      if (sortOption === "products_asc") return countA - countB;
+      if (sortOption === "products_desc") return countB - countA;
+      if (sortOption === "status") {
+        const scoreA = (a.is_active ? 2 : 0) + (a.is_coming_soon ? 1 : 0);
+        const scoreB = (b.is_active ? 2 : 0) + (b.is_coming_soon ? 1 : 0);
+        return scoreB - scoreA;
+      }
+      return 0;
+    });
+
+    return result;
+  }, [categories, search, statusFilter, sortOption, categoryStats]);
+
+  const hasActiveFilters = search.trim() !== "" || statusFilter !== "Tous";
+
+  const resetFilters = () => {
+    setSearch("");
+    setStatusFilter("Tous");
+    setSortOption("name_asc");
+  };
 
   const openAddModal = () => {
     setEditingCat(null);
@@ -174,7 +202,7 @@ const CategoriesAdmin = () => {
     setEditingCat(cat);
     setName(cat.name);
     setSlug(cat.slug);
-    setDescription(cat.description);
+    setDescription(cat.description || "");
     setImage(cat.image || cat.icon || "");
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
@@ -295,296 +323,444 @@ const CategoriesAdmin = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Header & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Barre d'En-tête Identique à Gestion des Parfums */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
         <div>
-          <h2 className="text-xl font-serif font-bold text-foreground flex items-center gap-2">
-            <FolderTree className="w-5 h-5 text-primary" /> Gestion des Catégories
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Organisez les rayons, collections et univers olfactifs de la boutique Maison Kenzi
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">
+            Univers & Collections
+          </span>
+          <h1 className="font-serif text-2xl sm:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight mt-0.5">
+            Gestion des Catégories
+          </h1>
+          <p className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-1">
+            {categories.length} univers enregistrés • {filteredAndSorted.length} affichés
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#111827] hover:bg-[#1F2937] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] dark:text-[#111827] text-white text-xs font-bold rounded-xl shadow-md shadow-[#C9A96E]/20 transition-all cursor-pointer whitespace-nowrap self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" /> Nouvelle Catégorie
-        </button>
-      </div>
-
-      {/* Top Bar: Search, Stats & Global Reset */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Recherche globale (nom, slug, description)..."
-            className="w-full pl-10 pr-10 py-2.5 text-xs bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground shadow-xs"
-          />
-          {search && (
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* Bascule Tableau / Cartes */}
+          <div className="inline-flex items-center bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] rounded-xl p-1 shadow-xs">
             <button
               type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
+              onClick={() => changeViewMode("table")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === "table"
+                  ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-xs"
+                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+              }`}
+              title="Affichage en Tableau"
             >
-              <X className="w-3.5 h-3.5" />
+              <Table2 className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Tableau</span>
             </button>
-          )}
-        </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
-            <strong className="text-foreground font-semibold">{filteredCategories.length}</strong> / {categories.length} catégorie{categories.length > 1 ? "s" : ""}
-          </span>
-
-          {hasActiveFilters && (
             <button
               type="button"
-              onClick={resetAllFilters}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl transition-colors cursor-pointer"
-              title="Réinitialiser tous les filtres"
+              onClick={() => changeViewMode("grid")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === "grid"
+                  ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-xs"
+                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+              }`}
+              title="Affichage en Grille de Cartes"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Réinitialiser les filtres</span>
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Cartes</span>
             </button>
-          )}
+          </div>
+
+          {/* Bouton Nouvelle Catégorie */}
+          <Button
+            onClick={openAddModal}
+            className="rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs font-medium uppercase tracking-[0.15em] h-10 px-5 gap-2 shadow-sm cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nouvelle Catégorie</span>
+          </Button>
         </div>
       </div>
 
-      {/* Categories Grid Table with Column Filters & Sorting */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="bg-muted/60 text-muted-foreground text-[10px] uppercase tracking-wider border-b border-border font-bold">
-              {/* Row 1: Column Titles with Sorting */}
-              <tr>
-                <th className="text-left px-5 py-3">
-                  <button
-                    type="button"
-                    onClick={() => handleSort("name")}
-                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
-                  >
-                    <span>Catégorie & Univers</span>
-                    {sortField === "name" ? (
-                      sortDirection === "asc" ? (
-                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
-                      ) : (
-                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
-                    )}
-                  </button>
-                </th>
+      {/* Barre de Filtres & Recherche */}
+      <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Recherche */}
+          <div className="relative sm:col-span-2 md:col-span-3">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher par nom, univers olfactif ou description…"
+              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C827A] hover:text-[#1A1816] p-1 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-                <th className="text-left px-5 py-3">
-                  <button
-                    type="button"
-                    onClick={() => handleSort("description")}
-                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
-                  >
-                    <span>Description</span>
-                    {sortField === "description" ? (
-                      sortDirection === "asc" ? (
-                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
-                      ) : (
-                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
-                    )}
-                  </button>
-                </th>
+          {/* Filtre Statut */}
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+            >
+              <option value="Tous">Tous les Statuts</option>
+              <option value="active">Actives uniquement</option>
+              <option value="coming_soon">À venir uniquement</option>
+              <option value="inactive">Masquées</option>
+            </select>
+          </div>
+        </div>
 
-                <th className="text-center px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => handleSort("products")}
-                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer mx-auto"
-                  >
-                    <span>Produits</span>
-                    {sortField === "products" ? (
-                      sortDirection === "asc" ? (
-                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
-                      ) : (
-                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
-                    )}
+        {/* Ligne 2 : Filtres Actifs & Réinitialisation */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] text-xs text-[#7A726A] dark:text-[#A39B91]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Filtres actifs :</span>
+              {search && (
+                <span className="inline-flex items-center gap-1 bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] px-2.5 py-1 rounded-full text-[11px] text-[#1A1816] dark:text-[#FAF7F2]">
+                  Recherche : « {search} »
+                  <button onClick={() => setSearch("")} className="hover:text-red-500 cursor-pointer">
+                    <X className="w-3 h-3" />
                   </button>
-                </th>
-
-                <th className="text-center px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => handleSort("status")}
-                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer mx-auto"
-                  >
-                    <span>Statut</span>
-                    {sortField === "status" ? (
-                      sortDirection === "asc" ? (
-                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
-                      ) : (
-                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
-                    )}
+                </span>
+              )}
+              {statusFilter !== "Tous" && (
+                <span className="inline-flex items-center gap-1 bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] px-2.5 py-1 rounded-full text-[11px] text-[#1A1816] dark:text-[#FAF7F2]">
+                  Statut : {statusFilter === "active" ? "Actives" : statusFilter === "coming_soon" ? "À venir" : "Masquées"}
+                  <button onClick={() => setStatusFilter("Tous")} className="hover:text-red-500 cursor-pointer">
+                    <X className="w-3 h-3" />
                   </button>
-                </th>
+                </span>
+              )}
+            </div>
 
-                <th className="text-right px-5 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {filteredCategories.map((cat, idx) => {
-                const count = categoryStats[cat.slug] ?? 0;
-                const catImg = cat.image || cat.icon;
-                return (
-                  <tr
-                    key={cat.id || cat.slug || `cat-row-${idx}`}
-                    className="hover:bg-muted/30 transition-colors group"
-                  >
-                    {/* Name & Thumbnail */}
-                    <td className="px-5 py-4 font-medium text-foreground">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden border border-border bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                          {catImg ? (
-                            <img
-                              src={catImg}
-                              alt={cat.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            cat.name.charAt(0)
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-serif font-bold text-sm text-foreground">
-                            {cat.name}
+            <button
+              onClick={resetFilters}
+              className="text-[#C9A96E] hover:underline font-medium cursor-pointer ml-auto text-xs"
+            >
+              Réinitialiser tous les filtres
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Vue 1: GRILLE DE CARTES */}
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredAndSorted.map((cat) => {
+            const count = categoryStats[cat.slug] ?? 0;
+            const catImg = cat.image || cat.icon;
+
+            return (
+              <div
+                key={cat.id || cat.slug}
+                className="group relative bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] hover:border-[#C9A96E]/50 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between"
+              >
+                <div>
+                  {/* Visuel & Statut */}
+                  <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] mb-3">
+                    {catImg ? (
+                      <img
+                        src={catImg}
+                        alt={cat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#C9A96E] font-serif text-3xl font-bold bg-[#FAF7F2] dark:bg-[#1C1A18]">
+                        {cat.name.charAt(0)}
+                      </div>
+                    )}
+
+                    {/* Badge Statut */}
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md border ${
+                          cat.is_active
+                            ? "bg-emerald-500/90 text-white border-emerald-400/40"
+                            : "bg-stone-500/90 text-white border-stone-400/40"
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${cat.is_active ? "bg-white" : "bg-white/60"}`} />
+                        {cat.is_active ? "Actif" : "Masqué"}
+                      </span>
+
+                      {cat.is_coming_soon && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md bg-[#C9A96E]/90 text-[#121110] border border-[#C9A96E]/40">
+                          <Clock className="w-2.5 h-2.5" /> À venir
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Titre & Description */}
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-serif text-base font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate" title={cat.name}>
+                      {cat.name}
+                    </h3>
+                    {cat.gender && (
+                      <span className="text-[9px] uppercase tracking-wider text-[#7A726A] dark:text-[#A39B91] bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] px-2 py-0.5 rounded-full font-medium shrink-0">
+                        {cat.gender}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-[#7A726A] dark:text-[#A39B91] line-clamp-2 mt-1 min-h-[2rem]">
+                    {cat.description || "Aucune description renseignée."}
+                  </p>
+                </div>
+
+                {/* Pied de Carte : Compteur & Actions */}
+                <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#EAE3D8] dark:border-[#24211E]">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                    {count} parfum{count > 1 ? "s" : ""}
+                  </span>
+
+                  <div className="flex items-center gap-1">
+                    <a
+                      href={`/collection/${cat.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#7A726A] dark:text-[#A39B91] hover:text-[#C9A96E] transition-colors"
+                      title="Voir sur la boutique"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(cat)}
+                      className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] transition-colors cursor-pointer"
+                      title="Modifier"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeletingCat(cat)}
+                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-[#7A726A] dark:text-[#A39B91] hover:text-red-500 transition-colors cursor-pointer"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Vue 2: TABLEAU DE LUXE */
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 text-[#7A726A] dark:text-[#A39B91] text-[10px] uppercase tracking-wider border-b border-[#EAE3D8] dark:border-[#24211E] font-bold">
+                <tr>
+                  <th className="text-left px-5 py-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleSortHeader("name")}
+                      className="group inline-flex items-center gap-1.5 hover:text-[#1A1816] dark:hover:text-[#FAF7F2] transition-colors cursor-pointer"
+                    >
+                      <span>Catégorie</span>
+                      {sortOption === "name_asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      ) : sortOption === "name_desc" ? (
+                        <ArrowDown className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 text-[#7A726A]/50 group-hover:text-[#1A1816]" />
+                      )}
+                    </button>
+                  </th>
+
+                  <th className="text-left px-5 py-3.5">Description</th>
+
+                  <th className="text-center px-4 py-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleSortHeader("products")}
+                      className="group inline-flex items-center gap-1.5 hover:text-[#1A1816] dark:hover:text-[#FAF7F2] transition-colors cursor-pointer mx-auto"
+                    >
+                      <span>Produits</span>
+                      {sortOption === "products_asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      ) : sortOption === "products_desc" ? (
+                        <ArrowDown className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 text-[#7A726A]/50 group-hover:text-[#1A1816]" />
+                      )}
+                    </button>
+                  </th>
+
+                  <th className="text-center px-4 py-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleSortHeader("status")}
+                      className="group inline-flex items-center gap-1.5 hover:text-[#1A1816] dark:hover:text-[#FAF7F2] transition-colors cursor-pointer mx-auto"
+                    >
+                      <span>Statut</span>
+                      {sortOption === "status" ? (
+                        <ArrowDown className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 text-[#7A726A]/50 group-hover:text-[#1A1816]" />
+                      )}
+                    </button>
+                  </th>
+
+                  <th className="text-right px-5 py-3.5">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#EAE3D8]/60 dark:divide-[#24211E]/60">
+                {filteredAndSorted.map((cat, idx) => {
+                  const count = categoryStats[cat.slug] ?? 0;
+                  const catImg = cat.image || cat.icon;
+                  return (
+                    <tr
+                      key={cat.id || cat.slug || `cat-row-${idx}`}
+                      className="hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A17]/50 transition-colors group"
+                    >
+                      {/* Name & Thumbnail */}
+                      <td className="px-5 py-4 font-medium text-[#1A1816] dark:text-[#FAF7F2]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-[#FAF7F2] dark:bg-[#1C1A18] text-[#C9A96E] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                            {catImg ? (
+                              <img
+                                src={catImg}
+                                alt={cat.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              cat.name.charAt(0)
+                            )}
                           </div>
-                          {cat.gender && (
-                            <span className="text-[10px] text-muted-foreground bg-secondary px-2 py-0.2 rounded-full border border-border">
-                              {cat.gender}
+                          <div>
+                            <div className="font-serif font-bold text-sm text-[#1A1816] dark:text-[#FAF7F2]">
+                              {cat.name}
+                            </div>
+                            {cat.gender && (
+                              <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] bg-[#FAF7F2] dark:bg-[#1C1A18] px-2 py-0.2 rounded-full border border-[#E5DDD0] dark:border-[#332E28]">
+                                {cat.gender}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Description */}
+                      <td className="px-5 py-4 text-[#7A726A] dark:text-[#A39B91] max-w-xs truncate">
+                        {cat.description || "—"}
+                      </td>
+
+                      {/* Products Count */}
+                      <td className="px-4 py-4 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                          {count} parfum{count > 1 ? "s" : ""}
+                        </span>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-4 text-center">
+                        <div className="flex flex-col items-center gap-1">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                              cat.is_active
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
+                                : "bg-stone-500/10 text-stone-600 dark:text-stone-400 border border-stone-500/20"
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                cat.is_active ? "bg-emerald-500" : "bg-stone-400"
+                              }`}
+                            />
+                            {cat.is_active ? "Actif" : "Masqué"}
+                          </span>
+                          {cat.is_coming_soon && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                              <Clock className="w-2.5 h-2.5" /> À venir
                             </span>
                           )}
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Description */}
-                    <td className="px-5 py-4 text-muted-foreground max-w-xs truncate">
-                      {cat.description || "—"}
-                    </td>
-
-                    {/* Products Count */}
-                    <td className="px-4 py-4 text-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
-                        {count} parfum{count > 1 ? "s" : ""}
-                      </span>
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex flex-col items-center gap-1">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                            cat.is_active
-                              ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              cat.is_active ? "bg-emerald-500" : "bg-muted-foreground"
-                            }`}
-                          />
-                          {cat.is_active ? "Actif" : "Masqué"}
-                        </span>
-                        {cat.is_coming_soon && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                            <Clock className="w-2.5 h-2.5" /> À venir
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <a
-                          href={`/collection/${cat.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                          title="Voir sur la boutique"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(cat)}
-                          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                          title="Modifier"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeletingCat(cat)}
-                          className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors cursor-pointer"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              {filteredCategories.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <p className="text-xs font-medium text-foreground">
-                        {hasActiveFilters
-                          ? "Aucune catégorie ne correspond aux critères et filtres sélectionnés."
-                          : "Aucune catégorie enregistrée pour le moment."}
-                      </p>
-                      {hasActiveFilters && (
-                        <button
-                          type="button"
-                          onClick={resetAllFilters}
-                          className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl transition-colors cursor-pointer"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Effacer tous les filtres</span>
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                      {/* Actions */}
+                      <td className="px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <a
+                            href={`/collection/${cat.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#7A726A] dark:text-[#A39B91] hover:text-[#C9A96E] transition-colors cursor-pointer"
+                            title="Voir sur la boutique"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(cat)}
+                            className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] transition-colors cursor-pointer"
+                            title="Modifier"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeletingCat(cat)}
+                            className="p-1.5 rounded-lg hover:bg-red-500/10 text-[#7A726A] dark:text-[#A39B91] hover:text-red-500 transition-colors cursor-pointer"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Category Edit / Add Modal */}
+      {/* État Vide */}
+      {filteredAndSorted.length === 0 && (
+        <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-12 text-center max-w-md mx-auto space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center mx-auto">
+            <FolderTree className="w-6 h-6" />
+          </div>
+          <h3 className="font-serif text-lg font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+            Aucune catégorie trouvée
+          </h3>
+          <p className="text-xs text-[#7A726A] dark:text-[#A39B91]">
+            {hasActiveFilters
+              ? "Aucune catégorie ne correspond à vos filtres de recherche actuels."
+              : "Commencez par créer votre première catégorie ou univers olfactif."}
+          </p>
+          {hasActiveFilters && (
+            <Button
+              onClick={resetFilters}
+              variant="outline"
+              className="mt-2 text-xs rounded-xl border-[#C9A96E]/40 text-[#C9A96E] hover:bg-[#C9A96E]/10"
+            >
+              Effacer les filtres
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-card max-w-lg w-[95vw] p-6 rounded-2xl shadow-2xl border border-border">
-          <DialogHeader className="pb-3 border-b border-border">
-            <DialogTitle className="text-base sm:text-lg font-serif font-bold text-foreground flex items-center gap-2">
-              <FolderTree className="w-5 h-5 text-primary" />
+        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-lg w-[95vw] p-6 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+          <DialogHeader className="pb-3 border-b border-[#EAE3D8] dark:border-[#24211E]">
+            <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-2">
+              <FolderTree className="w-5 h-5 text-[#C9A96E]" />
               <span>{editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground mt-1 text-left">
+            <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-1 text-left">
               {editingCat
                 ? "Modifiez les informations et l'univers olfactif de cette catégorie."
                 : "Configurez un nouvel univers olfactif pour organiser vos créations de niche."}
@@ -593,15 +769,15 @@ const CategoriesAdmin = () => {
 
           <form onSubmit={handleSave} className="space-y-4 mt-2">
             <div>
-              <label className="block text-xs font-semibold text-foreground mb-1">
+              <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                 Nom de la catégorie *
               </label>
               <input
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="Ex: Parfums d'Exception"
-                className={`w-full px-3 py-2 text-xs bg-background border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary ${
-                  errors.name ? "border-red-500 bg-red-50/50" : "border-border"
+                className={`w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] ${
+                  errors.name ? "border-red-500 bg-red-50/50" : "border-[#E5DDD0] dark:border-[#2D2A26]"
                 }`}
               />
               {errors.name && (
@@ -615,16 +791,16 @@ const CategoriesAdmin = () => {
             {/* Image de la catégorie */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-foreground">
+                <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
                   Visuel & Image de la catégorie
                 </label>
-                <span className="text-[10px] text-muted-foreground font-medium">
+                <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] font-medium">
                   Recommandé : 800 × 1000 px
                 </span>
               </div>
 
               {image ? (
-                <div className="relative group rounded-xl overflow-hidden border border-border bg-muted/20 aspect-[16/9] flex items-center justify-center">
+                <div className="relative group rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-[#FAF7F2] dark:bg-[#1C1A18] aspect-[16/9] flex items-center justify-center">
                   <img
                     src={image}
                     alt="Aperçu catégorie"
@@ -634,7 +810,7 @@ const CategoriesAdmin = () => {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="px-3 py-1.5 bg-white/95 dark:bg-black/90 text-foreground text-xs font-semibold rounded-lg shadow-sm hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-1.5 bg-white/95 dark:bg-black/90 text-[#1A1816] dark:text-[#FAF7F2] text-xs font-semibold rounded-lg shadow-sm hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
                     >
                       <Upload className="w-3.5 h-3.5" /> Remplacer
                     </button>
@@ -650,20 +826,20 @@ const CategoriesAdmin = () => {
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-border hover:border-primary/60 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/30 transition-all group"
+                  className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A18]/50 transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                     {uploading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <ImageIcon className="w-5 h-5" />
                     )}
                   </div>
-                  <p className="text-xs font-semibold text-foreground">
+                  <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
                     {uploading ? "Téléversement en cours..." : "Cliquez pour importer la photo de collection"}
                   </p>
-                  <p className="text-[10px] text-muted-foreground mt-1 max-w-xs">
-                    Dimensions recommandées : <strong>800 × 1000 px</strong> (Portrait 4:5) ou <strong>1000 × 1000 px</strong> (Carré 1:1) • PNG, JPG, WebP max 5 Mo
+                  <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 max-w-xs">
+                    Dimensions recommandées : <strong>800 × 1000 px</strong> (Portrait 4:5) • PNG, JPG, WebP max 5 Mo
                   </p>
                 </div>
               )}
@@ -678,7 +854,7 @@ const CategoriesAdmin = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-foreground mb-1">
+              <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                 Description de la collection
               </label>
               <textarea
@@ -686,36 +862,36 @@ const CategoriesAdmin = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Décrivez l'univers olfactif de cette catégorie..."
                 rows={3}
-                className="w-full px-3 py-2 text-xs bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border cursor-pointer select-none">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer select-none">
                 <div>
-                  <div className="text-xs font-semibold text-foreground">Catégorie active</div>
-                  <div className="text-[10px] text-muted-foreground">Visible sur la boutique</div>
+                  <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">Catégorie active</div>
+                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Visible sur la boutique</div>
                 </div>
                 <Switch checked={isActive} onCheckedChange={setIsActive} />
               </label>
 
-              <label className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
                 <div>
-                  <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-[#C9A96E]" />
                     <span>À venir / Teaser</span>
                   </div>
-                  <div className="text-[10px] text-muted-foreground">Bientôt disponible</div>
+                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Bientôt disponible</div>
                 </div>
                 <Switch checked={isComingSoon} onCheckedChange={setIsComingSoon} />
               </label>
             </div>
 
-            <DialogFooter className="gap-2 pt-3 border-t border-border">
+            <DialogFooter className="gap-2 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E]">
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-xs font-medium rounded-xl border border-border text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#332E28] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 Annuler
               </button>
@@ -731,35 +907,37 @@ const CategoriesAdmin = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Modal */}
-      <Dialog open={!!deletingCat} onOpenChange={(o) => !o && setDeletingCat(null)}>
-        <DialogContent className="bg-card max-w-sm w-[95vw] p-6 rounded-2xl shadow-2xl border border-border">
-          <DialogHeader>
-            <DialogTitle className="text-sm font-serif font-bold text-foreground">
+      {/* Modale de Confirmation de Suppression de Luxe */}
+      <AlertDialog open={!!deletingCat} onOpenChange={(o) => !o && setDeletingCat(null)}>
+        <AlertDialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl shadow-2xl p-6 sm:p-8 max-w-md">
+          <AlertDialogHeader className="space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto sm:mx-0">
+              <Trash2 className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <AlertDialogTitle className="font-serif text-xl font-medium text-[#1A1816] dark:text-[#FAF7F2]">
               Confirmer la suppression
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground my-2">
-              Êtes-vous sûr de vouloir supprimer la catégorie <strong className="text-foreground">{deletingCat?.name}</strong> ? Cette action est irréversible.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 pt-2">
-            <button
-              type="button"
-              onClick={() => setDeletingCat(null)}
-              className="px-3.5 py-1.5 text-xs rounded-xl border border-border hover:bg-muted"
-            >
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] leading-relaxed">
+              Êtes-vous certain de vouloir supprimer la catégorie <strong className="text-[#1A1816] dark:text-[#FAF7F2] font-semibold">{deletingCat?.name}</strong> de la boutique Maison Kenzi ?
+              <br />
+              <span className="text-rose-600 dark:text-rose-400 mt-1 block">
+                Cette action est irréversible.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-6 gap-2 sm:gap-3">
+            <AlertDialogCancel className="rounded-xl border border-[#E5DDD0] dark:border-[#332E28] bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] text-xs font-medium px-4 py-2.5 cursor-pointer">
               Annuler
-            </button>
-            <button
-              type="button"
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={confirmDelete}
-              className="px-4 py-1.5 text-xs font-bold rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-sm"
+              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium px-5 py-2.5 shadow-sm cursor-pointer"
             >
-              Supprimer
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              Supprimer définitivement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
