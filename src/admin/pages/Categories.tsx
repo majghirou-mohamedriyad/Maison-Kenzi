@@ -18,6 +18,12 @@ import {
   Image as ImageIcon,
   Loader2,
   Clock,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Filter,
+  X,
+  RotateCcw,
 } from "lucide-react";
 import {
   useCategories,
@@ -56,6 +62,19 @@ const CategoriesAdmin = () => {
   const [deletingCat, setDeletingCat] = useState<AdminCategory | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Column Filters State
+  const [nameFilter, setNameFilter] = useState("");
+  const [genderFilter, setGenderFilter] = useState<string>("Tous");
+  const [descFilter, setDescFilter] = useState("");
+  const [productsFilter, setProductsFilter] = useState<string>("Tous");
+  const [statusFilter, setStatusFilter] = useState<string>("Tous");
+
+  // Column Sorting State
+  type SortField = "name" | "description" | "products" | "status" | "default";
+  type SortDirection = "asc" | "desc";
+  const [sortField, setSortField] = useState<SortField>("default");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
   // Form State
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -85,13 +104,123 @@ const CategoriesAdmin = () => {
     return counts;
   }, [categories, products]);
 
+  const hasActiveFilters = Boolean(
+    search.trim() ||
+    nameFilter.trim() ||
+    genderFilter !== "Tous" ||
+    descFilter.trim() ||
+    productsFilter !== "Tous" ||
+    statusFilter !== "Tous" ||
+    sortField !== "default"
+  );
+
+  const resetAllFilters = () => {
+    setSearch("");
+    setNameFilter("");
+    setGenderFilter("Tous");
+    setDescFilter("");
+    setProductsFilter("Tous");
+    setStatusFilter("Tous");
+    setSortField("default");
+    setSortDirection("asc");
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else {
+        setSortField("default");
+        setSortDirection("asc");
+      }
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
   const filteredCategories = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return categories;
-    return categories.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
-    );
-  }, [categories, search]);
+    let list = categories.filter((c) => {
+      // 1. Recherche globale rapide
+      const qGlobal = search.trim().toLowerCase();
+      if (qGlobal) {
+        const matchGlobal =
+          c.name.toLowerCase().includes(qGlobal) ||
+          c.slug.toLowerCase().includes(qGlobal) ||
+          (c.description && c.description.toLowerCase().includes(qGlobal));
+        if (!matchGlobal) return false;
+      }
+
+      // 2. Filtre colonne Nom / Slug
+      if (nameFilter.trim()) {
+        const qName = nameFilter.trim().toLowerCase();
+        const matchName = c.name.toLowerCase().includes(qName) || c.slug.toLowerCase().includes(qName);
+        if (!matchName) return false;
+      }
+
+      // 3. Filtre colonne Genre
+      if (genderFilter !== "Tous") {
+        if (genderFilter === "Sans genre") {
+          if (c.gender) return false;
+        } else {
+          if ((c.gender || "").toLowerCase() !== genderFilter.toLowerCase()) return false;
+        }
+      }
+
+      // 4. Filtre colonne Description
+      if (descFilter.trim()) {
+        const qDesc = descFilter.trim().toLowerCase();
+        if (!c.description || !c.description.toLowerCase().includes(qDesc)) return false;
+      }
+
+      // 5. Filtre colonne Nombre de produits
+      const count = categoryStats[c.slug] ?? 0;
+      if (productsFilter === "with_products" && count === 0) return false;
+      if (productsFilter === "no_products" && count > 0) return false;
+
+      // 6. Filtre colonne Statut
+      if (statusFilter === "active" && !c.is_active) return false;
+      if (statusFilter === "inactive" && c.is_active) return false;
+      if (statusFilter === "coming_soon" && !c.is_coming_soon) return false;
+      if (statusFilter === "ready" && (!c.is_active || c.is_coming_soon)) return false;
+
+      return true;
+    });
+
+    // Tri par colonne
+    if (sortField !== "default") {
+      list = [...list].sort((a, b) => {
+        let comparison = 0;
+        if (sortField === "name") {
+          comparison = a.name.localeCompare(b.name, "fr", { sensitivity: "base" });
+        } else if (sortField === "description") {
+          comparison = (a.description || "").localeCompare(b.description || "", "fr", { sensitivity: "base" });
+        } else if (sortField === "products") {
+          const countA = categoryStats[a.slug] ?? 0;
+          const countB = categoryStats[b.slug] ?? 0;
+          comparison = countA - countB;
+        } else if (sortField === "status") {
+          const scoreA = (a.is_active ? 2 : 0) + (a.is_coming_soon ? 1 : 0);
+          const scoreB = (b.is_active ? 2 : 0) + (b.is_coming_soon ? 1 : 0);
+          comparison = scoreA - scoreB;
+        }
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
+    }
+
+    return list;
+  }, [
+    categories,
+    search,
+    nameFilter,
+    genderFilter,
+    descFilter,
+    productsFilter,
+    statusFilter,
+    sortField,
+    sortDirection,
+    categoryStats,
+  ]);
 
   const openAddModal = () => {
     setEditingCat(null);
@@ -251,28 +380,233 @@ const CategoriesAdmin = () => {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher une catégorie ou un slug..."
-          className="w-full pl-10 pr-4 py-2.5 text-xs bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground shadow-xs"
-        />
+      {/* Top Bar: Search, Stats & Global Reset */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Recherche globale (nom, slug, description)..."
+            className="w-full pl-10 pr-10 py-2.5 text-xs bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground shadow-xs"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">
+            <strong className="text-foreground font-semibold">{filteredCategories.length}</strong> / {categories.length} catégorie{categories.length > 1 ? "s" : ""}
+          </span>
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetAllFilters}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl transition-colors cursor-pointer"
+              title="Réinitialiser tous les filtres"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Réinitialiser les filtres</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Categories Grid Table */}
+      {/* Categories Grid Table with Column Filters & Sorting */}
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-muted/50 text-muted-foreground text-[10px] uppercase tracking-wider border-b border-border font-bold">
+            <thead className="bg-muted/60 text-muted-foreground text-[10px] uppercase tracking-wider border-b border-border font-bold">
+              {/* Row 1: Column Titles with Sorting */}
               <tr>
-                <th className="text-left px-5 py-3.5">Catégorie</th>
-                <th className="text-left px-5 py-3.5">Description</th>
-                <th className="text-center px-4 py-3.5">Produits</th>
-                <th className="text-center px-4 py-3.5">Statut</th>
-                <th className="text-right px-5 py-3.5">Actions</th>
+                <th className="text-left px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("name")}
+                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <span>Catégorie & Univers</span>
+                    {sortField === "name" ? (
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
+                    )}
+                  </button>
+                </th>
+
+                <th className="text-left px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("description")}
+                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <span>Description</span>
+                    {sortField === "description" ? (
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
+                    )}
+                  </button>
+                </th>
+
+                <th className="text-center px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("products")}
+                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer mx-auto"
+                  >
+                    <span>Produits</span>
+                    {sortField === "products" ? (
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
+                    )}
+                  </button>
+                </th>
+
+                <th className="text-center px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("status")}
+                    className="group inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer mx-auto"
+                  >
+                    <span>Statut</span>
+                    {sortField === "status" ? (
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground" />
+                    )}
+                  </button>
+                </th>
+
+                <th className="text-right px-5 py-3">Actions</th>
+              </tr>
+
+              {/* Row 2: Column Filter Inputs */}
+              <tr className="bg-muted/30 border-t border-border/70 font-normal">
+                {/* Filter: Catégorie (Nom + Genre) */}
+                <th className="px-5 py-2.5">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5">
+                    <div className="relative flex-1">
+                      <input
+                        value={nameFilter}
+                        onChange={(e) => setNameFilter(e.target.value)}
+                        placeholder="Filtrer nom..."
+                        className="w-full pl-2.5 pr-6 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70"
+                      />
+                      {nameFilter && (
+                        <button
+                          type="button"
+                          onClick={() => setNameFilter("")}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                    <select
+                      value={genderFilter}
+                      onChange={(e) => setGenderFilter(e.target.value)}
+                      className="px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer shrink-0"
+                    >
+                      <option value="Tous">Genre: Tous</option>
+                      <option value="Homme">Homme</option>
+                      <option value="Femme">Femme</option>
+                      <option value="Mixte">Mixte</option>
+                      <option value="Sans genre">Sans genre</option>
+                    </select>
+                  </div>
+                </th>
+
+                {/* Filter: Description */}
+                <th className="px-5 py-2.5">
+                  <div className="relative max-w-xs">
+                    <input
+                      value={descFilter}
+                      onChange={(e) => setDescFilter(e.target.value)}
+                      placeholder="Filtrer description..."
+                      className="w-full pl-2.5 pr-6 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70"
+                    />
+                    {descFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setDescFilter("")}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                </th>
+
+                {/* Filter: Nombre de Produits */}
+                <th className="px-4 py-2.5 text-center">
+                  <select
+                    value={productsFilter}
+                    onChange={(e) => setProductsFilter(e.target.value)}
+                    className="w-full max-w-[130px] mx-auto px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
+                  >
+                    <option value="Tous">Tous</option>
+                    <option value="with_products">&gt; 0 parfum</option>
+                    <option value="no_products">0 parfum</option>
+                  </select>
+                </th>
+
+                {/* Filter: Statut */}
+                <th className="px-4 py-2.5 text-center">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full max-w-[130px] mx-auto px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
+                  >
+                    <option value="Tous">Tous</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Masqué</option>
+                    <option value="coming_soon">À venir</option>
+                    <option value="ready">Prêt (Actif)</option>
+                  </select>
+                </th>
+
+                {/* Actions / Reset */}
+                <th className="px-5 py-2.5 text-right">
+                  {hasActiveFilters ? (
+                    <button
+                      type="button"
+                      onClick={resetAllFilters}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-md transition-colors cursor-pointer"
+                      title="Effacer les filtres"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Effacer</span>
+                    </button>
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground/60 font-normal">—</span>
+                  )}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
@@ -384,8 +718,24 @@ const CategoriesAdmin = () => {
 
               {filteredCategories.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
-                    Aucune catégorie trouvée.
+                  <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <p className="text-xs font-medium text-foreground">
+                        {hasActiveFilters
+                          ? "Aucune catégorie ne correspond aux critères et filtres sélectionnés."
+                          : "Aucune catégorie enregistrée pour le moment."}
+                      </p>
+                      {hasActiveFilters && (
+                        <button
+                          type="button"
+                          onClick={resetAllFilters}
+                          className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl transition-colors cursor-pointer"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Effacer tous les filtres</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               )}
