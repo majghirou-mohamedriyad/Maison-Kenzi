@@ -84,32 +84,83 @@ const CustomerCare = () => {
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(defaultText)}`, "_blank");
   };
 
-  const faqItems = [
+  // Questions Fréquentes enrichies par catégorie
+  const [activeFaqCategory, setActiveFaqCategory] = useState<string>("all");
+  const [faqSearch, setFaqSearch] = useState<string>("");
+
+  const allFaqItems = [
     {
+      id: 1,
+      category: "authenticite",
+      categoryLabel: "Authenticité & Flacons",
       icon: ShieldCheck,
-      question: "Comment garantissez-vous l'authenticité des jus ?",
+      question: "Comment garantissez-vous l'authenticité des parfums ?",
       answer:
-        "Chaque flacon proposé chez Maison Kenzi provient exclusivement des circuits officiels des marques et maisons de haute parfumerie. Nos décants sont prélevés avec du matériel stérile de haute précision directement depuis les bouteilles authentiques scellées, sans aucune altération ni ajout.",
+        "L'intégrité de nos fragrances est notre premier engagement. Chaque flacon est acquis exclusivement auprès des circuits officiels des maisons de haute parfumerie et des distributeurs certifiés. Nos décants sont prélevés avec des instruments stériles de précision directement à partir des bouteilles scellées, sans aucune dilution, altération ou manipulation de la formule originale.",
     },
     {
-      icon: Truck,
-      question: "Quels sont les délais et zones de livraison ?",
-      answer:
-        "Nous livrons dans l'ensemble des villes du Royaume du Maroc sous 24h à 48h ouvrées. Chaque commande est emballée dans un coffret de protection capitonné garantissant la préservation parfaite des flacons et des essences.",
-    },
-    {
+      id: 2,
+      category: "authenticite",
+      categoryLabel: "Authenticité & Flacons",
       icon: Sparkles,
-      question: "Puis-je bénéficier d'un conseil olfactif sur-mesure ?",
+      question: "Quelle est la qualité des flacons décants nomades ?",
       answer:
-        "Absolument. Que vous recherchiez une signature pour une occasion spéciale, un sillage boisé pour l'hiver ou une fraîcheur hespéridée, nos experts sont disponibles directement sur WhatsApp ou par message pour vous guider pas à pas selon vos goûts.",
+        "Nos décants (5ml et 10ml) sont confectionnés dans un verre épais haute densité résistant aux chocs, préservant le jus de la lumière et des variations de température. Ils sont équipés d'un atomiseur vaporisateur brume fine premium offrant une diffusion homogène et voluptueuse identique aux flacons grands formats.",
     },
     {
-      icon: RotateCcw,
-      question: "Quelle est votre politique de retour ou d'échange ?",
+      id: 3,
+      category: "conseil",
+      categoryLabel: "Conseils & Formats",
+      icon: Clock,
+      question: "Combien de vaporisations permet un décant 5ml et 10ml ?",
       answer:
-        "Afin de garantir la pureté et l'hygiène de nos décants de parfum, les retours sont acceptés sous 7 jours après réception uniquement pour les articles non ouverts, non vaporisés et conservés dans leur emballage de protection d'origine.",
+        "Un décant de 5 ml offre environ 70 à 80 pulvérisations (soit près d'un mois d'utilisation quotidienne pour tester l'évolution des notes sur votre peau). Un format 10 ml permet environ 150 à 160 pulvérisations, idéal pour voyager ou porter une création précieuse durant toute une saison.",
+    },
+    {
+      id: 4,
+      category: "livraison",
+      categoryLabel: "Commandes & Livraison",
+      icon: Truck,
+      question: "Quels sont les délais et modalités de livraison au Maroc ?",
+      answer:
+        "Nous livrons dans l'ensemble des villes et provinces du Royaume du Maroc sous 24 à 48 heures ouvrées. Chaque flacon est soigneusement capitonné dans un emballage anti-choc isotherme. Vous réglez directement en espèces (Cash on Delivery) lors de la remise en main propre de votre colis par le transporteur.",
+    },
+    {
+      id: 5,
+      category: "conseil",
+      categoryLabel: "Conseils & Formats",
+      icon: Sparkles,
+      question: "Puis-je bénéficier d'une consultation olfactive personnalisée ?",
+      answer:
+        "Avec grand plaisir. Si vous hésitez entre plusieurs sillages ou cherchez une signature olfactive adaptée à votre personnalité, vos goûts ou une saison particulière, notre conciergerie est à votre disposition 6j/7 sur WhatsApp et Instagram pour une recommandation sur-mesure.",
+    },
+    {
+      id: 6,
+      category: "retours",
+      categoryLabel: "Retours & Garanties",
+      icon: RotateCcw,
+      question: "Quelle est votre politique d'échange et de rétractation ?",
+      answer:
+        "Pour des raisons d'hygiène et afin de garantir l'authenticité irréprochable de chaque essence pour l'ensemble de notre clientèle, les retours sont acceptés sous un délai de 7 jours après réception, exclusivement pour les articles non ouverts, non vaporisés et toujours dans leur opercule de protection d'origine.",
     },
   ];
+
+  const faqCategories = [
+    { id: "all", label: "Toutes les questions" },
+    { id: "authenticite", label: "Authenticité & Décants" },
+    { id: "livraison", label: "Livraison & Paiement" },
+    { id: "conseil", label: "Conseil & Formats" },
+    { id: "retours", label: "Garanties & Retours" },
+  ];
+
+  const filteredFaq = allFaqItems.filter((item) => {
+    const matchCategory = activeFaqCategory === "all" || item.category === activeFaqCategory;
+    const matchSearch =
+      faqSearch.trim() === "" ||
+      item.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+      item.answer.toLowerCase().includes(faqSearch.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20">
@@ -400,56 +451,158 @@ const CustomerCare = () => {
           </div>
 
           {/* =========================================================================
-              4. FOIRE AUX QUESTIONS & ENGAGEMENTS
+              4. FOIRE AUX QUESTIONS & ENGAGEMENTS (DESIGN LUXE AVANCÉ)
              ========================================================================= */}
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
+            {/* Header FAQ */}
             <div className="text-center mb-10">
-              <p className="text-xs uppercase tracking-[0.3em] text-primary font-medium mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary text-xs uppercase tracking-[0.2em] font-medium mb-3">
+                <Sparkles className="w-3 h-3" />
+                <span>Guide & Transparence</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-light tracking-tight mb-3">
                 Questions Fréquentes
-              </p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-light tracking-tight">
-                Engagements & Réponses
               </h2>
-              <div className="w-12 h-[1px] bg-primary/40 mx-auto mt-4" />
+              <p className="text-sm font-light text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Tout ce que vous devez savoir sur la sélection de nos jus authentiques, le processus de décantation et nos livraisons.
+              </p>
+              <div className="w-14 h-[1px] bg-primary/40 mx-auto mt-5" />
             </div>
 
-            <div className="space-y-4">
-              {faqItems.map((item, idx) => {
-                const Icon = item.icon;
-                const isOpen = openFaq === idx;
-
+            {/* Onglets Filtres de Catégories FAQ */}
+            <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
+              {faqCategories.map((cat) => {
+                const isActive = activeFaqCategory === cat.id;
                 return (
-                  <div
-                    key={idx}
-                    className="rounded-xl border border-primary/15 bg-card/30 backdrop-blur-sm overflow-hidden transition-colors hover:border-primary/30"
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveFaqCategory(cat.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-sm scale-105"
+                        : "bg-card/60 text-muted-foreground hover:text-foreground border border-border/60 hover:border-primary/30"
+                    }`}
                   >
-                    <button
-                      onClick={() => toggleFaq(idx)}
-                      className="w-full px-5 sm:px-6 py-4.5 flex items-center justify-between text-left gap-4"
-                    >
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span className="font-serif text-base sm:text-lg text-foreground font-medium">
-                          {item.question}
-                        </span>
-                      </div>
-                      <ChevronDown
-                        className={`w-5 h-5 text-primary shrink-0 transition-transform duration-300 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {isOpen && (
-                      <div className="px-5 sm:px-6 pb-5 pt-1 text-sm font-light text-muted-foreground leading-relaxed pl-[3.75rem] border-t border-border/30 animate-fade-in">
-                        {item.answer}
-                      </div>
-                    )}
-                  </div>
+                    {cat.label}
+                  </button>
                 );
               })}
+            </div>
+
+            {/* Liste des Accordéons Sublimés */}
+            {filteredFaq.length === 0 ? (
+              <div className="text-center py-12 rounded-2xl border border-primary/20 bg-card/30 backdrop-blur-sm">
+                <p className="text-muted-foreground text-sm font-light mb-4">
+                  Aucune réponse ne correspond à ce critère.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setActiveFaqCategory("all");
+                    setFaqSearch("");
+                  }}
+                  className="rounded-full text-xs uppercase tracking-wider border-primary/30"
+                >
+                  Réinitialiser le filtre
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredFaq.map((item, idx) => {
+                  const Icon = item.icon;
+                  const isOpen = openFaq === item.id;
+                  const itemNumber = String(idx + 1).padStart(2, "0");
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`group rounded-2xl border transition-all duration-300 backdrop-blur-md overflow-hidden ${
+                        isOpen
+                          ? "border-primary/50 bg-card/80 shadow-md ring-1 ring-primary/20"
+                          : "border-primary/15 bg-card/40 hover:border-primary/35 hover:bg-card/60"
+                      }`}
+                    >
+                      <button
+                        onClick={() => toggleFaq(item.id)}
+                        className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left gap-4 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+                          {/* Numérotation ou Icône avec effet doré */}
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                              isOpen
+                                ? "bg-primary text-primary-foreground shadow-sm scale-110"
+                                : "bg-primary/10 text-primary border border-primary/20 group-hover:scale-105"
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </div>
+
+                          <div className="min-w-0">
+                            <span className="block text-[10px] uppercase tracking-[0.2em] text-primary/80 font-semibold mb-1">
+                              {item.categoryLabel} · {itemNumber}
+                            </span>
+                            <h3 className="font-serif text-base sm:text-lg text-foreground font-medium tracking-tight">
+                              {item.question}
+                            </h3>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center shrink-0 transition-all duration-300 ${
+                            isOpen ? "bg-primary/15 rotate-180" : "bg-background/50 group-hover:border-primary/40"
+                          }`}
+                        >
+                          <ChevronDown className="w-4 h-4 text-primary" />
+                        </div>
+                      </button>
+
+                      {isOpen && (
+                        <div className="px-5 sm:px-8 pb-6 pt-0 text-sm sm:text-[15px] font-light text-muted-foreground leading-relaxed border-t border-border/30 mt-1 animate-fade-in">
+                          <div className="pt-4 pl-0 sm:pl-[3.75rem]">
+                            <p>{item.answer}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Encadré d'Assistance / Contact direct bas de page */}
+            <div className="mt-14 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-card/50 to-primary/10 backdrop-blur-md p-8 sm:p-10 text-center relative overflow-hidden">
+              <div className="max-w-xl mx-auto space-y-3">
+                <div className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 text-primary mx-auto flex items-center justify-center">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+                <h3 className="font-serif text-2xl text-foreground font-medium tracking-tight">
+                  Vous avez une autre question ?
+                </h3>
+                <p className="text-xs sm:text-sm font-light text-muted-foreground leading-relaxed pb-2">
+                  Notre équipe de conseillers olfactifs vous répond en direct pour vous accompagner dans votre choix.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <Button
+                    onClick={handleDirectWhatsapp}
+                    className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.15em] text-xs h-11 px-6 font-medium shadow-sm transition-transform hover:scale-105"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Parler à un conseiller sur WhatsApp
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full sm:w-auto rounded-full border-primary/30 text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 px-6 font-medium"
+                  >
+                    <a href={`tel:+${waNumber}`}>
+                      <Phone className="w-4 h-4 mr-2 text-primary" />
+                      Appeler l'Atelier
+                    </a>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

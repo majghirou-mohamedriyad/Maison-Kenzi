@@ -14,7 +14,11 @@
   - [x] En-tête Hero éditorial avec badge signature « Haute Parfumerie · Conciergerie » et espacement fluide sous la navigation flottante (`pt-28 sm:pt-36`).
   - [x] Trio de cartes de contact de luxe : Conciergerie WhatsApp directe avec badge « Réponse Instantanée », Ligne Directe & Horaires d'Atelier, Univers Instagram `@maisonkenzi`.
   - [x] Formulaire de conciergerie interactif avec sélection d'objet sur-mesure (Conseil olfactif personnalisé, Suivi de commande, Flaconnage & décants, Disponibilité de parfum) et double canal de transmission (formulaire élégant + pont direct vers WhatsApp avec message pré-formaté).
-  - [x] Foire aux questions (FAQ) interactive en accordéons pour rassurer les clients sur l'authenticité 100% garantie des jus, la livraison express 24-48h partout au Maroc, le conseil olfactif et la politique de retour sous 7 jours.
+  - [x] Section **Questions Fréquentes (FAQ) Haute Couture** :
+    - Filtres par onglets thématiques interactifs (*Toutes les questions*, *Authenticité & Décants*, *Livraison & Paiement*, *Conseil & Formats*, *Garanties & Retours*).
+    - Cartes accordéons en verre dépoli avec pastilles iconographiques or champagne, numérotation fine (*01*, *02*, ...), lueurs douces et micro-interactions au survol/dépliage.
+    - Contenu enrichi et précis (procédé de décantage stérile, atomiseur brume fine, contenance en pulvérisations 5ml/10ml, livraison express 24-48h cash à la livraison, conseils et retours).
+    - Encadré d'assistance en bas de page avec double bouton d'appel direct vers l'atelier et la conciergerie WhatsApp.
   - [x] [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Ajout de l'alias d'accès direct `/contact` vers la page Service Client & Conciergerie.
 
 - [x] Synchronisation Temps Réel Instantanée Boutique & Administration (Zéro Rechargement de Page) :
