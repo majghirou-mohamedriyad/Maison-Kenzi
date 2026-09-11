@@ -54,6 +54,9 @@ const Parametres = () => {
   // Store Info State
   const [storeName, setStoreName] = useState(settings.store_name || "Maison Kenzi");
   const [storePhone, setStorePhone] = useState(settings.whatsapp_phone || "212752850156");
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(
+    settings.free_shipping_threshold ?? 500
+  );
   const [savingStore, setSavingStore] = useState(false);
 
   // Admin Account State
@@ -71,10 +74,10 @@ const Parametres = () => {
   const [waPhone, setWaPhone] = useState(settings.whatsapp_phone || "212752850156");
   const [savingMaint, setSavingMaint] = useState(false);
 
-
   useEffect(() => {
     setStoreName(settings.store_name || "Maison Kenzi");
     setStorePhone(settings.whatsapp_phone || "212752850156");
+    setFreeShippingThreshold(settings.free_shipping_threshold ?? 500);
 
     setMaintMode(settings.maintenance_mode);
     setMaintMessage(settings.maintenance_message);
@@ -92,13 +95,15 @@ const Parametres = () => {
 
   const saveStoreInfo = async () => {
     setSavingStore(true);
+    const parsedThreshold = Number(freeShippingThreshold) > 0 ? Number(freeShippingThreshold) : 500;
     const { error } = await update({
       store_name: storeName,
       whatsapp_phone: storePhone,
+      free_shipping_threshold: parsedThreshold,
     });
     setSavingStore(false);
     if (error) toast.error("Erreur de sauvegarde: " + error.message);
-    else toast.success("Informations de la boutique enregistrées dans Supabase");
+    else toast.success("Paramètres et seuil de livraison gratuite enregistrés");
   };
 
   const saveAdminAccount = async () => {
@@ -133,6 +138,7 @@ const Parametres = () => {
       maintenance_message: maintMessage,
       instagram_url: igUrl,
       whatsapp_phone: waPhone,
+      free_shipping_threshold: Number(freeShippingThreshold) || 500,
     });
     if (error) {
       toast.error("Erreur: " + error.message);
@@ -148,6 +154,7 @@ const Parametres = () => {
       maintenance_message: maintMessage,
       instagram_url: igUrl,
       whatsapp_phone: waPhone,
+      free_shipping_threshold: Number(freeShippingThreshold) || 500,
     });
     setSavingMaint(false);
     if (error) toast.error("Erreur: " + error.message);
@@ -156,7 +163,7 @@ const Parametres = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <Card title="Informations de la boutique" onSave={saveStoreInfo} saving={savingStore}>
+      <Card title="Informations & Tarifs de Livraison" subtitle="Configuration générale et seuil de gratuité" onSave={saveStoreInfo} saving={savingStore}>
         <div>
           <label className={labelCls}>Nom de la boutique</label>
           <input
@@ -172,6 +179,26 @@ const Parametres = () => {
             value={storePhone}
             onChange={(e) => setStorePhone(e.target.value)}
           />
+        </div>
+        <div>
+          <label className={labelCls}>Seuil de Livraison Gratuite (MAD)</label>
+          <div className="relative">
+            <input
+              type="number"
+              min="0"
+              step="10"
+              className={inputCls}
+              placeholder="500"
+              value={freeShippingThreshold}
+              onChange={(e) => setFreeShippingThreshold(Number(e.target.value))}
+            />
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary pointer-events-none">
+              MAD
+            </span>
+          </div>
+          <p className="text-[11px] text-[#7A726A] dark:text-[#A39B91] mt-1">
+            Définit le montant d'achat à partir duquel la livraison devient offerte dans le panier client.
+          </p>
         </div>
       </Card>
 

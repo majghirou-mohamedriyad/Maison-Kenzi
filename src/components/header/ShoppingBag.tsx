@@ -36,8 +36,6 @@ interface ShoppingBagProps {
   onClose: () => void;
 }
 
-const FREE_SHIPPING_THRESHOLD = 500; // Livraison offerte dès 500 MAD
-
 const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
@@ -50,9 +48,12 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   const rawPhone = settings.whatsapp_phone || "212752850156";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
 
+  // Seuil dynamique de livraison gratuite configuré depuis l'administration
+  const freeShippingThreshold = Number(settings.free_shipping_threshold) > 0 ? Number(settings.free_shipping_threshold) : 500;
+
   // Calcul du progrès pour la livraison gratuite
-  const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
-  const remainingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
+  const remainingForFree = Math.max(0, freeShippingThreshold - subtotal);
 
   // Suggestions de découverte (parfums non encore dans le panier)
   const cartIds = new Set(items.map((i) => i.id));

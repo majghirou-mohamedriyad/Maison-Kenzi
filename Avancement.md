@@ -10,14 +10,10 @@
 ## Historique des Tâches Réalisées
 
 - [x] Refonte & Optimisation Haute Parfumerie du Panier d'Achat :
+  - [x] [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx) & [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts) : Ajout de la configuration dynamique du **seuil de livraison offerte** (`free_shipping_threshold` en MAD) modifiable à tout moment depuis le tableau de bord administrateur avec synchronisation temps réel (Supabase & Realtime Broadcast).
+  - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : Jauge interactive connectée au seuil dynamique (`settings.free_shipping_threshold`), calcul automatique du montant restant et passage en livraison offerte validée dès que le panier atteint le montant défini.
   - [x] [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx) : Persistance automatique du panier dans le `localStorage` (`mk_cart_items`), empêchant toute perte des articles sélectionnés lors du rechargement ou de la navigation.
-  - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : Refonte intégrale du tiroir latéral :
-    - Jauge interactive de palier pour la **livraison offerte** partout au Maroc (dès 500 MAD) avec calcul en direct du montant restant et passage à l'état validé en émeraude.
-    - Miniatures de flacons protégées avec effet de zoom au survol et gestion des visuels de remplacement.
-    - Bouton de purge complète du panier avec confirmation intégrée (« Vider » -> « Confirmer ? »).
-    - Amélioration des sélecteurs de quantité `+` / `-` et bouton de suppression tactile explicite.
-    - Badges de réassurance de conciergerie (100% Authentique, Paiement Cash à la Réception).
-    - Transition fluide vers la page de commande [`/checkout`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx).
+  - [x] Miniatures soignées avec zoom, bouton de vidage sécurisé avec confirmation en 2 étapes, badges de conciergerie 100% Authentique & Paiement Cash.
   - [x] [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx) : Ouverture automatique et fluide du tiroir de panier dès l'ajout d'un produit depuis la fiche produit.
 
 - [x] Masquage Temporaire du Bouton « Besoin d'Aide ? » / ChatBot :

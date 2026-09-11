@@ -11,6 +11,7 @@ export type AppSettings = {
   bot_name: string;
   bot_welcome: string;
   store_name: string;
+  free_shipping_threshold: number;
 };
 
 const DEFAULTS: AppSettings = {
@@ -22,6 +23,7 @@ const DEFAULTS: AppSettings = {
   bot_name: "Conseillère Maison Kenzi",
   bot_welcome: "Bienvenue chez Maison Kenzi. Comment puis-je vous guider dans votre découverte olfactive ?",
   store_name: "Maison Kenzi",
+  free_shipping_threshold: 500,
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";
