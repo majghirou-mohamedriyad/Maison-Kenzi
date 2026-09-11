@@ -11,6 +11,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
 import { Sparkles, Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
+import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 
 const ProductCarousel = () => {
   const { data: allParfums, loading } = useParfums();
@@ -86,6 +87,14 @@ const ProductCarousel = () => {
                     <span className="absolute top-3 left-3 z-10 inline-flex items-center text-[9px] uppercase tracking-[0.2em] bg-background/90 text-muted-foreground backdrop-blur-md px-2.5 py-1 rounded-full font-medium border border-border">
                       Rupture
                     </span>
+                  )}
+
+                  {/* Bouton d'Ajout Rapide au Panier */}
+                  {!outOfStock && (
+                    <QuickAddToCartButton
+                      parfum={p}
+                      className="absolute bottom-2.5 right-2.5 z-20"
+                    />
                   )}
                 </div>
 

@@ -11,6 +11,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
 import { Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
+import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 
 interface RelatedProductsProps {
   currentParfumId?: string;
@@ -107,6 +108,13 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                     aspect="aspect-[4/5]"
                     fitMode="cover"
                     className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                  />
+
+                  {/* Bouton d'Ajout Rapide au Panier */}
+                  <QuickAddToCartButton
+                    parfum={p}
+                    size="sm"
+                    className="absolute bottom-2 right-2 z-20"
                   />
                 </div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">

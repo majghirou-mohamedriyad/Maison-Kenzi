@@ -38,6 +38,7 @@ import {
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import { isParfumInCategory } from "@/lib/productCategories";
+import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 
 type FilterKey = string;
 type SortOption = "featured" | "price_asc" | "price_desc" | "newest" | "name_asc";
@@ -579,6 +580,14 @@ const Collection = () => {
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                             <span>Rupture</span>
                           </span>
+                        )}
+
+                        {/* Bouton d'Ajout Rapide au Panier */}
+                        {!outOfStock && (
+                          <QuickAddToCartButton
+                            parfum={p}
+                            className="absolute bottom-2.5 right-2.5 z-20"
+                          />
                         )}
 
                         {/* Light Sweep Shimmer Effect */}

@@ -19,6 +19,7 @@ import {
   SEASONAL_UPDATED_EVENT,
   SeasonKey,
 } from "@/lib/season";
+import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 
 const seasonIconMap = {
   Sun,
@@ -165,6 +166,14 @@ const SeasonalSection = () => {
                     <SeasonIcon className="w-2.5 h-2.5 transition-transform duration-700 group-hover:rotate-180" />
                     <span>{seasonInfo.label}</span>
                   </div>
+
+                  {/* Bouton d'Ajout Rapide au Panier */}
+                  {!outOfStock && (
+                    <QuickAddToCartButton
+                      parfum={p}
+                      className="absolute bottom-2.5 right-2.5 z-20"
+                    />
+                  )}
                 </div>
 
                 {/* Details */}
