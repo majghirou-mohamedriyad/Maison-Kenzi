@@ -9,6 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Sublimation de la Section Éditoriale « Pourquoi Choisir Maison Kenzi » :
+  - [x] [`src/components/content/EditorialSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/EditorialSection.tsx) : Refonte en 4 piliers d'excellence (100% Flacons Originaux Scellés, Livraison Express 24–48h partout au Maroc, Paiement en Espèces à la Réception, Conciergerie WhatsApp Dédiée), typographie éditoriale de prestige et boutons de contact direct.
+
 - [x] Remplacement de la Section Saisonnière par « L'Excellence des Grands Flacons Complets » :
   - [x] [`src/components/content/DecantGuideSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/DecantGuideSection.tsx) : Conception d'une section éditoriale de prestige présentant les **flacons complets d'origine 100% scellés sous blister**, la haute concentration en extraits / eaux de parfum nobles et la garantie d'authenticité certifiée.
   - [x] [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx) : Suppression de l'ancienne section saisonnière et intégration harmonieuse de la section des Grands Flacons.

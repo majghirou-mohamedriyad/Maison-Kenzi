@@ -1,101 +1,163 @@
-import { Link } from "react-router-dom";
-import { Truck, ShieldCheck, Sparkles, ArrowRight } from "lucide-react";
+/**
+ * Section Éditoriale & Engagements d'Excellence — Maison Kenzi
+ *
+ * Présentation des piliers de confiance de la Maison :
+ * 1. 100% Flacons Scellés & Authentiques
+ * 2. Livraison Express Partout au Maroc (24–48h)
+ * 3. Paiement en Espèces à la Livraison
+ * 4. Conciergerie & Conseil Privé Personnalisé
+ */
 
-const kpis = [
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  Truck,
+  ShieldCheck,
+  Crown,
+  MessageCircle,
+  ArrowRight,
+  Sparkles,
+  PackageCheck,
+  CheckCircle2,
+} from "lucide-react";
+import { useAppSettings } from "@/hooks/useAppSettings";
+
+const pillars = [
   {
     number: "01",
-    icon: Truck,
-    title: "Livraison Rapide",
-    description: "24–48h partout au Maroc.",
-    detail: "Expédition express sécurisée",
+    icon: Crown,
+    title: "100% Flacons Originaux",
+    subtitle: "Authenticité Certifiée",
+    description:
+      "Chaque parfum est garanti 100% authentique, neuf et scellé dans son packaging d'origine de la maison créatrice.",
+    tag: "Origine Garantie",
   },
   {
     number: "02",
-    icon: ShieldCheck,
-    title: "Paiement à la Livraison",
-    description: "Achetez en toute confiance",
-    detail: "Règlement à la réception",
+    icon: Truck,
+    title: "Livraison Express Maroc",
+    subtitle: "24h à 48h à Domicile",
+    description:
+      "Expédition rapide et soignée dans toutes les villes du Royaume avec suivi de colis en temps réel.",
+    tag: "Emballage Protégé",
   },
   {
     number: "03",
-    icon: Sparkles,
-    title: "Qualité Premium",
-    description: "Produits soigneusement sélectionnés",
-    detail: "100% Produits Authentiques",
+    icon: ShieldCheck,
+    title: "Paiement à la Livraison",
+    subtitle: "Achat en Toute Sérénité",
+    description:
+      "Réglez votre commande en espèces directement auprès du livreur à la réception en mains propres de votre flacon.",
+    tag: "Zéro Risque",
+  },
+  {
+    number: "04",
+    icon: MessageCircle,
+    title: "Conseil & Conciergerie",
+    subtitle: "Accompagnement Sur-Mesure",
+    description:
+      "Notre équipe vous guide sur WhatsApp pour choisir le sillage idéal selon vos préférences et occasions.",
+    tag: "Service Dédié",
   },
 ];
 
 const EditorialSection = () => {
+  const { settings } = useAppSettings();
+  const rawPhone = settings.whatsapp_phone || "212752850156";
+  const waNumber = rawPhone.replace(/[^0-9]/g, "");
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+    "Bonjour Maison Kenzi, j'aimerais recevoir des conseils personnalisés pour choisir un parfum."
+  )}`;
+
   return (
-    <section className="w-full mb-10 sm:mb-24 px-3 sm:px-6 max-w-7xl mx-auto">
-      {/* Section Header */}
-      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-12">
-        <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-1.5">
-          L'Engagement Maison Kenzi
-        </p>
-        <h2 className="font-serif text-xl sm:text-4xl text-foreground tracking-tight mb-2 font-bold">
+    <section className="w-full mb-16 sm:mb-28 px-4 sm:px-6 max-w-7xl mx-auto relative">
+      {/* En-tête de Section */}
+      <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-semibold tracking-[0.25em] uppercase mb-3 shadow-xs">
+          <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+          <span>L'Engagement Maison Kenzi</span>
+        </div>
+
+        <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-normal tracking-tight leading-tight">
           Pourquoi Choisir <span className="text-primary italic font-serif">Maison Kenzi</span> ?
         </h2>
-        <div className="w-10 h-0.5 bg-primary/40 mx-auto rounded-full" />
+
+        <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed mt-3 max-w-xl mx-auto">
+          L'exigence de la haute parfumerie, la certitude d'un flacon d'origine scellé et un service de conciergerie attentif à chaque instant.
+        </p>
+
+        <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-4 rounded-full" />
       </div>
 
-      {/* 3 KPI Luxury Banner / Grid */}
-      <div className="relative rounded-2xl sm:rounded-3xl border border-primary/20 bg-card/40 backdrop-blur-md p-3 sm:p-8 shadow-sm overflow-hidden">
-        {/* Subtle background glow pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-primary/15 relative z-10 gap-3 sm:gap-0">
-          {kpis.map((kpi, index) => {
-            const Icon = kpi.icon;
-            return (
-              <div
-                key={index}
-                className="group relative px-3 sm:px-6 py-3.5 sm:py-6 transition-all duration-500 hover:bg-primary/[0.03] flex flex-col justify-between"
-              >
-                {/* Number & Icon Row */}
-                <div>
-                  <div className="flex items-center justify-between mb-2.5 sm:mb-5">
-                    <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full border border-primary/25 bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-500">
-                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <span className="font-serif text-lg sm:text-2xl font-light text-primary/40 group-hover:text-primary transition-colors duration-500">
-                      {kpi.number}
-                    </span>
+      {/* Grille 4 Piliers d'Excellence */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {pillars.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={index}
+              className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-6 sm:p-7 shadow-xs hover:shadow-xl hover:shadow-primary/10 hover:border-primary/50 transition-all duration-500 flex flex-col justify-between"
+            >
+              <div>
+                {/* Ligne Numéro & Icône */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-105 transition-all duration-300 shadow-xs">
+                    <Icon className="w-5 h-5 stroke-[1.75]" />
                   </div>
-
-                  {/* Title */}
-                  <h3 className="font-serif text-sm sm:text-xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
-                    {kpi.title}
-                  </h3>
-
-                  {/* Main Description */}
-                  <p className="text-[11px] sm:text-sm font-light text-muted-foreground leading-relaxed mb-2.5 sm:mb-4">
-                    {kpi.description}
-                  </p>
+                  <span className="font-serif text-xl sm:text-2xl font-light text-primary/35 group-hover:text-primary transition-colors">
+                    {item.number}
+                  </span>
                 </div>
 
-                {/* Footer Tag */}
-                <div className="pt-2 border-t border-primary/10 flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors duration-300">
-                  <span>{kpi.detail}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-all duration-300" />
-                </div>
+                {/* Tag Subtitle */}
+                <span className="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">
+                  {item.subtitle}
+                </span>
+
+                {/* Titre */}
+                <h3 className="font-serif text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-snug mb-2.5">
+                  {item.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs text-muted-foreground font-light leading-relaxed">
+                  {item.description}
+                </p>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Liseré Inférieur */}
+              <div className="pt-4 mt-5 border-t border-border/60 flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
+                <span>{item.tag}</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary transition-colors" />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Bottom Link */}
-      <div className="mt-6 sm:mt-10 text-center">
+      {/* Barre d'Actions & Conciergerie */}
+      <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
         <Link
           to="/about/service-client"
-          className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-primary hover:text-primary-hover hover:gap-3 transition-all font-semibold py-2 px-5 rounded-full border border-primary/25 hover:border-primary/50 hover:bg-primary/5"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs uppercase tracking-[0.16em] font-semibold text-foreground hover:text-primary py-3 px-6 rounded-full border border-border/80 hover:border-primary/50 bg-card/60 backdrop-blur-md shadow-xs transition-all"
         >
-          Service Client & Contact <ArrowRight size={13} />
+          <span>En Savoir Plus sur la Maison</span>
+          <ArrowRight size={14} />
         </Link>
+
+        <a
+          href={waUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs uppercase tracking-[0.16em] font-bold text-white py-3 px-6 rounded-full bg-[#25D366] hover:bg-[#20ba5a] shadow-md hover:shadow-lg transition-all"
+        >
+          <MessageCircle className="w-4 h-4" />
+          <span>Contacter la Conciergerie WhatsApp</span>
+        </a>
       </div>
     </section>
   );
 };
 
 export default EditorialSection;
+
