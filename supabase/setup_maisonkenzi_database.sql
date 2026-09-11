@@ -87,12 +87,17 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.app_settings (
     maintenance_message TEXT NOT NULL DEFAULT 'Maison Kenzi prépare de nouvelles créations. Revenez très bientôt.',
     instagram_url TEXT NOT NULL DEFAULT 'https://instagram.com/maisonkenzi',
     whatsapp_phone TEXT NOT NULL DEFAULT '212752850156',
+    free_shipping_threshold NUMERIC NOT NULL DEFAULT 500,
     bot_enabled BOOLEAN NOT NULL DEFAULT true,
     bot_name TEXT NOT NULL DEFAULT 'Conseillère Maison Kenzi',
     bot_welcome TEXT NOT NULL DEFAULT 'Bienvenue chez Maison Kenzi. Comment puis-je vous guider dans votre découverte olfactive ?',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT single_row CHECK (id = true)
 );
+
+ALTER TABLE maisonkenzi.app_settings ADD COLUMN IF NOT EXISTS free_shipping_threshold NUMERIC DEFAULT 500;
+ALTER TABLE public.app_settings ADD COLUMN IF NOT EXISTS free_shipping_threshold NUMERIC DEFAULT 500;
+
 
 -- Table: orders (Commandes Clients)
 CREATE TABLE IF NOT EXISTS maisonkenzi.orders (

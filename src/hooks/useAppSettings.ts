@@ -118,23 +118,36 @@ if (typeof window !== "undefined") {
   } catch {}
 }
 
-export const getAppSettings = (): AppSettings => state;
-
 export const updateAppSettings = async (patch: Partial<AppSettings>) => {
   state = { ...state, ...patch };
   notify();
 
-  // Persistance dans Supabase
+  // Persistance dans Supabase avec gestion gracieuse si la colonne SQL n'a pas encore été migrée
   try {
     const { store_name, store_phone, ...dbPayload } = patch;
+    
+    // Tenter la sauvegarde complète
     const { error } = await supabase
       .from("app_settings")
       .upsert({ id: true, ...dbPayload } as any);
 
     if (error) {
+      // Si la colonne free_shipping_threshold n'existe pas encore dans Supabase, sauvegarder le reste sans crash
+      if (error.message?.includes("free_shipping_threshold")) {
+        console.warn("Colonne free_shipping_threshold non détectée dans Supabase. Sauvegarde locale active.");
+        const fallbackPayload = { ...dbPayload };
+        delete (fallbackPayload as any).free_shipping_threshold;
+        
+        const { error: fallbackErr } = await supabase
+          .from("app_settings")
+          .upsert({ id: true, ...fallbackPayload } as any);
+          
+        return { error: fallbackErr };
+      }
       console.error("Erreur mise à jour settings Supabase:", error);
+      return { error };
     }
-    return { error };
+    return { error: null };
   } catch (err) {
     return { error: err as Error };
   }
