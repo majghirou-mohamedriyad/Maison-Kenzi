@@ -42,8 +42,20 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   const navigate = useNavigate();
   const allProducts = useProducts();
   const [confirmClear, setConfirmClear] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
-  if (!isOpen) return null;
+  // Déclenche l'animation de sortie fluide avant d'appeler onClose
+  const handleClose = React.useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 280);
+  }, [isClosing, onClose]);
+
+  // Si non ouvert et pas en train de se fermer, ne rien afficher
+  if (!isOpen && !isClosing) return null;
 
   const rawPhone = settings.whatsapp_phone || "212752850156";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
@@ -62,20 +74,32 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
     .slice(0, 3);
 
   const handleCheckoutNavigation = () => {
-    onClose();
-    navigate("/checkout");
+    handleClose();
+    setTimeout(() => {
+      navigate("/checkout");
+    }, 150);
   };
 
   return (
     <div className="fixed inset-0 z-[110] h-screen overflow-hidden select-none">
-      {/* Superposition d'arrière-plan avec flou cinématographique */}
+      {/* Superposition d'arrière-plan avec flou cinématographique et fondu entrée/sortie */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in-0"
-        onClick={onClose}
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+          isClosing
+            ? "animate-out fade-out-0 duration-280 fill-mode-forwards"
+            : "animate-in fade-in-0 duration-300"
+        }`}
+        onClick={handleClose}
       />
 
-      {/* Tiroir Coulissant Latéral */}
-      <div className="absolute right-0 top-0 h-screen w-full sm:w-[440px] bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-l border-border/80 shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-300">
+      {/* Tiroir Coulissant Latéral avec animation d'entrée et de sortie */}
+      <div
+        className={`absolute right-0 top-0 h-screen w-full sm:w-[440px] bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-l border-border/80 shadow-2xl flex flex-col z-10 ${
+          isClosing
+            ? "animate-out slide-out-to-right duration-280 fill-mode-forwards"
+            : "animate-in slide-in-from-right duration-300"
+        }`}
+      >
         
         {/* En-tête du Panier */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/70 bg-card/50">
@@ -123,7 +147,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
             )}
 
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
               aria-label="Fermer le panier"
             >
@@ -192,7 +216,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 <Button
                   asChild
                   className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-bold uppercase tracking-wider h-11 shadow-md cursor-pointer"
-                  onClick={onClose}
+                  onClick={handleClose}
                 >
                   <Link to="/collection/all" className="flex items-center justify-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" />
@@ -205,7 +229,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     asChild
                     variant="outline"
                     className="rounded-xl border-border hover:border-primary/40 text-xs h-9 cursor-pointer"
-                    onClick={onClose}
+                    onClick={handleClose}
                   >
                     <Link to="/collection/homme" className="flex items-center justify-center gap-1.5">
                       <Flame className="w-3 h-3 text-primary" /> Homme
@@ -216,7 +240,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     asChild
                     variant="outline"
                     className="rounded-xl border-border hover:border-primary/40 text-xs h-9 cursor-pointer"
-                    onClick={onClose}
+                    onClick={handleClose}
                   >
                     <Link to="/collection/femme" className="flex items-center justify-center gap-1.5">
                       <Flower2 className="w-3 h-3 text-primary" /> Femme
@@ -375,7 +399,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 {/* Continuer les Achats */}
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="w-full text-center text-[11px] uppercase tracking-wider font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1"
                 >
                   Continuer mes découvertes

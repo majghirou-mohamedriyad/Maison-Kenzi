@@ -10,6 +10,7 @@
 ## Historique des Tâches Réalisées
 
 - [x] Refonte & Optimisation Haute Parfumerie du Panier d'Achat :
+  - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : **Animation de fermeture cinématographique fluide** (`animate-out slide-out-to-right` et `fade-out-0` sur 280ms) symétrique à l'animation d'ouverture pour tous les déclencheurs de fermeture (croix, backdrop, redirection vers le catalogue ou le checkout).
   - [x] [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx) & [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts) : Ajout de la configuration dynamique du **seuil de livraison offerte** (`free_shipping_threshold` en MAD) modifiable à tout moment depuis le tableau de bord administrateur avec synchronisation temps réel (Supabase & Realtime Broadcast).
   - [x] [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx) : Jauge interactive connectée au seuil dynamique (`settings.free_shipping_threshold`), calcul automatique du montant restant et passage en livraison offerte validée dès que le panier atteint le montant défini.
   - [x] [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx) : Persistance automatique du panier dans le `localStorage` (`mk_cart_items`), empêchant toute perte des articles sélectionnés lors du rechargement ou de la navigation.
