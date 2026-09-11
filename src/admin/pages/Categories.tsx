@@ -62,10 +62,8 @@ const CategoriesAdmin = () => {
   const [deletingCat, setDeletingCat] = useState<AdminCategory | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Column Filters State
-  const [nameFilter, setNameFilter] = useState("");
+  // Column Filters State (Sélecteurs dédiés par colonne)
   const [genderFilter, setGenderFilter] = useState<string>("Tous");
-  const [descFilter, setDescFilter] = useState("");
   const [productsFilter, setProductsFilter] = useState<string>("Tous");
   const [statusFilter, setStatusFilter] = useState<string>("Tous");
 
@@ -106,9 +104,7 @@ const CategoriesAdmin = () => {
 
   const hasActiveFilters = Boolean(
     search.trim() ||
-    nameFilter.trim() ||
     genderFilter !== "Tous" ||
-    descFilter.trim() ||
     productsFilter !== "Tous" ||
     statusFilter !== "Tous" ||
     sortField !== "default"
@@ -116,9 +112,7 @@ const CategoriesAdmin = () => {
 
   const resetAllFilters = () => {
     setSearch("");
-    setNameFilter("");
     setGenderFilter("Tous");
-    setDescFilter("");
     setProductsFilter("Tous");
     setStatusFilter("Tous");
     setSortField("default");
@@ -141,7 +135,7 @@ const CategoriesAdmin = () => {
 
   const filteredCategories = useMemo(() => {
     let list = categories.filter((c) => {
-      // 1. Recherche globale rapide
+      // 1. Recherche globale rapide (nom, slug, description)
       const qGlobal = search.trim().toLowerCase();
       if (qGlobal) {
         const matchGlobal =
@@ -151,14 +145,7 @@ const CategoriesAdmin = () => {
         if (!matchGlobal) return false;
       }
 
-      // 2. Filtre colonne Nom / Slug
-      if (nameFilter.trim()) {
-        const qName = nameFilter.trim().toLowerCase();
-        const matchName = c.name.toLowerCase().includes(qName) || c.slug.toLowerCase().includes(qName);
-        if (!matchName) return false;
-      }
-
-      // 3. Filtre colonne Genre
+      // 2. Filtre colonne Genre
       if (genderFilter !== "Tous") {
         if (genderFilter === "Sans genre") {
           if (c.gender) return false;
@@ -167,18 +154,12 @@ const CategoriesAdmin = () => {
         }
       }
 
-      // 4. Filtre colonne Description
-      if (descFilter.trim()) {
-        const qDesc = descFilter.trim().toLowerCase();
-        if (!c.description || !c.description.toLowerCase().includes(qDesc)) return false;
-      }
-
-      // 5. Filtre colonne Nombre de produits
+      // 3. Filtre colonne Nombre de produits
       const count = categoryStats[c.slug] ?? 0;
       if (productsFilter === "with_products" && count === 0) return false;
       if (productsFilter === "no_products" && count > 0) return false;
 
-      // 6. Filtre colonne Statut
+      // 4. Filtre colonne Statut
       if (statusFilter === "active" && !c.is_active) return false;
       if (statusFilter === "inactive" && c.is_active) return false;
       if (statusFilter === "coming_soon" && !c.is_coming_soon) return false;
@@ -212,9 +193,7 @@ const CategoriesAdmin = () => {
   }, [
     categories,
     search,
-    nameFilter,
     genderFilter,
-    descFilter,
     productsFilter,
     statusFilter,
     sortField,
@@ -506,65 +485,30 @@ const CategoriesAdmin = () => {
                 <th className="text-right px-5 py-3">Actions</th>
               </tr>
 
-              {/* Row 2: Column Filter Inputs */}
+              {/* Row 2: Column Filter Selectors (Genre, Produits, Statut) */}
               <tr className="bg-muted/30 border-t border-border/70 font-normal">
-                {/* Filter: Catégorie (Nom + Genre) */}
-                <th className="px-5 py-2.5">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5">
-                    <div className="relative flex-1">
-                      <input
-                        value={nameFilter}
-                        onChange={(e) => setNameFilter(e.target.value)}
-                        placeholder="Filtrer nom..."
-                        className="w-full pl-2.5 pr-6 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70"
-                      />
-                      {nameFilter && (
-                        <button
-                          type="button"
-                          onClick={() => setNameFilter("")}
-                          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                    <select
-                      value={genderFilter}
-                      onChange={(e) => setGenderFilter(e.target.value)}
-                      className="px-2 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer shrink-0"
-                    >
-                      <option value="Tous">Genre: Tous</option>
-                      <option value="Homme">Homme</option>
-                      <option value="Femme">Femme</option>
-                      <option value="Mixte">Mixte</option>
-                      <option value="Sans genre">Sans genre</option>
-                    </select>
-                  </div>
+                {/* Filter: Genre de la catégorie */}
+                <th className="px-5 py-2">
+                  <select
+                    value={genderFilter}
+                    onChange={(e) => setGenderFilter(e.target.value)}
+                    className="px-2.5 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground cursor-pointer"
+                  >
+                    <option value="Tous">Genre: Tous</option>
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                    <option value="Mixte">Mixte</option>
+                    <option value="Sans genre">Sans genre</option>
+                  </select>
                 </th>
 
-                {/* Filter: Description */}
-                <th className="px-5 py-2.5">
-                  <div className="relative max-w-xs">
-                    <input
-                      value={descFilter}
-                      onChange={(e) => setDescFilter(e.target.value)}
-                      placeholder="Filtrer description..."
-                      className="w-full pl-2.5 pr-6 py-1.5 text-[11px] font-normal bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70"
-                    />
-                    {descFilter && (
-                      <button
-                        type="button"
-                        onClick={() => setDescFilter("")}
-                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
+                {/* Description (Pas de filtre textuel redondant) */}
+                <th className="px-5 py-2 text-muted-foreground/40 font-normal text-[10px]">
+                  —
                 </th>
 
                 {/* Filter: Nombre de Produits */}
-                <th className="px-4 py-2.5 text-center">
+                <th className="px-4 py-2 text-center">
                   <select
                     value={productsFilter}
                     onChange={(e) => setProductsFilter(e.target.value)}
@@ -577,7 +521,7 @@ const CategoriesAdmin = () => {
                 </th>
 
                 {/* Filter: Statut */}
-                <th className="px-4 py-2.5 text-center">
+                <th className="px-4 py-2 text-center">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -592,7 +536,7 @@ const CategoriesAdmin = () => {
                 </th>
 
                 {/* Actions / Reset */}
-                <th className="px-5 py-2.5 text-right">
+                <th className="px-5 py-2 text-right">
                   {hasActiveFilters ? (
                     <button
                       type="button"
