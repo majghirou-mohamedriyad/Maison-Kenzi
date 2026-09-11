@@ -46,8 +46,8 @@ const App = () => (
               <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/about" element={<About />} />
-              <Route path="/about/notre-histoire" element={<About />} />
               <Route path="/about/service-client" element={<ServiceClient />} />
+              <Route path="/contact" element={<ServiceClient />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />

@@ -3,11 +3,19 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Synchronisation Temps Réel Instantanée (Admin & Boutique 0ms), Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Espace Admin Haute Parfumerie opérationnels
+- **Statut général** : Refonte Haute Parfumerie Service Client & Conciergerie, Synchronisation Temps Réel Instantanée (Admin & Boutique 0ms), Bannière Panoramique de Catégorie, Sélection Multi-Catégories des Parfums, Espace Admin opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Refonte Haute Parfumerie de la Page Service Client & Contact (`/about/service-client` et `/contact`) :
+  - [x] [`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx) : Redesign complet et immersif aligné sur le Luxury Nude Design System (Travertin, Albâtre, Or Champagne, typographie Serif prestigieuse, zéro emoji, icônes vectorielles `lucide-react`).
+  - [x] En-tête Hero éditorial avec badge signature « Haute Parfumerie · Conciergerie » et espacement fluide sous la navigation flottante (`pt-28 sm:pt-36`).
+  - [x] Trio de cartes de contact de luxe : Conciergerie WhatsApp directe avec badge « Réponse Instantanée », Ligne Directe & Horaires d'Atelier, Univers Instagram `@maisonkenzi`.
+  - [x] Formulaire de conciergerie interactif avec sélection d'objet sur-mesure (Conseil olfactif personnalisé, Suivi de commande, Flaconnage & décants, Disponibilité de parfum) et double canal de transmission (formulaire élégant + pont direct vers WhatsApp avec message pré-formaté).
+  - [x] Foire aux questions (FAQ) interactive en accordéons pour rassurer les clients sur l'authenticité 100% garantie des jus, la livraison express 24-48h partout au Maroc, le conseil olfactif et la politique de retour sous 7 jours.
+  - [x] [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Ajout de l'alias d'accès direct `/contact` vers la page Service Client & Conciergerie.
 
 - [x] Synchronisation Temps Réel Instantanée Boutique & Administration (Zéro Rechargement de Page) :
   - [x] [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts) : Raccordement direct et réactif de `useParfums` et `useParfum` au store central via `useProducts()` et `useSyncExternalStore`. Toute modification dans l'administration (ajout, modification, suppression de parfum, changement de stock ou de prix) se répercute **immédiatement (en 0ms)** sur l'ensemble de la boutique sans nécessiter d'actualisation de page.
