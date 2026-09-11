@@ -17,6 +17,7 @@ export type AdminCategory = {
   icon?: string;
   gender?: string;
   is_active: boolean;
+  is_coming_soon?: boolean;
   order_index: number;
 };
 
@@ -49,6 +50,7 @@ const load = (): AdminCategory[] => {
           image: cat.image || cat.icon || "",
           icon: cat.icon || cat.image || "",
           is_active: cat.is_active ?? true,
+          is_coming_soon: !!cat.is_coming_soon,
           order_index: cat.order_index ?? index,
         }));
       }
@@ -78,6 +80,7 @@ if (typeof window !== "undefined") {
           image: c.image || c.icon || "",
           icon: c.icon || c.image || "",
           is_active: c.is_active ?? true,
+          is_coming_soon: !!c.is_coming_soon,
           order_index: c.sort_order ?? index,
         }));
         notify();
@@ -134,6 +137,7 @@ export const addCategory = async (
     icon: imageVal,
     gender: cat.gender,
     is_active: cat.is_active ?? true,
+    is_coming_soon: !!cat.is_coming_soon,
     order_index: cat.order_index ?? state.length + 1,
   };
 
@@ -143,19 +147,27 @@ export const addCategory = async (
 
   // Persistance dans la base de données Supabase
   try {
-    const { error } = await supabase.from("categories").upsert({
+    const payload: any = {
       id: fullCat.id,
       name: fullCat.name,
       slug: fullCat.slug,
       description: fullCat.description,
       icon: fullCat.image || fullCat.icon || null,
       is_active: fullCat.is_active,
+      is_coming_soon: fullCat.is_coming_soon,
       sort_order: fullCat.order_index,
-    } as never);
+    };
+
+    const { error } = await supabase.from("categories").upsert(payload as never);
 
     if (error) {
-      console.error("Erreur lors de l'enregistrement de la catégorie dans Supabase :", error);
-      return { success: false, error, category: fullCat };
+      console.warn("Tentative sans colonne is_coming_soon pour compatibilité:", error.message);
+      const { is_coming_soon: _ics, ...fallbackPayload } = payload;
+      const { error: err2 } = await supabase.from("categories").upsert(fallbackPayload as never);
+      if (err2) {
+        console.error("Erreur lors de l'enregistrement de la catégorie dans Supabase :", err2);
+        return { success: false, error: err2, category: fullCat };
+      }
     }
     return { success: true, category: fullCat };
   } catch (err) {
@@ -181,19 +193,27 @@ export const updateCategory = async (
   try {
     const updated = state.find((c) => c.id === id);
     if (updated) {
-      const { error } = await supabase.from("categories").upsert({
+      const payload: any = {
         id: updated.id,
         name: updated.name,
         slug: updated.slug,
         description: updated.description,
         icon: updated.image || updated.icon || null,
         is_active: updated.is_active,
+        is_coming_soon: !!updated.is_coming_soon,
         sort_order: updated.order_index,
-      } as never);
+      };
+
+      const { error } = await supabase.from("categories").upsert(payload as never);
 
       if (error) {
-        console.error("Erreur lors de la mise à jour de la catégorie dans Supabase :", error);
-        return { success: false, error };
+        console.warn("Tentative mise à jour sans is_coming_soon:", error.message);
+        const { is_coming_soon: _ics, ...fallbackPayload } = payload;
+        const { error: err2 } = await supabase.from("categories").upsert(fallbackPayload as never);
+        if (err2) {
+          console.error("Erreur lors de la mise à jour de la catégorie dans Supabase :", err2);
+          return { success: false, error: err2 };
+        }
       }
     }
     return { success: true };

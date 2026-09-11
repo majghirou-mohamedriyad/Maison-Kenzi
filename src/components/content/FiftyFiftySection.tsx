@@ -6,7 +6,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Clock } from "lucide-react";
 import { useCategories } from "@/store/useCategoryStore";
 
 const Card = ({
@@ -15,12 +15,14 @@ const Card = ({
   href,
   tag,
   image,
+  isComingSoon,
 }: {
   title: string;
   text: string;
   href: string;
   tag: string;
   image?: string;
+  isComingSoon?: boolean;
 }) => (
   <Link
     to={href}
@@ -45,10 +47,16 @@ const Card = ({
     />
 
     {/* Badge supérieur */}
-    <div className="relative z-10 flex items-center justify-between">
+    <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
       <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium px-3 py-1 rounded-full backdrop-blur-md shadow-xs bg-black/50 text-white/90 border border-white/15">
         {tag}
       </span>
+      {isComingSoon && (
+        <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md bg-[#C9A96E]/20 text-[#C9A96E] border border-[#C9A96E]/40 shadow-xs">
+          <Clock className="w-2.5 h-2.5" strokeWidth={2} />
+          <span>À Venir</span>
+        </span>
+      )}
     </div>
 
     {/* Typographie intégrée */}
@@ -63,7 +71,7 @@ const Card = ({
       )}
 
       <div className="pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-primary uppercase tracking-[0.2em] transition-all group-hover:translate-x-1">
-        <span>Explorer</span>
+        <span>{isComingSoon ? "Découvrir l'univers" : "Explorer"}</span>
         <ArrowRight size={13} strokeWidth={1.5} />
       </div>
     </div>
@@ -101,6 +109,7 @@ const FiftyFiftySection = () => {
             href={`/collection/${cat.slug}`}
             tag={cat.name}
             image={cat.image || cat.icon}
+            isComingSoon={cat.is_coming_soon}
           />
         ))}
       </div>

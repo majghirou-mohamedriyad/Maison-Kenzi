@@ -17,6 +17,7 @@ import {
   Upload,
   Image as ImageIcon,
   Loader2,
+  Clock,
 } from "lucide-react";
 import {
   useCategories,
@@ -62,6 +63,7 @@ const CategoriesAdmin = () => {
   const [image, setImage] = useState("");
   const [gender, setGender] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
+  const [isComingSoon, setIsComingSoon] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -99,6 +101,7 @@ const CategoriesAdmin = () => {
     setImage("");
     setGender("");
     setIsActive(true);
+    setIsComingSoon(false);
     setErrors({});
     setModalOpen(true);
   };
@@ -111,6 +114,7 @@ const CategoriesAdmin = () => {
     setImage(cat.image || cat.icon || "");
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
+    setIsComingSoon(Boolean(cat.is_coming_soon));
     setErrors({});
     setModalOpen(true);
   };
@@ -178,6 +182,7 @@ const CategoriesAdmin = () => {
           icon: image.trim() || undefined,
           gender: gender || undefined,
           is_active: isActive,
+          is_coming_soon: isComingSoon,
         });
 
         if (res.error) {
@@ -194,6 +199,7 @@ const CategoriesAdmin = () => {
           icon: image.trim() || undefined,
           gender: gender || undefined,
           is_active: isActive,
+          is_coming_soon: isComingSoon,
           order_index: categories.length + 1,
         });
 
@@ -319,20 +325,27 @@ const CategoriesAdmin = () => {
 
                     {/* Status */}
                     <td className="px-4 py-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                          cat.is_active
-                            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
+                      <div className="flex flex-col items-center gap-1">
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            cat.is_active ? "bg-emerald-500" : "bg-muted-foreground"
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                            cat.is_active
+                              ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
+                              : "bg-muted text-muted-foreground"
                           }`}
-                        />
-                        {cat.is_active ? "Actif" : "Masqué"}
-                      </span>
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              cat.is_active ? "bg-emerald-500" : "bg-muted-foreground"
+                            }`}
+                          />
+                          {cat.is_active ? "Actif" : "Masqué"}
+                        </span>
+                        {cat.is_coming_soon && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                            <Clock className="w-2.5 h-2.5" /> À venir
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Actions */}
@@ -495,13 +508,26 @@ const CategoriesAdmin = () => {
               />
             </div>
 
-            <label className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border cursor-pointer select-none">
-              <div>
-                <div className="text-xs font-semibold text-foreground">Catégorie active</div>
-                <div className="text-[10px] text-muted-foreground">Visible sur la boutique en ligne</div>
-              </div>
-              <Switch checked={isActive} onCheckedChange={setIsActive} />
-            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border cursor-pointer select-none">
+                <div>
+                  <div className="text-xs font-semibold text-foreground">Catégorie active</div>
+                  <div className="text-[10px] text-muted-foreground">Visible sur la boutique</div>
+                </div>
+                <Switch checked={isActive} onCheckedChange={setIsActive} />
+              </label>
+
+              <label className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
+                <div>
+                  <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#C9A96E]" />
+                    <span>À venir / Teaser</span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">Bientôt disponible</div>
+                </div>
+                <Switch checked={isComingSoon} onCheckedChange={setIsComingSoon} />
+              </label>
+            </div>
 
             <DialogFooter className="gap-2 pt-3 border-t border-border">
               <button

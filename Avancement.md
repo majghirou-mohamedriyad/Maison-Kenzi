@@ -2,12 +2,19 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-10
-- **Statut général** : Section Hero immersive plein écran avec animation Ken Burns cinématique, Espace Admin Haute Parfumerie et Sidebar rétractable opérationnels
+- **Dernière mise à jour** : 2026-09-11
+- **Statut général** : Gestion des Catégories à Venir / Teasers de collections, Espace Admin Haute Parfumerie, Galerie Multi-Photos et Système de Design Nude opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Gestion des Catégories & Univers Olfactifs « À Venir / Bientôt Disponible » :
+  - [x] [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts) : Ajout du champ `is_coming_soon?: boolean` avec synchronisation bidirectionnelle Supabase et repli gracieux sans erreur si la colonne SQL n'a pas encore été créée sur le VPS.
+  - [x] [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx) : Ajout de l'interrupteur « À venir / Teaser » dans la modale de création/édition et affichage de la pastille dorée « À venir » avec icône `Clock` dans la table des catégories.
+  - [x] [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx) : Affichage d'un badge de prestige « À Venir » sur les cartes d'univers olfactifs en page d'accueil avec incitation « Découvrir l'univers ».
+  - [x] [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx) : Intégration des étiquettes « À venir » sur la barre de filtres (desktop et mobile) et affichage d'un écran Teaser d'exception (« Cette collection arrive très prochainement ») avec bouton de notification directe sur WhatsApp si la collection ne dispose pas encore de flacons actifs.
+  - [x] [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql) : Ajout de l'instruction `ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS is_coming_soon BOOLEAN NOT NULL DEFAULT false;`.
 
 - [x] Section Hero Plein Écran & Navbar Flottante sans Bande Supérieure :
   - [x] [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx) : Positionnement fixe (`fixed top-0`) au-dessus du Hero sans décalage de flux, éliminant totalement la bande crème/blanche supérieure au-dessus du Hero.

@@ -23,6 +23,8 @@ import {
   Leaf,
   Wind,
   Snowflake,
+  Clock,
+  MessageCircle,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -45,6 +47,7 @@ interface FilterOption {
   shortLabel: string;
   icon: React.ComponentType<{ className?: string }>;
   isGold?: boolean;
+  isComingSoon?: boolean;
 }
 
 const slugToFilter = (slug: string | undefined): FilterKey => {
@@ -57,14 +60,14 @@ const filterToSlug = (key: FilterKey): string => {
   return key;
 };
 
-const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDesc?: string) => {
+const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDesc?: string, isComingSoon?: boolean) => {
   const f = filter.toLowerCase();
   if (f === "homme") {
     return {
       title: categoryName || "Parfums Homme",
       subtitle: "Haute Parfumerie Masculine",
       description: categoryDesc || "Une sélection d'exception de fragrances masculines : sillages boisés, ambrés, cuirés et orientaux des plus grandes maisons, décantés artisanalement en flacons stérilisés.",
-      badge: "Sélection Pour Homme",
+      badge: isComingSoon ? "Collection à Venir" : "Sélection Pour Homme",
     };
   }
   if (f === "femme") {
@@ -72,7 +75,7 @@ const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDe
       title: categoryName || "Parfums Femme",
       subtitle: "Haute Parfumerie Féminine",
       description: categoryDesc || "Des créations olfactives envoûtantes aux accords floraux, gourmands et poudrés pour révéler votre signature avec élégance et distinction.",
-      badge: "Sélection Pour Femme",
+      badge: isComingSoon ? "Collection à Venir" : "Sélection Pour Femme",
     };
   }
   if (f.includes("deodorant")) {
@@ -80,7 +83,7 @@ const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDe
       title: categoryName || "Déodorants Stick",
       subtitle: "Soin & Fraîcheur Longue Durée",
       description: categoryDesc || "La sélection officielle des déodorants en stick haute efficacité, apportant confort et fraîcheur absolue tout au long de la journée.",
-      badge: "Protection 48h",
+      badge: isComingSoon ? "Collection à Venir" : "Protection 48h",
     };
   }
   if (f.includes("pack")) {
@@ -88,15 +91,15 @@ const collectionHeroInfo = (filter: FilterKey, categoryName?: string, categoryDe
       title: categoryName || "Les Packs & Coffrets",
       subtitle: "Offres Signatures Exclusives",
       description: categoryDesc || "Découvrez nos coffrets thématiques et nos duos/trios d'exception pour explorer plusieurs univers olfactifs à prix privilégié.",
-      badge: "Offres Limitées",
+      badge: isComingSoon ? "Collection à Venir" : "Offres Limitées",
     };
   }
   if (filter !== "Toutes" && categoryName) {
     return {
       title: categoryName,
-      subtitle: "Collection Spéciale",
+      subtitle: isComingSoon ? "Collection Bientôt Disponible" : "Collection Spéciale",
       description: categoryDesc || "",
-      badge: "Sélection Exclusive",
+      badge: isComingSoon ? "Collection à Venir" : "Sélection Exclusive",
     };
   }
   return {
@@ -141,6 +144,7 @@ const Collection = () => {
         shortLabel: cat.name,
         icon,
         isGold: s.includes("pack"),
+        isComingSoon: Boolean(cat.is_coming_soon),
       });
     });
 
@@ -164,7 +168,12 @@ const Collection = () => {
     [activeAdminCategories, filter]
   );
 
-  const hero = collectionHeroInfo(filter, currentCategoryObj?.name, currentCategoryObj?.description);
+  const hero = collectionHeroInfo(
+    filter,
+    currentCategoryObj?.name,
+    currentCategoryObj?.description,
+    Boolean(currentCategoryObj?.is_coming_soon)
+  );
 
   // Filter and sort products
   const filteredAndSorted = useMemo(() => {
@@ -375,6 +384,11 @@ const Collection = () => {
                         <div className="flex items-center gap-2.5">
                           <Icon className={`w-4 h-4 ${active ? "text-primary-foreground" : "text-primary"}`} />
                           <span>{item.label}</span>
+                          {item.isComingSoon && (
+                            <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] font-medium bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full">
+                              À venir
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-serif font-bold opacity-90">({count})</span>
@@ -389,7 +403,7 @@ const Collection = () => {
           </div>
 
           {/* Desktop Collection Pills Bar */}
-          <div className="hidden md:flex items-center justify-center gap-2 p-1.5 rounded-full bg-card/80 border border-border/80 backdrop-blur-md shadow-xs max-w-fit mx-auto mb-6">
+          <div className="hidden md:flex items-center justify-center flex-wrap gap-2 p-1.5 rounded-full bg-card/80 border border-border/80 backdrop-blur-md shadow-xs max-w-fit mx-auto mb-6">
             {filterOptions.map((item) => {
               const active = item.key.toLowerCase() === filter.toLowerCase();
               const Icon = item.icon;
@@ -410,6 +424,17 @@ const Collection = () => {
                 >
                   <Icon className={`w-3.5 h-3.5 shrink-0 ${active ? "text-primary-foreground" : "text-primary"}`} />
                   <span>{item.label}</span>
+                  {item.isComingSoon && (
+                    <span
+                      className={`text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.2 rounded-full ${
+                        active
+                          ? "bg-black/30 text-white"
+                          : "bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30"
+                      }`}
+                    >
+                      À venir
+                    </span>
+                  )}
                   {count > 0 && (
                     <span
                       className={`text-[10px] font-serif font-bold px-1.5 py-0.2 rounded-full ${
@@ -615,20 +640,63 @@ const Collection = () => {
               </div>
 
               {filteredAndSorted.length === 0 && (
-                <div className="text-center py-20 bg-card/40 border border-border rounded-3xl p-8 max-w-md mx-auto space-y-3">
-                  <p className="text-sm font-medium text-foreground">
-                    Aucun parfum ne correspond à vos critères de recherche.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setLocalSearch("");
-                      setOnlyInStock(false);
-                    }}
-                    className="text-xs uppercase tracking-wider font-semibold text-primary border border-primary/30 px-4 py-2 rounded-xl hover:bg-primary/10 transition-colors cursor-pointer"
-                  >
-                    Réinitialiser les filtres
-                  </button>
-                </div>
+                currentCategoryObj?.is_coming_soon ? (
+                  <div className="relative overflow-hidden rounded-3xl border border-[#C9A96E]/30 bg-gradient-to-b from-card/90 via-card/50 to-card/90 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-xl space-y-6 my-8">
+                    {/* Halo d'ambiance */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#C9A96E]/10 blur-2xl rounded-full pointer-events-none" />
+
+                    <div className="w-14 h-14 rounded-2xl bg-[#C9A96E]/10 border border-[#C9A96E]/30 text-[#C9A96E] flex items-center justify-center mx-auto shadow-sm relative z-10">
+                      <Clock className="w-7 h-7" strokeWidth={1.5} />
+                    </div>
+
+                    <div className="space-y-2 relative z-10">
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#C9A96E]/10 border border-[#C9A96E]/30 text-[#C9A96E] text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em]">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>En Cours d'Élaboration</span>
+                      </div>
+                      <h3 className="font-serif text-2xl sm:text-3xl text-foreground font-normal tracking-tight">
+                        Cette collection arrive très prochainement
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-lg mx-auto font-light">
+                        Nos maîtres parfumeurs préparent actuellement la sélection des flacons originaux et décants d'exception pour l'univers <strong className="text-foreground font-medium">{currentCategoryObj.name}</strong>.
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10">
+                      <a
+                        href={`https://wa.me/212600000000?text=${encodeURIComponent(`Bonjour Maison Kenzi, je souhaite être informé dès la sortie de la collection "${currentCategoryObj.name}".`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] text-xs font-bold shadow-md shadow-[#C9A96E]/20 hover:brightness-110 transition-all cursor-pointer"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Être notifié sur WhatsApp</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleFilterClick("Toutes")}
+                        className="w-full sm:w-auto px-5 py-3 rounded-xl border border-border text-foreground hover:bg-muted text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        Explorer les autres collections
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-card/40 border border-border rounded-3xl p-8 max-w-md mx-auto space-y-3">
+                    <p className="text-sm font-medium text-foreground">
+                      Aucun parfum ne correspond à vos critères de recherche.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setLocalSearch("");
+                        setOnlyInStock(false);
+                      }}
+                      className="text-xs uppercase tracking-wider font-semibold text-primary border border-primary/30 px-4 py-2 rounded-xl hover:bg-primary/10 transition-colors cursor-pointer"
+                    >
+                      Réinitialiser les filtres
+                    </button>
+                  </div>
+                )
               )}
             </>
           )}

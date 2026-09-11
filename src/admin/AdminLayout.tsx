@@ -145,9 +145,6 @@ const AdminLayout = () => {
           className="flex items-center gap-3 group overflow-hidden min-w-0"
           title="Maison Kenzi Admin"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#F0E9DF] dark:bg-[#1C1A18] border border-[#C9A96E]/50 flex items-center justify-center text-[#1A1816] dark:text-[#C9A96E] font-serif font-bold text-sm shrink-0 shadow-xs group-hover:border-[#C9A96E] transition-colors">
-            MK
-          </div>
           {!isCollapsed && (
             <div className="flex flex-col items-start min-w-0">
               <span className="font-serif text-sm tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
