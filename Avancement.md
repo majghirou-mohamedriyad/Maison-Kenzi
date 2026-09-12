@@ -9,10 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Bouton Flottant de Retour en Haut de Page (« Back to Top ») ([`src/components/BackToTop.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/BackToTop.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
-  - [x] **Apparition Feutrée au Défilement** : Détection fluide du scroll (`scrollY > 350px`) avec animation d'entrée/sortie `animate-in fade-in zoom-in-95`.
+- [x] Bouton Flottant de Retour en Haut avec Anneau de Progression Circulaire ([`src/components/BackToTop.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/BackToTop.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Anneau de Progression Dynamique (0% à 100%)** : Cercle SVG précis entourant le bouton et se remplissant en or champagne (`text-primary`, `stroke-dashoffset`) au fur et à mesure du défilement de la page.
+  - [x] **Apparition Feutrée au Défilement** : Détection fluide du scroll (`scrollY > 250px`) avec animation d'entrée/sortie `animate-in fade-in zoom-in-95` et infobulle indiquant le pourcentage défilé.
   - [x] **Défilement Doux Intuitif** : Remontée instantanée mais fluide en haut de page (`window.scrollTo({ top: 0, behavior: 'smooth' })`).
-  - [x] **Design Haute Couture & Positionnement Soigné** : Bouton circulaire en verre dépoli (`backdrop-blur-xl`), bordure or champagne `border-primary/40`, icône `ArrowUp` de `lucide-react` avec micro-animation d'élévation au survol, parfaitement positionné au-dessus du bouton de chat/conciergerie sans chevauchement.
+  - [x] **Design Haute Couture & Positionnement Soigné** : Bouton circulaire en verre dépoli (`backdrop-blur-xl`), bordure subtile, icône `ArrowUp` de `lucide-react` avec micro-animation d'élévation au survol, empilé au-dessus du bouton de conciergerie.
   - [x] **Filtrage Espace Admin** : Masquage automatique sur les pages d'administration pour préserver l'ergonomie du tableau de bord.
 
 - [x] Suivi de Commande — Champ de Saisie Épuré & Vide par Défaut ([`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx)) :
