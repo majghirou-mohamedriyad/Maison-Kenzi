@@ -10,7 +10,8 @@
 ## Historique des Tâches Réalisées
 
 - [x] Déclinaison Haute Définition du Logo Officiel Maison Kenzi (Light & Dark Theme) :
-  - [x] **Recadrage Haute Précision sans Marges** ([`public/mk-logo-light.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-light.png), [`public/mk-logo-dark.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-dark.png)) : Suppression des marges superflues pour un cadrage serré autour du monogramme MK et de la typographie, éliminant toute sensation de miniaturisation.
+  - [x] **Fond 100% Transparent & Antialiasing de Précision** ([`public/mk-logo-light.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-light.png), [`public/mk-logo-dark.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-dark.png)) : Conversion en PNG transparent avec détourage chromatique doux et lissage des contours dorés sans fond opaque.
+  - [x] **Recadrage Haute Précision sans Marges** : Suppression des marges superflues pour un cadrage serré autour du monogramme MK et de la typographie, éliminant toute sensation de miniaturisation.
   - [x] **Ajustement des Proportions dans la Navigation & le Footer** ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/components/header/CheckoutHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/CheckoutHeader.tsx)) : Agrandissement de la taille d'affichage (`h-10 sm:h-11 md:h-12 lg:h-14`) avec commutation automatique Light/Dark.
 
 - [x] Sublimation Créative de la Page « Service Client & Contact » ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
