@@ -24,6 +24,7 @@ import {
   Info,
   MessageCircle,
   Truck,
+  Headset,
   Tag,
   Grid,
 } from "lucide-react";
@@ -351,6 +352,19 @@ const Navigation = () => {
             <span className="hidden lg:inline">Suivi</span>
           </Link>
 
+          {/* Desktop Service Client Link */}
+          <Link
+            to="/service-client"
+            className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
+                ? "bg-foreground text-background"
+                : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+              }`}
+            title="Service Client & Conciergerie Privée"
+          >
+            <Headset className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Service Client</span>
+          </Link>
+
           {/* Desktop À Propos Link */}
           <Link
             to="/about"
@@ -614,6 +628,21 @@ const Navigation = () => {
                 <span className="flex items-center gap-2">
                   <Truck className={`w-4 h-4 ${location.pathname === "/suivi-commande" ? "text-background" : "text-primary"}`} />
                   <span>Suivre ma Commande</span>
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 opacity-70" />
+              </Link>
+
+              <Link
+                to="/service-client"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
+                    ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                    : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
+                  }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Headset className={`w-4 h-4 ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact" ? "text-background" : "text-primary"}`} />
+                  <span>Service Client & Conciergerie</span>
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>

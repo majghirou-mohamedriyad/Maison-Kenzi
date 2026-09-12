@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Intégration du Lien « Service Client » dans la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Navigation Desktop & Mobile** : Ajout du lien direct vers la page de conciergerie / service client avec l'icône vectorielle `Headset` de `lucide-react`.
+  - [x] **Gestion de l'État Actif Multi-Routes** : Détection active sur `/service-client`, `/about/service-client` et `/contact` avec mise en surbrillance cohérente.
+  - [x] **Alias d'URL Directs** : Support de `/service-client` en redirection transparente dans le routeur principal.
+
 - [x] Bouton Flottant de Retour en Haut avec Anneau de Progression Circulaire ([`src/components/BackToTop.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/BackToTop.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Anneau de Progression Dynamique (0% à 100%)** : Cercle SVG précis entourant le bouton et se remplissant en or champagne (`text-primary`, `stroke-dashoffset`) au fur et à mesure du défilement de la page.
   - [x] **Apparition Feutrée au Défilement** : Détection fluide du scroll (`scrollY > 250px`) avec animation d'entrée/sortie `animate-in fade-in zoom-in-95` et infobulle indiquant le pourcentage défilé.
