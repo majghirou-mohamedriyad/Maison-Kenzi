@@ -185,6 +185,9 @@ const getTargetBaseUrls = (rawUrl: string): string[] => {
 /**
  * Envoie un message texte via l'API OpenWA sur la VPS
  */
+/**
+ * Envoie un message texte via l'API OpenWA sur la VPS
+ */
 export const sendOpenWaMessage = async (
   recipientPhone: string,
   messageText: string,
@@ -197,11 +200,12 @@ export const sendOpenWaMessage = async (
 
   const chatId = formatWhatsAppChatId(recipientPhone);
   if (!chatId || chatId === "@c.us") {
-    return { success: false, error: "Numero de telephone invalide." };
+    return { success: false, error: "Numéro de téléphone invalide." };
   }
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "Accept": "application/json, text/plain, */*",
   };
   if (apiKey) {
     headers["Authorization"] = `Bearer ${apiKey}`;
@@ -210,23 +214,34 @@ export const sendOpenWaMessage = async (
 
   const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
+  let receivedServerResponse = false;
 
   for (const base of baseUrls) {
     const attempts = [
-      // Format 1 : OpenWA Easy API / Session dans le chemin
+      // 1. Format OpenWA /session/sendText avec args
       {
         url: `${base}/${encodeURIComponent(session)}/sendText`,
-        payload: { to: chatId, content: messageText, args: { to: chatId, content: messageText } },
+        payload: { args: { to: chatId, content: messageText } },
       },
-      // Format 2 : OpenWA API Direct
+      // 2. Format OpenWA /session/sendText plat
+      {
+        url: `${base}/${encodeURIComponent(session)}/sendText`,
+        payload: { to: chatId, content: messageText, chatId: chatId, text: messageText },
+      },
+      // 3. Format OpenWA /sendText direct avec session
       {
         url: `${base}/sendText`,
-        payload: { chatId: chatId, to: chatId, text: messageText, content: messageText, session: session },
+        payload: { args: { to: chatId, content: messageText }, session: session, to: chatId, content: messageText, chatId: chatId, text: messageText },
       },
-      // Format 3 : OpenWA /api/sendText
+      // 4. Format OpenWA /session/sendMessage
+      {
+        url: `${base}/${encodeURIComponent(session)}/sendMessage`,
+        payload: { to: chatId, message: messageText, text: messageText, content: messageText },
+      },
+      // 5. Format OpenWA /api/sendText
       {
         url: `${base}/api/sendText`,
-        payload: { to: chatId, content: messageText, session: session },
+        payload: { session: session, to: chatId, content: messageText },
       },
     ];
 
@@ -248,16 +263,24 @@ export const sendOpenWaMessage = async (
           const data = await response.json().catch(() => ({ status: "sent" }));
           return { success: true, details: data };
         } else {
+          receivedServerResponse = true;
           const errorText = await response.text().catch(() => response.statusText);
-          lastError = `Erreur HTTP ${response.status}: ${errorText}`;
+          lastError = `Erreur OpenWA (HTTP ${response.status}) sur ${attempt.url} : ${errorText || response.statusText}`;
         }
       } catch (err: any) {
-        if (err.name === "AbortError") {
-          lastError = "Delai d'attente depasse (Timeout 12s) lors de la communication avec OpenWA.";
-        } else {
-          lastError = err.message || String(err);
+        if (!receivedServerResponse) {
+          if (err.name === "AbortError") {
+            lastError = "Délai d'attente dépassé (Timeout 12s) lors de l'envoi WhatsApp.";
+          } else {
+            lastError = err.message || String(err);
+          }
         }
       }
+    }
+
+    // Si le proxy local a répondu (même avec une erreur HTTP 4xx/5xx explicite), ne pas écraser par un CORS TypeError
+    if (receivedServerResponse) {
+      break;
     }
   }
 
@@ -269,7 +292,7 @@ export const sendOpenWaMessage = async (
  */
 export const checkOpenWaSessionStatus = async (
   overrideConfig?: Partial<AppSettings>
-): Promise<{ ok: boolean; status: string; raw?: any; error?: string }> => {
+): Promise<{ ok: boolean; status: string; raw?: any; error?: string; sessions?: string[] }> => {
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const session = (currentSettings.openwa_session || "default").trim();
@@ -310,13 +333,29 @@ export const checkOpenWaSessionStatus = async (
         if (res.ok) {
           const contentType = res.headers.get("content-type") || "";
           let data: any = { status: "online" };
+          let detectedSessions: string[] = [];
+
           if (contentType.includes("application/json")) {
             data = await res.json().catch(() => ({ status: "online" }));
+            if (Array.isArray(data)) {
+              detectedSessions = data.map((s: any) => typeof s === "string" ? s : s.id || s.name || s.session).filter(Boolean);
+            } else if (data && typeof data === "object") {
+              if (Array.isArray(data.sessions)) {
+                detectedSessions = data.sessions.map((s: any) => typeof s === "string" ? s : s.id || s.name).filter(Boolean);
+              }
+            }
           }
+
+          let statusMsg = "Serveur VPS Joint & Connecté";
+          if (detectedSessions.length > 0) {
+            statusMsg += ` (Sessions actives: ${detectedSessions.join(", ")})`;
+          }
+
           return {
             ok: true,
-            status: "Serveur VPS Joint & Session Active",
+            status: statusMsg,
             raw: data,
+            sessions: detectedSessions,
           };
         }
       } catch (err: any) {

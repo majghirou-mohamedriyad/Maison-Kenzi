@@ -232,7 +232,10 @@ const Parametres = () => {
         openwa_api_key: openwaApiKey,
       });
       if (res.ok) {
-        setConnectionStatus({ checked: true, ok: true, message: `Connecté (${res.status})` });
+        if (res.sessions && res.sessions.length > 0 && (!openwaSession || openwaSession === "default")) {
+          setOpenwaSession(res.sessions[0]);
+        }
+        setConnectionStatus({ checked: true, ok: true, message: `Connecté : ${res.status}` });
         toast.success("Serveur OpenWA joint avec succès !");
       } else {
         setConnectionStatus({ checked: true, ok: false, message: res.error || "Serveur non joignable" });
