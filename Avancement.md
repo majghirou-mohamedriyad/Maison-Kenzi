@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Unification & Simplification du Bouton de Commande ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)) :
+  - [x] **Suppression du Double Bouton** : Remplacement des 2 boutons superposés (« Valider sur WhatsApp » et « Valider sur le site ») par un **unique bouton principal de prestige** : `Valider la Commande (Paiement à la Livraison)`.
+  - [x] **Expérience Client Fluide** : Validation directe avec feedback instantané, enregistrement en base Supabase et affichage immédiat de l'écran de confirmation et du numéro de suivi `MK-XXXXXX`.
+
 - [x] Suppression Définitive de la Page « Base de Données Clients » :
   - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Retrait du lien de navigation « Fichier Clients » (`/admin/clients`) et du dictionnaire des titres.
   - [x] [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Suppression de la route `/admin/clients` et nettoyage des imports.

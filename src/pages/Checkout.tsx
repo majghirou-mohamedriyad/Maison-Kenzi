@@ -498,28 +498,16 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* Submission Action Buttons */}
-                  <div className="pt-2 space-y-3">
-                    {/* PRIMARY ACTION: WhatsApp Order */}
-                    <Button
-                      type="button"
-                      disabled={submitting}
-                      onClick={() => processOrderSubmission(true)}
-                      className="w-full h-12 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300 gap-2 cursor-pointer border-0"
-                    >
-                      <MessageCircle className="w-5 h-5" />
-                      <span>Valider & Commander sur WhatsApp</span>
-                    </Button>
-
-                    {/* SECONDARY ACTION: Direct Web Order */}
+                  {/* Single Main Order Confirmation Button */}
+                  <div className="pt-3">
                     <Button
                       type="button"
                       disabled={submitting}
                       onClick={() => processOrderSubmission(false)}
-                      variant="outline"
-                      className="w-full h-11 rounded-2xl border-border hover:border-primary text-foreground font-semibold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                      className="w-full h-12.5 rounded-2xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 gap-2 cursor-pointer border-0"
                     >
-                      <span>Valider la commande sur le site</span>
+                      <ShieldCheck className="w-5 h-5" />
+                      <span>{submitting ? "Validation en cours…" : "Valider la Commande"}</span>
                     </Button>
                   </div>
                 </div>
