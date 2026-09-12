@@ -94,7 +94,7 @@ const ExpressOrderForm = ({
 }: ExpressOrderFormProps) => {
   const navigate = useNavigate();
   const { settings } = useAppSettings();
-  const { parfums } = useParfums();
+  const { data: parfums = [] } = useParfums();
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -163,12 +163,13 @@ const ExpressOrderForm = ({
 
   // Filtrage du catalogue pour l'ajout multi-parfums
   const filteredCatalog = useMemo(() => {
+    const list = Array.isArray(parfums) ? parfums : [];
     const q = searchCatalogQuery.trim().toLowerCase();
-    if (!q) return parfums.slice(0, 10);
-    return parfums.filter(
+    if (!q) return list.slice(0, 10);
+    return list.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.maison.toLowerCase().includes(q) ||
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.maison && p.maison.toLowerCase().includes(q)) ||
         (p.category && p.category.toLowerCase().includes(q))
     ).slice(0, 15);
   }, [parfums, searchCatalogQuery]);

@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Correction de l'Extraction des Données du Catalogue `useParfums` ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Déstructuration `const { data: parfums = [] } = useParfums()`** : Récupération correcte du tableau de parfums retourné par le hook.
+  - [x] **Élimination du Crash `TypeError: Cannot read properties of undefined (reading 'slice')`** : Filtrage et recherche instantanée dans le catalogue sans aucune erreur.
+
 - [x] Correction de la Variable `primaryImg` dans la Vue Tableau ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
   - [x] **Déclaration de `primaryImg`** : Rétablissement de `getPrimaryImage(p)` dans le mapping des lignes du tableau.
   - [x] **Élimination de l'Erreur Runtime `ReferenceError: primaryImg is not defined`** : Rendu parfait des miniatures et de la fiche produit en mode Tableau.
