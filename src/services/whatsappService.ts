@@ -192,7 +192,7 @@ export const sendOpenWaMessage = async (
 ): Promise<{ success: boolean; messageId?: string; error?: string; details?: any }> => {
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
-  const session = (currentSettings.openwa_session || "default").trim();
+  const session = (currentSettings.openwa_session || "e8fe5adf-cd3b-4470-8cf7-6a85504430ff").trim();
   const apiKey = (currentSettings.openwa_api_key || "").trim();
 
   const chatId = formatWhatsAppChatId(recipientPhone);

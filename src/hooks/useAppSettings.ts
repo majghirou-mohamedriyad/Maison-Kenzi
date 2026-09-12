@@ -32,7 +32,7 @@ const DEFAULTS: AppSettings = {
   store_name: "Maison Kenzi",
   free_shipping_threshold: 500,
   openwa_url: "http://185.197.249.4:2785",
-  openwa_session: "default",
+  openwa_session: "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
   openwa_api_key: "",
   openwa_auto_order_confirmation: true,
   openwa_auto_status_update: true,
