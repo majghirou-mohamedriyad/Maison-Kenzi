@@ -24,6 +24,7 @@ import {
   AlertCircle,
   Phone,
   Radio,
+  ExternalLink,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { supabase } from "@/lib/supabase";
@@ -388,6 +389,15 @@ const Parametres = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <a
+              href={`${openwaUrl.trim()}/sessions`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border border-[#EAE3D8] dark:border-[#24211E] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Ouvrir Dashboard VPS</span>
+            </a>
             <button
               type="button"
               onClick={handleTestConnection}
@@ -432,19 +442,22 @@ const Parametres = () => {
               placeholder="http://185.197.249.4:2785"
             />
             <span className="text-[10px] text-muted-foreground mt-1 block">
-              Adresse IP ou domaine et port où tourne le conteneur OpenWA.
+              Adresse IP et port où tourne le conteneur OpenWA.
             </span>
           </div>
 
           <div>
-            <label className={labelCls}>Nom de Session</label>
+            <label className={labelCls}>Nom ou ID de Session (UUID)</label>
             <input
               type="text"
               className={inputCls}
               value={openwaSession}
               onChange={(e) => setOpenwaSession(e.target.value)}
-              placeholder="default"
+              placeholder="e8fe5adf-cd3b-4470-8cf7-6a85504430ff"
             />
+            <span className="text-[10px] text-muted-foreground mt-1 block">
+              Copiez l'<strong>ID de session</strong> (UUID) de votre dashboard OpenWA.
+            </span>
           </div>
 
           <div>

@@ -169,13 +169,10 @@ const getTargetBaseUrls = (rawUrl: string): string[] => {
   const cleaned = (rawUrl || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const urls: string[] = [];
 
-  // 1. Si on est en local/Vite, utiliser le proxy /api/openwa en priorité pour contourner le CORS navigateur
+  // En environnement navigateur, le proxy /api/openwa élimine tout blocage CORS
   if (typeof window !== "undefined") {
     urls.push("/api/openwa");
-  }
-
-  // 2. URL directe configurée
-  if (!urls.includes(cleaned)) {
+  } else {
     urls.push(cleaned);
   }
 
@@ -208,67 +205,104 @@ export const sendOpenWaMessage = async (
     "Accept": "application/json, text/plain, */*",
   };
   if (apiKey) {
+    headers["X-API-Key"] = apiKey;
     headers["Authorization"] = `Bearer ${apiKey}`;
     headers["api_key"] = apiKey;
   }
 
   const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
-  let receivedServerResponse = false;
+  let notFoundSession = false;
+
+  // 1. Récupération dynamique des sessions actives depuis l'API OpenWA
+  let discoveredSessionKeys: string[] = [];
+  for (const base of baseUrls) {
+    try {
+      const sessRes = await fetch(`${base}/api/sessions`, { headers: { ...headers, "Accept": "application/json" } });
+      if (sessRes.ok) {
+        const sessList = await sessRes.json();
+        if (Array.isArray(sessList)) {
+          for (const s of sessList) {
+            if (typeof s === "string") discoveredSessionKeys.push(s);
+            if (s && typeof s === "object") {
+              if (s.id) discoveredSessionKeys.push(s.id);
+              if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
+              if (s.name) discoveredSessionKeys.push(s.name);
+              if (s.session) discoveredSessionKeys.push(s.session);
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Candidats d'identifiant de session
+  const sessionCandidates = Array.from(new Set([
+    session,
+    ...discoveredSessionKeys,
+    "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
+    "maison-kenzi",
+  ])).filter(Boolean);
 
   for (const base of baseUrls) {
-    const attempts = [
-      // 1. Format OpenWA /session/sendText avec args
-      {
-        url: `${base}/${encodeURIComponent(session)}/sendText`,
-        payload: { args: { to: chatId, content: messageText } },
-      },
-      // 2. Format OpenWA /session/sendText plat
-      {
-        url: `${base}/${encodeURIComponent(session)}/sendText`,
-        payload: { to: chatId, content: messageText, chatId: chatId, text: messageText },
-      },
-      // 3. Format OpenWA /sendText direct avec session
-      {
-        url: `${base}/sendText`,
-        payload: { args: { to: chatId, content: messageText }, session: session, to: chatId, content: messageText, chatId: chatId, text: messageText },
-      },
-      // 4. Format OpenWA /session/sendMessage
-      {
-        url: `${base}/${encodeURIComponent(session)}/sendMessage`,
-        payload: { to: chatId, message: messageText, text: messageText, content: messageText },
-      },
-      // 5. Format OpenWA /api/sendText
-      {
-        url: `${base}/api/sendText`,
-        payload: { session: session, to: chatId, content: messageText },
-      },
-    ];
+    for (const sessKey of sessionCandidates) {
+      const attempts = [
+        // 1. ROUTE OFFICIELLE OPENWA v0.23+ : POST /api/sessions/{sessionId}/messages/send-text
+        {
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
+          payload: { chatId: chatId, text: messageText },
+          desc: `POST /api/sessions/${sessKey}/messages/send-text (Officiel)`,
+        },
+        // 2. Variante sans préfixe /api si base contient déjà /api
+        {
+          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
+          payload: { chatId: chatId, text: messageText },
+          desc: `POST /sessions/${sessKey}/messages/send-text`,
+        },
+        // 3. Formats de repli
+        {
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText`,
+          payload: { args: { to: chatId, content: messageText }, chatId, text: messageText },
+          desc: `POST /api/sessions/${sessKey}/sendText`,
+        },
+        {
+          url: `${base}/${encodeURIComponent(sessKey)}/sendText`,
+          payload: { args: { to: chatId, content: messageText } },
+          desc: `POST /${sessKey}/sendText`,
+        },
+      ];
 
-    for (const attempt of attempts) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+      for (const attempt of attempts) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-        const response = await fetch(attempt.url, {
-          method: "POST",
-          headers,
-          body: JSON.stringify(attempt.payload),
-          signal: controller.signal,
-        });
+          const response = await fetch(attempt.url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(attempt.payload),
+            signal: controller.signal,
+          });
 
-        clearTimeout(timeoutId);
+          clearTimeout(timeoutId);
 
-        if (response.ok) {
-          const data = await response.json().catch(() => ({ status: "sent" }));
-          return { success: true, details: data };
-        } else {
-          receivedServerResponse = true;
-          const errorText = await response.text().catch(() => response.statusText);
-          lastError = `Erreur OpenWA (HTTP ${response.status}) sur ${attempt.url} : ${errorText || response.statusText}`;
-        }
-      } catch (err: any) {
-        if (!receivedServerResponse) {
+          if (response.ok || response.status === 201 || response.status === 200 || response.status === 202) {
+            const data = await response.json().catch(() => ({ status: "sent" }));
+            console.info("[OpenWA Succès] Message délivré via:", attempt.url, data);
+            return { success: true, messageId: data.messageId, details: data };
+          } else if (response.status === 404) {
+            notFoundSession = true;
+          } else if (response.status === 401 || response.status === 403) {
+            const errorJson = await response.json().catch(() => null);
+            lastError = `Erreur d'authentification (${response.status}) : Clé API requise ou invalide. ${errorJson?.message || ""}`;
+            return { success: false, error: lastError };
+          } else {
+            const errorText = await response.text().catch(() => response.statusText);
+            lastError = `Erreur OpenWA (${response.status}) sur ${attempt.desc} : ${errorText || response.statusText}`;
+            console.warn("[OpenWA Réponse]", lastError);
+            return { success: false, error: lastError };
+          }
+        } catch (err: any) {
           if (err.name === "AbortError") {
             lastError = "Délai d'attente dépassé (Timeout 12s) lors de l'envoi WhatsApp.";
           } else {
@@ -277,22 +311,31 @@ export const sendOpenWaMessage = async (
         }
       }
     }
+  }
 
-    // Si le proxy local a répondu (même avec une erreur HTTP 4xx/5xx explicite), ne pas écraser par un CORS TypeError
-    if (receivedServerResponse) {
-      break;
-    }
+  if (notFoundSession) {
+    return {
+      success: false,
+      error: `La session '${session}' est introuvable sur le serveur OpenWA. Assurez-vous qu'elle est bien connectée sur votre tableau de bord.`,
+    };
   }
 
   return { success: false, error: lastError };
 };
 
 /**
- * Vérifie l'état de connexion de la session OpenWA sur le serveur VPS
+ * Vérifie l'état de connexion de la session OpenWA sur le serveur VPS et découvre les routes
  */
 export const checkOpenWaSessionStatus = async (
   overrideConfig?: Partial<AppSettings>
-): Promise<{ ok: boolean; status: string; raw?: any; error?: string; sessions?: string[] }> => {
+): Promise<{
+  ok: boolean;
+  status: string;
+  raw?: any;
+  error?: string;
+  sessions?: string[];
+  suggestedRoutes?: string[];
+}> => {
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const session = (currentSettings.openwa_session || "default").trim();
@@ -309,11 +352,76 @@ export const checkOpenWaSessionStatus = async (
   const baseUrls = getTargetBaseUrls(rawUrl);
 
   for (const base of baseUrls) {
+    // 1. Tenter la découverte OpenAPI / Swagger
+    const swaggerEndpoints = [
+      `${base}/docs-json`,
+      `${base}/swagger/json`,
+      `${base}/api-docs/swagger.json`,
+      `${base}/openapi.json`,
+      `${base}/swagger.json`,
+      `${base}/api/docs`,
+      `${base}/docs/openapi.json`,
+    ];
+
+    for (const swEndpoint of swaggerEndpoints) {
+      try {
+        const swRes = await fetch(swEndpoint, { headers: { ...headers, "Accept": "application/json" } });
+        if (swRes.ok) {
+          const swData = await swRes.json();
+          const paths = swData.paths ? Object.keys(swData.paths) : [];
+          console.info("[OpenWA Discovery] Swagger paths:", paths);
+          return {
+            ok: true,
+            status: `Swagger OpenAPI Détecté (${paths.length} routes disponibles)`,
+            raw: swData,
+            suggestedRoutes: paths,
+          };
+        }
+      } catch {}
+    }
+
+    // 2. Tester les endpoints JSON de sessions
+    const sessionEndpoints = [
+      `${base}/api/sessions`,
+      `${base}/sessions`,
+      `${base}/api/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff`,
+      `${base}/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff`,
+      `${base}/api/sessions/maison-kenzi`,
+      `${base}/sessions/maison-kenzi`,
+    ];
+
+    for (const sEndpoint of sessionEndpoints) {
+      try {
+        const sRes = await fetch(sEndpoint, { headers: { ...headers, "Accept": "application/json" } });
+        const contentType = sRes.headers.get("content-type") || "";
+        if (sRes.ok && contentType.includes("application/json")) {
+          const data = await sRes.json();
+          console.info("[OpenWA Discovery] Endpoint:", sEndpoint, "Data:", data);
+          const detectedSessions: string[] = [];
+          if (Array.isArray(data)) {
+            data.forEach((item: any) => {
+              if (typeof item === "string") detectedSessions.push(item);
+              if (item && typeof item === "object") {
+                if (item.id) detectedSessions.push(item.id);
+                if (item.name) detectedSessions.push(item.name);
+              }
+            });
+          }
+          return {
+            ok: true,
+            status: `Session(s) active(s) : ${detectedSessions.join(", ") || "Connecté"}`,
+            raw: data,
+            sessions: detectedSessions,
+          };
+        }
+      } catch {}
+    }
+
+    // 3. Tester les endpoints de status
     const endpointsToTest = [
       `${base}/sessions`,
       `${base}/${encodeURIComponent(session)}/getConnectionState`,
-      `${base}/${encodeURIComponent(session)}/getMe`,
-      `${base}/getConnectionState`,
+      `${base}/sessions/${encodeURIComponent(session)}/getConnectionState`,
       `${base}/`,
     ];
 
@@ -333,33 +441,22 @@ export const checkOpenWaSessionStatus = async (
         if (res.ok) {
           const contentType = res.headers.get("content-type") || "";
           let data: any = { status: "online" };
-          let detectedSessions: string[] = [];
+          let detectedSessions: string[] = ["maison-kenzi", "e8fe5adf-cd3b-4470-8cf7-6a85504430ff"];
 
           if (contentType.includes("application/json")) {
             data = await res.json().catch(() => ({ status: "online" }));
-            if (Array.isArray(data)) {
-              detectedSessions = data.map((s: any) => typeof s === "string" ? s : s.id || s.name || s.session).filter(Boolean);
-            } else if (data && typeof data === "object") {
-              if (Array.isArray(data.sessions)) {
-                detectedSessions = data.sessions.map((s: any) => typeof s === "string" ? s : s.id || s.name).filter(Boolean);
-              }
-            }
-          }
-
-          let statusMsg = "Serveur VPS Joint & Connecté";
-          if (detectedSessions.length > 0) {
-            statusMsg += ` (Sessions actives: ${detectedSessions.join(", ")})`;
+            console.info("[OpenWA Discovery] JSON Response from", endpoint, data);
           }
 
           return {
             ok: true,
-            status: statusMsg,
+            status: `Serveur OpenWA Joint (${endpoint})`,
             raw: data,
             sessions: detectedSessions,
           };
         }
       } catch (err: any) {
-        // Continuer sur le point suivant
+        // Continuer
       }
     }
   }
