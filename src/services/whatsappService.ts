@@ -187,6 +187,57 @@ const getTargetBaseUrls = (rawUrl: string): string[] => {
  */
 const HARDCODED_OPENWA_KEY = "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf";
 
+const getAuthHeadersVariants = (key: string): Array<Record<string, string>> => {
+  const basic1 = typeof btoa !== "undefined" ? btoa(`:${key}`) : "";
+  const basic2 = typeof btoa !== "undefined" ? btoa(`admin:${key}`) : "";
+  const basic3 = typeof btoa !== "undefined" ? btoa(`${key}:`) : "";
+  const basic4 = typeof btoa !== "undefined" ? btoa(`${key}:${key}`) : "";
+
+  return [
+    {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "X-Api-Key": key,
+      "x-api-key": key,
+      "X-API-KEY": key,
+      "Authorization": `Bearer ${key}`,
+      "api_key": key,
+      "api-key": key,
+      "apikey": key,
+      "key": key,
+      "secret-key": key,
+    },
+    {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": `Basic ${basic1}`,
+      "x-api-key": key,
+      "api_key": key,
+    },
+    {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": `Basic ${basic2}`,
+      "x-api-key": key,
+      "api_key": key,
+    },
+    {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": `Basic ${basic3}`,
+      "x-api-key": key,
+      "api_key": key,
+    },
+    {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": `Basic ${basic4}`,
+      "x-api-key": key,
+      "api_key": key,
+    },
+  ];
+};
+
 export const sendOpenWaMessage = async (
   recipientPhone: string,
   messageText: string,
@@ -204,61 +255,60 @@ export const sendOpenWaMessage = async (
     return { success: false, error: "Numéro de téléphone invalide." };
   }
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Accept": "application/json, text/plain, */*",
-  };
-  if (apiKey) {
-    headers["X-Api-Key"] = apiKey;
-    headers["x-api-key"] = apiKey;
-    headers["X-API-Key"] = apiKey;
-    headers["Authorization"] = `Bearer ${apiKey}`;
-    headers["api_key"] = apiKey;
-    headers["apikey"] = apiKey;
+  // 0. Tentative prioritaire via la fonction Serverless Vercel /api/whatsapp
+  try {
+    const serverlessRes = await fetch("/api/whatsapp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone: recipientPhone,
+        message: messageText,
+        session,
+        apiKey,
+      }),
+    });
+
+    if (serverlessRes.ok) {
+      const sData = await serverlessRes.json();
+      if (sData.success) {
+        console.info("[WhatsApp Serverless Succès]", sData);
+        return { success: true, messageId: sData.data?.messageId || "sent", details: sData };
+      }
+    }
+  } catch {
+    // Si la fonction serverless n'est pas disponible (ex: dev local pur), continuer avec le relai direct
   }
 
-  const authQuery = apiKey ? `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}` : "";
+  const headerVariants = getAuthHeadersVariants(apiKey);
+  const authQuery = apiKey
+    ? `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}&key=${encodeURIComponent(apiKey)}&token=${encodeURIComponent(apiKey)}&secret=${encodeURIComponent(apiKey)}`
+    : "";
   const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
-  let notFoundSession = false;
 
-  const fullPayload = {
-    chatId: chatId,
-    to: chatId,
-    text: messageText,
-    content: messageText,
-    message: messageText,
-    api_key: apiKey,
-    apiKey: apiKey,
-    args: {
-      to: chatId,
-      content: messageText,
-      chatId: chatId,
-      text: messageText,
-    },
-  };
-
-  // 1. Récupération dynamique des sessions actives depuis l'API OpenWA
+  // 1. Récupération dynamique des sessions actives
   let discoveredSessionKeys: string[] = [];
   for (const base of baseUrls) {
-    for (const ep of [`${base}/api/sessions${authQuery}`, `${base}/sessions${authQuery}`]) {
-      try {
-        const sessRes = await fetch(ep, { headers: { ...headers, "Accept": "application/json" } });
-        if (sessRes.ok) {
-          const sessList = await sessRes.json();
-          if (Array.isArray(sessList)) {
-            for (const s of sessList) {
-              if (typeof s === "string") discoveredSessionKeys.push(s);
-              if (s && typeof s === "object") {
-                if (s.id) discoveredSessionKeys.push(s.id);
-                if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
-                if (s.name) discoveredSessionKeys.push(s.name);
-                if (s.session) discoveredSessionKeys.push(s.session);
+    for (const headers of headerVariants.slice(0, 2)) {
+      for (const ep of [`${base}/api/sessions${authQuery}`, `${base}/sessions${authQuery}`, `${base}/api/sessions`, `${base}/sessions`]) {
+        try {
+          const sessRes = await fetch(ep, { headers: { ...headers, "Accept": "application/json" } });
+          if (sessRes.ok) {
+            const sessList = await sessRes.json();
+            if (Array.isArray(sessList)) {
+              for (const s of sessList) {
+                if (typeof s === "string") discoveredSessionKeys.push(s);
+                if (s && typeof s === "object") {
+                  if (s.id) discoveredSessionKeys.push(s.id);
+                  if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
+                  if (s.name) discoveredSessionKeys.push(s.name);
+                  if (s.session) discoveredSessionKeys.push(s.session);
+                }
               }
             }
           }
-        }
-      } catch { }
+        } catch { }
+      }
     }
   }
 
@@ -273,31 +323,43 @@ export const sendOpenWaMessage = async (
 
   for (const base of baseUrls) {
     for (const sessKey of sessionCandidates) {
+      const fullPayload = {
+        chatId: chatId,
+        to: chatId,
+        phone: recipientPhone,
+        text: messageText,
+        content: messageText,
+        message: messageText,
+        body: messageText,
+        session: sessKey,
+        sessionId: sessKey,
+        api_key: apiKey,
+        apiKey: apiKey,
+        key: apiKey,
+        token: apiKey,
+        secret: apiKey,
+        args: {
+          to: chatId,
+          content: messageText,
+          chatId: chatId,
+          text: messageText,
+        },
+      };
+
       const attempts = [
-        // 1. ROUTE OFFICIELLE OPENWA v0.23+ : POST /api/sessions/{sessionId}/messages/send-text
+        // 1. Route WAHA / OpenWA REST v0.23+
         {
           url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
           payload: fullPayload,
-          desc: `POST /api/sessions/${sessKey}/messages/send-text (Officiel)`,
+          desc: `POST /api/sessions/${sessKey}/messages/send-text`,
         },
-        // 2. Variante sans préfixe /api si base contient déjà /api
+        // 2. Variante sans /api
         {
           url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
           payload: fullPayload,
           desc: `POST /sessions/${sessKey}/messages/send-text`,
         },
-        // 3. Formats de repli
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /api/sessions/${sessKey}/sendText`,
-        },
-        {
-          url: `${base}/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /${sessKey}/sendText`,
-        },
-        // 4. Routes racine directes
+        // 3. Format direct /api/sendText
         {
           url: `${base}/api/sendText${authQuery}`,
           payload: fullPayload,
@@ -308,54 +370,67 @@ export const sendOpenWaMessage = async (
           payload: fullPayload,
           desc: `POST /sendText`,
         },
+        // 4. Format session direct /api/sessions/:id/sendText
+        {
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+          payload: fullPayload,
+          desc: `POST /api/sessions/${sessKey}/sendText`,
+        },
+        {
+          url: `${base}/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+          payload: fullPayload,
+          desc: `POST /${sessKey}/sendText`,
+        },
+        // 5. Format sans query param mais avec headers
+        {
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
+          payload: fullPayload,
+          desc: `POST /api/sessions/${sessKey}/messages/send-text (headers)`,
+        },
+        {
+          url: `${base}/api/sendText`,
+          payload: fullPayload,
+          desc: `POST /api/sendText (headers)`,
+        },
       ];
 
-      for (const attempt of attempts) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 12000);
+      for (const headers of headerVariants) {
+        for (const attempt of attempts) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-          const response = await fetch(attempt.url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(attempt.payload),
-            signal: controller.signal,
-          });
+            const response = await fetch(attempt.url, {
+              method: "POST",
+              headers,
+              body: JSON.stringify(attempt.payload),
+              signal: controller.signal,
+            });
 
-          clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
 
-          if (response.ok || response.status === 201 || response.status === 200 || response.status === 202) {
-            const data = await response.json().catch(() => ({ status: "sent" }));
-            console.info("[OpenWA Succès] Message délivré via:", attempt.url, data);
-            return { success: true, messageId: data.messageId, details: data };
-          } else if (response.status === 404) {
-            notFoundSession = true;
-          } else if (response.status === 401 || response.status === 403) {
-            const errorJson = await response.json().catch(() => null);
-            lastError = `Erreur d'authentification (${response.status}) : Clé API requise ou invalide. ${errorJson?.message || ""}`;
-            return { success: false, error: lastError };
-          } else {
-            const errorText = await response.text().catch(() => response.statusText);
-            lastError = `Erreur OpenWA (${response.status}) sur ${attempt.desc} : ${errorText || response.statusText}`;
-            console.warn("[OpenWA Réponse]", lastError);
-            return { success: false, error: lastError };
-          }
-        } catch (err: any) {
-          if (err.name === "AbortError") {
-            lastError = "Délai d'attente dépassé (Timeout 12s) lors de l'envoi WhatsApp.";
-          } else {
-            lastError = err.message || String(err);
+            if (response.ok || response.status === 201 || response.status === 200 || response.status === 202) {
+              const data = await response.json().catch(() => ({ status: "sent" }));
+              console.info("[OpenWA Succès] Message délivré via:", attempt.url, data);
+              return { success: true, messageId: data.messageId, details: data };
+            } else if (response.status === 401 || response.status === 403) {
+              const errorJson = await response.json().catch(() => null);
+              lastError = `Erreur d'authentification (${response.status}) sur ${attempt.desc} : ${errorJson?.message || ""}`;
+              // Ne pas abort le loop, continuer d'essayer les autres variantes d'en-têtes / routes
+            } else {
+              const errorText = await response.text().catch(() => response.statusText);
+              lastError = `Erreur OpenWA (${response.status}) sur ${attempt.desc} : ${errorText || response.statusText}`;
+            }
+          } catch (err: any) {
+            if (err.name === "AbortError") {
+              lastError = "Délai d'attente dépassé (Timeout 10s) lors de l'envoi WhatsApp.";
+            } else {
+              lastError = err.message || String(err);
+            }
           }
         }
       }
     }
-  }
-
-  if (notFoundSession) {
-    return {
-      success: false,
-      error: `La session '${session}' est introuvable sur le serveur OpenWA. Assurez-vous qu'elle est bien connectée sur votre tableau de bord.`,
-    };
   }
 
   return { success: false, error: lastError };
