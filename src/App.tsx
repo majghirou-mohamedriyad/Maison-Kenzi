@@ -9,6 +9,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import MaintenanceGate from "./components/MaintenanceGate";
 import ChatBotMount from "./components/ChatBotMount";
 import FloatingCartButton from "./components/cart/FloatingCartButton";
+import BackToTop from "./components/BackToTop";
 
 import Index from "./pages/Index";
 import Collection from "./pages/Category";
@@ -68,6 +69,7 @@ const App = () => (
             </Routes>
             <FloatingCartButton />
             <ChatBotMount />
+            <BackToTop />
             </MaintenanceGate>
 
           </CartProvider>

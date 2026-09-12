@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Bouton Flottant de Retour en Haut de Page (« Back to Top ») ([`src/components/BackToTop.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/BackToTop.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Apparition Feutrée au Défilement** : Détection fluide du scroll (`scrollY > 350px`) avec animation d'entrée/sortie `animate-in fade-in zoom-in-95`.
+  - [x] **Défilement Doux Intuitif** : Remontée instantanée mais fluide en haut de page (`window.scrollTo({ top: 0, behavior: 'smooth' })`).
+  - [x] **Design Haute Couture & Positionnement Soigné** : Bouton circulaire en verre dépoli (`backdrop-blur-xl`), bordure or champagne `border-primary/40`, icône `ArrowUp` de `lucide-react` avec micro-animation d'élévation au survol, parfaitement positionné au-dessus du bouton de chat/conciergerie sans chevauchement.
+  - [x] **Filtrage Espace Admin** : Masquage automatique sur les pages d'administration pour préserver l'ergonomie du tableau de bord.
+
 - [x] Suivi de Commande — Champ de Saisie Épuré & Vide par Défaut ([`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx)) :
   - [x] **Champ Vide par Défaut** : Le champ de recherche de commande ne préremplit plus automatiquement d'ancien code depuis le stockage local, affichant uniquement le placeholder d'exemple *« Ex : MK-849201 »*.
   - [x] **Support des Liens Directs Préservé** : Le préremplissage automatique ne s'active désormais que si un code est explicitement transmis dans l'URL de tracking (`?code=MK-XXXXXX`).
