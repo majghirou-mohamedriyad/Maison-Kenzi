@@ -257,21 +257,24 @@ const Collection = () => {
   }, [currentCategoryObj]);
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   // Reinitialiser l'index de banniere lors du changement de collection
   useEffect(() => {
     setCurrentBannerIndex(0);
   }, [filter]);
 
-  // Defilement automatique doux si plusieurs bannières sont configurees
+  // Option 1 : Defilement automatique toutes les 5 secondes (5s)
   useEffect(() => {
-    if (categoryBanners.length <= 1) return;
+    if (categoryBanners.length <= 1 || isPaused) return;
     const interval = setInterval(() => {
       setCurrentBannerIndex((prev) => (prev + 1) % categoryBanners.length);
-    }, 6000);
+    }, 5000); // Défilement automatique toutes les 5 secondes
     return () => clearInterval(interval);
-  }, [categoryBanners.length]);
+  }, [categoryBanners.length, isPaused, currentBannerIndex]);
 
+  // Option 2 : Changement manuel (precedent / suivant / pagination / glissement tactile)
   const nextBanner = () => {
     if (categoryBanners.length <= 1) return;
     setCurrentBannerIndex((prev) => (prev + 1) % categoryBanners.length);
@@ -282,17 +285,41 @@ const Collection = () => {
     setCurrentBannerIndex((prev) => (prev - 1 + categoryBanners.length) % categoryBanners.length);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || categoryBanners.length <= 1) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        nextBanner();
+      } else {
+        prevBanner();
+      }
+    }
+    setTouchStartX(null);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo title={title} description={description} path={canonical} />
       <Header />
 
       <main className="flex-1 pb-16">
-        {/* Luxury Category Hero Banner (Carrousel automatique ou statique) */}
+        {/* Luxury Category Hero Banner (Automatique 5s + Manuel au choix) */}
         {categoryBanners.length > 0 ? (
-          <section className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20 group/hero">
+          <section
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20 group/hero select-none"
+          >
             {/* Images de fond en carrousel avec transition douce (cross-fade) */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 pointer-events-none">
               {categoryBanners.map((imgUrl, idx) => (
                 <div
                   key={`${imgUrl}-${idx}`}
@@ -315,23 +342,29 @@ const Collection = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
             </div>
 
-            {/* Contrôles fléchés de navigation (si > 1 photo) */}
+            {/* Contrôles fléchés manuels de navigation (si > 1 photo) */}
             {categoryBanners.length > 1 && (
               <>
                 <button
                   type="button"
-                  onClick={prevBanner}
-                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg"
-                  title="Photo précédente"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevBanner();
+                  }}
+                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
+                  title="Photo précédente (Manuel)"
                   aria-label="Photo précédente"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   type="button"
-                  onClick={nextBanner}
-                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg"
-                  title="Photo suivante"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextBanner();
+                  }}
+                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
+                  title="Photo suivante (Manuel)"
                   aria-label="Photo suivante"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -389,22 +422,31 @@ const Collection = () => {
                 )}
               </div>
 
-              {/* Puces de pagination en bas si plusieurs bannières */}
+              {/* Contrôles de navigation manuels (Puces + Compteur interactif) */}
               {categoryBanners.length > 1 && (
-                <div className="flex items-center gap-2 pt-6">
-                  {categoryBanners.map((_, dotIdx) => (
-                    <button
-                      key={`dot-${dotIdx}`}
-                      type="button"
-                      onClick={() => setCurrentBannerIndex(dotIdx)}
-                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        dotIdx === currentBannerIndex
-                          ? "w-8 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
-                          : "w-2 bg-white/40 hover:bg-white/70"
-                      }`}
-                      aria-label={`Aller à la bannière ${dotIdx + 1}`}
-                    />
-                  ))}
+                <div className="flex items-center gap-3 pt-6">
+                  <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                    {categoryBanners.map((_, dotIdx) => (
+                      <button
+                        key={`dot-${dotIdx}`}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentBannerIndex(dotIdx);
+                        }}
+                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          dotIdx === currentBannerIndex
+                            ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
+                            : "w-2 bg-white/40 hover:bg-white/80"
+                        }`}
+                        title={`Afficher la photo ${dotIdx + 1} (Manuel)`}
+                        aria-label={`Aller à la photo ${dotIdx + 1}`}
+                      />
+                    ))}
+                    <span className="text-[10px] font-medium text-white/70 ml-1">
+                      {currentBannerIndex + 1} / {categoryBanners.length}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
