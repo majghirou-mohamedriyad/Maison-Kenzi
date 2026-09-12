@@ -9,6 +9,15 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Commande Multi-Parfums & Multi-Produits en Achat Direct ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Ajout de Parfums Complémentaires au Formulaire** : Bouton « Ajouter un autre parfum » permettant de parcourir et rechercher l'ensemble du catalogue en temps réel.
+  - [x] **Choix Flexible des Formats & Quantités Multiples** : Sélection individuelle de la contenance (Flacon d'origine, 5ml, 10ml) et du nombre d'unités avec recalcul dynamique du montant total.
+  - [x] **Enregistrement Groupé & Traçabilité Unifiée** : Sauvegarde de tous les articles dans la commande Supabase (`orders.items`) avec référence unique `MK-XXXXXX` et confirmation WhatsApp détaillée listant chaque produit.
+
+- [x] Correction & Sublimation du Logo sur la Page de Maintenance ([`src/pages/Maintenance.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Maintenance.tsx)) :
+  - [x] **Logo Officiel Adaptatif Haute Définition** : Remplacement de l'ancien lien cassé `/logo.png` par les logos officiels transparents `/mk-logo-light-removebg.png` et `/mk-logo-dark.png`.
+  - [x] **Commutation Automatique selon le Thème** : Affichage net et contrasté du logo Maison Kenzi en mode clair comme en mode sombre.
+
 - [x] Affichage Universel des Photos dans l'Espace Administration ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/SeasonalAdmin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/SeasonalAdmin.tsx), [`src/admin/pages/BestSellers.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/BestSellers.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
   - [x] **Extraction Robuste via `getPrimaryImage`** : Remplacement de l'accès direct `p.image_url` par `getPrimaryImage(p)` dans les vues Grille et Tableau pour récupérer sans faille la photo principale, les multi-photos ou le stockage direct.
   - [x] **Protection & Fallback Image `onError`** : Masquage propre ou remplacement par placeholder en cas d'indisponibilité réseau sans casser l'interface.
