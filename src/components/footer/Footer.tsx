@@ -41,7 +41,7 @@ const Footer = () => {
               aria-label="Maison Kenzi - Accueil"
             >
               <img
-                src="/mk-logo-light.png"
+                src="/mk-logo-light-removebg.png"
                 alt="Maison Kenzi"
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain dark:hidden"
               />
@@ -166,7 +166,7 @@ const Footer = () => {
 
         {/* Bottom copyright bar */}
         <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
-          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>  
+          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

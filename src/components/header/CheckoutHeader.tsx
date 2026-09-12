@@ -19,7 +19,7 @@ const CheckoutHeader = () => {
             className="absolute left-1/2 transform -translate-x-1/2 py-1"
           >
             <img
-              src="/mk-logo-light.png"
+              src="/mk-logo-light-removebg.png"
               alt="Maison Kenzi"
               className="h-11 sm:h-12 md:h-14 w-auto object-contain dark:hidden"
             />

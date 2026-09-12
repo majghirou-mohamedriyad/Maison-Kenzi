@@ -140,12 +140,12 @@ const Navigation = () => {
 
   const filteredParfums = searchQuery.trim()
     ? allParfums
-        .filter(
-          (p) =>
-            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.maison.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .slice(0, 5)
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.maison.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .slice(0, 5)
     : [];
 
   const handleSelectProduct = (id: string) => {
@@ -165,7 +165,7 @@ const Navigation = () => {
     <div className="relative">
       {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
       <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
-        
+
         {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
         <div className="flex items-center gap-1 sm:gap-2 z-10">
           {/* Mobile Menu Button */}
@@ -185,11 +185,10 @@ const Navigation = () => {
             {/* 1. Bouton « Nos Produits » -> Catalogue */}
             <Link
               to="/collection/all"
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
-                location.pathname === "/collection/all"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${location.pathname === "/collection/all"
                   ? "bg-foreground text-background shadow-xs font-semibold"
                   : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-              }`}
+                }`}
             >
               <span>Nos Produits</span>
             </Link>
@@ -203,19 +202,17 @@ const Navigation = () => {
               <button
                 type="button"
                 onClick={() => setIsCollectionsHovered((v) => !v)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                  isCollectionsHovered || isCollectionsActive
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${isCollectionsHovered || isCollectionsActive
                     ? "bg-foreground text-background shadow-xs font-semibold"
                     : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-                }`}
+                  }`}
                 aria-expanded={isCollectionsHovered}
                 aria-haspopup="true"
               >
                 <span>Nos Collections</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isCollectionsHovered ? "rotate-180" : ""
-                  }`}
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isCollectionsHovered ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -277,15 +274,13 @@ const Navigation = () => {
                           key={cat.id}
                           to={`/collection/${cat.slug}`}
                           onClick={() => setIsCollectionsHovered(false)}
-                          className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${
-                            isCurrent ? "bg-primary/15 border border-primary/30 text-primary" : "hover:bg-primary/10 text-foreground"
-                          }`}
+                          className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${isCurrent ? "bg-primary/15 border border-primary/30 text-primary" : "hover:bg-primary/10 text-foreground"
+                            }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                            isCurrent
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isCurrent
                               ? "bg-primary text-primary-foreground"
                               : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
-                          }`}>
+                            }`}>
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -328,7 +323,7 @@ const Navigation = () => {
             aria-label="Maison Kenzi - Accueil"
           >
             <img
-              src="/mk-logo-light.png"
+              src="/mk-logo-light-removebg.png"
               alt="Maison Kenzi"
               className="h-10 sm:h-11 md:h-12 lg:h-14 w-auto max-w-[160px] sm:max-w-[190px] md:max-w-[220px] object-contain drop-shadow-xs dark:hidden"
             />
@@ -346,11 +341,10 @@ const Navigation = () => {
           {/* Desktop Suivi Commande Link */}
           <Link
             to="/suivi-commande"
-            className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-              location.pathname === "/suivi-commande"
+            className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/suivi-commande"
                 ? "bg-foreground text-background"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-            }`}
+              }`}
             title="Suivre ma commande en direct"
           >
             <Truck className="w-3.5 h-3.5" />
@@ -360,11 +354,10 @@ const Navigation = () => {
           {/* Desktop À Propos Link */}
           <Link
             to="/about"
-            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-              location.pathname === "/about"
+            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/about"
                 ? "bg-foreground text-background"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-            }`}
+              }`}
           >
             <Info className="w-3.5 h-3.5" />
             <span>À Propos</span>
@@ -383,11 +376,10 @@ const Navigation = () => {
               setIsCollectionsHovered(false);
               setIsSearchOpen((v) => !v);
             }}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${
-              isSearchOpen
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${isSearchOpen
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-            }`}
+              }`}
             aria-label="Rechercher"
             title="Recherche (Ctrl + K)"
           >
@@ -552,11 +544,10 @@ const Navigation = () => {
             <Link
               to="/collection/all"
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                location.pathname === "/collection/all"
+              className={`flex items-center justify-between p-3 rounded-xl border transition-all ${location.pathname === "/collection/all"
                   ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
                   : "bg-card border-border/80 text-foreground hover:bg-muted/50"
-              }`}
+                }`}
             >
               <span className="flex items-center gap-2.5 font-semibold text-xs">
                 <Sparkles className="w-4 h-4 text-primary" />
@@ -585,18 +576,16 @@ const Navigation = () => {
                         key={cat.id}
                         to={`/collection/${cat.slug}`}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${
-                          isCurrent
+                        className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${isCurrent
                             ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
                             : "bg-card border-border/80 hover:border-primary/40 text-foreground"
-                        }`}
+                          }`}
                       >
                         <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            isCurrent
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isCurrent
                               ? "bg-primary-foreground/20 text-primary-foreground"
                               : "bg-primary/10 text-primary"
-                          }`}
+                            }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
@@ -617,11 +606,10 @@ const Navigation = () => {
               <Link
                 to="/suivi-commande"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${
-                  location.pathname === "/suivi-commande"
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${location.pathname === "/suivi-commande"
                     ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
                     : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
-                }`}
+                  }`}
               >
                 <span className="flex items-center gap-2">
                   <Truck className={`w-4 h-4 ${location.pathname === "/suivi-commande" ? "text-background" : "text-primary"}`} />
@@ -633,11 +621,10 @@ const Navigation = () => {
               <Link
                 to="/about"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${
-                  location.pathname === "/about"
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${location.pathname === "/about"
                     ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
                     : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
-                }`}
+                  }`}
               >
                 <span className="flex items-center gap-2">
                   <Info className={`w-4 h-4 ${location.pathname === "/about" ? "text-background" : "text-primary"}`} />

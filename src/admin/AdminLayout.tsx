@@ -136,9 +136,23 @@ const AdminLayout = () => {
       <div className={`h-16 px-4 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center ${isCollapsed ? "justify-center flex-col gap-1" : "justify-between"}`}>
         <Link 
           to="/admin" 
-          className="flex items-center gap-3 group overflow-hidden min-w-0"
+          className="flex items-center gap-2.5 group overflow-hidden min-w-0 transition-transform hover:scale-[1.02]"
           title="Maison Kenzi Admin"
         >
+          {/* Logo Officiel Adaptatif Clair & Sombre */}
+          <div className="shrink-0 flex items-center justify-center">
+            <img
+              src="/mk-logo-light-removebg.png"
+              alt="Maison Kenzi"
+              className={`${isCollapsed ? "h-8" : "h-9 sm:h-10"} w-auto object-contain dark:hidden`}
+            />
+            <img
+              src="/mk-logo-dark.png"
+              alt="Maison Kenzi"
+              className={`${isCollapsed ? "h-8" : "h-9 sm:h-10"} w-auto object-contain hidden dark:block`}
+            />
+          </div>
+
           {!isCollapsed && (
             <div className="flex flex-col items-start min-w-0">
               <span className="font-serif text-sm tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">

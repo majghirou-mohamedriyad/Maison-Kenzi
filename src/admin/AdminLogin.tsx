@@ -98,15 +98,24 @@ const AdminLogin = () => {
           
           {/* En-tête / Identité de marque */}
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-14 h-14 rounded-full bg-[#F5EFEB] dark:bg-[#1F1D1A] border border-[#E2D5C3] dark:border-[#38332C] flex items-center justify-center mb-4 shadow-sm">
-              <KeyRound className="w-6 h-6 text-[#C9A96E] stroke-[1.5]" />
-            </div>
+            <Link to="/" className="inline-block mb-3 transition-transform hover:scale-105" title="Retour au site">
+              <img
+                src="/mk-logo-light-removebg.png"
+                alt="Maison Kenzi"
+                className="h-16 sm:h-20 w-auto object-contain dark:hidden"
+              />
+              <img
+                src="/mk-logo-dark.png"
+                alt="Maison Kenzi"
+                className="h-16 sm:h-20 w-auto object-contain hidden dark:block"
+              />
+            </Link>
 
-            <span className="text-[10px] tracking-[0.35em] uppercase text-[#C9A96E] font-medium mb-1.5">
+            <span className="text-[10px] tracking-[0.35em] uppercase text-[#C9A96E] font-medium mb-1">
               Haute Parfumerie Privée
             </span>
-            <h1 className="text-2xl sm:text-3xl font-serif tracking-tight text-[#1A1816] dark:text-[#FBF9F5]">
-              Maison Kenzi
+            <h1 className="text-xl sm:text-2xl font-serif tracking-tight text-[#1A1816] dark:text-[#FBF9F5]">
+              Espace Administration
             </h1>
             <p className="mt-2 text-xs text-[#7A726A] dark:text-[#A39B91] leading-relaxed max-w-xs">
               Authentification réservée à la direction et aux gestionnaires de la maison.
