@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suppression du Bouton WhatsApp des Catégories à Venir ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
+  - [x] **Épuration de la Vue « À Venir »** : Suppression définitive du bouton *« Être notifié sur WhatsApp »* dans l'encart des catégories en cours d'élaboration.
+  - [x] **Recentrage sur le Catalogue** : Conservation d'un bouton d'action principal épuré *« Explorer les autres collections »* avec icône vectorielle `Sparkles`.
+
 - [x] Refonte Éditoriale & Sublimation du Design des Filtres ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
   - [x] **Segmented Control Haute Parfumerie pour le Genre** : Remplacement du sélecteur HTML basique par un groupe de pastilles arrondies (*Tous*, *Homme*, *Femme*, *Mixte*) avec micro-animations et icônes vectorielles `lucide-react`.
   - [x] **Bouton Toggle Switch « En stock »** : Pastille de prestige avec pastille lumineuse émeraude et pulsation radar douce lors de l'activation.

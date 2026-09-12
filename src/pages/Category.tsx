@@ -792,26 +792,18 @@ const Collection = () => {
                         Cette collection arrive très prochainement
                       </h3>
                       <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-lg mx-auto font-light">
-                        Nos maîtres parfumeurs préparent actuellement la sélection des flacons originaux et décants d'exception pour l'univers <strong className="text-foreground font-medium">{currentCategoryObj.name}</strong>.
+                        Nos maîtres parfumeurs préparent actuellement la sélection des flacons originaux d'exception pour l'univers <strong className="text-foreground font-medium">{currentCategoryObj.name}</strong>.
                       </p>
                     </div>
 
-                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10">
-                      <a
-                        href={`https://wa.me/212600000000?text=${encodeURIComponent(`Bonjour Maison Kenzi, je souhaite être informé dès la sortie de la collection "${currentCategoryObj.name}".`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] text-xs font-bold shadow-md shadow-[#C9A96E]/20 hover:brightness-110 transition-all cursor-pointer"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        <span>Être notifié sur WhatsApp</span>
-                      </a>
+                    <div className="pt-2 flex items-center justify-center relative z-10">
                       <button
                         type="button"
                         onClick={() => handleFilterClick("Toutes")}
-                        className="w-full sm:w-auto px-5 py-3 rounded-xl border border-border text-foreground hover:bg-muted text-xs font-medium transition-colors cursor-pointer"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wider shadow-sm hover:bg-primary/90 transition-all cursor-pointer"
                       >
-                        Explorer les autres collections
+                        <Sparkles className="w-4 h-4" />
+                        <span>Explorer les autres collections</span>
                       </button>
                     </div>
                   </div>
