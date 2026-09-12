@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Migration Globale de la Devise vers l'Euro (€) — Client & Admin ([`src/lib/sizes.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/sizes.ts), [`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx), [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx), [`src/admin/pages/Finances.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Finances.tsx), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts), [`src/admin/lib/financialReportPdf.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/financialReportPdf.ts)) :
+  - [x] **Formatage Universel Client & Catalogue** : Remplacement du suffixe `MAD` par `€` sur l'ensemble des fiches produits, panier, formulaire express multi-parfums, carrousels et suivi de commande en temps réel.
+  - [x] **Back-Office & Administration Complète** : Conversion en `€` des tableaux de bord, chiffres d'affaires, graphiques de revenus, gestion des commandes, fiches et formulaires de création de produits, modales et paramètres.
+  - [x] **Documents Officiels & Messages** : Génération des factures PDF A4, bilans comptables mensuels PDF et notifications WhatsApp avec la devise `€`.
+
 - [x] Résolution de l'Erreur 400/401 WhatsApp & Normalisation DTO Strict ([`api/whatsapp.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/whatsapp.js), [`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts)) :
   - [x] **Authentification Validée & Clé API Connectée** : Connexion réussie à l'instance WAHA/OpenWA sur la VPS avec la clé officielle et la session `e8fe5adf-cd3b-4470-8cf7-6a85504430ff`.
   - [x] **Élimination de l'Erreur 400 Bad Request (DTO Strict)** : Envoi de payloads JSON nettoyés conformes aux spécifications WAHA (`chatId: "212...@c.us"`, `text: "..."`) sans aucun surplus de champs non autorisés.

@@ -1,3 +1,11 @@
+/**
+ * Générateur de Rapport Financier & Bilan Comptable PDF Mensuel — Maison Kenzi
+ *
+ * Conçoit et télécharge un document comptable A4 de prestige sous jsPDF.
+ * Présentation éditoriale haute parfumerie, synthèse des KPI (CA, charges, bénéfice net),
+ * ventilation par catégorie et grand livre détaillé des écritures en Euro (€).
+ */
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { Expense, CategoryBreakdown } from "@/hooks/useAdminFinances";
@@ -17,7 +25,7 @@ const money = (n: number) => {
   const formatted = Number(n || 0)
     .toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     .replace(/[\u00A0\u202F\s]/g, " ");
-  return `${formatted} MAD`;
+  return `${formatted} €`;
 };
 
 async function loadImageAsBase64(url: string): Promise<string | null> {
@@ -160,7 +168,7 @@ export async function exportMonthlyFinancialReportPdf({
   autoTable(doc, {
     startY: catY + 10,
     head: [["Catégorie de Dépense", "Part (%)", "Montant Total"]],
-    body: catRows.length > 0 ? catRows : [["Aucune dépense enregistrée pour ce mois", "0%", "0,00 MAD"]],
+    body: catRows.length > 0 ? catRows : [["Aucune dépense enregistrée pour ce mois", "0%", "0,00 €"]],
     theme: "plain",
     styles: { font: "helvetica", fontSize: 8.5, textColor: BRAND.inkSoft },
     headStyles: { fillColor: BRAND.ink, textColor: BRAND.gold, fontStyle: "bold", fontSize: 8 },
@@ -193,7 +201,7 @@ export async function exportMonthlyFinancialReportPdf({
   autoTable(doc, {
     startY: tableEndY + 10,
     head: [["Date", "Catégorie", "Libellé / Description", "Montant"]],
-    body: expRows.length > 0 ? expRows : [["—", "—", "Aucune dépense détaillée", "0,00 MAD"]],
+    body: expRows.length > 0 ? expRows : [["—", "—", "Aucune dépense détaillée", "0,00 €"]],
     theme: "plain",
     styles: { font: "helvetica", fontSize: 8.5, textColor: BRAND.inkSoft },
     headStyles: { fillColor: BRAND.ink, textColor: BRAND.gold, fontStyle: "bold", fontSize: 8 },

@@ -15,7 +15,7 @@ import { useFlaconnage } from "@/hooks/useFlaconnage";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
-const fmtMad = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} MAD`;
+const fmtMad = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} €`;
 const trendPct = (cur: number, prev: number) =>
   prev > 0 ? Number((((cur - prev) / prev) * 100).toFixed(1)) : cur > 0 ? 100 : 0;
 

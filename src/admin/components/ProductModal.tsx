@@ -619,7 +619,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Prix de vente */}
                   <div>
-                    <label className={labelCls}>Prix de vente (MAD) *</label>
+                    <label className={labelCls}>Prix de vente (€) *</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -627,10 +627,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         className={(errors.price ? inputErrorCls : inputCls) + " pr-12 font-medium"}
                         value={f.price}
                         onChange={(e) => set("price", e.target.value)}
-                        placeholder="Ex: 850"
+                        placeholder="Ex: 85"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
-                        MAD
+                        €
                       </span>
                     </div>
                     {errors.price && (

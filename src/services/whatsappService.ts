@@ -71,7 +71,7 @@ Bonjour ${order.customer_name || "Cher(e) Client(e)"},
 Nous avons le plaisir de vous confirmer la bonne reception de votre commande aupres de Maison Kenzi.
 
 *Reference de Commande :* ${order.order_number}
-*Montant Total :* ${order.total_amount} MAD
+*Montant Total :* ${order.total_amount} €
 *Reglement :* Paiement a la livraison (especes a reception)
 
 ${itemsList ? `*Articles commandes :*\n${itemsList}\n` : ""}${order.shipping_city ? `*Destination :* ${order.shipping_city}${order.shipping_address ? `, ${order.shipping_address}` : ""}\n` : ""}
@@ -147,7 +147,7 @@ export const buildAdminOrderAlertMessage = (order: {
   return `*NOUVELLE COMMANDE RECUE — MAISON KENZI*
 
 Reference : ${order.order_number}
-Montant : ${order.total_amount} MAD
+Montant : ${order.total_amount} €
 Client : ${order.customer_name}
 Telephone : ${order.customer_phone}
 Ville : ${order.shipping_city || "Non specifiee"}

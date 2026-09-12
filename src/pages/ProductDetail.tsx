@@ -241,7 +241,7 @@ const ParfumDetail = () => {
     image: parfum.image_url || undefined,
     offers: {
       "@type": "Offer",
-      priceCurrency: "MAD",
+      priceCurrency: "EUR",
       price: priceFor(parfum, isFullBottle ? "full" : "10ml"),
       availability: parfum.is_active
         ? "https://schema.org/InStock"

@@ -189,19 +189,19 @@ const Parametres = () => {
           />
         </div>
         <div>
-          <label className={labelCls}>Seuil de Livraison Gratuite (MAD)</label>
+          <label className={labelCls}>Seuil de Livraison Gratuite (€)</label>
           <div className="relative">
             <input
               type="number"
               min="0"
-              step="10"
+              step="1"
               className={inputCls}
-              placeholder="500"
+              placeholder="50"
               value={freeShippingThreshold}
               onChange={(e) => setFreeShippingThreshold(Number(e.target.value))}
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary pointer-events-none">
-              MAD
+              €
             </span>
           </div>
           <p className="text-[11px] text-[#7A726A] dark:text-[#A39B91] mt-1">

@@ -25,7 +25,9 @@ export const priceFor = (prices: PriceSource, size: Size): number => {
   }
 };
 
-export const formatMAD = (n: number) => `${Number(n).toLocaleString("fr-FR")} MAD`;
+export const formatMAD = (n: number) => `${Number(n).toLocaleString("fr-FR")} €`;
+export const formatEUR = formatMAD;
+export const formatPrice = formatMAD;
 
 export type ParfumPricingSummary = {
   priceText: string;

@@ -34,7 +34,7 @@ const money = (n: number) => {
   const formatted = Number(n || 0)
     .toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     .replace(/[\u00A0\u202F\s]/g, " ");
-  return `${formatted} MAD`;
+  return `${formatted} €`;
 };
 
 /** Utility to convert image URL to PNG base64 for jsPDF rendering with aspect ratio */

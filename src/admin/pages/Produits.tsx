@@ -369,7 +369,7 @@ const Produits = () => {
     const selectedProds = products.filter((p) => selectedIds.includes(p.id));
     if (selectedProds.length === 0) return;
 
-    const headers = ["ID", "Nom", "Maison", "Catégories", "Prix 5ml (MAD)", "Prix 10ml (MAD)", "Prix Flacon (MAD)", "Stock Global", "Statut"];
+    const headers = ["ID", "Nom", "Maison", "Catégories", "Prix 5ml (€)", "Prix 10ml (€)", "Prix Flacon (€)", "Stock Global", "Statut"];
     const rows = selectedProds.map((p) => {
       const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
       const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");

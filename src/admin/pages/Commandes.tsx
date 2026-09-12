@@ -412,7 +412,7 @@ const Commandes = () => {
           <div>
             <span className="text-[11px] uppercase tracking-wider text-primary font-semibold">Chiffre d'Affaires</span>
             <div className="text-xl font-bold tracking-tight text-primary mt-1">
-              {stats.revenue.toLocaleString("fr-FR")} MAD
+              {stats.revenue.toLocaleString("fr-FR")} €
             </div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -519,7 +519,7 @@ const Commandes = () => {
                       {summarizeItems(o.items)}
                     </td>
                     <td className="px-4 py-3 text-right font-bold tracking-tight text-foreground whitespace-nowrap">
-                      {Number(o.total_amount).toLocaleString("fr-FR")} MAD
+                      {Number(o.total_amount).toLocaleString("fr-FR")} €
                     </td>
                     <td className="px-4 py-3"><StatusSelect id={o.id} status={o.status} /></td>
                     <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">{formatDate(o.created_at)}</td>
@@ -572,7 +572,7 @@ const Commandes = () => {
               </div>
               <div className="flex items-center justify-between pt-1">
                 <span className="text-xs text-muted-foreground font-semibold">Total à payer</span>
-                <span className="font-bold tracking-tight text-foreground text-base">{Number(o.total_amount).toLocaleString("fr-FR")} MAD</span>
+                <span className="font-bold tracking-tight text-foreground text-base">{Number(o.total_amount).toLocaleString("fr-FR")} €</span>
               </div>
               <div className="flex justify-end pt-2 border-t border-border"><Actions o={o} /></div>
             </div>
@@ -678,12 +678,12 @@ const Commandes = () => {
                               Format : {it.size}
                             </span>
                             <span>× {qty} unité{qty > 1 ? "s" : ""}</span>
-                            <span>à {unitPrice.toLocaleString("fr-FR")} MAD</span>
+                            <span>à {unitPrice.toLocaleString("fr-FR")} €</span>
                           </div>
                         </div>
 
                         <div className="font-bold tracking-tight text-foreground text-sm text-right shrink-0">
-                          {subtotal.toLocaleString("fr-FR")} MAD
+                          {subtotal.toLocaleString("fr-FR")} €
                         </div>
                       </div>
                     );
@@ -699,7 +699,7 @@ const Commandes = () => {
                   <div className="flex justify-between text-base font-bold pt-1 border-t border-border">
                     <span className="text-foreground">Total à encaisser (COD)</span>
                     <span className="font-bold tracking-tight text-primary">
-                      {Number(viewingOrder.total_amount).toLocaleString("fr-FR")} MAD
+                      {Number(viewingOrder.total_amount).toLocaleString("fr-FR")} €
                     </span>
                   </div>
                 </div>

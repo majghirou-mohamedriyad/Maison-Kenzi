@@ -40,7 +40,7 @@ type Props = {
   isAllSelected?: boolean;
 };
 
-const fmt = (n: number) => `${n.toLocaleString("fr-FR")} MAD`;
+const fmt = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 
 const ProductTable = ({
   products,

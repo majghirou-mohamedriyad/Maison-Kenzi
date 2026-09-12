@@ -40,7 +40,7 @@ const RevenueChart = () => {
                 color: tooltipText,
               }}
               labelStyle={{ color: tooltipText }}
-              formatter={(v: number) => [`${v.toLocaleString("fr-FR")} MAD`, "Revenus"]}
+              formatter={(v: number) => [`${v.toLocaleString("fr-FR")} €`, "Revenus"]}
             />
             <Bar dataKey="revenus" fill="#C9A96E" radius={[4, 4, 0, 0]} />
           </BarChart>

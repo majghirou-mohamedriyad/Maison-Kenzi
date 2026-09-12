@@ -23,11 +23,11 @@ const Livraison = () => {
               </div>
               <div className="space-y-3">
                 <h3 className="font-serif text-xl text-primary">Express</h3>
-                <p className="text-sm font-light text-foreground/75">60 MAD · 1 à 2 jours ouvrés.</p>
+                <p className="text-sm font-light text-foreground/75">5 € · 1 à 2 jours ouvrés.</p>
               </div>
               <div className="space-y-3">
                 <h3 className="font-serif text-xl text-primary">Lendemain</h3>
-                <p className="text-sm font-light text-foreground/75">120 MAD · livraison J+1 ouvré.</p>
+                <p className="text-sm font-light text-foreground/75">10 € · livraison J+1 ouvré.</p>
               </div>
             </div>
           </ContentSection>
