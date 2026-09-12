@@ -9,11 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Accessibilité & Intégration Directe des Collections Homme & Femme ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
-  - [x] **Barre de Navigation Principale** : Intégration directe des pastilles cliquables **Catalogue** (`/collection/all`), **Homme** (`/collection/homme`) et **Femme** (`/collection/femme`), complétées harmonieusement par les catégories personnalisées de l'administration.
-  - [x] **Menu Mobile Drawer** : Grille à 2 colonnes présentant immédiatement les univers Catalogue, Homme, Femme et les catégories créées avec leurs icônes dédiées (`Flame`, `Flower2`, `Sparkles`, `ShieldCheck`, `Crown`).
-  - [x] **Page Collections & Filtres** : Enrichissement des pastilles de sélection et des métadonnées éditoriales (titres soignés, sous-titres, descriptions olfactives et calcul des totaux de stock en direct pour Homme et Femme).
-  - [x] **Recherche Instantanée & Footer** : Raccourcis univers réels et présence permanente des univers essentiels dans le pied de page.
+- [x] Refonte du Filtrage par Genre & Suppression des Collections Homme / Femme ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
+  - [x] **Nouveau Sélecteur de Genre Intégré** : Ajout d'un menu de filtre dédié à côté de « En stock uniquement » permettant de filtrer instantanément par **Tous les genres**, **Homme**, **Femme** ou **Mixte / Unisexe**.
+  - [x] **Suppression des Pastilles Statiques Homme & Femme** : Les pastilles de catégories hautes se concentrent désormais exclusivement sur les catégories réelles (Catalogue + univers créés dans l'admin comme Déodorants, Packs, etc.).
+  - [x] **Nettoyage de la Navigation & du Footer** : Retrait des liens Homme et Femme dans la barre de navigation, le menu mobile et le footer au profit du Catalogue global et des catégories réelles.
 
 - [x] Refonte Éditoriale & Sublimation de la Page 404 ([`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx)) :
   - [x] **Repositionnement Haute Parfumerie** : Remplacement de la page générique par une expérience immersive signée Maison Kenzi (*« Cette fragrance semble s'être évaporée »*), avec liseré doré champagne et halo lumineux feutré.

@@ -276,10 +276,10 @@ const ParfumDetail = () => {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link
-                    to={`/collection/${parfum.gender.toLowerCase()}`}
+                    to="/collection/all"
                     className="text-muted-foreground hover:text-primary"
                   >
-                    {parfum.gender}
+                    Catalogue
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>

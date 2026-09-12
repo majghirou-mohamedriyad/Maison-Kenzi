@@ -264,8 +264,8 @@ const About = () => {
                 size="lg"
                 className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider font-bold px-8 shadow-md gap-2 cursor-pointer"
               >
-                <Link to="/collection/homme">
-                  <Flame className="w-4 h-4" /> Parfums Homme
+                <Link to="/collection/all">
+                  <Sparkles className="w-4 h-4" /> Explorer le Catalogue
                 </Link>
               </Button>
 
@@ -275,8 +275,8 @@ const About = () => {
                 variant="outline"
                 className="rounded-full border-border hover:border-primary text-xs uppercase tracking-wider font-bold px-8 cursor-pointer"
               >
-                <Link to="/collection/femme">
-                  <Flower2 className="w-4 h-4 text-primary" /> Parfums Femme
+                <Link to="/suivi-commande">
+                  <Truck className="w-4 h-4 text-primary" /> Suivi de Commande
                 </Link>
               </Button>
 

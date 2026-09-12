@@ -25,6 +25,7 @@ import {
   Snowflake,
   Clock,
   MessageCircle,
+  Users,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -42,6 +43,7 @@ import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 
 type FilterKey = string;
 type SortOption = "featured" | "price_asc" | "price_desc" | "newest" | "name_asc";
+type GenderOption = "all" | "Homme" | "Femme" | "Mixte";
 
 interface FilterOption {
   key: FilterKey;
@@ -78,33 +80,6 @@ const collectionHeroInfo = (
     };
   }
 
-  if (f === "homme") {
-    return {
-      title: categoryName || "Parfums Homme",
-      subtitle: "Sélection Masculine",
-      description: (categoryDesc || "Fragrances de caractère, boisées, épicées et fraîches créées pour l'homme d'aujourd'hui.").trim(),
-      badge: isComingSoon ? "À Venir" : "",
-    };
-  }
-
-  if (f === "femme") {
-    return {
-      title: categoryName || "Parfums Femme",
-      subtitle: "Raffinement Féminin",
-      description: (categoryDesc || "Compositions florales, orientales et solaires incarnant l'élégance et la sensualité suprême.").trim(),
-      badge: isComingSoon ? "À Venir" : "",
-    };
-  }
-
-  if (f === "mixte" || f === "unisexe") {
-    return {
-      title: categoryName || "Parfums Mixtes & Unisexe",
-      subtitle: "Accords Universels",
-      description: (categoryDesc || "Créations olfactives d'exception partagées, transcendant les genres avec subtilité.").trim(),
-      badge: isComingSoon ? "À Venir" : "",
-    };
-  }
-
   return {
     title: categoryName || filter,
     subtitle: "Univers Olfactif",
@@ -121,6 +96,7 @@ const Collection = () => {
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [localSearch, setLocalSearch] = useState("");
   const [onlyInStock, setOnlyInStock] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<GenderOption>("all");
 
   const adminCategories = useCategories();
   const activeAdminCategories = useMemo(
@@ -129,25 +105,8 @@ const Collection = () => {
   );
 
   const filterOptions = useMemo<FilterOption[]>(() => {
-    const adminHomme = activeAdminCategories.find((c) => c.slug.toLowerCase() === "homme");
-    const adminFemme = activeAdminCategories.find((c) => c.slug.toLowerCase() === "femme");
-
     const options: FilterOption[] = [
       { key: "Toutes", label: "Toutes les Collections", shortLabel: "Toutes", icon: Grid },
-      {
-        key: "homme",
-        label: adminHomme?.name || "Homme",
-        shortLabel: adminHomme?.name || "Homme",
-        icon: Flame,
-        isComingSoon: Boolean(adminHomme?.is_coming_soon),
-      },
-      {
-        key: "femme",
-        label: adminFemme?.name || "Femme",
-        shortLabel: adminFemme?.name || "Femme",
-        icon: Flower2,
-        isComingSoon: Boolean(adminFemme?.is_coming_soon),
-      },
     ];
 
     activeAdminCategories.forEach((cat) => {
@@ -203,6 +162,17 @@ const Collection = () => {
         if (!isParfumInCategory(p, filter)) return false;
       }
 
+      // Gender filter (Homme / Femme / Mixte / Unisexe)
+      if (genderFilter !== "all") {
+        const g = (p.gender || "").toLowerCase().trim();
+        const targetG = genderFilter.toLowerCase();
+        if (targetG === "mixte") {
+          if (g !== "mixte" && g !== "unisexe") return false;
+        } else {
+          if (g !== targetG) return false;
+        }
+      }
+
       // In stock filter
       if (onlyInStock) {
         const isFull = p.sale_mode === "full_bottle";
@@ -238,14 +208,12 @@ const Collection = () => {
     });
 
     return list;
-  }, [filter, parfums, activeAdminCategories, onlyInStock, localSearch, sortBy]);
+  }, [filter, parfums, activeAdminCategories, genderFilter, onlyInStock, localSearch, sortBy]);
 
   // Compute counts for each filter
   const counts = useMemo(() => {
     const map: Record<string, number> = {
       Toutes: parfums.length,
-      homme: parfums.filter((p) => isParfumInCategory(p, "homme")).length,
-      femme: parfums.filter((p) => isParfumInCategory(p, "femme")).length,
     };
     activeAdminCategories.forEach((cat) => {
       map[cat.slug] = parfums.filter((p) => isParfumInCategory(p, cat.slug)).length;
@@ -515,8 +483,25 @@ const Collection = () => {
                 />
               </div>
 
-              {/* Sort & In Stock Filters */}
-              <div className="flex items-center justify-between sm:justify-end gap-2 text-xs">
+              {/* Sort, Gender & In Stock Filters */}
+              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 text-xs">
+                {/* Filtre par Genre (Homme / Femme / Mixte) */}
+                <div className="flex items-center gap-1.5 bg-background border border-border rounded-xl px-2.5 py-1.5">
+                  <Users className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <select
+                    value={genderFilter}
+                    onChange={(e) => setGenderFilter(e.target.value as GenderOption)}
+                    className="bg-transparent text-[11px] font-medium text-foreground outline-none cursor-pointer pr-1"
+                    aria-label="Filtrer par genre"
+                  >
+                    <option value="all" className="bg-card text-foreground">Tous les genres</option>
+                    <option value="Homme" className="bg-card text-foreground">Homme</option>
+                    <option value="Femme" className="bg-card text-foreground">Femme</option>
+                    <option value="Mixte" className="bg-card text-foreground">Mixte / Unisexe</option>
+                  </select>
+                </div>
+
+                {/* Filtre En stock */}
                 <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-foreground cursor-pointer select-none text-[11px]">
                   <input
                     type="checkbox"
@@ -527,6 +512,7 @@ const Collection = () => {
                   <span>En stock uniquement</span>
                 </label>
 
+                {/* Tri */}
                 <div className="flex items-center gap-1 bg-background border border-border rounded-xl px-2.5 py-1.5">
                   <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
                   <select
@@ -754,6 +740,7 @@ const Collection = () => {
                       onClick={() => {
                         setLocalSearch("");
                         setOnlyInStock(false);
+                        setGenderFilter("all");
                       }}
                       className="text-xs uppercase tracking-wider font-semibold text-primary border border-primary/30 px-4 py-2 rounded-xl hover:bg-primary/10 transition-colors cursor-pointer"
                     >

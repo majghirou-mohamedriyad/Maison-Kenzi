@@ -51,7 +51,7 @@ const Navigation = () => {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Liste unifiée des univers pour la navigation (Catalogue, Homme, Femme, et catégories d'administration actives)
+  // Liste des univers pour la navigation (Catalogue et catégories d'administration actives)
   const navItems = useMemo(() => {
     const items: {
       slug: string;
@@ -67,20 +67,6 @@ const Navigation = () => {
         name: "Catalogue",
         icon: Sparkles,
         description: "Tous les parfums",
-      },
-      {
-        slug: "homme",
-        path: "/collection/homme",
-        name: "Homme",
-        icon: Flame,
-        description: "Sélection masculine",
-      },
-      {
-        slug: "femme",
-        path: "/collection/femme",
-        name: "Femme",
-        icon: Flower2,
-        description: "Raffinement féminin",
       },
     ];
 
@@ -108,8 +94,6 @@ const Navigation = () => {
   // Suggestions rapides pour le panneau de recherche
   const searchCategorySuggestions = useMemo(() => {
     const baseSuggestions = [
-      { slug: "homme", name: "Parfums Homme" },
-      { slug: "femme", name: "Parfums Femme" },
       { slug: "all", name: "Tous les Parfums" },
     ];
     const adminSugg = activeAdminCategories

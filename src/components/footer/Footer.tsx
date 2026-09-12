@@ -68,16 +68,6 @@ const Footer = () => {
                   Tous les Parfums (Catalogue)
                 </Link>
               </li>
-              <li>
-                <Link to="/collection/homme" className="hover:text-primary transition-colors">
-                  Parfums Homme
-                </Link>
-              </li>
-              <li>
-                <Link to="/collection/femme" className="hover:text-primary transition-colors">
-                  Parfums Femme
-                </Link>
-              </li>
               {activeCategories
                 .filter(
                   (c) =>
