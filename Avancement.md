@@ -10,6 +10,7 @@
 ## Historique des Tâches Réalisées
 
 - [x] Optimisation des Filtres & Catégories Olfactives :
+  - [x] **Filtre Genre Exclusif à la Catégorie « Parfums »** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Affichage conditionnel du sélecteur *Tous / Homme / Femme / Mixte* uniquement lorsqu'on consulte la catégorie Parfums, réinitialisation automatique lors du passage à d'autres collections (Cosmétiques, Artisanat, Antiquités, Toutes les Collections).
   - [x] **Suppression du Tag « Univers Olfactif »** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Épuration du bandeau de catégorie pour ne laisser que le grand titre et la description éditoriale sans sous-titre redondant.
   - [x] **Réactivation de « Toutes les Collections » en 1ère Position** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Onglet général en tête de liste permettant d'afficher l'intégralité du catalogue d'un seul coup (parfums, cosmétiques, artisanat, antiquités) avec le compteur global et bannière du catalogue officiel.
   - [x] **Résolution de la Catégorie « Parfums »** ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts)) : Inclusion automatique et intelligente de l'ensemble des créations olfactives de la boutique sous la catégorie `parfums` / `parfum`, avec prise en compte de la tolérance singulier/pluriel pour les cosmétiques, artisanat et antiquités.

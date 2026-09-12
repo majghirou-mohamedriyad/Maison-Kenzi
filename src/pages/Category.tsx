@@ -153,12 +153,16 @@ const Collection = () => {
 
   const { data: parfums, loading, error } = useParfums();
 
+  const isParfumCategory = filter.toLowerCase() === "parfums" || filter.toLowerCase() === "parfum";
+
   useEffect(() => {
     setFilter(slugToFilter(collection));
+    setGenderFilter("all");
   }, [collection]);
 
   const handleFilterClick = (key: FilterKey) => {
     setFilter(key);
+    setGenderFilter("all");
     setIsMobileSelectOpen(false);
     navigate(`/collection/${filterToSlug(key)}`);
   };
@@ -183,8 +187,8 @@ const Collection = () => {
         if (!isParfumInCategory(p, filter)) return false;
       }
 
-      // Gender filter (Homme / Femme / Mixte / Unisexe)
-      if (genderFilter !== "all") {
+      // Gender filter (Homme / Femme / Mixte / Unisexe) — Uniquement pour la catégorie Parfums
+      if (isParfumCategory && genderFilter !== "all") {
         const g = (p.gender || "").toLowerCase().trim();
         const targetG = genderFilter.toLowerCase();
         if (targetG === "mixte") {
@@ -640,34 +644,36 @@ const Collection = () => {
 
                 {/* Groupes de Filtres : Genre, Stock & Tri */}
                 <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-2.5">
-                  {/* Segmented Control pour le Genre (Homme, Femme, Mixte, Tous) */}
-                  <div className="inline-flex items-center p-0.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 shadow-2xs">
-                    {(
-                      [
-                        { key: "all", label: "Tous", icon: Users },
-                        { key: "Homme", label: "Homme", icon: Flame },
-                        { key: "Femme", label: "Femme", icon: Flower2 },
-                        { key: "Mixte", label: "Mixte", icon: Sparkles },
-                      ] as const
-                    ).map((item) => {
-                      const isActive = genderFilter === item.key;
-                      const ItemIcon = item.icon;
-                      return (
-                        <button
-                          key={item.key}
-                          type="button"
-                          onClick={() => setGenderFilter(item.key)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
-                            ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            }`}
-                        >
-                          <ItemIcon className={`w-3 h-3 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
-                          <span>{item.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {/* Segmented Control pour le Genre (Homme, Femme, Mixte, Tous) — Uniquement pour la catégorie Parfums */}
+                  {isParfumCategory && (
+                    <div className="inline-flex items-center p-0.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 shadow-2xs">
+                      {(
+                        [
+                          { key: "all", label: "Tous", icon: Users },
+                          { key: "Homme", label: "Homme", icon: Flame },
+                          { key: "Femme", label: "Femme", icon: Flower2 },
+                          { key: "Mixte", label: "Mixte", icon: Sparkles },
+                        ] as const
+                      ).map((item) => {
+                        const isActive = genderFilter === item.key;
+                        const ItemIcon = item.icon;
+                        return (
+                          <button
+                            key={item.key}
+                            type="button"
+                            onClick={() => setGenderFilter(item.key)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                              }`}
+                          >
+                            <ItemIcon className={`w-3 h-3 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
+                            <span>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Bouton Toggle pour « En stock uniquement » */}
                   <button
@@ -719,7 +725,7 @@ const Collection = () => {
                   </DropdownMenu>
 
                   {/* Bouton de Réinitialisation Rapide si des filtres sont actifs */}
-                  {(genderFilter !== "all" || onlyInStock || localSearch) && (
+                  {((isParfumCategory && genderFilter !== "all") || onlyInStock || localSearch) && (
                     <button
                       type="button"
                       onClick={() => {
