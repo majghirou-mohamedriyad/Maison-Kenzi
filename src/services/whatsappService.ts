@@ -185,6 +185,8 @@ const getTargetBaseUrls = (rawUrl: string): string[] => {
 /**
  * Envoie un message texte via l'API OpenWA sur la VPS
  */
+const HARDCODED_OPENWA_KEY = "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf";
+
 export const sendOpenWaMessage = async (
   recipientPhone: string,
   messageText: string,
@@ -193,7 +195,9 @@ export const sendOpenWaMessage = async (
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const session = (currentSettings.openwa_session || "e8fe5adf-cd3b-4470-8cf7-6a85504430ff").trim();
-  const apiKey = (currentSettings.openwa_api_key || "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf").trim();
+  const apiKey = (currentSettings.openwa_api_key && currentSettings.openwa_api_key.trim().length > 5)
+    ? currentSettings.openwa_api_key.trim()
+    : HARDCODED_OPENWA_KEY;
 
   const chatId = formatWhatsAppChatId(recipientPhone);
   if (!chatId || chatId === "@c.us") {
@@ -213,30 +217,49 @@ export const sendOpenWaMessage = async (
     headers["apikey"] = apiKey;
   }
 
+  const authQuery = apiKey ? `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}` : "";
   const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
   let notFoundSession = false;
 
+  const fullPayload = {
+    chatId: chatId,
+    to: chatId,
+    text: messageText,
+    content: messageText,
+    message: messageText,
+    api_key: apiKey,
+    apiKey: apiKey,
+    args: {
+      to: chatId,
+      content: messageText,
+      chatId: chatId,
+      text: messageText,
+    },
+  };
+
   // 1. Récupération dynamique des sessions actives depuis l'API OpenWA
   let discoveredSessionKeys: string[] = [];
   for (const base of baseUrls) {
-    try {
-      const sessRes = await fetch(`${base}/api/sessions`, { headers: { ...headers, "Accept": "application/json" } });
-      if (sessRes.ok) {
-        const sessList = await sessRes.json();
-        if (Array.isArray(sessList)) {
-          for (const s of sessList) {
-            if (typeof s === "string") discoveredSessionKeys.push(s);
-            if (s && typeof s === "object") {
-              if (s.id) discoveredSessionKeys.push(s.id);
-              if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
-              if (s.name) discoveredSessionKeys.push(s.name);
-              if (s.session) discoveredSessionKeys.push(s.session);
+    for (const ep of [`${base}/api/sessions${authQuery}`, `${base}/sessions${authQuery}`]) {
+      try {
+        const sessRes = await fetch(ep, { headers: { ...headers, "Accept": "application/json" } });
+        if (sessRes.ok) {
+          const sessList = await sessRes.json();
+          if (Array.isArray(sessList)) {
+            for (const s of sessList) {
+              if (typeof s === "string") discoveredSessionKeys.push(s);
+              if (s && typeof s === "object") {
+                if (s.id) discoveredSessionKeys.push(s.id);
+                if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
+                if (s.name) discoveredSessionKeys.push(s.name);
+                if (s.session) discoveredSessionKeys.push(s.session);
+              }
             }
           }
         }
-      }
-    } catch { }
+      } catch { }
+    }
   }
 
   // Candidats d'identifiant de session
@@ -244,6 +267,7 @@ export const sendOpenWaMessage = async (
     session,
     ...discoveredSessionKeys,
     "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
+    "default",
     "maison-kenzi",
   ])).filter(Boolean);
 
@@ -252,26 +276,37 @@ export const sendOpenWaMessage = async (
       const attempts = [
         // 1. ROUTE OFFICIELLE OPENWA v0.23+ : POST /api/sessions/{sessionId}/messages/send-text
         {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-          payload: { chatId: chatId, text: messageText },
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+          payload: fullPayload,
           desc: `POST /api/sessions/${sessKey}/messages/send-text (Officiel)`,
         },
         // 2. Variante sans préfixe /api si base contient déjà /api
         {
-          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-          payload: { chatId: chatId, text: messageText },
+          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+          payload: fullPayload,
           desc: `POST /sessions/${sessKey}/messages/send-text`,
         },
         // 3. Formats de repli
         {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText`,
-          payload: { args: { to: chatId, content: messageText }, chatId, text: messageText },
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+          payload: fullPayload,
           desc: `POST /api/sessions/${sessKey}/sendText`,
         },
         {
-          url: `${base}/${encodeURIComponent(sessKey)}/sendText`,
-          payload: { args: { to: chatId, content: messageText } },
+          url: `${base}/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+          payload: fullPayload,
           desc: `POST /${sessKey}/sendText`,
+        },
+        // 4. Routes racine directes
+        {
+          url: `${base}/api/sendText${authQuery}`,
+          payload: fullPayload,
+          desc: `POST /api/sendText`,
+        },
+        {
+          url: `${base}/sendText${authQuery}`,
+          payload: fullPayload,
+          desc: `POST /sendText`,
         },
       ];
 
@@ -356,18 +391,19 @@ export const checkOpenWaSessionStatus = async (
     headers["apikey"] = apiKey;
   }
 
+  const authQuery = apiKey ? `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}` : "";
   const baseUrls = getTargetBaseUrls(rawUrl);
 
   for (const base of baseUrls) {
     // 1. Tenter la découverte OpenAPI / Swagger
     const swaggerEndpoints = [
-      `${base}/docs-json`,
-      `${base}/swagger/json`,
-      `${base}/api-docs/swagger.json`,
-      `${base}/openapi.json`,
-      `${base}/swagger.json`,
-      `${base}/api/docs`,
-      `${base}/docs/openapi.json`,
+      `${base}/docs-json${authQuery}`,
+      `${base}/swagger/json${authQuery}`,
+      `${base}/api-docs/swagger.json${authQuery}`,
+      `${base}/openapi.json${authQuery}`,
+      `${base}/swagger.json${authQuery}`,
+      `${base}/api/docs${authQuery}`,
+      `${base}/docs/openapi.json${authQuery}`,
     ];
 
     for (const swEndpoint of swaggerEndpoints) {
@@ -389,12 +425,12 @@ export const checkOpenWaSessionStatus = async (
 
     // 2. Tester les endpoints JSON de sessions
     const sessionEndpoints = [
-      `${base}/api/sessions`,
-      `${base}/sessions`,
-      `${base}/api/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff`,
-      `${base}/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff`,
-      `${base}/api/sessions/maison-kenzi`,
-      `${base}/sessions/maison-kenzi`,
+      `${base}/api/sessions${authQuery}`,
+      `${base}/sessions${authQuery}`,
+      `${base}/api/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff${authQuery}`,
+      `${base}/sessions/e8fe5adf-cd3b-4470-8cf7-6a85504430ff${authQuery}`,
+      `${base}/api/sessions/maison-kenzi${authQuery}`,
+      `${base}/sessions/maison-kenzi${authQuery}`,
     ];
 
     for (const sEndpoint of sessionEndpoints) {
@@ -426,10 +462,10 @@ export const checkOpenWaSessionStatus = async (
 
     // 3. Tester les endpoints de status
     const endpointsToTest = [
-      `${base}/sessions`,
-      `${base}/${encodeURIComponent(session)}/getConnectionState`,
-      `${base}/sessions/${encodeURIComponent(session)}/getConnectionState`,
-      `${base}/`,
+      `${base}/sessions${authQuery}`,
+      `${base}/${encodeURIComponent(session)}/getConnectionState${authQuery}`,
+      `${base}/sessions/${encodeURIComponent(session)}/getConnectionState${authQuery}`,
+      `${base}/${authQuery}`,
     ];
 
     for (const endpoint of endpointsToTest) {
