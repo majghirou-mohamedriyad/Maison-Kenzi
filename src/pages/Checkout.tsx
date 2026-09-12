@@ -38,7 +38,7 @@ import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
 import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappService";
 
 import { useRef, useEffect } from "react";
-import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
+import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/destinations";
 
 const Checkout = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
@@ -47,6 +47,7 @@ const Checkout = () => {
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("Maroc");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("Casablanca");
   const [cityQuery, setCityQuery] = useState("Casablanca");
@@ -75,9 +76,9 @@ const Checkout = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const matchingCities = searchMoroccanCities(cityQuery, 10);
+  const matchingDestinations = searchDestinations(cityQuery, 10);
 
-  const shippingCost = 0; // Free express delivery throughout Morocco
+  const shippingCost = 0; // Livraison express offerte
   const total = subtotal + shippingCost;
 
   const isFormValid = fullName.trim() !== "" && phone.trim() !== "" && address.trim() !== "" && city.trim() !== "";
@@ -121,7 +122,7 @@ const Checkout = () => {
     setSubmitting(true);
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `MK-${randomSuffix}`;
-    const fullAddressText = `${address.trim()}, ${city}, Maroc`;
+    const fullAddressText = `${address.trim()}, ${city}, ${country}`;
     const cleanEmail = `client_${Date.now()}@maisonkenzi.ma`;
 
     const orderPayload = {
@@ -394,20 +395,48 @@ const Checkout = () => {
                       />
                     </div>
 
-                    {/* City Autocomplete & Quick Selection from CSV */}
+                    {/* Country Selection */}
+                    <div className="space-y-2">
+                      <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-primary" /> Pays de Destination *
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-normal">
+                          Livraison Maroc & Toute l'Europe
+                        </span>
+                      </Label>
+
+                      <div className="flex flex-wrap gap-1.5">
+                        {COUNTRIES.slice(0, 8).map((cnt) => (
+                          <button
+                            key={cnt.code}
+                            type="button"
+                            onClick={() => setCountry(cnt.name)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${country === cnt.name
+                                ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                                : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/60"
+                              }`}
+                          >
+                            {cnt.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* City Autocomplete & Quick Selection */}
                     <div className="space-y-2 relative" ref={cityWrapperRef}>
                       <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
                           <Building2 className="w-3.5 h-3.5 text-primary" /> Ville de Destination *
                         </span>
                         <span className="text-[10px] text-muted-foreground font-normal">
-                          {matchingCities.length > 0 && cityQuery ? `${matchingCities.length} résultat(s)` : "330+ villes desservies"}
+                          {matchingDestinations.length > 0 && cityQuery ? `${matchingDestinations.length} destination(s)` : "Villes Maroc & Europe"}
                         </span>
                       </Label>
 
                       {/* Top Popular City Quick Badges */}
                       <div className="flex flex-wrap gap-1.5 pb-1">
-                        {POPULAR_CITIES.slice(0, 7).map((c) => (
+                        {POPULAR_DESTINATIONS.slice(0, 8).map((c) => (
                           <button
                             key={c}
                             type="button"
@@ -432,7 +461,7 @@ const Checkout = () => {
                           id="city"
                           type="text"
                           required
-                          placeholder="Rechercher votre ville (ex: Casablanca, Marrakech, Agadir, Nador)..."
+                          placeholder="Rechercher votre ville (ex: Casablanca, Paris, Bruxelles, Genève, Madrid)..."
                           value={cityQuery}
                           onFocus={() => setShowCityDropdown(true)}
                           onChange={(e) => {
@@ -458,27 +487,27 @@ const Checkout = () => {
                       </div>
 
                       {/* Autocomplete Dropdown List */}
-                      {showCityDropdown && matchingCities.length > 0 && (
+                      {showCityDropdown && matchingDestinations.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1.5 max-h-48 overflow-y-auto space-y-0.5 animate-in fade-in-0 duration-150">
-                          {matchingCities.map((cityName) => (
+                          {matchingDestinations.map((dest) => (
                             <button
-                              key={cityName}
+                              key={dest.name}
                               type="button"
                               onClick={() => {
-                                setCity(cityName);
-                                setCityQuery(cityName);
+                                setCity(dest.name);
+                                setCityQuery(dest.name);
                                 setShowCityDropdown(false);
                               }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${city.toLowerCase() === cityName.toLowerCase()
+                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${city.toLowerCase() === dest.name.toLowerCase()
                                   ? "bg-primary/10 text-primary font-semibold"
                                   : "text-foreground hover:bg-secondary/80"
                                 }`}
                             >
                               <span className="flex items-center gap-2">
                                 <MapPin className="w-3 h-3 text-primary/70 shrink-0" />
-                                <span>{cityName}</span>
+                                <span>{dest.name}</span>
                               </span>
-                              <span className="text-[10px] text-muted-foreground">Maroc</span>
+                              <span className="text-[10px] text-muted-foreground">{dest.country}</span>
                             </button>
                           ))}
                         </div>

@@ -23,7 +23,7 @@ const DEFAULT_QAS: QA[] = [
   {
     id: "qa-1",
     question: "Quels sont vos délais d'expédition et de livraison ?",
-    answer: "L'expédition est soignée et rapide avec suivi de colis. La livraison s'effectue sous 24h à 48h ouvrées.",
+    answer: "Nous assurons la livraison partout au Maroc (24-48h) et en Europe (3-5 jours ouvrés). L'expédition est soignée et chaque colis bénéficie d'un numéro de suivi direct.",
   },
   {
     id: "qa-2",

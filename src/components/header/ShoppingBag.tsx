@@ -160,7 +160,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
               <Truck className="w-3.5 h-3.5 shrink-0" />
               {remainingForFree === 0 ? (
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  Livraison Express Offerte partout au Maroc !
+                  Livraison Express Offerte partout au Maroc & en Europe !
                 </span>
               ) : (
                 <span>

@@ -12,12 +12,12 @@ const VPS_BASE_URL = "http://185.197.249.4:2785";
 const formatWhatsAppChatId = (phone) => {
   if (!phone) return "";
   let cleaned = String(phone).replace(/[^0-9]/g, "");
-  if (cleaned.startsWith("06") || cleaned.startsWith("07") || cleaned.startsWith("05")) {
-    cleaned = "212" + cleaned.substring(1);
-  } else if (cleaned.startsWith("6") || cleaned.startsWith("7")) {
-    cleaned = "212" + cleaned;
+  if (cleaned.startsWith("00")) {
+    cleaned = cleaned.substring(2);
   }
-  if (!cleaned.startsWith("212") && cleaned.length === 9) {
+  if ((cleaned.startsWith("06") || cleaned.startsWith("07") || cleaned.startsWith("05")) && cleaned.length === 10) {
+    cleaned = "212" + cleaned.substring(1);
+  } else if ((cleaned.startsWith("6") || cleaned.startsWith("7")) && cleaned.length === 9) {
     cleaned = "212" + cleaned;
   }
   return cleaned.includes("@c.us") ? cleaned : `${cleaned}@c.us`;

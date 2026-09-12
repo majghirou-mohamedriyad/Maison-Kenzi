@@ -55,7 +55,7 @@ const Footer = () => {
               Haute Parfumerie & Flacons Originaux
             </p>
             <p className="text-xs font-light text-muted-foreground leading-relaxed max-w-xs">
-              Sélection exclusive des plus grands chefs-d'œuvre de la parfumerie mondiale. Flacons 100% originaux scellés livrés partout au Maroc.
+              Sélection exclusive des plus grands chefs-d'œuvre de la parfumerie mondiale. Flacons 100% originaux scellés livrés partout au Maroc et en Europe.
             </p>
           </div>
 
@@ -120,11 +120,11 @@ const Footer = () => {
               </li>
               <li className="pt-1 text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
                 <Truck className="w-3.5 h-3.5 text-primary" />
-                <span>Livraison Express 24–48h Maroc</span>
+                <span>Livraison partout au Maroc & en Europe</span>
               </li>
               <li className="text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                <span>Paiement Cash à la Réception</span>
+                <span>Paiement Sécurisé par Internet</span>
               </li>
             </ul>
           </div>

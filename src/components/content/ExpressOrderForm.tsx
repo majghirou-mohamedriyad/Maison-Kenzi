@@ -38,7 +38,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
+import { COUNTRIES, POPULAR_DESTINATIONS, searchDestinations } from "@/data/destinations";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
 import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappService";
@@ -97,6 +97,7 @@ const ExpressOrderForm = ({
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("Maroc");
   const [city, setCity] = useState("Casablanca");
   const [cityQuery, setCityQuery] = useState("Casablanca");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
@@ -134,7 +135,9 @@ const ExpressOrderForm = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const matchingCities = searchMoroccanCities(cityQuery, 8);
+  const matchingDestinations = useMemo(() => {
+    return searchDestinations(cityQuery, 8);
+  }, [cityQuery]);
 
   // Normalisation de la liste des formats sélectionnés du parfum principal
   const activeMainItems: OrderSelectionItem[] = items && items.length > 0
@@ -295,7 +298,7 @@ const ExpressOrderForm = ({
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `MK-${randomSuffix}`;
     const cleanEmail = `${fullName.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
-    const fullAddressText = `${address.trim()}, ${city.trim()}, Maroc`;
+    const fullAddressText = `${address.trim()}, ${city.trim()}, ${country}`;
     saveLastOrderNumber(orderNumber);
 
     // Enregistrement de la commande dans Supabase
@@ -476,7 +479,7 @@ const ExpressOrderForm = ({
           </div>
 
           <div className="border-t border-border/50 pt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground font-semibold">Total à régler à la livraison :</span>
+            <span className="text-muted-foreground font-semibold">Total réglé en ligne :</span>
             <span className="font-bold text-foreground text-sm sm:text-base tracking-tight text-primary">
               {formatMAD(completedOrder.totalPrice)}
             </span>
@@ -706,36 +709,67 @@ const ExpressOrderForm = ({
             />
           </div>
 
-          {/* Field 3: Ville de Destination */}
-          <div className="space-y-1 relative" ref={cityWrapperRef}>
-            <Label
-              htmlFor="city"
-              className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1">
+          {/* Field 3: Pays et Ville de Destination */}
+          <div className="space-y-1.5 relative" ref={cityWrapperRef}>
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="city"
+                className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
+              >
                 <Building2 className="w-3 h-3 text-primary shrink-0" />
-                <span>Ville de Destination *</span>
+                <span>Destination (Maroc & Europe) *</span>
+              </Label>
+              <span className="text-[9px] text-primary font-semibold uppercase tracking-wider">
+                Livraison express
               </span>
-            </Label>
+            </div>
 
-            {/* Quick city badges */}
-            <div className="flex flex-wrap gap-1 pb-1">
-              {POPULAR_CITIES.slice(0, 6).map((c) => (
+            {/* Quick Country Selector */}
+            <div className="flex flex-wrap gap-1 pb-0.5">
+              {COUNTRIES.slice(0, 5).map((cty) => (
                 <button
-                  key={c}
+                  key={cty.code}
                   type="button"
                   onClick={() => {
-                    setCity(c);
-                    setCityQuery(c);
-                    setShowCityDropdown(false);
+                    setCountry(cty.name);
+                    if (cty.code === "MA" && !cityQuery) {
+                      setCity("Casablanca");
+                      setCityQuery("Casablanca");
+                    } else if (cty.code === "FR" && !cityQuery) {
+                      setCity("Paris");
+                      setCityQuery("Paris");
+                    }
                   }}
                   className={`px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-medium transition-all cursor-pointer ${
-                    city.toLowerCase() === c.toLowerCase()
-                      ? "bg-primary text-primary-foreground font-semibold"
+                    country === cty.name
+                      ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                       : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/50"
                   }`}
                 >
-                  {c}
+                  {cty.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Quick destination badges */}
+            <div className="flex flex-wrap gap-1 pb-1">
+              {POPULAR_DESTINATIONS.slice(0, 6).map((dest) => (
+                <button
+                  key={dest.name}
+                  type="button"
+                  onClick={() => {
+                    setCity(dest.name);
+                    setCityQuery(dest.name);
+                    setCountry(dest.country);
+                    setShowCityDropdown(false);
+                  }}
+                  className={`px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-medium transition-all cursor-pointer ${
+                    city.toLowerCase() === dest.name.toLowerCase()
+                      ? "bg-primary text-primary-foreground font-semibold"
+                      : "bg-secondary/50 text-muted-foreground hover:text-foreground border border-border/40"
+                  }`}
+                >
+                  {dest.name}
                 </button>
               ))}
             </div>
@@ -745,7 +779,7 @@ const ExpressOrderForm = ({
                 id="city"
                 type="text"
                 required
-                placeholder="Ex: Casablanca, Rabat, Marrakech..."
+                placeholder="Ex: Casablanca, Paris, Bruxelles, Marrakech, Madrid..."
                 value={cityQuery}
                 onFocus={() => {
                   setFocusedField("city");
@@ -763,27 +797,31 @@ const ExpressOrderForm = ({
               />
             </div>
 
-            {/* City Dropdown */}
-            {showCityDropdown && matchingCities.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-40 overflow-y-auto space-y-0.5">
-                {matchingCities.map((cityName) => (
+            {/* Destination Dropdown */}
+            {showCityDropdown && matchingDestinations.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
+                {matchingDestinations.map((dest) => (
                   <button
-                    key={cityName}
+                    key={`${dest.name}-${dest.country}`}
                     type="button"
                     onClick={() => {
-                      setCity(cityName);
-                      setCityQuery(cityName);
+                      setCity(dest.name);
+                      setCityQuery(dest.name);
+                      setCountry(dest.country);
                       setShowCityDropdown(false);
                     }}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                      city.toLowerCase() === cityName.toLowerCase()
+                      city.toLowerCase() === dest.name.toLowerCase()
                         ? "bg-primary/10 text-primary font-semibold"
                         : "text-foreground hover:bg-secondary/80"
                     }`}
                   >
                     <span className="flex items-center gap-1.5">
                       <MapPin className="w-3 h-3 text-primary/70 shrink-0" />
-                      <span>{cityName}</span>
+                      <span className="font-medium">{dest.name}</span>
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">
+                      {dest.country}
                     </span>
                   </button>
                 ))}

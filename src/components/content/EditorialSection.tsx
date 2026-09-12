@@ -35,11 +35,11 @@ const pillars = [
   {
     number: "02",
     icon: Truck,
-    title: "Livraison",
-    subtitle: "24h à 48h à Domicile",
+    title: "Livraison Maroc & Europe",
+    subtitle: "Acheminement Express & Sécurisé",
     description:
-      "Expédition rapide et soignée dans toutes les villes du Royaume avec suivi de colis en temps réel.",
-    tag: "Emballage Protégé",
+      "Expédition rapide et soignée dans toutes les villes du Royaume du Maroc et en Europe avec numéro de suivi en direct.",
+    tag: "Emballage Haute Protection",
   },
   {
     number: "03",

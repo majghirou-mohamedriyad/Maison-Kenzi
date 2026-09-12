@@ -20,15 +20,15 @@ export const formatWhatsAppChatId = (phone: string): string => {
   // Suppression de tous les caractères non numériques
   let cleaned = phone.replace(/[^0-9]/g, "");
 
-  // Format marocain national débutant par 06 ou 07 ou 05
-  if (cleaned.startsWith("06") || cleaned.startsWith("07") || cleaned.startsWith("05")) {
-    cleaned = "212" + cleaned.substring(1);
-  } else if (cleaned.startsWith("6") || cleaned.startsWith("7")) {
-    cleaned = "212" + cleaned;
+  // Remplacement du double zéro international initial (0033... -> 33...)
+  if (cleaned.startsWith("00")) {
+    cleaned = cleaned.substring(2);
   }
 
-  // Si le numéro ne comporte pas encore l'indicatif international
-  if (!cleaned.startsWith("212") && cleaned.length === 9) {
+  // Format marocain national débutant par 06, 07 ou 05 (10 chiffres)
+  if ((cleaned.startsWith("06") || cleaned.startsWith("07") || cleaned.startsWith("05")) && cleaned.length === 10) {
+    cleaned = "212" + cleaned.substring(1);
+  } else if ((cleaned.startsWith("6") || cleaned.startsWith("7")) && cleaned.length === 9) {
     cleaned = "212" + cleaned;
   }
 

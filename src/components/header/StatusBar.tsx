@@ -11,10 +11,10 @@ const StatusBar = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const usps = [
-    { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc", icon: Sparkles },
+    { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc & en Europe", icon: Sparkles },
     { text: "100% Flacons Complets & Scellés d'Origine", icon: Award },
-    { text: "Livraison Express 24–48h partout au Maroc", icon: Truck },
-    { text: "Paiement Sécurisé par Internet — 100% Parfums Authentiques", icon: ShieldCheck },
+    { text: "Livraison Express partout au Maroc & en Europe", icon: Truck },
+    { text: "Paiement Sécurisé par Internet — Vente Définitive", icon: ShieldCheck },
   ];
 
   useEffect(() => {

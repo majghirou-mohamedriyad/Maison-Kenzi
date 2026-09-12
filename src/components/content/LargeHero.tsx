@@ -22,7 +22,7 @@ const SLIDES = [
     tag: "MAISON KENZI · HAUTE PARFUMERIE",
     titlePrefix: "L'Essence du ",
     titleHighlight: "Prestige",
-    subtitle: "Parfums de niche d'exception et flacons complets scellés sélectionnés pour les connaisseurs au Maroc.",
+    subtitle: "Parfums de niche d'exception et flacons complets scellés sélectionnés pour les connaisseurs au Maroc et en Europe.",
     btnText: "Découvrir les Collections",
     btnLink: "/collection/all",
     bgImage: "/mk-banner.png",
