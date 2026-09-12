@@ -113,7 +113,7 @@ export const DecantGuideSection = () => {
             Trouvez votre sillage signature
           </h4>
           <p className="text-xs text-muted-foreground font-light">
-            Découvrez nos flacons de prestige disponibles immédiatement avec livraison rapide et paiement à la livraison au Maroc.
+            Découvrez nos flacons de prestige disponibles immédiatement avec livraison rapide et paiement sécurisé par internet.
           </p>
         </div>
 

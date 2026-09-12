@@ -39,7 +39,7 @@ const NotreHistoire = () => {
                 </p>
                 <p className="text-foreground/75 leading-relaxed font-light">
                   Chaque produit est 100% original et sélectionné avec rigueur pour vous offrir une expérience d'exception
-                  avec la garantie d'une livraison rapide 24–48h et du paiement à la livraison.
+                  avec la garantie d'une expédition soignée et du paiement sécurisé par internet.
                 </p>
                 <p className="text-foreground/75 leading-relaxed font-light italic">
                   « L'excellence, la confiance et l'élégance à chaque commande. »

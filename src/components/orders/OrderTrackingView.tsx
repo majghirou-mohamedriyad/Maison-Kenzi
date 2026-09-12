@@ -347,7 +347,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
 
               {/* Total Row */}
               <div className="bg-secondary/40 p-3.5 flex items-center justify-between border-t border-border/70 text-xs sm:text-sm font-bold">
-                <span className="text-foreground">Montant à régler à la livraison (COD) :</span>
+                <span className="text-foreground">Montant réglé par internet :</span>
                 <span className="text-base sm:text-lg font-bold tracking-tight text-primary">
                   {formatMAD(order.total_amount)}
                 </span>
@@ -358,7 +358,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border/50">
               <div className="flex items-center gap-2 text-xs text-muted-foreground font-light">
                 <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-                <span>Paiement en espèces à la réception partout au Maroc</span>
+                <span>Paiement sécurisé par internet • Vente définitive sans retour</span>
               </div>
 
               <a

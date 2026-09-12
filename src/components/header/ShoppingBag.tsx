@@ -384,8 +384,8 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     <span>100% Authentique</span>
                   </div>
                   <div className="flex items-center justify-center gap-1.5">
-                    <PackageCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Paiement à la livraison</span>
+                    <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Paiement par internet</span>
                   </div>
                 </div>
               </div>

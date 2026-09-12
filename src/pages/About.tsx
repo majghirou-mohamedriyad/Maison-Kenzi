@@ -49,24 +49,28 @@ const pillars = [
   },
   {
     icon: PackageCheck,
-    title: "Paiement en Espèces à la Réception",
-    desc: "Commandez en toute confiance : vous ne réglez votre achat qu'au moment où le livreur vous remet votre précieux colis en mains propres à votre adresse.",
-    tag: "Sérénité Totale",
+    title: "Paiement Sécurisé par Internet",
+    desc: "Commandez en toute confiance : transactions sécurisées et chiffrées par internet avec confirmation immédiate et traçabilité.",
+    tag: "Chiffrement SSL",
   },
 ];
 
 const faqs = [
   {
     q: "Les parfums vendus par Maison Kenzi sont-ils 100% originaux ?",
-    a: "Absolument. Chez Maison Kenzi, l'authenticité est notre premier engagement. Tous nos parfums sont des flacons complets originaux scellés dans leur boîte d'origine sous blister, issus directement des circuits officiels des plus grandes maisons de création.",
+    a: "Absolument. Chez Maison Kenzi, l'authenticité est notre premier engagement. Tous nos parfums sont des créations originales scellées dans leur boîte d'origine sous blister, issues directement des circuits officiels des plus grandes maisons de création.",
   },
   {
-    q: "Sous quel délai ma commande est-elle livrée au Maroc ?",
-    a: "Nos commandes sont traitées le jour même et livrées en 24 à 48 heures partout au Maroc. Vous recevez un numéro de suivi de commande en direct (`MK-XXXXXX`) pour suivre l'acheminement de votre colis en temps réel.",
+    q: "Sous quel délai ma commande est-elle livrée ?",
+    a: "Nos commandes sont traitées avec le plus grand soin et expédiées en 24 à 48 heures. Vous recevez une référence de commande en direct (`MK-XXXXXX`) pour suivre l'acheminement de votre colis en temps réel.",
   },
   {
     q: "Quels sont les modes de paiement acceptés ?",
-    a: "Nous privilégions le paiement en espèces à la livraison (Cash on Delivery). Vous payez le montant exact de votre commande directement au livreur lors de la remise en mains propres.",
+    a: "Le règlement s'effectue de manière 100% sécurisée par internet lors de la validation de votre commande (carte bancaire, transactions chiffrées).",
+  },
+  {
+    q: "Quelle est votre politique de retour ?",
+    a: "Afin de garantir l'authenticité absolue, l'hygiène stricte et la préservation de chaque jus d'exception, les ventes sont définitives. Aucun retour ni échange n'est accepté une fois le colis expédié.",
   },
   {
     q: "Comment puis-je être conseillé pour choisir mon parfum ?",
@@ -88,7 +92,7 @@ const About = () => {
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo
         title="À Propos de Maison Kenzi | Haute Parfumerie & Flacons Originaux au Maroc"
-        description="Découvrez l'univers Maison Kenzi : l'exigence de la haute parfumerie au Maroc. Flacons complets 100% originaux scellés, livraison express 24-48h et paiement à la livraison."
+        description="Découvrez l'univers Maison Kenzi : l'exigence de la haute parfumerie. Flacons complets 100% originaux scellés, livraison soignée et paiement sécurisé par internet."
         path="/about"
       />
       <Header />

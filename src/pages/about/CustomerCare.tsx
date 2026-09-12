@@ -83,8 +83,8 @@ const processSteps = [
   },
   {
     step: "04",
-    title: "Règlement en Mains Propres",
-    desc: "Paiement en espèces à la livraison (Cash on Delivery) lors de la remise de votre commande.",
+    title: "Paiement Sécurisé par Internet",
+    desc: "Règlement 100% sécurisé et chiffré par carte bancaire lors de la validation de votre commande.",
     icon: PackageCheck,
   },
 ];
@@ -166,11 +166,11 @@ const CustomerCare = () => {
     },
     {
       id: 3,
-      categoryLabel: "Règlement & Sérénité",
+      categoryLabel: "Règlement & Sécurité",
       icon: PackageCheck,
       question: "Comment s'effectue le paiement de ma commande ?",
       answer:
-        "Le règlement s'effectue exclusivement en espèces à la livraison (Cash on Delivery). Vous ne payez qu'au moment précis où le transporteur vous remet votre colis en mains propres à votre domicile ou bureau.",
+        "Le règlement s'effectue de manière 100% sécurisée par internet lors de votre commande (carte bancaire, chiffrement SSL 256-bit). Vous recevez instantanément votre confirmation et votre référence de suivi.",
     },
     {
       id: 4,
@@ -182,11 +182,11 @@ const CustomerCare = () => {
     },
     {
       id: 5,
-      categoryLabel: "Garanties & Retours",
+      categoryLabel: "Politique de Vente & Authenticité",
       icon: RotateCcw,
       question: "Quelle est votre politique de garantie et de retour ?",
       answer:
-        "Afin de préserver l'intégrité et la perfection de nos créations pour l'ensemble de notre clientèle, les retours sont acceptés sous 7 jours pour les articles non descellés, intacts dans leur blister d'origine.",
+        "Afin de garantir l'authenticité absolue, l'hygiène stricte et la conservation olfactive irréprochable de chaque jus pour l'ensemble de notre clientèle, Maison Kenzi n'effectue aucun retour ni échange une fois la commande validée et expédiée (vente définitive).",
     },
   ];
 

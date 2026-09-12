@@ -14,7 +14,7 @@ const StatusBar = () => {
     { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc", icon: Sparkles },
     { text: "100% Flacons Complets & Scellés d'Origine", icon: Award },
     { text: "Livraison Express 24–48h partout au Maroc", icon: Truck },
-    { text: "Paiement à la Livraison — 100% Parfums Authentiques", icon: ShieldCheck },
+    { text: "Paiement Sécurisé par Internet — 100% Parfums Authentiques", icon: ShieldCheck },
   ];
 
   useEffect(() => {

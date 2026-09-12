@@ -75,9 +75,9 @@ const OrderTracking = () => {
               <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
                 <ShieldCheck className="w-4 h-4" />
               </div>
-              <h4 className="font-serif text-sm font-semibold text-foreground">Paiement à la Livraison</h4>
+              <h4 className="font-serif text-sm font-semibold text-foreground">Paiement Sécurisé</h4>
               <p className="text-xs text-muted-foreground font-light leading-relaxed">
-                Réglez en espèces directement lors de la remise en main propre.
+                Transactions chiffrées par internet avec confirmation immédiate.
               </p>
             </div>
           </div>

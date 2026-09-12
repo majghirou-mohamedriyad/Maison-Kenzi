@@ -72,7 +72,8 @@ Nous avons le plaisir de vous confirmer la bonne reception de votre commande aup
 
 *Reference de Commande :* ${order.order_number}
 *Montant Total :* ${order.total_amount} €
-*Reglement :* Paiement a la livraison (especes a reception)
+*Reglement :* Paiement securise par internet (valide)
+*Politique :* Vente definitive sans retour (hygiene & authenticite garantie)
 
 ${itemsList ? `*Articles commandes :*\n${itemsList}\n` : ""}${order.shipping_city ? `*Destination :* ${order.shipping_city}${order.shipping_address ? `, ${order.shipping_address}` : ""}\n` : ""}
 Vous pouvez suivre la preparation et l'acheminement de votre colis en temps reel a l'adresse suivante :
@@ -156,7 +157,7 @@ Adresse : ${order.shipping_address || "Non specifiee"}
 *Articles commandes :*
 ${itemsList || "Consulter le tableau d'administration"}
 
-Mode de paiement : Paiement a la livraison`;
+Mode de paiement : Paiement sécurisé par internet (validé)`;
 };
 
 /**

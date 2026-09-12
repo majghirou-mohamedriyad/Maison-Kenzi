@@ -4,7 +4,7 @@
  * Présentation des piliers de confiance de la Maison :
  * 1. 100% Flacons Scellés & Authentiques
  * 2. Livraison Express Partout au Maroc (24–48h)
- * 3. Paiement en Espèces à la Livraison
+ * 3. Paiement Sécurisé par Internet (Transactions Chiffrées)
  * 4. Conciergerie & Conseil Privé Personnalisé
  */
 
@@ -44,11 +44,11 @@ const pillars = [
   {
     number: "03",
     icon: ShieldCheck,
-    title: "Paiement à la Livraison",
-    subtitle: "Achat en Toute Sérénité",
+    title: "Paiement Sécurisé par Internet",
+    subtitle: "Transactions Chiffrées SSL",
     description:
-      "Réglez votre commande en espèces directement auprès du livreur à la réception en mains propres de votre flacon.",
-    tag: "Zéro Risque",
+      "Réglez votre commande en toute sécurité par internet avec des protocoles de chiffrement bancaire de pointe.",
+    tag: "100% Sécurisé",
   },
   {
     number: "04",

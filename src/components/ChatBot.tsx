@@ -22,33 +22,33 @@ const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
 const DEFAULT_QAS: QA[] = [
   {
     id: "qa-1",
-    question: "🚚 Quels sont vos délais de livraison au Maroc ?",
-    answer: "La livraison est rapide et express partout au Maroc sous 24h à 48h. Le paiement s'effectue en espèces à la livraison.",
+    question: "Quels sont vos délais d'expédition et de livraison ?",
+    answer: "L'expédition est soignée et rapide avec suivi de colis. La livraison s'effectue sous 24h à 48h ouvrées.",
   },
   {
     id: "qa-2",
-    question: "✨ Vos parfums sont-ils 100% authentiques ?",
-    answer: "Garantie 100% Authenticité. Tous nos jus sont prélevés directement des flacons officiels scellés des plus grandes maisons de parfumerie.",
+    question: "Vos parfums sont-ils 100% authentiques ?",
+    answer: "Garantie 100% Authenticité. Tous nos flacons et jus proviennent directement des circuits officiels des plus prestigieuses maisons de haute parfumerie.",
   },
   {
     id: "qa-3",
-    question: "📏 Comment choisir le format (5ml, 10ml) ?",
-    answer: "• 5ml (~75 sprays) : Parfait pour tester et voyager.\n• 10ml (~150 sprays) : 3 à 4 semaines d'utilisation quotidienne.",
+    question: "Comment choisir le format idéal (5ml, 10ml, Flacon) ?",
+    answer: "• 5ml (~75 pulvérisations) : Idéal pour découvrir et tester sur votre peau.\n• 10ml (~150 pulvérisations) : Format voyage pour 3 à 4 semaines.\n• Flacon complet : Pour votre signature olfactive quotidienne.",
   },
   {
     id: "qa-4",
-    question: "🔥 Quels sont les Best-Sellers du moment ?",
-    answer: "Pour Homme : Jean Paul Gaultier Le Beau, YSL Y EDP & Afnan 9PM.\nPour Femme : Valentino Born In Roma Intense, Prada Paradoxe & Baccarat Rouge 540.",
+    question: "Quel est le mode de règlement accepté ?",
+    answer: "Le règlement s'effectue de manière sécurisée par internet lors de la commande (carte bancaire et protocoles de chiffrement SSL).",
   },
   {
     id: "qa-5",
-    question: "💵 Quel est le mode de paiement ?",
-    answer: "Paiement à la livraison (Cash on Delivery). Vous ne payez qu'à la réception de votre colis auprès du livreur.",
+    question: "Quelle est votre politique de retour ou d'échange ?",
+    answer: "Afin de préserver l'intégrité, l'hygiène et l'authenticité inviolable de chaque fragrance, toutes les ventes sont définitives. Aucun retour ni échange n'est accepté une fois le colis expédié.",
   },
   {
     id: "qa-6",
-    question: "🎁 Avez-vous des packs découverte ?",
-    answer: "Oui ! Découvrez nos Packs Découverte dans l'onglet Collection Packs avec des tarifs avantageux et des combinaisons exclusives.",
+    question: "Proposez-vous des coffrets et packs découverte ?",
+    answer: "Oui, explorez notre sélection de Packs Découverte dans l'onglet Collection pour des harmonies olfactives exclusives.",
   },
 ];
 

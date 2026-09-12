@@ -13,7 +13,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Seo
         title="Maison Kenzi | Parfums & Déodorants Premium au Maroc"
-        description="Découvrez les parfums homme, parfums femme, déodorants stick et packs premium Maison Kenzi. Des fragrances élégantes et des soins de qualité, livraison rapide au Maroc et paiement à la livraison."
+        description="Découvrez les parfums homme, parfums femme, déodorants stick et packs premium Maison Kenzi. Des fragrances élégantes et des soins de qualité, livraison rapide et paiement sécurisé par internet."
         path="/"
         ogType="website"
       />

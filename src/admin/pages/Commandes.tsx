@@ -697,7 +697,7 @@ const Commandes = () => {
                     <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Gratuite</span>
                   </div>
                   <div className="flex justify-between text-base font-bold pt-1 border-t border-border">
-                    <span className="text-foreground">Total à encaisser (COD)</span>
+                    <span className="text-foreground">Total payé par internet</span>
                     <span className="font-bold tracking-tight text-primary">
                       {Number(viewingOrder.total_amount).toLocaleString("fr-FR")} €
                     </span>

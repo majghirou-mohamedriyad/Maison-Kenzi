@@ -18,6 +18,8 @@ import {
   Send,
   Building2,
   ShoppingBag,
+  Lock,
+  AlertCircle,
 } from "lucide-react";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
@@ -225,7 +227,7 @@ const Checkout = () => {
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo
         title="Finaliser ma Commande | Maison Kenzi"
-        description="Paiement à la livraison partout au Maroc sous 24-48h. Parfums 100% originaux."
+        description="Paiement sécurisé par internet. Parfums 100% originaux scellés et expédition soignée."
         path="/checkout"
       />
       <Header />
@@ -298,7 +300,7 @@ const Checkout = () => {
                     </p>
                     <p className="flex items-center gap-2">
                       <CreditCard className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Paiement en espèces à la livraison</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Paiement sécurisé par internet (validé)</span>
                     </p>
                   </div>
                 </div>
@@ -355,7 +357,7 @@ const Checkout = () => {
                     </div>
                     <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">
                       <CreditCard className="w-3 h-3" />
-                      <span>Paiement à la livraison</span>
+                      <span>Paiement sécurisé par internet</span>
                     </div>
                   </div>
 
@@ -641,18 +643,22 @@ const Checkout = () => {
                   </div>
 
                   {/* Reassurance items */}
-                  <div className="bg-background/80 border border-border/60 rounded-2xl p-3 space-y-2 text-[11px] text-muted-foreground">
+                  <div className="bg-background/80 border border-border/60 rounded-2xl p-3.5 space-y-2.5 text-[11px] text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-                      <span>Parfums 100% Authentiques d'origine</span>
+                      <span>Parfums 100% Authentiques d'origine scellés</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Truck className="w-4 h-4 text-primary shrink-0" />
-                      <span>Livraison 24–48h avec suivi par téléphone</span>
+                      <span>Expédition soignée avec suivi de colis en temps réel</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-primary shrink-0" />
-                      <span>Paiement en espèces à la livraison</span>
+                      <Lock className="w-4 h-4 text-primary shrink-0" />
+                      <span>Paiement sécurisé par internet (Chiffrement SSL)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10.5px] text-[#A37B34] dark:text-[#C9A96E] pt-1.5 border-t border-border/40 font-medium">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>Vente définitive : aucun retour ni échange (hygiène & authenticité)</span>
                     </div>
                   </div>
                 </div>

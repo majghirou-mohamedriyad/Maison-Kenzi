@@ -649,7 +649,7 @@ const ExpressOrderForm = ({
 
           <span className="text-[8.5px] sm:text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
             <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
-            <span>Paiement à la livraison</span>
+            <span>Paiement sécurisé par internet</span>
           </span>
         </div>
 
@@ -849,8 +849,8 @@ const ExpressOrderForm = ({
           </Button>
 
           <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
-            <Truck className="w-3 h-3 text-primary shrink-0" />
-            <span>Livraison express 24–48h partout au Maroc • Paiement à la réception</span>
+            <ShieldCheck className="w-3 h-3 text-primary shrink-0" />
+            <span>Paiement sécurisé par internet • Vente définitive sans retour</span>
           </div>
         </div>
       </form>
