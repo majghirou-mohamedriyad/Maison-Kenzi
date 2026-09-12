@@ -28,6 +28,8 @@ import {
   Sparkles,
   Layers,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   useCategories,
@@ -285,6 +287,19 @@ const CategoriesAdmin = () => {
       return [item, ...copy];
     });
     toast.success("Photo définie comme bannière principale");
+  };
+
+  const handleMoveImage = (index: number, direction: "left" | "right") => {
+    const targetIndex = direction === "left" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= images.length) return;
+
+    setImages((prev) => {
+      const copy = [...prev];
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy;
+    });
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -860,56 +875,129 @@ const CategoriesAdmin = () => {
                 </span>
               </div>
 
-              {/* Galerie des vignettes existantes */}
+              {/* Galerie des vignettes existantes avec réorganisation (Glisser-Déposer ou Flèches) */}
               {images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-48 overflow-y-auto p-2 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-[#FAF7F2]/50 dark:bg-[#1C1A18]/50">
-                  {images.map((imgUrl, index) => (
-                    <div
-                      key={`${imgUrl}-${index}`}
-                      className="group relative aspect-[16/10] rounded-lg overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5"
-                    >
-                      <img
-                        src={imgUrl}
-                        alt={`Bannière ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                    <span>Glissez les photos ou utilisez les flèches pour modifier l'ordre :</span>
+                  </div>
 
-                      {/* Badge Ordre / Principale */}
-                      <div className="absolute top-1.5 left-1.5">
-                        {index === 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
-                            <Star className="w-2.5 h-2.5 fill-current" /> Principale
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/60 text-white backdrop-blur-xs">
-                            #{index + 1}
-                          </span>
-                        )}
-                      </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto p-2 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-[#FAF7F2]/50 dark:bg-[#1C1A18]/50">
+                    {images.map((imgUrl, index) => (
+                      <div
+                        key={`${imgUrl}-${index}`}
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData("text/plain", index.toString());
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const sourceIndexStr = e.dataTransfer.getData("text/plain");
+                          if (!sourceIndexStr) return;
+                          const sourceIndex = parseInt(sourceIndexStr, 10);
+                          if (isNaN(sourceIndex) || sourceIndex === index) return;
+                          setImages((prev) => {
+                            const copy = [...prev];
+                            const [movedItem] = copy.splice(sourceIndex, 1);
+                            copy.splice(index, 0, movedItem);
+                            return copy;
+                          });
+                          toast.success("Ordre des photos mis à jour");
+                        }}
+                        className="group relative aspect-[16/10] rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:border-[#C9A96E]/60 transition-all shadow-xs"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`Bannière ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
 
-                      {/* Boutons d'action au survol */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
-                        {index !== 0 && (
-                          <button
-                            type="button"
-                            onClick={() => handleSetPrimaryImage(index)}
-                            className="p-1.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer"
-                            title="Définir comme bannière principale"
-                          >
-                            <Star className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(index)}
-                          className="p-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
-                          title="Supprimer cette photo"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {/* Badge Ordre / Principale */}
+                        <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
+                          {index === 0 ? (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
+                              <Star className="w-2.5 h-2.5 fill-current" /> Principale
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 text-white backdrop-blur-xs">
+                              #{index + 1}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Panneau d'actions au survol */}
+                        <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
+                          {/* Ligne 1 : Définir principale & Supprimer */}
+                          <div className="flex items-center justify-between w-full">
+                            {index !== 0 ? (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSetPrimaryImage(index);
+                                }}
+                                className="px-1.5 py-0.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer text-[9px] font-bold flex items-center gap-1 shadow-xs"
+                                title="Définir comme bannière principale"
+                              >
+                                <Star className="w-2.5 h-2.5" />
+                                <span>Principale</span>
+                              </button>
+                            ) : (
+                              <div />
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveImage(index);
+                              }}
+                              className="p-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer ml-auto shadow-xs"
+                              title="Supprimer cette photo"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {/* Ligne 2 : Flèches de changement de position (Ordre) */}
+                          <div className="flex items-center justify-between w-full mt-auto pt-1">
+                            <button
+                              type="button"
+                              disabled={index === 0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMoveImage(index, "left");
+                              }}
+                              className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                              title="Déplacer vers la gauche"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+
+                            <span className="text-[10px] font-bold text-white tracking-wider">
+                              {index + 1} / {images.length}
+                            </span>
+
+                            <button
+                              type="button"
+                              disabled={index === images.length - 1}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMoveImage(index, "right");
+                              }}
+                              className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                              title="Déplacer vers la droite"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
 
