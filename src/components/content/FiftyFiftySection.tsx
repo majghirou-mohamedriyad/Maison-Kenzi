@@ -108,7 +108,7 @@ const FiftyFiftySection = () => {
             text={cat.description}
             href={`/collection/${cat.slug}`}
             tag={cat.name}
-            image={cat.image || cat.icon}
+            image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : undefined)}
             isComingSoon={cat.is_coming_soon}
           />
         ))}

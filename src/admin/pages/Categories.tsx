@@ -26,6 +26,8 @@ import {
   ArrowUp,
   ArrowDown,
   Sparkles,
+  Layers,
+  Star,
 } from "lucide-react";
 import {
   useCategories,
@@ -102,11 +104,13 @@ const CategoriesAdmin = () => {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [urlInput, setUrlInput] = useState("");
   const [gender, setGender] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
   const [isComingSoon, setIsComingSoon] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -184,7 +188,8 @@ const CategoriesAdmin = () => {
     setName("");
     setSlug("");
     setDescription("");
-    setImage("");
+    setImages([]);
+    setUrlInput("");
     setGender("");
     setIsActive(true);
     setIsComingSoon(false);
@@ -197,7 +202,14 @@ const CategoriesAdmin = () => {
     setName(cat.name);
     setSlug(cat.slug);
     setDescription(cat.description || "");
-    setImage(cat.image || cat.icon || "");
+    const initialImages =
+      cat.images && cat.images.length > 0
+        ? cat.images
+        : cat.image || cat.icon
+        ? [cat.image || cat.icon!]
+        : [];
+    setImages(initialImages);
+    setUrlInput("");
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
     setIsComingSoon(Boolean(cat.is_coming_soon));
@@ -210,32 +222,84 @@ const CategoriesAdmin = () => {
     setSlug(slugify(val));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleMultipleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Veuillez sélectionner un fichier image valide (PNG, JPG, WebP)");
-      return;
+    const fileList = Array.from(files);
+    const validFiles: File[] = [];
+
+    for (const file of fileList) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`"${file.name}" n'est pas un fichier image valide.`);
+        continue;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error(`"${file.name}" dépasse la limite de 8 Mo.`);
+        continue;
+      }
+      validFiles.push(file);
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 5 Mo");
-      return;
-    }
+    if (validFiles.length === 0) return;
 
     setUploading(true);
+    setUploadProgress(`0 / ${validFiles.length}`);
+
+    const uploadedUrls: string[] = [];
+    const targetId = editingCat?.id || slug || `category-${Date.now()}`;
+
     try {
-      const targetId = editingCat?.id || slug || `category-${Date.now()}`;
-      const url = await uploadProductImage(targetId, file);
-      setImage(url);
-      toast.success("Image téléversée avec succès");
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        setUploadProgress(`${i + 1} / ${validFiles.length}`);
+        const url = await uploadProductImage(targetId, file);
+        if (url) {
+          uploadedUrls.push(url);
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        setImages((prev) => [...prev, ...uploadedUrls]);
+        toast.success(
+          uploadedUrls.length === 1
+            ? "1 photo de bannière ajoutée"
+            : `${uploadedUrls.length} photos de bannières ajoutées`
+        );
+      }
     } catch {
-      toast.error("Erreur lors du téléversement de l'image");
+      toast.error("Erreur lors du téléversement des images");
     } finally {
       setUploading(false);
+      setUploadProgress("");
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleSetPrimaryImage = (indexToMakePrimary: number) => {
+    if (indexToMakePrimary === 0) return;
+    setImages((prev) => {
+      const copy = [...prev];
+      const [item] = copy.splice(indexToMakePrimary, 1);
+      return [item, ...copy];
+    });
+    toast.success("Photo définie comme bannière principale");
+  };
+
+  const handleAddImageUrl = () => {
+    const trimmed = urlInput.trim();
+    if (!trimmed) return;
+    if (images.includes(trimmed)) {
+      toast.error("Cette image est déjà dans la liste.");
+      return;
+    }
+    setImages((prev) => [...prev, trimmed]);
+    setUrlInput("");
+    toast.success("Image ajoutée");
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -258,14 +322,17 @@ const CategoriesAdmin = () => {
     }
 
     setIsSaving(true);
+    const primaryImage = images.length > 0 ? images[0] : undefined;
+
     try {
       if (editingCat) {
         const res = await updateCategory(editingCat.id, {
           name: name.trim(),
           slug: finalSlug,
           description: description.trim(),
-          image: image.trim() || undefined,
-          icon: image.trim() || undefined,
+          image: primaryImage,
+          icon: primaryImage,
+          images: images,
           gender: gender || undefined,
           is_active: isActive,
           is_coming_soon: isComingSoon,
@@ -281,8 +348,9 @@ const CategoriesAdmin = () => {
           name: name.trim(),
           slug: finalSlug,
           description: description.trim(),
-          image: image.trim() || undefined,
-          icon: image.trim() || undefined,
+          image: primaryImage,
+          icon: primaryImage,
+          images: images,
           gender: gender || undefined,
           is_active: isActive,
           is_coming_soon: isComingSoon,
@@ -489,6 +557,12 @@ const CategoriesAdmin = () => {
                           <Clock className="w-2.5 h-2.5" /> À venir
                         </span>
                       )}
+
+                      {cat.images && cat.images.length > 1 && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md bg-[#1A1816]/80 text-[#FAF7F2] border border-white/20">
+                          <Layers className="w-2.5 h-2.5 text-[#C9A96E]" /> {cat.images.length} photos
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -612,6 +686,7 @@ const CategoriesAdmin = () => {
                 {filteredAndSorted.map((cat, idx) => {
                   const count = categoryStats[cat.slug] ?? 0;
                   const catImg = cat.image || cat.icon;
+                  const bannerCount = cat.images && cat.images.length > 0 ? cat.images.length : (cat.image || cat.icon ? 1 : 0);
                   return (
                     <tr
                       key={cat.id || cat.slug || `cat-row-${idx}`}
@@ -632,8 +707,15 @@ const CategoriesAdmin = () => {
                             )}
                           </div>
                           <div>
-                            <div className="font-serif font-bold text-sm text-[#1A1816] dark:text-[#FAF7F2]">
-                              {cat.name}
+                            <div className="flex items-center gap-2">
+                              <span className="font-serif font-bold text-sm text-[#1A1816] dark:text-[#FAF7F2]">
+                                {cat.name}
+                              </span>
+                              {bannerCount > 1 && (
+                                <span className="inline-flex items-center gap-1 text-[9px] text-[#C9A96E] bg-[#C9A96E]/10 border border-[#C9A96E]/20 px-1.5 py-0.2 rounded-md font-medium">
+                                  <Layers className="w-2.5 h-2.5" /> {bannerCount}
+                                </span>
+                              )}
                             </div>
                             {cat.gender && (
                               <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] bg-[#FAF7F2] dark:bg-[#1C1A18] px-2 py-0.2 rounded-full border border-[#E5DDD0] dark:border-[#332E28]">
@@ -782,68 +864,126 @@ const CategoriesAdmin = () => {
               )}
             </div>
 
-            {/* Image de la catégorie */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
+            {/* Multi-Photos de bannières de la catégorie */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between">
                 <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                  Visuel & Image de la catégorie
+                  Photos de bannières ({images.length})
                 </label>
-                <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] font-medium">
-                  Recommandé : 800 × 1000 px
+                <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                  Recommandé : 1920 × 600 px ou 1200 × 800 px
                 </span>
               </div>
 
-              {image ? (
-                <div className="relative group rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-[#FAF7F2] dark:bg-[#1C1A18] aspect-[16/9] flex items-center justify-center">
-                  <img
-                    src={image}
-                    alt="Aperçu catégorie"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="px-3 py-1.5 bg-white/95 dark:bg-black/90 text-[#1A1816] dark:text-[#FAF7F2] text-xs font-semibold rounded-lg shadow-sm hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+              {/* Galerie des vignettes existantes */}
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-48 overflow-y-auto p-2 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-[#FAF7F2]/50 dark:bg-[#1C1A18]/50">
+                  {images.map((imgUrl, index) => (
+                    <div
+                      key={`${imgUrl}-${index}`}
+                      className="group relative aspect-[16/10] rounded-lg overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5"
                     >
-                      <Upload className="w-3.5 h-3.5" /> Remplacer
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImage("")}
-                      className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-colors flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Supprimer
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A18]/50 transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                    {uploading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <ImageIcon className="w-5 h-5" />
-                    )}
-                  </div>
-                  <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                    {uploading ? "Téléversement en cours..." : "Cliquez pour importer la photo de collection"}
-                  </p>
-                  <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 max-w-xs">
-                    Dimensions recommandées : <strong>800 × 1000 px</strong> (Portrait 4:5) • PNG, JPG, WebP max 5 Mo
-                  </p>
+                      <img
+                        src={imgUrl}
+                        alt={`Bannière ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Badge Ordre / Principale */}
+                      <div className="absolute top-1.5 left-1.5">
+                        {index === 0 ? (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
+                            <Star className="w-2.5 h-2.5 fill-current" /> Principale
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/60 text-white backdrop-blur-xs">
+                            #{index + 1}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Boutons d'action au survol */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                        {index !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimaryImage(index)}
+                            className="p-1.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer"
+                            title="Définir comme bannière principale"
+                          >
+                            <Star className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="p-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                          title="Supprimer cette photo"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
+
+              {/* Zone d'importation multi-fichiers */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-3.5 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A18]/50 transition-all group"
+              >
+                <div className="w-9 h-9 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                  {uploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                </div>
+                <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                  {uploading
+                    ? `Téléversement (${uploadProgress})...`
+                    : images.length === 0
+                    ? "Cliquez pour importer une ou plusieurs photos de bannière"
+                    : "Ajouter d'autres photos de bannière"}
+                </p>
+                <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-0.5">
+                  Sélection multiple autorisée (PNG, JPG, WebP max 8 Mo)
+                </p>
+              </div>
+
+              {/* Champ d'ajout direct par URL */}
+              <div className="flex items-center gap-1.5 pt-1">
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddImageUrl();
+                    }
+                  }}
+                  placeholder="Ou collez une URL d'image (ex: https://...)"
+                  className="flex-1 px-3 py-1.5 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] placeholder-[#9E958C]"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddImageUrl}
+                  disabled={!urlInput.trim()}
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] disabled:opacity-40 transition-all cursor-pointer"
+                >
+                  Ajouter
+                </button>
+              </div>
 
               <input
                 ref={fileInputRef}
                 type="file"
+                multiple
                 accept="image/png,image/jpeg,image/webp,image/jpg"
                 className="hidden"
-                onChange={handleFileChange}
+                onChange={handleMultipleFilesChange}
               />
             </div>
 

@@ -28,6 +28,8 @@ import {
   Users,
   RotateCcw,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -246,7 +248,39 @@ const Collection = () => {
     : "Catalogue officiel Maison Kenzi - Parfums d'exception, décants et soins au Maroc.";
   const canonical = `/collection/${(collection ?? "all").toLowerCase()}`;
 
-  const categoryBanner = currentCategoryObj?.image || currentCategoryObj?.icon;
+  const categoryBanners = useMemo(() => {
+    if (currentCategoryObj?.images && currentCategoryObj.images.length > 0) {
+      return currentCategoryObj.images.filter(Boolean);
+    }
+    const single = currentCategoryObj?.image || currentCategoryObj?.icon;
+    return single ? [single] : [];
+  }, [currentCategoryObj]);
+
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  // Reinitialiser l'index de banniere lors du changement de collection
+  useEffect(() => {
+    setCurrentBannerIndex(0);
+  }, [filter]);
+
+  // Defilement automatique doux si plusieurs bannières sont configurees
+  useEffect(() => {
+    if (categoryBanners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % categoryBanners.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [categoryBanners.length]);
+
+  const nextBanner = () => {
+    if (categoryBanners.length <= 1) return;
+    setCurrentBannerIndex((prev) => (prev + 1) % categoryBanners.length);
+  };
+
+  const prevBanner = () => {
+    if (categoryBanners.length <= 1) return;
+    setCurrentBannerIndex((prev) => (prev - 1 + categoryBanners.length) % categoryBanners.length);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
@@ -254,20 +288,56 @@ const Collection = () => {
       <Header />
 
       <main className="flex-1 pb-16">
-        {/* Luxury Category Hero Banner */}
-        {categoryBanner ? (
-          <section className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20">
-            {/* Image de fond plein écran en bannière avec voile ultra-léger */}
+        {/* Luxury Category Hero Banner (Carrousel automatique ou statique) */}
+        {categoryBanners.length > 0 ? (
+          <section className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20 group/hero">
+            {/* Images de fond en carrousel avec transition douce (cross-fade) */}
             <div className="absolute inset-0 z-0">
-              <img
-                src={categoryBanner}
-                alt={hero.title}
-                className="w-full h-full object-cover object-center"
-              />
-              {/* Voile ultra-léger pour préserver l'éclat de la photo tout en assurant la lisibilité */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-black/10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
+              {categoryBanners.map((imgUrl, idx) => (
+                <div
+                  key={`${imgUrl}-${idx}`}
+                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+                    idx === currentBannerIndex
+                      ? "opacity-100 scale-100"
+                      : "opacity-0 scale-105 pointer-events-none"
+                  }`}
+                >
+                  <img
+                    src={imgUrl}
+                    alt={`${hero.title} — Bannière ${idx + 1}`}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              ))}
+
+              {/* Voiles de dégradé pour préserver l'éclat de la photo tout en assurant une lisibilité parfaite */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/15" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
             </div>
+
+            {/* Contrôles fléchés de navigation (si > 1 photo) */}
+            {categoryBanners.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevBanner}
+                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg"
+                  title="Photo précédente"
+                  aria-label="Photo précédente"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextBanner}
+                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg"
+                  title="Photo suivante"
+                  aria-label="Photo suivante"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            )}
 
             {/* Contenu de la Bannière de Catégorie */}
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col justify-end min-h-[280px] sm:min-h-[340px] md:min-h-[380px]">
@@ -318,6 +388,25 @@ const Collection = () => {
                   </p>
                 )}
               </div>
+
+              {/* Puces de pagination en bas si plusieurs bannières */}
+              {categoryBanners.length > 1 && (
+                <div className="flex items-center gap-2 pt-6">
+                  {categoryBanners.map((_, dotIdx) => (
+                    <button
+                      key={`dot-${dotIdx}`}
+                      type="button"
+                      onClick={() => setCurrentBannerIndex(dotIdx)}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        dotIdx === currentBannerIndex
+                          ? "w-8 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
+                          : "w-2 bg-white/40 hover:bg-white/70"
+                      }`}
+                      aria-label={`Aller à la bannière ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         ) : (

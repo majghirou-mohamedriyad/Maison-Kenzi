@@ -15,6 +15,7 @@ export type AdminCategory = {
   description: string;
   image?: string;
   icon?: string;
+  images?: string[];
   gender?: string;
   is_active: boolean;
   is_coming_soon?: boolean;
@@ -25,6 +26,24 @@ const DEFAULT_CATEGORIES: AdminCategory[] = [];
 
 const STORAGE_KEY = "maisonkenzi_categories";
 const CHANNEL_NAME = "maisonkenzi_categories_channel";
+
+// Extraction sécurisée d'un tableau d'images
+const parseImages = (raw: any): string[] => {
+  if (Array.isArray(raw)) return raw.filter((s) => typeof s === "string" && s.trim());
+  if (typeof raw === "string" && raw.trim()) {
+    if (raw.startsWith("[") && raw.endsWith("]")) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed.filter((s) => typeof s === "string" && s.trim());
+      } catch {}
+    }
+    if (raw.includes(",")) {
+      return raw.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+    return [raw.trim()];
+  }
+  return [];
+};
 
 // Génération sécurisée d'un identifiant unique (UUID ou horodatage)
 const generateId = (): string => {
@@ -44,15 +63,20 @@ const load = (): AdminCategory[] => {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        return parsed.map((cat: any, index: number) => ({
-          ...cat,
-          id: cat.id || cat.slug || `cat_${index}_${Date.now()}`,
-          image: cat.image || cat.icon || "",
-          icon: cat.icon || cat.image || "",
-          is_active: cat.is_active ?? true,
-          is_coming_soon: !!cat.is_coming_soon,
-          order_index: cat.order_index ?? index,
-        }));
+        return parsed.map((cat: any, index: number) => {
+          const imgs = parseImages(cat.images || cat.banner_images || cat.image || cat.icon);
+          const primaryImage = imgs[0] || cat.image || cat.icon || "";
+          return {
+            ...cat,
+            id: cat.id || cat.slug || `cat_${index}_${Date.now()}`,
+            image: primaryImage,
+            icon: primaryImage,
+            images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
+            is_active: cat.is_active ?? true,
+            is_coming_soon: !!cat.is_coming_soon,
+            order_index: cat.order_index ?? index,
+          };
+        });
       }
     }
   } catch {}
@@ -71,18 +95,23 @@ export const fetchCategoriesFromSupabase = async () => {
       .order("sort_order", { ascending: true });
 
     if (!error && Array.isArray(data)) {
-      state = data.map((c: any, index: number) => ({
-        id: c.id || c.slug || `cat_${index}`,
-        slug: c.slug,
-        name: c.name,
-        description: c.description || "",
-        image: c.image || c.icon || "",
-        icon: c.icon || c.image || "",
-        gender: c.gender,
-        is_active: c.is_active ?? true,
-        is_coming_soon: !!c.is_coming_soon,
-        order_index: c.sort_order ?? index,
-      }));
+      state = data.map((c: any, index: number) => {
+        const imgs = parseImages(c.images || c.banner_images || c.image || c.icon);
+        const primaryImage = imgs[0] || c.image || c.icon || "";
+        return {
+          id: c.id || c.slug || `cat_${index}`,
+          slug: c.slug,
+          name: c.name,
+          description: c.description || "",
+          image: primaryImage,
+          icon: primaryImage,
+          images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
+          gender: c.gender,
+          is_active: c.is_active ?? true,
+          is_coming_soon: !!c.is_coming_soon,
+          order_index: c.sort_order ?? index,
+        };
+      });
       notify();
     }
   } catch {}
@@ -160,14 +189,16 @@ export const addCategory = async (
   cat: Omit<AdminCategory, "id"> & { id?: string }
 ): Promise<{ success: boolean; error?: any; category: AdminCategory }> => {
   const id = cat.id?.trim() ? cat.id : generateId();
-  const imageVal = cat.image || cat.icon || "";
+  const imgs = parseImages(cat.images || cat.image || cat.icon);
+  const primaryImage = imgs[0] || cat.image || cat.icon || "";
   const fullCat: AdminCategory = {
     id,
     name: cat.name.trim(),
     slug: cat.slug.trim(),
     description: cat.description ? cat.description.trim() : "",
-    image: imageVal,
-    icon: imageVal,
+    image: primaryImage,
+    icon: primaryImage,
+    images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
     gender: cat.gender,
     is_active: cat.is_active ?? true,
     is_coming_soon: !!cat.is_coming_soon,
@@ -185,7 +216,7 @@ export const addCategory = async (
       name: fullCat.name,
       slug: fullCat.slug,
       description: fullCat.description,
-      icon: fullCat.image || fullCat.icon || null,
+      icon: fullCat.images && fullCat.images.length > 0 ? JSON.stringify(fullCat.images) : (fullCat.image || null),
       is_active: fullCat.is_active,
       is_coming_soon: fullCat.is_coming_soon,
       sort_order: fullCat.order_index,
@@ -215,8 +246,15 @@ export const updateCategory = async (
 ): Promise<{ success: boolean; error?: any }> => {
   state = state.map((c) => {
     if (c.id === id) {
-      const img = partial.image !== undefined ? partial.image : partial.icon !== undefined ? partial.icon : c.image;
-      return { ...c, ...partial, image: img, icon: img };
+      const imgs = partial.images !== undefined ? parseImages(partial.images) : c.images;
+      const primaryImage = (imgs && imgs[0]) || partial.image || partial.icon || c.image || "";
+      return {
+        ...c,
+        ...partial,
+        image: primaryImage,
+        icon: primaryImage,
+        images: imgs && imgs.length > 0 ? imgs : (primaryImage ? [primaryImage] : []),
+      };
     }
     return c;
   });
@@ -231,7 +269,7 @@ export const updateCategory = async (
         name: updated.name,
         slug: updated.slug,
         description: updated.description,
-        icon: updated.image || updated.icon || null,
+        icon: updated.images && updated.images.length > 0 ? JSON.stringify(updated.images) : (updated.image || null),
         is_active: updated.is_active,
         is_coming_soon: !!updated.is_coming_soon,
         sort_order: updated.order_index,

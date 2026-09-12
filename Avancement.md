@@ -2,12 +2,18 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-11
-- **Statut général** : Suivi de Commande en Temps Réel (Navbar, Modale & Page Dédiée), Refonte Haute Parfumerie Service Client & Conciergerie, Synchronisation Instantanée Admin/Boutique (0ms), Bannière Panoramique de Catégorie, Espace Admin opérationnels
+- **Dernière mise à jour** : 2026-09-12
+- **Statut général** : Support Multi-Photos de Bannières de Catégorie avec Carrousel Interactif, Navigation « Nos Produits » & Menu Déroulant « Nos Collections », Suivi de Commande en Temps Réel, Espace Admin opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Support Multi-Photos de Bannières de Catégorie & Carrousel Hero Interactif :
+  - [x] **Store Catégories Typé & Rétrocompatible** ([`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) : Ajout du champ `images?: string[]`, parseur sécurisé pour chaînes JSON et listes séparées par virgules, synchronisation automatique Supabase et persistance locale.
+  - [x] **Administration Multi-Upload & Gestionnaire de Bannières** ([`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) : Téléversement simultané de plusieurs photos de bannières avec suivi de progression, galerie de vignettes avec réorganisation (désignation de la bannière principale en un clic), suppression individuelle, ajout direct par URL et badges du nombre de photos sur le tableau et les cartes.
+  - [x] **Carrousel Hero de Catégorie Haute Parfumerie** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Défilement automatique doux (fondu enchaîné sur 6 secondes), boutons de navigation gauche/droite en verre dépoli avec micro-interactions, puces de pagination interactives et préservation de la lisibilité des textes éditoriaux.
+  - [x] **Compatibilité Globale** ([`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx)) : Prise en charge automatique de la première image du tableau sur les vignettes de la page d'accueil.
 
 - [x] Navigation « Nos Produits » & Menu Déroulant « Nos Collections » au Survol ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
   - [x] **Bouton Direct « Nos Produits »** : Pastille de navigation menant directement au catalogue complet de la boutique (`/collection/all`).
