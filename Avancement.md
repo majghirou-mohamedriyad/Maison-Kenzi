@@ -9,6 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suppression du Bouton « M'alerter du retour en stock » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Épuration de l'Interface en Cas de Rupture** : Retrait définitif du lien WhatsApp d'alerte de stock pour conserver un parcours d'achat direct focalisé sur les parfums disponibles.
+
 - [x] Correction de l'Extraction des Données du Catalogue `useParfums` ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Déstructuration `const { data: parfums = [] } = useParfums()`** : Récupération correcte du tableau de parfums retourné par le hook.
   - [x] **Élimination du Crash `TypeError: Cannot read properties of undefined (reading 'slice')`** : Filtrage et recherche instantanée dans le catalogue sans aucune erreur.

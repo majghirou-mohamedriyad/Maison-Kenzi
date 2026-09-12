@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   ShoppingBag,
   AlertCircle,
-  Bell,
   Building2,
   ShieldCheck,
   Truck,
@@ -390,11 +389,6 @@ const ExpressOrderForm = ({
   };
 
   if (outOfStock && extraItems.length === 0) {
-    const targetPhoneRaw = settings.whatsapp_phone || settings.store_phone || "212652535301";
-    const targetWaNumber = targetPhoneRaw.replace(/[^0-9]/g, "") || "212652535301";
-    const notifyMsg = `Bonjour, je souhaite être notifié(e) du retour en stock du parfum : ${maison} — ${parfumName}`;
-    const notifyUrl = `https://wa.me/${targetWaNumber}?text=${encodeURIComponent(notifyMsg)}`;
-
     return (
       <div className="relative overflow-hidden bg-card/90 backdrop-blur-md border-2 border-border/80 rounded-2xl p-5 space-y-4 shadow-xl text-center animate-in fade-in zoom-in-95">
         <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive">
@@ -413,7 +407,7 @@ const ExpressOrderForm = ({
           </p>
         </div>
 
-        <div className="pt-2 border-t border-border/40 space-y-2">
+        <div className="pt-2 border-t border-border/40">
           <Button
             type="button"
             onClick={() => setShowAddModal(true)}
@@ -422,16 +416,6 @@ const ExpressOrderForm = ({
             <PlusCircle className="w-4 h-4" />
             <span>Commander d'autres parfums du catalogue</span>
           </Button>
-
-          <a
-            href={notifyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full h-10 rounded-full bg-primary/10 border border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-xs"
-          >
-            <Bell className="w-4 h-4" />
-            <span>M'alerter du retour en stock</span>
-          </a>
         </div>
       </div>
     );
