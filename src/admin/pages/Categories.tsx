@@ -105,7 +105,6 @@ const CategoriesAdmin = () => {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<string[]>([]);
-  const [urlInput, setUrlInput] = useState("");
   const [gender, setGender] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
   const [isComingSoon, setIsComingSoon] = useState(false);
@@ -189,7 +188,6 @@ const CategoriesAdmin = () => {
     setSlug("");
     setDescription("");
     setImages([]);
-    setUrlInput("");
     setGender("");
     setIsActive(true);
     setIsComingSoon(false);
@@ -209,7 +207,6 @@ const CategoriesAdmin = () => {
         ? [cat.image || cat.icon!]
         : [];
     setImages(initialImages);
-    setUrlInput("");
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
     setIsComingSoon(Boolean(cat.is_coming_soon));
@@ -288,18 +285,6 @@ const CategoriesAdmin = () => {
       return [item, ...copy];
     });
     toast.success("Photo définie comme bannière principale");
-  };
-
-  const handleAddImageUrl = () => {
-    const trimmed = urlInput.trim();
-    if (!trimmed) return;
-    if (images.includes(trimmed)) {
-      toast.error("Cette image est déjà dans la liste.");
-      return;
-    }
-    setImages((prev) => [...prev, trimmed]);
-    setUrlInput("");
-    toast.success("Image ajoutée");
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -950,31 +935,6 @@ const CategoriesAdmin = () => {
                 <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-0.5">
                   Sélection multiple autorisée (PNG, JPG, WebP max 8 Mo)
                 </p>
-              </div>
-
-              {/* Champ d'ajout direct par URL */}
-              <div className="flex items-center gap-1.5 pt-1">
-                <input
-                  type="url"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddImageUrl();
-                    }
-                  }}
-                  placeholder="Ou collez une URL d'image (ex: https://...)"
-                  className="flex-1 px-3 py-1.5 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] placeholder-[#9E958C]"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddImageUrl}
-                  disabled={!urlInput.trim()}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] disabled:opacity-40 transition-all cursor-pointer"
-                >
-                  Ajouter
-                </button>
               </div>
 
               <input
