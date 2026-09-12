@@ -99,7 +99,6 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
     error,
     searched,
     fetchOrder,
-    lastSavedOrderNumber,
   } = useOrderTracking(initialCode);
 
   const [inputVal, setInputVal] = useState(initialCode || "");
@@ -163,24 +162,6 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
             </Button>
           </div>
         </form>
-
-        {/* Suggestion du dernier code mémorisé */}
-        {lastSavedOrderNumber && lastSavedOrderNumber !== inputVal && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-            <span>Dernière commande passée :</span>
-            <button
-              type="button"
-              onClick={() => {
-                setInputVal(lastSavedOrderNumber);
-                fetchOrder(lastSavedOrderNumber);
-              }}
-              className="font-mono text-primary hover:underline font-semibold text-xs inline-flex items-center gap-1 cursor-pointer"
-            >
-              <span>{lastSavedOrderNumber}</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Error / Not Found message */}

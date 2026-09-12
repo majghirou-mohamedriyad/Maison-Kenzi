@@ -16,9 +16,10 @@
   - [x] **Design Haute Couture & Positionnement Soigné** : Bouton circulaire en verre dépoli (`backdrop-blur-xl`), bordure subtile, icône `ArrowUp` de `lucide-react` avec micro-animation d'élévation au survol, empilé au-dessus du bouton de conciergerie.
   - [x] **Filtrage Espace Admin** : Masquage automatique sur les pages d'administration pour préserver l'ergonomie du tableau de bord.
 
-- [x] Suivi de Commande — Champ de Saisie Épuré & Vide par Défaut ([`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx)) :
-  - [x] **Champ Vide par Défaut** : Le champ de recherche de commande ne préremplit plus automatiquement d'ancien code depuis le stockage local, affichant uniquement le placeholder d'exemple *« Ex : MK-849201 »*.
-  - [x] **Support des Liens Directs Préservé** : Le préremplissage automatique ne s'active désormais que si un code est explicitement transmis dans l'URL de tracking (`?code=MK-XXXXXX`).
+- [x] Suivi de Commande — Champ de Saisie Épuré & Suppression de la Suggestion ([`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx)) :
+  - [x] **Suppression Complète de la Phrase « Dernière commande passée »** : Épuration totale de l'interface de recherche pour un visuel minimaliste et propre sans affichage d'historique antérieur.
+  - [x] **Champ Vide par Défaut** : Le champ de recherche de commande ne préremplit aucun ancien code depuis le stockage local, affichant uniquement le placeholder d'exemple *« Ex : MK-849201 »*.
+  - [x] **Support des Liens Directs Préservé** : Le préremplissage automatique ne s'active que si un code est explicitement transmis dans l'URL de tracking (`?code=MK-XXXXXX`).
 
 - [x] Gestion des Commandes — Copie Automatique Rapide du N° de Commande ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
   - [x] **Copie Instantanée au Clic dans le Presse-Papier** : Le clic direct sur le badge du numéro de commande (`MK-XXXXXX`) dans le tableau ou sur mobile copie automatiquement la référence sans ouvrir la modale de détails.
