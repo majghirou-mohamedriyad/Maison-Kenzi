@@ -330,12 +330,12 @@ const Navigation = () => {
             <img
               src="/mk-logo-light.png"
               alt="Maison Kenzi"
-              className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-xs dark:hidden"
+              className="h-10 sm:h-11 md:h-12 lg:h-14 w-auto max-w-[160px] sm:max-w-[190px] md:max-w-[220px] object-contain drop-shadow-xs dark:hidden"
             />
             <img
               src="/mk-logo-dark.png"
               alt="Maison Kenzi"
-              className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-xs hidden dark:block"
+              className="h-10 sm:h-11 md:h-12 lg:h-14 w-auto max-w-[160px] sm:max-w-[190px] md:max-w-[220px] object-contain drop-shadow-xs hidden dark:block"
             />
           </Link>
         </div>

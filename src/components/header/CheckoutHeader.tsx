@@ -21,12 +21,12 @@ const CheckoutHeader = () => {
             <img
               src="/mk-logo-light.png"
               alt="Maison Kenzi"
-              className="h-9 md:h-11 w-auto object-contain dark:hidden"
+              className="h-11 sm:h-12 md:h-14 w-auto object-contain dark:hidden"
             />
             <img
               src="/mk-logo-dark.png"
               alt="Maison Kenzi"
-              className="h-9 md:h-11 w-auto object-contain hidden dark:block"
+              className="h-11 sm:h-12 md:h-14 w-auto object-contain hidden dark:block"
             />
           </Link>
 

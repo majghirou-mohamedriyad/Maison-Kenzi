@@ -43,12 +43,12 @@ const Footer = () => {
               <img
                 src="/mk-logo-light.png"
                 alt="Maison Kenzi"
-                className="h-10 md:h-12 w-auto object-contain dark:hidden"
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain dark:hidden"
               />
               <img
                 src="/mk-logo-dark.png"
                 alt="Maison Kenzi"
-                className="h-10 md:h-12 w-auto object-contain hidden dark:block"
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain hidden dark:block"
               />
             </Link>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
