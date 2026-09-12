@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      "/api/openwa": {
+        target: "http://185.197.249.4:2785",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/openwa/, ""),
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

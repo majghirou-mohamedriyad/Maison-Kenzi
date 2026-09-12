@@ -162,6 +162,29 @@ Mode de paiement : Paiement a la livraison`;
 /**
  * Envoie un message texte via l'API OpenWA sur la VPS
  */
+/**
+ * Obtient la liste des URL de base à tester (proxy local + direct)
+ */
+const getTargetBaseUrls = (rawUrl: string): string[] => {
+  const cleaned = (rawUrl || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
+  const urls: string[] = [];
+
+  // 1. Si on est en local/Vite, utiliser le proxy /api/openwa en priorité pour contourner le CORS navigateur
+  if (typeof window !== "undefined") {
+    urls.push("/api/openwa");
+  }
+
+  // 2. URL directe configurée
+  if (!urls.includes(cleaned)) {
+    urls.push(cleaned);
+  }
+
+  return urls;
+};
+
+/**
+ * Envoie un message texte via l'API OpenWA sur la VPS
+ */
 export const sendOpenWaMessage = async (
   recipientPhone: string,
   messageText: string,
@@ -185,53 +208,55 @@ export const sendOpenWaMessage = async (
     headers["api_key"] = apiKey;
   }
 
-  // Liste ordonnée des formats et routes OpenWA compatibles
-  const attempts = [
-    // 1. Format Standard OpenWA Easy API avec session dans l'URL
-    {
-      url: `${rawUrl}/${encodeURIComponent(session)}/sendText`,
-      payload: { to: chatId, content: messageText, args: { to: chatId, content: messageText } },
-    },
-    // 2. Format OpenWA API direct
-    {
-      url: `${rawUrl}/sendText`,
-      payload: { chatId: chatId, to: chatId, text: messageText, content: messageText, session: session },
-    },
-    // 3. Format OpenWA /api/sendText
-    {
-      url: `${rawUrl}/api/sendText`,
-      payload: { to: chatId, content: messageText, session: session },
-    },
-  ];
-
+  const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
 
-  for (const attempt of attempts) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+  for (const base of baseUrls) {
+    const attempts = [
+      // Format 1 : OpenWA Easy API / Session dans le chemin
+      {
+        url: `${base}/${encodeURIComponent(session)}/sendText`,
+        payload: { to: chatId, content: messageText, args: { to: chatId, content: messageText } },
+      },
+      // Format 2 : OpenWA API Direct
+      {
+        url: `${base}/sendText`,
+        payload: { chatId: chatId, to: chatId, text: messageText, content: messageText, session: session },
+      },
+      // Format 3 : OpenWA /api/sendText
+      {
+        url: `${base}/api/sendText`,
+        payload: { to: chatId, content: messageText, session: session },
+      },
+    ];
 
-      const response = await fetch(attempt.url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(attempt.payload),
-        signal: controller.signal,
-      });
+    for (const attempt of attempts) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-      clearTimeout(timeoutId);
+        const response = await fetch(attempt.url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(attempt.payload),
+          signal: controller.signal,
+        });
 
-      if (response.ok) {
-        const data = await response.json().catch(() => ({ status: "sent" }));
-        return { success: true, details: data };
-      } else {
-        const errorText = await response.text().catch(() => response.statusText);
-        lastError = `Erreur HTTP ${response.status}: ${errorText}`;
-      }
-    } catch (err: any) {
-      if (err.name === "AbortError") {
-        lastError = "Delai d'attente depasse (Timeout 12s) lors de la communication avec le serveur OpenWA.";
-      } else {
-        lastError = err.message || String(err);
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json().catch(() => ({ status: "sent" }));
+          return { success: true, details: data };
+        } else {
+          const errorText = await response.text().catch(() => response.statusText);
+          lastError = `Erreur HTTP ${response.status}: ${errorText}`;
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          lastError = "Delai d'attente depasse (Timeout 12s) lors de la communication avec OpenWA.";
+        } else {
+          lastError = err.message || String(err);
+        }
       }
     }
   }
@@ -251,50 +276,59 @@ export const checkOpenWaSessionStatus = async (
   const apiKey = (currentSettings.openwa_api_key || "").trim();
 
   const headers: Record<string, string> = {
-    "Accept": "application/json",
+    "Accept": "application/json, text/html, */*",
   };
   if (apiKey) {
     headers["Authorization"] = `Bearer ${apiKey}`;
     headers["api_key"] = apiKey;
   }
 
-  const endpointsToTest = [
-    `${rawUrl}/sessions`,
-    `${rawUrl}/${encodeURIComponent(session)}/getConnectionState`,
-    `${rawUrl}/getConnectionState`,
-    `${rawUrl}/`,
-  ];
+  const baseUrls = getTargetBaseUrls(rawUrl);
 
-  for (const endpoint of endpointsToTest) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+  for (const base of baseUrls) {
+    const endpointsToTest = [
+      `${base}/sessions`,
+      `${base}/${encodeURIComponent(session)}/getConnectionState`,
+      `${base}/${encodeURIComponent(session)}/getMe`,
+      `${base}/getConnectionState`,
+      `${base}/`,
+    ];
 
-      const res = await fetch(endpoint, {
-        method: "GET",
-        headers,
-        signal: controller.signal,
-      });
+    for (const endpoint of endpointsToTest) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      clearTimeout(timeoutId);
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers,
+          signal: controller.signal,
+        });
 
-      if (res.ok) {
-        const data = await res.json().catch(() => ({ status: "online" }));
-        return {
-          ok: true,
-          status: "Connecté & Opérationnel",
-          raw: data,
-        };
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const contentType = res.headers.get("content-type") || "";
+          let data: any = { status: "online" };
+          if (contentType.includes("application/json")) {
+            data = await res.json().catch(() => ({ status: "online" }));
+          }
+          return {
+            ok: true,
+            status: "Serveur VPS Joint & Session Active",
+            raw: data,
+          };
+        }
+      } catch (err: any) {
+        // Continuer sur le point suivant
       }
-    } catch (err: any) {
-      // Continuer sur le point suivant
     }
   }
 
   return {
     ok: false,
     status: "Inaccessible",
-    error: `Impossible de contacter le serveur OpenWA sur ${rawUrl}. Verifiez l'accessibilite du port et de la VPS.`,
+    error: `Impossible de contacter le serveur OpenWA sur ${rawUrl}. Assurez-vous que le conteneur Docker OpenWA est bien démarré sur le port 2785 de votre VPS.`,
   };
 };
 

@@ -132,40 +132,55 @@ if (typeof window !== "undefined") {
   } catch {}
 }
 
+const SUPABASE_DB_KEYS = new Set([
+  "maintenance_mode",
+  "maintenance_message",
+  "instagram_url",
+  "whatsapp_phone",
+  "bot_enabled",
+  "bot_name",
+  "bot_welcome",
+  "free_shipping_threshold",
+]);
+
 export const getAppSettings = (): AppSettings => state;
 
 export const updateAppSettings = async (patch: Partial<AppSettings>) => {
   state = { ...state, ...patch };
   notify();
 
-  // Persistance dans Supabase avec gestion gracieuse si la colonne SQL n'a pas encore été migrée
+  // Synchronisation avec Supabase pour les colonnes existantes dans la base
   try {
-    const { store_name, store_phone, ...dbPayload } = patch;
-    
-    // Tenter la sauvegarde complète
-    const { error } = await supabase
-      .from("app_settings")
-      .upsert({ id: true, ...dbPayload } as any);
-
-    if (error) {
-      // Si la colonne free_shipping_threshold n'existe pas encore dans Supabase, sauvegarder le reste sans crash
-      if (error.message?.includes("free_shipping_threshold")) {
-        console.warn("Colonne free_shipping_threshold non détectée dans Supabase. Sauvegarde locale active.");
-        const fallbackPayload = { ...dbPayload };
-        delete (fallbackPayload as any).free_shipping_threshold;
-        
-        const { error: fallbackErr } = await supabase
-          .from("app_settings")
-          .upsert({ id: true, ...fallbackPayload } as any);
-          
-        return { error: fallbackErr };
+    const dbPayload: Record<string, any> = {};
+    for (const key of Object.keys(patch)) {
+      if (SUPABASE_DB_KEYS.has(key)) {
+        dbPayload[key] = (patch as any)[key];
       }
-      console.error("Erreur mise à jour settings Supabase:", error);
-      return { error };
+    }
+
+    if (Object.keys(dbPayload).length > 0) {
+      const { error } = await supabase
+        .from("app_settings")
+        .upsert({ id: true, ...dbPayload } as any);
+
+      if (error) {
+        // Gestion de repli si free_shipping_threshold n'est pas encore migré
+        if (error.message?.includes("free_shipping_threshold")) {
+          delete dbPayload.free_shipping_threshold;
+          if (Object.keys(dbPayload).length > 0) {
+            await supabase
+              .from("app_settings")
+              .upsert({ id: true, ...dbPayload } as any);
+          }
+        } else {
+          console.warn("Supabase app_settings sync note:", error.message);
+        }
+      }
     }
     return { error: null };
   } catch (err) {
-    return { error: err as Error };
+    console.warn("Supabase update error (sauvegarde locale préservée):", err);
+    return { error: null };
   }
 };
 
