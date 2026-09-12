@@ -343,6 +343,7 @@ const ProductTable = ({
                   const sFull = p.full_bottle_stock ?? 0;
                   const stockTotal = isFull ? sFull : s5 + s10;
                   const inStock = (p.active ?? true) && stockTotal > 0;
+                  const primaryImg = getPrimaryImage(p);
                   const isSelected = selectedIds.includes(p.id);
 
                   return (

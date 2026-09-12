@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Correction de la Variable `primaryImg` dans la Vue Tableau ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
+  - [x] **Déclaration de `primaryImg`** : Rétablissement de `getPrimaryImage(p)` dans le mapping des lignes du tableau.
+  - [x] **Élimination de l'Erreur Runtime `ReferenceError: primaryImg is not defined`** : Rendu parfait des miniatures et de la fiche produit en mode Tableau.
+
 - [x] Résolution de l'Erreur Runtime TDZ `ReferenceError: Cannot access before initialization` ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
   - [x] **Correction de l'Ordre des Hooks & Variables** : Déplacement de l'initialisation de `filteredAndSorted` en amont des calculs de sélection `isAllSelected` et des handlers d'actions groupées.
   - [x] **Stabilité Parfaite de la Page Admin Produits** : Élimination du crash JavaScript lors du chargement de la gestion du catalogue sur Vercel.
