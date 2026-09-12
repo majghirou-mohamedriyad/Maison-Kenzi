@@ -9,10 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Refonte du Filtrage par Genre & Suppression des Collections Homme / Femme ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
-  - [x] **Nouveau Sélecteur de Genre Intégré** : Ajout d'un menu de filtre dédié à côté de « En stock uniquement » permettant de filtrer instantanément par **Tous les genres**, **Homme**, **Femme** ou **Mixte / Unisexe**.
-  - [x] **Suppression des Pastilles Statiques Homme & Femme** : Les pastilles de catégories hautes se concentrent désormais exclusivement sur les catégories réelles (Catalogue + univers créés dans l'admin comme Déodorants, Packs, etc.).
-  - [x] **Nettoyage de la Navigation & du Footer** : Retrait des liens Homme et Femme dans la barre de navigation, le menu mobile et le footer au profit du Catalogue global et des catégories réelles.
+- [x] Refonte Éditoriale & Sublimation du Design des Filtres ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
+  - [x] **Segmented Control Haute Parfumerie pour le Genre** : Remplacement du sélecteur HTML basique par un groupe de pastilles arrondies (*Tous*, *Homme*, *Femme*, *Mixte*) avec micro-animations et icônes vectorielles `lucide-react`.
+  - [x] **Bouton Toggle Switch « En stock »** : Pastille de prestige avec pastille lumineuse émeraude et pulsation radar douce lors de l'activation.
+  - [x] **Menu Déroulant de Tri Radix UI (`DropdownMenu`)** : Remplacement du menu natif par un dropdown haute joaillerie avec fond en verre dépoli, coche de validation dorée et sélection instantanée.
+  - [x] **Champ de Recherche Flottant & Bouton Reset Rapide** : Barre de recherche arrondie épurée avec bouton d'effacement et badge de réinitialisation contextuelle.
 
 - [x] Refonte Éditoriale & Sublimation de la Page 404 ([`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx)) :
   - [x] **Repositionnement Haute Parfumerie** : Remplacement de la page générique par une expérience immersive signée Maison Kenzi (*« Cette fragrance semble s'être évaporée »*), avec liseré doré champagne et halo lumineux feutré.

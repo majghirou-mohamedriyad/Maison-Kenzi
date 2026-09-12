@@ -26,6 +26,8 @@ import {
   Clock,
   MessageCircle,
   Users,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -35,6 +37,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
@@ -44,6 +52,14 @@ import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 type FilterKey = string;
 type SortOption = "featured" | "price_asc" | "price_desc" | "newest" | "name_asc";
 type GenderOption = "all" | "Homme" | "Femme" | "Mixte";
+
+const sortOptionsList: { value: SortOption; label: string }[] = [
+  { value: "featured", label: "Recommandés" },
+  { value: "price_asc", label: "Prix croissant" },
+  { value: "price_desc", label: "Prix décroissant" },
+  { value: "newest", label: "Nouveautés" },
+  { value: "name_asc", label: "Nom (A–Z)" },
+];
 
 interface FilterOption {
   key: FilterKey;
@@ -468,64 +484,132 @@ const Collection = () => {
             })}
           </div>
 
-          {/* Search, Filter Bar & Sort Controls */}
+          {/* Search, Filter Bar & Sort Controls Haute Parfumerie */}
           {parfums.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 border border-border rounded-2xl p-3 shadow-xs">
-              {/* Quick in-page search */}
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
-                  placeholder={`Rechercher dans ${hero.title}...`}
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
-                />
-              </div>
-
-              {/* Sort, Gender & In Stock Filters */}
-              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 text-xs">
-                {/* Filtre par Genre (Homme / Femme / Mixte) */}
-                <div className="flex items-center gap-1.5 bg-background border border-border rounded-xl px-2.5 py-1.5">
-                  <Users className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <select
-                    value={genderFilter}
-                    onChange={(e) => setGenderFilter(e.target.value as GenderOption)}
-                    className="bg-transparent text-[11px] font-medium text-foreground outline-none cursor-pointer pr-1"
-                    aria-label="Filtrer par genre"
-                  >
-                    <option value="all" className="bg-card text-foreground">Tous les genres</option>
-                    <option value="Homme" className="bg-card text-foreground">Homme</option>
-                    <option value="Femme" className="bg-card text-foreground">Femme</option>
-                    <option value="Mixte" className="bg-card text-foreground">Mixte / Unisexe</option>
-                  </select>
+            <div className="bg-card/70 dark:bg-[#131211]/80 border border-border/80 dark:border-[#C9A96E]/20 rounded-3xl p-3 sm:p-4 shadow-sm backdrop-blur-xl space-y-3">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                {/* Search Input Haute Parfumerie */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary shrink-0" />
+                  <input
+                    type="text"
+                    value={localSearch}
+                    onChange={(e) => setLocalSearch(e.target.value)}
+                    placeholder={`Rechercher dans ${hero.title}...`}
+                    className="w-full pl-10 pr-9 py-2 text-xs bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 focus:border-primary rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all shadow-2xs"
+                  />
+                  {localSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setLocalSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition-colors cursor-pointer"
+                      aria-label="Effacer la recherche"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
 
-                {/* Filtre En stock */}
-                <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-foreground cursor-pointer select-none text-[11px]">
-                  <input
-                    type="checkbox"
-                    checked={onlyInStock}
-                    onChange={(e) => setOnlyInStock(e.target.checked)}
-                    className="rounded text-primary focus:ring-primary w-3.5 h-3.5"
-                  />
-                  <span>En stock uniquement</span>
-                </label>
+                {/* Groupes de Filtres : Genre, Stock & Tri */}
+                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-2.5">
+                  {/* Segmented Control pour le Genre (Homme, Femme, Mixte, Tous) */}
+                  <div className="inline-flex items-center p-0.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 shadow-2xs">
+                    {(
+                      [
+                        { key: "all", label: "Tous", icon: Users },
+                        { key: "Homme", label: "Homme", icon: Flame },
+                        { key: "Femme", label: "Femme", icon: Flower2 },
+                        { key: "Mixte", label: "Mixte", icon: Sparkles },
+                      ] as const
+                    ).map((item) => {
+                      const isActive = genderFilter === item.key;
+                      const ItemIcon = item.icon;
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setGenderFilter(item.key)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                            isActive
+                              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          }`}
+                        >
+                          <ItemIcon className={`w-3 h-3 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
+                          <span>{item.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                {/* Tri */}
-                <div className="flex items-center gap-1 bg-background border border-border rounded-xl px-2.5 py-1.5">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="bg-transparent text-[11px] font-medium text-foreground outline-none cursor-pointer pr-1"
+                  {/* Bouton Toggle pour « En stock uniquement » */}
+                  <button
+                    type="button"
+                    onClick={() => setOnlyInStock((v) => !v)}
+                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer border shadow-2xs select-none ${
+                      onlyInStock
+                        ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-semibold"
+                        : "bg-background/90 dark:bg-[#0C0B0A]/90 border-border/80 text-muted-foreground hover:text-foreground hover:border-primary/40"
+                    }`}
                   >
-                    <option value="featured" className="bg-card text-foreground">Recommandés</option>
-                    <option value="price_asc" className="bg-card text-foreground">Prix croissant</option>
-                    <option value="price_desc" className="bg-card text-foreground">Prix décroissant</option>
-                    <option value="newest" className="bg-card text-foreground">Nouveautés</option>
-                    <option value="name_asc" className="bg-card text-foreground">Nom (A–Z)</option>
-                  </select>
+                    <span
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        onlyInStock ? "bg-emerald-500 shadow-xs animate-pulse" : "bg-muted-foreground/30"
+                      }`}
+                    />
+                    <span>En stock</span>
+                  </button>
+
+                  {/* Menu Déroulant Tri de Prestige */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 hover:border-primary/50 text-foreground text-[11px] font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer shadow-2xs outline-none focus:ring-2 focus:ring-primary/20">
+                      <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="hidden sm:inline text-muted-foreground font-normal">Tri :</span>
+                      <span className="font-semibold text-foreground">
+                        {sortOptionsList.find((s) => s.value === sortBy)?.label || "Recommandés"}
+                      </span>
+                      <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 p-1.5 rounded-2xl bg-card/95 dark:bg-[#151821]/95 backdrop-blur-xl border border-border/80 dark:border-white/10 shadow-xl space-y-0.5 z-50 animate-in fade-in-0 zoom-in-95 duration-150"
+                    >
+                      {sortOptionsList.map((opt) => {
+                        const isSelected = sortBy === opt.value;
+                        return (
+                          <DropdownMenuItem
+                            key={opt.value}
+                            onClick={() => setSortBy(opt.value)}
+                            className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                                : "text-foreground hover:bg-muted/70"
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-primary-foreground shrink-0" />}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Bouton de Réinitialisation Rapide si des filtres sont actifs */}
+                  {(genderFilter !== "all" || onlyInStock || localSearch) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocalSearch("");
+                        setOnlyInStock(false);
+                        setGenderFilter("all");
+                      }}
+                      title="Réinitialiser tous les filtres"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/30 text-[11px] font-medium tracking-wider uppercase transition-all cursor-pointer shadow-2xs"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span className="hidden sm:inline">Effacer</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
