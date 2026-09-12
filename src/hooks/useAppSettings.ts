@@ -33,7 +33,7 @@ const DEFAULTS: AppSettings = {
   free_shipping_threshold: 500,
   openwa_url: "http://185.197.249.4:2785",
   openwa_session: "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
-  openwa_api_key: "",
+  openwa_api_key: "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf",
   openwa_auto_order_confirmation: true,
   openwa_auto_status_update: true,
   openwa_admin_notification: true,
@@ -49,7 +49,11 @@ const getLocalSettings = (): AppSettings => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return { ...DEFAULTS, ...parsed };
+      return {
+        ...DEFAULTS,
+        ...parsed,
+        openwa_api_key: parsed.openwa_api_key || DEFAULTS.openwa_api_key,
+      };
     }
   } catch { }
   return DEFAULTS;

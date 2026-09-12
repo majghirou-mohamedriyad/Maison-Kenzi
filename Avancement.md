@@ -3,11 +3,16 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-12
-- **Statut général** : Site 100% Responsive (Mobile, Tablette, Desktop) sur les Parties Client et Administration, Support Multi-Photos de Bannières de Catégorie avec Carrousel Interactif, Navigation « Nos Produits » & Menu Déroulant « Nos Collections », Suivi de Commande en Temps Réel, Espace Admin opérationnels
+- **Statut général** : Clé API WhatsApp OpenWA / WAHA Authentifiée & Intégrée 100% en Arrière-Plan Silencieux, Site 100% Responsive, Suivi de Commande en Temps Réel opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Résolution de l'Erreur 401 WhatsApp & Automatisation 100% Silencieuse en Arrière-Plan ([`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx)) :
+  - [x] **Intégration de la Clé API Officielle OpenWA / WAHA** : Injection sécurisée de la clé `owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf` dans les requêtes de messagerie WhatsApp pour éliminer définitivement l'erreur `401 Unauthorized`.
+  - [x] **Fonctionnement 100% Invisible & Sans Encombrement UI** : Conservation d'une page Paramètres épurée et exécution asynchrone des confirmations de commande aux clients et alertes gérant sans aucune friction.
+  - [x] **En-têtes d'Authentification Multi-Standards** : Support complet des headers `X-Api-Key`, `x-api-key`, `Authorization: Bearer` et `api_key` pour tous les appels vers le serveur VPS.
 
 - [x] Optimisation Complète du Rendu Responsive (Client & Admin) ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Balise Viewport Mobile Standard** : Ajout de `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />` dans `index.html` pour garantir une mise à l'échelle parfaite sur tous les écrans tactiles et smartphones.

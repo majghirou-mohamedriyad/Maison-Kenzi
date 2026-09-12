@@ -1,8 +1,9 @@
 /**
  * Page de Paramètres & Statut de la Maison — Maison Kenzi Admin
  *
- * Configuration des informations de la boutique, du contact WhatsApp / Instagram,
- * de la gestion du mode maintenance et des accès administrateur.
+ * Configuration des informations de la boutique, du seuil de livraison offerte,
+ * du contact WhatsApp / Instagram, de la gestion du mode maintenance et des accès administrateur.
+ * Conforme Haute Parfumerie & Zéro Emoji (lucide-react uniquement).
  */
 
 import { useState, useEffect } from "react";
@@ -169,6 +170,7 @@ const Parametres = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* 1. Informations Générales & Livraison */}
       <Card title="Informations & Tarifs de Livraison" subtitle="Configuration générale et seuil de gratuité" onSave={saveStoreInfo} saving={savingStore}>
         <div>
           <label className={labelCls}>Nom de la boutique</label>
@@ -208,6 +210,7 @@ const Parametres = () => {
         </div>
       </Card>
 
+      {/* 2. Compte Administrateur */}
       <Card title="Compte administrateur" onSave={saveAdminAccount} saving={savingAdmin}>
         <div>
           <label className={labelCls}>Email administrateur</label>
@@ -262,7 +265,8 @@ const Parametres = () => {
         </div>
       </Card>
 
-      <div className="lg:col-span-2 bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-lg p-5 space-y-4">
+      {/* 3. Mode Maintenance */}
+      <div className="lg:col-span-2 bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl p-6 sm:p-7 space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${maintMode ? "bg-[#C9A96E]/15 text-[#C9A96E]" : "bg-[#F8F9FA] dark:bg-white/5 text-[#6B7280] dark:text-[#9CA3AF]"}`}>
@@ -320,7 +324,7 @@ const Parametres = () => {
             type="button"
             onClick={saveMaintenance}
             disabled={savingMaint}
-            className="px-4 py-2 text-sm rounded-md bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] hover:bg-[#1F2937] disabled:opacity-50"
+            className="px-4 py-2 text-sm rounded-md bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] hover:bg-[#1F2937] disabled:opacity-50 cursor-pointer"
           >
             {savingMaint ? "Enregistrement..." : "Sauvegarder"}
           </button>
@@ -331,3 +335,4 @@ const Parametres = () => {
 };
 
 export default Parametres;
+

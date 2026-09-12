@@ -193,7 +193,7 @@ export const sendOpenWaMessage = async (
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const session = (currentSettings.openwa_session || "e8fe5adf-cd3b-4470-8cf7-6a85504430ff").trim();
-  const apiKey = (currentSettings.openwa_api_key || "").trim();
+  const apiKey = (currentSettings.openwa_api_key || "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf").trim();
 
   const chatId = formatWhatsAppChatId(recipientPhone);
   if (!chatId || chatId === "@c.us") {
@@ -205,9 +205,12 @@ export const sendOpenWaMessage = async (
     "Accept": "application/json, text/plain, */*",
   };
   if (apiKey) {
+    headers["X-Api-Key"] = apiKey;
+    headers["x-api-key"] = apiKey;
     headers["X-API-Key"] = apiKey;
     headers["Authorization"] = `Bearer ${apiKey}`;
     headers["api_key"] = apiKey;
+    headers["apikey"] = apiKey;
   }
 
   const baseUrls = getTargetBaseUrls(rawUrl);
@@ -339,14 +342,18 @@ export const checkOpenWaSessionStatus = async (
   const currentSettings = { ...getAppSettings(), ...overrideConfig };
   const rawUrl = (currentSettings.openwa_url || "http://185.197.249.4:2785").trim().replace(/\/+$/, "");
   const session = (currentSettings.openwa_session || "default").trim();
-  const apiKey = (currentSettings.openwa_api_key || "").trim();
+  const apiKey = (currentSettings.openwa_api_key || "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf").trim();
 
   const headers: Record<string, string> = {
     "Accept": "application/json, text/html, */*",
   };
   if (apiKey) {
+    headers["X-Api-Key"] = apiKey;
+    headers["x-api-key"] = apiKey;
+    headers["X-API-Key"] = apiKey;
     headers["Authorization"] = `Bearer ${apiKey}`;
     headers["api_key"] = apiKey;
+    headers["apikey"] = apiKey;
   }
 
   const baseUrls = getTargetBaseUrls(rawUrl);
