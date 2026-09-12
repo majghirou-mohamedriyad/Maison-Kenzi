@@ -1,17 +1,11 @@
 import { useState, useRef } from "react";
 import ImageZoom from "./ImageZoom";
-import pantheonImage from "@/assets/pantheon.jpg";
-import eclipseImage from "@/assets/eclipse.jpg";
-import haloImage from "@/assets/halo.jpg";
-import organicEarring from "@/assets/organic-earring.png";
-import linkBracelet from "@/assets/link-bracelet.png";
 
 const productImages = [
-  pantheonImage,
-  organicEarring,
-  eclipseImage,
-  linkBracelet,
-  haloImage,
+  "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=1000&auto=format&fit=crop",
 ];
 
 const ProductImageGallery = () => {

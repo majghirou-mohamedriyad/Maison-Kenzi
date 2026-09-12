@@ -1,14 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
-import pantheonImage from "@/assets/pantheon.jpg";
-import eclipseImage from "@/assets/eclipse.jpg";
-import haloImage from "@/assets/halo.jpg";
-import obliqueImage from "@/assets/oblique.jpg";
-import lintelImage from "@/assets/lintel.jpg";
-import shadowlineImage from "@/assets/shadowline.jpg";
-import organicEarring from "@/assets/organic-earring.png";
-import linkBracelet from "@/assets/link-bracelet.png";
+
+const defaultPerfumeImg = "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=600&auto=format&fit=crop";
+const pantheonImage = defaultPerfumeImg;
+const eclipseImage = "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=600&auto=format&fit=crop";
+const haloImage = "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=600&auto=format&fit=crop";
+const obliqueImage = defaultPerfumeImg;
+const lintelImage = eclipseImage;
+const shadowlineImage = haloImage;
+const organicEarring = defaultPerfumeImg;
+const linkBracelet = eclipseImage;
 
 interface Product {
   id: number;

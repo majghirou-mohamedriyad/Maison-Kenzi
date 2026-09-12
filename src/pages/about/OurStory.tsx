@@ -3,7 +3,8 @@ import Footer from "../../components/footer/Footer";
 import PageHeader from "../../components/about/PageHeader";
 import ContentSection from "../../components/about/ContentSection";
 import AboutSidebar from "../../components/about/AboutSidebar";
-import notreHistoireImg from "@/assets/notre-histoire.jpg";
+
+const notreHistoireImg = "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=1024&auto=format&fit=crop";
 
 const NotreHistoire = () => {
   return (

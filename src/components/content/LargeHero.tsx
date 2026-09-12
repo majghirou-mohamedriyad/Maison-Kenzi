@@ -15,7 +15,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import heroImage from "@/assets/hero-image.jpg";
 
 const SLIDES = [
   {
@@ -26,7 +25,7 @@ const SLIDES = [
     subtitle: "Parfums de niche d'exception et flacons complets scellés sélectionnés pour les connaisseurs au Maroc.",
     btnText: "Découvrir les Collections",
     btnLink: "/collection/all",
-    bgImage: heroImage,
+    bgImage: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=2000&auto=format&fit=crop",
   },
   {
     id: 2,

@@ -1,6 +1,7 @@
-import circularCollection from "@/assets/circular-collection.png";
-import organicEarring from "@/assets/organic-earring.png";
 import { Link } from "react-router-dom";
+
+const organicEarring = "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=800&auto=format&fit=crop";
+const circularCollection = "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1200&auto=format&fit=crop";
 
 const OneThirdTwoThirdsSection = () => {
   return (

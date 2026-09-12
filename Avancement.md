@@ -9,6 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Résolution des Ressources Visuelles & Correction Build Vite :
+  - [x] **Correction de l'Import Manquant `hero-image.jpg`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Remplacement de l'import local manquant par une image haute définition de haute parfumerie pour le carrousel d'accueil, et nettoyage préventif des anciens imports orphelins (`OurStory.tsx`, `ProductImageGallery.tsx`, `ProductGrid.tsx`, `OneThirdTwoThirdsSection.tsx`).
+
 - [x] Identité Visuelle & Logo Officiel Maison Kenzi ([`public/mk-logo.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo.png)) :
   - [x] **Favicon & Onglet de Navigation** ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html)) : Définition du monogramme officiel Maison Kenzi doré champagne comme favicon de l'onglet, icône Apple Touch et visuel OpenGraph / Twitter.
   - [x] **Harmonisation Globale de l'Application** ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/header/CheckoutHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/CheckoutHeader.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) : Intégration du logo officiel dans la barre de navigation, l'en-tête de commande, le pied de page et les factures PDF.
