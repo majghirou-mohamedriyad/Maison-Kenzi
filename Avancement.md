@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Gestion des Visuels Produits — Ajout & Modification ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
+  - [x] **Réorganisation par Glisser-Déposer (Drag & Drop)** : Réorganisation instantanée de l'ordre des photos de la galerie par drag and drop avec mise en surbrillance dorée de la cible (`ring-2 ring-[#C9A96E]`), transparence de l'élément déplacé, poignée vectorielle `GripVertical` et toast de confirmation.
+  - [x] **Téléversement Direct par Glisser-Déposer de Fichiers** : Déposez directement vos fichiers images depuis l'explorateur sur la zone d'upload ou sur la section visuelle pour les téléverser simultanément.
+  - [x] **Définition Intuitive de la Couverture** : La première position reste automatiquement la photo de couverture principale (avec badge étoile dorée et désignation en un clic).
+
 - [x] Optimisation des Filtres & Catégories Olfactives :
   - [x] **Filtre Genre Exclusif à la Catégorie « Parfums »** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Affichage conditionnel du sélecteur *Tous / Homme / Femme / Mixte* uniquement lorsqu'on consulte la catégorie Parfums, réinitialisation automatique lors du passage à d'autres collections (Cosmétiques, Artisanat, Antiquités, Toutes les Collections).
   - [x] **Suppression du Tag « Univers Olfactif »** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Épuration du bandeau de catégorie pour ne laisser que le grand titre et la description éditoriale sans sous-titre redondant.

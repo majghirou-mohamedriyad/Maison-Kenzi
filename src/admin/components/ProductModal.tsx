@@ -34,6 +34,7 @@ import {
   Trash2,
   Image as ImageIcon,
   Plus,
+  GripVertical,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
@@ -98,6 +99,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(null);
+  const [dragOverImageIndex, setDragOverImageIndex] = useState<number | null>(null);
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Filtrage réactif des catégories dynamiques issues de Supabase
@@ -717,7 +721,31 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             {/* COLONNE DROITE : Image, Catégorie & Visibilité (5 colonnes) */}
             <div className="lg:col-span-5 space-y-6">
               {/* Visuels du Produit (Multi-photos) */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3.5">
+              {/* Visuels du Produit (Multi-photos avec Drag & Drop de réorganisation) */}
+              <section
+                onDragOver={(e) => {
+                  if (e.dataTransfer.types.includes("Files")) {
+                    e.preventDefault();
+                    setIsDraggingFiles(true);
+                  }
+                }}
+                onDragLeave={(e) => {
+                  if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+                  setIsDraggingFiles(false);
+                }}
+                onDrop={(e) => {
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    e.preventDefault();
+                    setIsDraggingFiles(false);
+                    handleFiles(e.dataTransfer.files);
+                  }
+                }}
+                className={`relative bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border transition-all duration-200 space-y-3.5 ${
+                  isDraggingFiles
+                    ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30 bg-[#C9A96E]/5"
+                    : "border-[#E5E7EB] dark:border-[#2A2A2A]"
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-[#C9A96E]" />
@@ -730,7 +758,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </span>
                 </div>
 
-                {/* Consignes de dimensions & fonctionnement du survol */}
+                {/* Consignes de dimensions & fonctionnement du survol et drag & drop */}
                 <div className="p-2.5 rounded-xl bg-[#F8F9FA] dark:bg-white/[0.03] border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-1">
                   <p className="text-[11px] font-semibold text-[#111827] dark:text-[#F9FAFB]">
                     Dimensions recommandées : 800 × 1000 px (Portrait 4:5) ou 1000 × 1000 px (Carré 1:1)
@@ -738,22 +766,59 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
                     • <strong>1ère photo</strong> : Couverture principale affichée sur la boutique.<br />
                     • <strong>2ème photo</strong> : Image interactive révélée au survol du produit.<br />
-                    • <strong>Photos suivantes</strong> : Visibles via le carrousel sur la fiche détail.
+                    • <strong>Glisser-déposer (Drag & Drop)</strong> : Saisissez n'importe quelle photo pour réorganiser l'ordre d'affichage.
                   </p>
                 </div>
 
-                {/* Grille des photos déjà ajoutées */}
+                {/* Grille des photos avec support du Drag & Drop */}
                 {(f.images || []).length > 0 && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
                     {(f.images || []).map((imgUrl, idx) => {
                       const isCover = idx === 0;
                       const isHover = idx === 1;
+                      const isDragged = draggedImageIndex === idx;
+                      const isOver = dragOverImageIndex === idx && draggedImageIndex !== idx;
 
                       return (
                         <div
                           key={`${imgUrl}-${idx}`}
-                          className={`group relative rounded-xl border overflow-hidden bg-[#0F0F0F] aspect-[4/5] flex flex-col justify-between transition-all ${
-                            isCover
+                          draggable
+                          onDragStart={(e) => {
+                            setDraggedImageIndex(idx);
+                            e.dataTransfer.effectAllowed = "move";
+                            e.dataTransfer.setData("text/plain", String(idx));
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = "move";
+                            if (dragOverImageIndex !== idx) {
+                              setDragOverImageIndex(idx);
+                            }
+                          }}
+                          onDragLeave={() => {
+                            if (dragOverImageIndex === idx) {
+                              setDragOverImageIndex(null);
+                            }
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            if (draggedImageIndex !== null && draggedImageIndex !== idx) {
+                              moveImage(draggedImageIndex, idx);
+                              toast.success("Ordre des photos mis à jour");
+                            }
+                            setDraggedImageIndex(null);
+                            setDragOverImageIndex(null);
+                          }}
+                          onDragEnd={() => {
+                            setDraggedImageIndex(null);
+                            setDragOverImageIndex(null);
+                          }}
+                          className={`group relative rounded-xl border overflow-hidden bg-[#0F0F0F] aspect-[4/5] flex flex-col justify-between transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
+                            isDragged
+                              ? "opacity-40 scale-95 ring-2 ring-[#C9A96E]/60 border-dashed border-[#C9A96E]"
+                              : isOver
+                              ? "ring-2 ring-[#C9A96E] scale-[1.03] border-[#C9A96E] shadow-lg z-10 bg-[#C9A96E]/10"
+                              : isCover
                               ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30"
                               : "border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
                           }`}
@@ -761,10 +826,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           <img
                             src={imgUrl}
                             alt={`Photo ${idx + 1}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover pointer-events-none"
                           />
 
-                          {/* Badge de position en haut */}
+                          {/* Badge de position et poignée de Drag en haut */}
                           <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
                             {isCover ? (
                               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#C9A96E] text-[#111827] flex items-center gap-1 shadow-md">
@@ -779,10 +844,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                                 Photo {idx + 1}
                               </span>
                             )}
+
+                            {/* Poignée de Drag visuelle */}
+                            <div className="w-5 h-5 rounded-md bg-black/60 backdrop-blur-xs flex items-center justify-center text-white/80 opacity-70 group-hover:opacity-100 transition-opacity shadow-xs" title="Glisser pour réorganiser">
+                              <GripVertical className="w-3 h-3" />
+                            </div>
                           </div>
 
                           {/* Barre d'actions en bas de chaque photo */}
-                          <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-center justify-between gap-1">
+                          <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 z-10" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center gap-1">
                               {/* Bouton Définir comme photo principale */}
                               {!isCover && (
@@ -837,7 +907,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Zone d'ajout de photos (multi-fichiers) */}
+                {/* Zone d'ajout de photos (multi-fichiers + drag & drop direct) */}
                 <div className="pt-1">
                   <input
                     ref={fileRef}
@@ -851,7 +921,11 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     type="button"
                     disabled={uploading}
                     onClick={() => fileRef.current?.click()}
-                    className="w-full flex items-center justify-center gap-2 p-3 text-xs font-medium rounded-xl border border-dashed border-[#C9A96E]/40 hover:border-[#C9A96E] bg-[#C9A96E]/5 hover:bg-[#C9A96E]/10 text-[#111827] dark:text-[#F9FAFB] disabled:opacity-50 transition-all cursor-pointer"
+                    className={`w-full flex items-center justify-center gap-2 p-3 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
+                      isDraggingFiles
+                        ? "border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E] scale-[1.01]"
+                        : "border-[#C9A96E]/40 hover:border-[#C9A96E] bg-[#C9A96E]/5 hover:bg-[#C9A96E]/10 text-[#111827] dark:text-[#F9FAFB]"
+                    } disabled:opacity-50`}
                   >
                     {uploading ? (
                       <>
@@ -863,8 +937,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <Plus className="w-4 h-4 text-[#C9A96E]" />
                         <span>
                           {(f.images || []).length === 0
-                            ? "Ajouter des photos du produit (PNG, JPG, WEBP)"
-                            : "Ajouter d'autres photos"}
+                            ? "Ajouter des photos du produit (ou glissez-déposez vos fichiers ici)"
+                            : "Ajouter d'autres photos (ou glissez-déposez vos fichiers ici)"}
                         </span>
                       </>
                     )}
