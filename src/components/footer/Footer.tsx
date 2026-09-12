@@ -68,8 +68,25 @@ const Footer = () => {
                   Tous les Parfums (Catalogue)
                 </Link>
               </li>
-              {activeCategories.length > 0 ? (
-                activeCategories.map((cat) => (
+              <li>
+                <Link to="/collection/homme" className="hover:text-primary transition-colors">
+                  Parfums Homme
+                </Link>
+              </li>
+              <li>
+                <Link to="/collection/femme" className="hover:text-primary transition-colors">
+                  Parfums Femme
+                </Link>
+              </li>
+              {activeCategories
+                .filter(
+                  (c) =>
+                    c.slug.toLowerCase() !== "homme" &&
+                    c.slug.toLowerCase() !== "femme" &&
+                    c.slug.toLowerCase() !== "all" &&
+                    c.slug.toLowerCase() !== "toutes"
+                )
+                .map((cat) => (
                   <li key={cat.id}>
                     <Link
                       to={`/collection/${cat.slug}`}
@@ -78,26 +95,7 @@ const Footer = () => {
                       {cat.name}
                     </Link>
                   </li>
-                ))
-              ) : (
-                <>
-                  <li>
-                    <Link to="/collection/homme" className="hover:text-primary transition-colors">
-                      Parfums Homme
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/collection/femme" className="hover:text-primary transition-colors">
-                      Parfums Femme
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/collection/unisexe" className="hover:text-primary transition-colors">
-                      Parfums Unisexe
-                    </Link>
-                  </li>
-                </>
-              )}
+                ))}
             </ul>
           </div>
 

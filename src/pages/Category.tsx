@@ -68,18 +68,46 @@ const collectionHeroInfo = (
   categoryDesc?: string,
   isComingSoon?: boolean
 ) => {
-  if (filter === "Toutes" || filter === "all") {
+  const f = filter.toLowerCase();
+  if (f === "toutes" || f === "all") {
     return {
       title: "Toutes les Collections",
-      subtitle: "",
-      description: "",
+      subtitle: "Catalogue Officiel",
+      description: "Explorez l'ensemble de notre sélection de haute parfumerie et flacons originaux.",
       badge: "",
+    };
+  }
+
+  if (f === "homme") {
+    return {
+      title: categoryName || "Parfums Homme",
+      subtitle: "Sélection Masculine",
+      description: (categoryDesc || "Fragrances de caractère, boisées, épicées et fraîches créées pour l'homme d'aujourd'hui.").trim(),
+      badge: isComingSoon ? "À Venir" : "",
+    };
+  }
+
+  if (f === "femme") {
+    return {
+      title: categoryName || "Parfums Femme",
+      subtitle: "Raffinement Féminin",
+      description: (categoryDesc || "Compositions florales, orientales et solaires incarnant l'élégance et la sensualité suprême.").trim(),
+      badge: isComingSoon ? "À Venir" : "",
+    };
+  }
+
+  if (f === "mixte" || f === "unisexe") {
+    return {
+      title: categoryName || "Parfums Mixtes & Unisexe",
+      subtitle: "Accords Universels",
+      description: (categoryDesc || "Créations olfactives d'exception partagées, transcendant les genres avec subtilité.").trim(),
+      badge: isComingSoon ? "À Venir" : "",
     };
   }
 
   return {
     title: categoryName || filter,
-    subtitle: "",
+    subtitle: "Univers Olfactif",
     description: (categoryDesc || "").trim(),
     badge: isComingSoon ? "À Venir" : "",
   };
@@ -101,26 +129,43 @@ const Collection = () => {
   );
 
   const filterOptions = useMemo<FilterOption[]>(() => {
+    const adminHomme = activeAdminCategories.find((c) => c.slug.toLowerCase() === "homme");
+    const adminFemme = activeAdminCategories.find((c) => c.slug.toLowerCase() === "femme");
+
     const options: FilterOption[] = [
       { key: "Toutes", label: "Toutes les Collections", shortLabel: "Toutes", icon: Grid },
+      {
+        key: "homme",
+        label: adminHomme?.name || "Homme",
+        shortLabel: adminHomme?.name || "Homme",
+        icon: Flame,
+        isComingSoon: Boolean(adminHomme?.is_coming_soon),
+      },
+      {
+        key: "femme",
+        label: adminFemme?.name || "Femme",
+        shortLabel: adminFemme?.name || "Femme",
+        icon: Flower2,
+        isComingSoon: Boolean(adminFemme?.is_coming_soon),
+      },
     ];
 
     activeAdminCategories.forEach((cat) => {
-      let icon = Grid;
       const s = cat.slug.toLowerCase();
-      if (s === "homme") icon = Flame;
-      else if (s === "femme") icon = Flower2;
-      else if (s.includes("deodorant")) icon = ShieldCheck;
-      else if (s.includes("pack")) icon = Crown;
+      if (s !== "homme" && s !== "femme" && s !== "all" && s !== "toutes") {
+        let icon = Grid;
+        if (s.includes("deodorant")) icon = ShieldCheck;
+        else if (s.includes("pack")) icon = Crown;
 
-      options.push({
-        key: cat.slug,
-        label: cat.name,
-        shortLabel: cat.name,
-        icon,
-        isGold: s.includes("pack"),
-        isComingSoon: Boolean(cat.is_coming_soon),
-      });
+        options.push({
+          key: cat.slug,
+          label: cat.name,
+          shortLabel: cat.name,
+          icon,
+          isGold: s.includes("pack"),
+          isComingSoon: Boolean(cat.is_coming_soon),
+        });
+      }
     });
 
     return options;
@@ -199,6 +244,8 @@ const Collection = () => {
   const counts = useMemo(() => {
     const map: Record<string, number> = {
       Toutes: parfums.length,
+      homme: parfums.filter((p) => isParfumInCategory(p, "homme")).length,
+      femme: parfums.filter((p) => isParfumInCategory(p, "femme")).length,
     };
     activeAdminCategories.forEach((cat) => {
       map[cat.slug] = parfums.filter((p) => isParfumInCategory(p, cat.slug)).length;

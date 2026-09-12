@@ -1,3 +1,11 @@
+/**
+ * Barre de Navigation Principale & Spotlight Search — Maison Kenzi
+ *
+ * Fournit la barre de navigation flottante (desktop et mobile), l'accès direct
+ * aux collections fondamentales (Catalogue, Homme, Femme, et univers dynamiques),
+ * le tiroir panier d'achat et la recherche rapide avec raccourci clavier.
+ */
+
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -15,7 +23,6 @@ import {
   MessageCircle,
   Truck,
   Tag,
-  Compass,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
@@ -44,12 +51,72 @@ const Navigation = () => {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Suggestions dynamiques et aléatoires basées sur les données réelles du site
-  const randomCategorySuggestions = useMemo(() => {
-    if (!isSearchOpen || activeAdminCategories.length === 0) return [];
-    const shuffled = [...activeAdminCategories].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
-  }, [isSearchOpen, activeAdminCategories]);
+  // Liste unifiée des univers pour la navigation (Catalogue, Homme, Femme, et catégories d'administration actives)
+  const navItems = useMemo(() => {
+    const items: {
+      slug: string;
+      path: string;
+      name: string;
+      icon: any;
+      isPacks?: boolean;
+      description?: string;
+    }[] = [
+      {
+        slug: "all",
+        path: "/collection/all",
+        name: "Catalogue",
+        icon: Sparkles,
+        description: "Tous les parfums",
+      },
+      {
+        slug: "homme",
+        path: "/collection/homme",
+        name: "Homme",
+        icon: Flame,
+        description: "Sélection masculine",
+      },
+      {
+        slug: "femme",
+        path: "/collection/femme",
+        name: "Femme",
+        icon: Flower2,
+        description: "Raffinement féminin",
+      },
+    ];
+
+    activeAdminCategories.forEach((cat) => {
+      const s = cat.slug.toLowerCase();
+      if (s !== "homme" && s !== "femme" && s !== "all" && s !== "toutes") {
+        let Icon = Tag;
+        if (s.includes("deodorant")) Icon = Shield;
+        else if (s.includes("pack")) Icon = Crown;
+
+        items.push({
+          slug: cat.slug,
+          path: `/collection/${cat.slug}`,
+          name: cat.name.replace(/^Parfums\s+/i, ""),
+          icon: Icon,
+          isPacks: s.includes("pack"),
+          description: cat.description || "Collection exclusive",
+        });
+      }
+    });
+
+    return items;
+  }, [activeAdminCategories]);
+
+  // Suggestions rapides pour le panneau de recherche
+  const searchCategorySuggestions = useMemo(() => {
+    const baseSuggestions = [
+      { slug: "homme", name: "Parfums Homme" },
+      { slug: "femme", name: "Parfums Femme" },
+      { slug: "all", name: "Tous les Parfums" },
+    ];
+    const adminSugg = activeAdminCategories
+      .filter((c) => c.slug.toLowerCase() !== "homme" && c.slug.toLowerCase() !== "femme")
+      .map((c) => ({ slug: c.slug, name: c.name }));
+    return [...baseSuggestions, ...adminSugg].slice(0, 4);
+  }, [activeAdminCategories]);
 
   const randomParfumSuggestions = useMemo(() => {
     if (!isSearchOpen || allParfums.length === 0) return [];
@@ -149,32 +216,19 @@ const Navigation = () => {
 
           {/* Desktop Nav Pills (Left side) */}
           <div className="hidden md:flex items-center gap-1">
-            <Link
-              to="/collection/all"
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
-                location.pathname === "/collection/all"
-                  ? "bg-foreground text-background"
-                  : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-              }`}
-            >
-              <span>Catalogue</span>
-            </Link>
-
-            {activeAdminCategories.map((cat) => {
-              const path = `/collection/${cat.slug}`;
-              const isActive = location.pathname === path;
-
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
               return (
                 <Link
-                  key={cat.id}
-                  to={path}
+                  key={item.slug}
+                  to={item.path}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
                     isActive
-                      ? "bg-foreground text-background"
+                      ? "bg-foreground text-background shadow-xs"
                       : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
                   }`}
                 >
-                  <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
@@ -312,33 +366,31 @@ const Navigation = () => {
               )}
             </div>
 
-            {/* Suggestions Dynamiques Aléatoires (Catégories & Parfums réels) */}
+            {/* Suggestions Dynamiques (Univers et Parfums réels) */}
             {!searchQuery.trim() && (
               <div className="space-y-2.5 pt-1">
-                {/* Catégories réelles actives */}
-                {randomCategorySuggestions.length > 0 && (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                      <Tag className="w-3 h-3 text-primary" />
-                      <span>Univers & Collections</span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {randomCategorySuggestions.map((cat) => (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => {
-                            setIsSearchOpen(false);
-                            navigate(`/collection/${cat.slug}`);
-                          }}
-                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 text-foreground hover:bg-primary/15 hover:text-primary hover:border-primary/30 border border-border/70 transition-all cursor-pointer flex items-center gap-1.5"
-                        >
-                          <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
-                        </button>
-                      ))}
-                    </div>
+                {/* Catégories & Univers réels */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                    <Tag className="w-3 h-3 text-primary" />
+                    <span>Univers & Collections</span>
                   </div>
-                )}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {searchCategorySuggestions.map((cat) => (
+                      <button
+                        key={cat.slug}
+                        type="button"
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          navigate(`/collection/${cat.slug}`);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 text-foreground hover:bg-primary/15 hover:text-primary hover:border-primary/30 border border-border/70 transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span>{cat.name.replace(/^Parfums\s+/i, "")}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Parfums réels actifs */}
                 {randomParfumSuggestions.length > 0 && (
@@ -361,12 +413,6 @@ const Navigation = () => {
                       ))}
                     </div>
                   </div>
-                )}
-
-                {randomCategorySuggestions.length === 0 && randomParfumSuggestions.length === 0 && (
-                  <p className="text-xs text-muted-foreground font-light py-1">
-                    Saisissez un nom de parfum ou une maison pour explorer la collection.
-                  </p>
                 )}
               </div>
             )}
@@ -417,37 +463,38 @@ const Navigation = () => {
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              {activeAdminCategories.map((cat) => {
-                const s = cat.slug.toLowerCase();
-                let Icon = Flame;
-                if (s === "femme") Icon = Flower2;
-                else if (s.includes("deodorant")) Icon = Shield;
-                else if (s.includes("pack")) Icon = Crown;
-
-                const isPacks = s.includes("pack");
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
 
                 return (
                   <Link
-                    key={cat.id}
-                    to={`/collection/${cat.slug}`}
+                    key={item.slug}
+                    to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${
-                      isPacks
+                      isActive
+                        ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
+                        : item.isPacks
                         ? "bg-primary/10 border-primary/30 text-primary shadow-xs"
                         : "bg-card border-border/80 hover:border-primary/40 text-foreground"
                     }`}
                   >
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                        isPacks ? "bg-primary/20 text-primary" : "bg-primary/10 text-primary"
+                        isActive
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : item.isPacks
+                          ? "bg-primary/20 text-primary"
+                          : "bg-primary/10 text-primary"
                       }`}
                     >
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-xs font-semibold block truncate">{cat.name}</span>
-                      <span className="text-[10px] text-muted-foreground truncate block">
-                        {cat.description || "Collection"}
+                      <span className="text-xs font-semibold block truncate">{item.name}</span>
+                      <span className={`text-[10px] truncate block ${isActive ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                        {item.description}
                       </span>
                     </div>
                   </Link>

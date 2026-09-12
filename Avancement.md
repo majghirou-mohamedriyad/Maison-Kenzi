@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Accessibilité & Intégration Directe des Collections Homme & Femme ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
+  - [x] **Barre de Navigation Principale** : Intégration directe des pastilles cliquables **Catalogue** (`/collection/all`), **Homme** (`/collection/homme`) et **Femme** (`/collection/femme`), complétées harmonieusement par les catégories personnalisées de l'administration.
+  - [x] **Menu Mobile Drawer** : Grille à 2 colonnes présentant immédiatement les univers Catalogue, Homme, Femme et les catégories créées avec leurs icônes dédiées (`Flame`, `Flower2`, `Sparkles`, `ShieldCheck`, `Crown`).
+  - [x] **Page Collections & Filtres** : Enrichissement des pastilles de sélection et des métadonnées éditoriales (titres soignés, sous-titres, descriptions olfactives et calcul des totaux de stock en direct pour Homme et Femme).
+  - [x] **Recherche Instantanée & Footer** : Raccourcis univers réels et présence permanente des univers essentiels dans le pied de page.
+
 - [x] Refonte Éditoriale & Sublimation de la Page 404 ([`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx)) :
   - [x] **Repositionnement Haute Parfumerie** : Remplacement de la page générique par une expérience immersive signée Maison Kenzi (*« Cette fragrance semble s'être évaporée »*), avec liseré doré champagne et halo lumineux feutré.
   - [x] **Navigation & Découverte de Secours** : Intégration du Header officiel, du Footer complet, et de boutons d'action rapide (`Retour à l'Accueil`, `Explorer le Catalogue`).
