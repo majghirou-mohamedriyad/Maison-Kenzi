@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Identité Visuelle & Logo Officiel Maison Kenzi ([`public/mk-logo.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo.png)) :
+  - [x] **Favicon & Onglet de Navigation** ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html)) : Définition du monogramme officiel Maison Kenzi doré champagne comme favicon de l'onglet, icône Apple Touch et visuel OpenGraph / Twitter.
+  - [x] **Harmonisation Globale de l'Application** ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/header/CheckoutHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/CheckoutHeader.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) : Intégration du logo officiel dans la barre de navigation, l'en-tête de commande, le pied de page et les factures PDF.
+
 - [x] Gestion des Visuels Produits — Ajout & Modification ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
   - [x] **Réorganisation par Glisser-Déposer (Drag & Drop)** : Réorganisation instantanée de l'ordre des photos de la galerie par drag and drop avec mise en surbrillance dorée de la cible (`ring-2 ring-[#C9A96E]`), transparence de l'élément déplacé, poignée vectorielle `GripVertical` et toast de confirmation.
   - [x] **Téléversement Direct par Glisser-Déposer de Fichiers** : Déposez directement vos fichiers images depuis l'explorateur sur la zone d'upload ou sur la section visuelle pour les téléverser simultanément.

@@ -41,9 +41,9 @@ const Footer = () => {
               aria-label="Maison Kenzi - Accueil"
             >
               <img
-                src="/logo.png"
+                src="/mk-logo.png"
                 alt="Maison Kenzi"
-                className="h-9 md:h-11 w-auto object-contain dark:invert"
+                className="h-10 md:h-12 w-auto object-contain"
               />
             </Link>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">

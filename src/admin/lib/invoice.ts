@@ -39,7 +39,7 @@ const money = (n: number) => {
 
 /** Utility to convert image URL to PNG base64 for jsPDF rendering with aspect ratio */
 async function loadLogoBase64(): Promise<{ data: string; aspect: number } | null> {
-  const sources = ["/logo.png", "/logo.svg"];
+  const sources = ["/mk-logo.png", "/logo.png", "/logo.svg"];
   for (const src of sources) {
     const res = await new Promise<{ data: string; aspect: number } | null>((resolve) => {
       const img = new Image();
