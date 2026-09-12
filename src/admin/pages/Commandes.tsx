@@ -22,6 +22,7 @@ import {
   Package,
   ChevronDown,
   Check,
+  Copy,
 } from "lucide-react";
 import { downloadInvoice, sendInvoiceViaWhatsapp } from "@/admin/lib/invoice";
 import {
@@ -119,6 +120,17 @@ const Commandes = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
   const [viewingOrder, setViewingOrder] = useState<Order | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyOrderNumber = (e: React.MouseEvent, orderNumber: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(orderNumber);
+    setCopiedId(orderNumber);
+    toast.success(`N° de commande ${orderNumber} copié dans le presse-papier`);
+    setTimeout(() => {
+      setCopiedId((curr) => (curr === orderNumber ? null : curr));
+    }, 2000);
+  };
 
   const handleStatusChange = async (id: string, status: OrderStatus) => {
     const res = await updateOrderStatus(id, status);
@@ -429,11 +441,17 @@ const Commandes = () => {
                   <tr key={o.id} className="border-t border-border hover:bg-muted/30 transition-colors align-top">
                     <td className="px-4 py-3 font-semibold text-foreground">
                       <button
-                        onClick={() => setViewingOrder(o)}
-                        className="hover:text-primary transition-colors text-left cursor-pointer"
-                        title="Voir les détails"
+                        type="button"
+                        onClick={(e) => handleCopyOrderNumber(e, o.order_number)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-primary/15 text-foreground hover:text-primary border border-border/80 hover:border-primary/40 font-mono text-xs font-bold transition-all cursor-pointer group shadow-2xs"
+                        title="Cliquer pour copier le N° de commande"
                       >
-                        {o.order_number}
+                        <span>{o.order_number}</span>
+                        {copiedId === o.order_number ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 stroke-[2.5]" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
+                        )}
                       </button>
                     </td>
                     <td className="px-4 py-3">
@@ -472,12 +490,19 @@ const Commandes = () => {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <button
-                    onClick={() => setViewingOrder(o)}
-                    className="font-semibold text-foreground text-sm hover:text-primary transition-colors text-left cursor-pointer"
+                    type="button"
+                    onClick={(e) => handleCopyOrderNumber(e, o.order_number)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-primary/15 text-foreground hover:text-primary border border-border/80 hover:border-primary/40 font-mono text-xs font-bold transition-all cursor-pointer group"
+                    title="Cliquer pour copier le N° de commande"
                   >
-                    {o.order_number}
+                    <span>{o.order_number}</span>
+                    {copiedId === o.order_number ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 stroke-[2.5]" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
+                    )}
                   </button>
-                  <div className="text-xs text-muted-foreground">{formatDate(o.created_at)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{formatDate(o.created_at)}</div>
                 </div>
                 <StatusSelect id={o.id} status={o.status} />
               </div>

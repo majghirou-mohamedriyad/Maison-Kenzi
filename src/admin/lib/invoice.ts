@@ -290,7 +290,7 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...BRAND.muted);
-  doc.text("Livraison Express Maroc :", boxX + 14, ty + 36);
+  doc.text("Livraison :", boxX + 14, ty + 36);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND.ink);
   doc.text("Gratuite", boxX + boxW - 14, ty + 36, { align: "right" });

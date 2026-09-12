@@ -35,7 +35,7 @@ const pillars = [
   {
     number: "02",
     icon: Truck,
-    title: "Livraison Express Maroc",
+    title: "Livraison",
     subtitle: "24h à 48h à Domicile",
     description:
       "Expédition rapide et soignée dans toutes les villes du Royaume avec suivi de colis en temps réel.",

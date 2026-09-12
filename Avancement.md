@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Gestion des Commandes — Copie Automatique Rapide du N° de Commande ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
+  - [x] **Copie Instantanée au Clic dans le Presse-Papier** : Le clic direct sur le badge du numéro de commande (`MK-XXXXXX`) dans le tableau ou sur mobile copie automatiquement la référence sans ouvrir la modale de détails.
+  - [x] **Feedback Visuel Dynamique & Toast** : Affichage d'une coche verte animée `Check` sur le bouton pendant 2 secondes et notification toast instantanée de confirmation.
+  - [x] **Accès Préservé aux Détails** : L'ouverture de la fiche complète de commande reste accessible via le bouton œil dédié dans la colonne Actions.
+
 - [x] Déclinaison Haute Définition du Logo Officiel Maison Kenzi (Light & Dark Theme) :
   - [x] **Audit & Synchronisation Globale WhatsApp & Instagram** ([`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts)) : Vérification et garantie que les champs « Numéro WhatsApp » et « Lien Instagram » des paramètres mettent à jour automatiquement tous les boutons et liens de contact du site (conciergerie, chatbot, footer, maintenance).
   - [x] **Visibilité & Contraste des Icônes Sidebar en Mode Sombre** ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx)) : Correction du calcul d'état actif (`isCurrent`), suppression des fonds dorés erronés sur les liens inactifs et contraste haute lisibilité (`text-[#FAF7F2]`/or champagne) sur l'ensemble des icônes.
