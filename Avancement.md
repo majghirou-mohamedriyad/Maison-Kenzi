@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Normalisation & Chargement Sécurisé des Photos Multi-Galerie & Bannières ([`src/lib/productImages.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productImages.ts), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) :
+  - [x] **Fonction `normalizeImageUrl` Universelle** : Conversion automatique des adresses d'images `http://185.197.249.4:8000/storage/...` vers le proxy sécurisé `/api/supabase/storage/...` en environnement HTTPS (Vercel).
+  - [x] **Élimination du Blocage Navigateur des Images** : Affichage fluide de l'ensemble des photos de parfums, galeries secondaires et bannières de catégories sans aucune coupure de flux.
+
 - [x] Configuration du Reverse Proxy Vercel & Compatibilité HTTPS/CORS ([`vercel.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vercel.json), [`src/integrations/supabase/client.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/integrations/supabase/client.ts), [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts)) :
   - [x] **Redirections Sécurisées `rewrites` Vercel** : Création des passerelles `/api/supabase` et `/api/openwa` pour relayer côté serveur les appels vers le VPS (`http://185.197.249.4:8000` et `http://185.197.249.4:2785`).
   - [x] **Élimination Définitive des Erreurs « Mixed Content »** : Le navigateur communique en HTTPS sécurisé avec Vercel, qui transfère les requêtes vers le VPS sans blocage navigateur.

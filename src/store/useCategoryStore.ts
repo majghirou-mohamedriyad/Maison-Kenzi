@@ -7,6 +7,7 @@
 
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/lib/supabase";
+import { normalizeImageUrl } from "@/lib/productImages";
 
 export type AdminCategory = {
   id: string;
@@ -27,22 +28,23 @@ const DEFAULT_CATEGORIES: AdminCategory[] = [];
 const STORAGE_KEY = "maisonkenzi_categories";
 const CHANNEL_NAME = "maisonkenzi_categories_channel";
 
-// Extraction sécurisée d'un tableau d'images
+// Extraction et normalisation sécurisée d'un tableau d'images
 const parseImages = (raw: any): string[] => {
-  if (Array.isArray(raw)) return raw.filter((s) => typeof s === "string" && s.trim());
-  if (typeof raw === "string" && raw.trim()) {
+  let list: string[] = [];
+  if (Array.isArray(raw)) list = raw.filter((s) => typeof s === "string" && s.trim());
+  else if (typeof raw === "string" && raw.trim()) {
     if (raw.startsWith("[") && raw.endsWith("]")) {
       try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed.filter((s) => typeof s === "string" && s.trim());
+        if (Array.isArray(parsed)) list = parsed.filter((s) => typeof s === "string" && s.trim());
       } catch {}
+    } else if (raw.includes(",")) {
+      list = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    } else {
+      list = [raw.trim()];
     }
-    if (raw.includes(",")) {
-      return raw.split(",").map((s) => s.trim()).filter(Boolean);
-    }
-    return [raw.trim()];
   }
-  return [];
+  return list.map((img) => normalizeImageUrl(img));
 };
 
 // Génération sécurisée d'un identifiant unique (UUID ou horodatage)
