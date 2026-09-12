@@ -25,7 +25,7 @@ const SLIDES = [
     subtitle: "Parfums de niche d'exception et flacons complets scellés sélectionnés pour les connaisseurs au Maroc.",
     btnText: "Découvrir les Collections",
     btnLink: "/collection/all",
-    bgImage: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=2000&auto=format&fit=crop",
+    bgImage: "/mk-banner.png",
   },
   {
     id: 2,
@@ -35,15 +35,25 @@ const SLIDES = [
     subtitle: "Explorez les plus grandes maisons olfactives en flacons d'origine neufs et authentiques.",
     btnText: "Explorer le Catalogue",
     btnLink: "/collection/all",
-    bgImage: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=2000&auto=format&fit=crop",
+    bgImage: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=2000&auto=format&fit=crop",
   },
   {
     id: 3,
-    tag: "EXTRAITS PRÉCIEUX",
+    tag: "CRÉATIONS D'EXCEPTION",
     titlePrefix: "L'Élégance de ",
     titleHighlight: "L'Absolu",
     subtitle: "Des sillages envoûtants, complexes et inoubliables qui signent votre présence.",
     btnText: "Voir les Créations",
+    btnLink: "/collection/all",
+    bgImage: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=2000&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    tag: "EXTRAITS PRÉCIEUX",
+    titlePrefix: "L'Harmonie des ",
+    titleHighlight: "Sens",
+    subtitle: "Une sélection rigoureuse de fragrances nobles 100% authentiques livrées partout au Maroc.",
+    btnText: "Nos Nouveautés",
     btnLink: "/collection/all",
     bgImage: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=2000&auto=format&fit=crop",
   },
@@ -81,7 +91,7 @@ const LargeHero = () => {
                 <img
                   src={s.bgImage}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = heroImage;
+                    (e.target as HTMLImageElement).src = "/mk-banner.png";
                   }}
                   alt={`Hero ${s.titleHighlight} - Maison Kenzi`}
                   className={`w-full h-full object-cover object-center transform transition-transform duration-[7000ms] ease-out ${

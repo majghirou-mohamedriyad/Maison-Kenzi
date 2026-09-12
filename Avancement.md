@@ -9,8 +9,9 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Résolution des Ressources Visuelles & Correction Build Vite :
-  - [x] **Correction de l'Import Manquant `hero-image.jpg`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Remplacement de l'import local manquant par une image haute définition de haute parfumerie pour le carrousel d'accueil, et nettoyage préventif des anciens imports orphelins (`OurStory.tsx`, `ProductImageGallery.tsx`, `ProductGrid.tsx`, `OneThirdTwoThirdsSection.tsx`).
+- [x] Résolution des Ressources Visuelles & Bannière Officielle du Hero :
+  - [x] **Intégration de la Bannière Officielle `mk-banner.png`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Affichage de la bannière panoramique de prestige `public/mk-banner.png` en tête du carrousel de la page d'accueil avec transition Ken Burns douce.
+  - [x] **Correction de l'Import Manquant `hero-image.jpg`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Remplacement de l'import local manquant par des images haute définition de haute parfumerie pour le carrousel d'accueil, et nettoyage préventif des anciens imports orphelins (`OurStory.tsx`, `ProductImageGallery.tsx`, `ProductGrid.tsx`, `OneThirdTwoThirdsSection.tsx`).
 
 - [x] Identité Visuelle & Logo Officiel Maison Kenzi ([`public/mk-logo.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo.png)) :
   - [x] **Favicon & Onglet de Navigation** ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html)) : Définition du monogramme officiel Maison Kenzi doré champagne comme favicon de l'onglet, icône Apple Touch et visuel OpenGraph / Twitter.
