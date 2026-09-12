@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Sublimation & Nouveau Design du Sélecteur de Langue FR / EN ([`src/components/LanguageSelector.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/LanguageSelector.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
+  - [x] **Design Capsule Haute Joaillerie** : Sélecteur en capsule arrondie (`rounded-full`) à fond semi-transparent et verre dépoli avec micro-bordure raffinée.
+  - [x] **Pastilles Actives à Micro-Transitions** : Pastille active à fort contraste (`bg-foreground` / `dark:bg-primary`) et micro-animations fluides de bascule entre Français et Anglais.
+  - [x] **Harmonisation UI/UX & Zéro Emoji** : Icône vectorielle `Globe` fine de `lucide-react`, typographie haute lisibilité et parfait alignement avec les boutons Theme, Recherche et Panier.
+
 - [x] Repositionnement du Logo Maison Kenzi à Gauche de la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
   - [x] **Alignement Naturel à Gauche** : Déplacement du logo de marque directement dans le groupe de gauche (aux côtés du menu mobile et des liens de catalogue « Nos Produits » et « Nos Collections »).
   - [x] **Épuration de l'Espace Central** : Suppression du positionnement absolu centré pour offrir une vue plus équilibrée et lisible de l'ensemble des contrôles (Recherche, Sélecteur de Langue, Thème et Panier).

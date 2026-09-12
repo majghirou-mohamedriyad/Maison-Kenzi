@@ -380,7 +380,7 @@ const Navigation = () => {
 
           {/* Language Selector (FR / EN) */}
           <div className="flex items-center">
-            <LanguageSelector variant="compact" />
+            <LanguageSelector variant="capsule" />
           </div>
 
           {/* Theme Toggle */}
