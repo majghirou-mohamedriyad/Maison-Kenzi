@@ -38,6 +38,7 @@ import {
   deleteCategory,
   type AdminCategory,
 } from "@/store/useCategoryStore";
+import { normalizeImageUrl } from "@/lib/productImages";
 import { useProducts } from "@/store/useProductStore";
 import { isParfumInCategory } from "@/lib/productCategories";
 import {
@@ -517,7 +518,8 @@ const CategoriesAdmin = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredAndSorted.map((cat) => {
             const count = categoryStats[cat.slug] ?? 0;
-            const catImg = cat.image || cat.icon;
+            const rawImg = cat.image || cat.icon || (cat.images && cat.images[0]);
+            const catImg = rawImg ? normalizeImageUrl(rawImg) : null;
 
             return (
               <div
@@ -532,6 +534,9 @@ const CategoriesAdmin = () => {
                         src={catImg}
                         alt={cat.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[#C9A96E] font-serif text-3xl font-bold bg-[#FAF7F2] dark:bg-[#1C1A18]">
@@ -685,7 +690,8 @@ const CategoriesAdmin = () => {
               <tbody className="divide-y divide-[#EAE3D8]/60 dark:divide-[#24211E]/60">
                 {filteredAndSorted.map((cat, idx) => {
                   const count = categoryStats[cat.slug] ?? 0;
-                  const catImg = cat.image || cat.icon;
+                  const rawImg = cat.image || cat.icon || (cat.images && cat.images[0]);
+                  const catImg = rawImg ? normalizeImageUrl(rawImg) : null;
                   const bannerCount = cat.images && cat.images.length > 0 ? cat.images.length : (cat.image || cat.icon ? 1 : 0);
                   return (
                     <tr
@@ -701,6 +707,9 @@ const CategoriesAdmin = () => {
                                 src={catImg}
                                 alt={cat.name}
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
                               />
                             ) : (
                               cat.name.charAt(0)

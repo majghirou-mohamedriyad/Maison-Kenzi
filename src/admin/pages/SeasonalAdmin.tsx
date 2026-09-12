@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { formatMAD } from "@/lib/sizes";
+import { getPrimaryImage } from "@/lib/productImages";
 import {
   getSavedSeasonalSettings,
   saveSeasonalSettings,
@@ -300,9 +301,12 @@ const SeasonalAdmin = () => {
                   {product && (
                     <div className="flex items-center gap-3 bg-[#F8F9FA] dark:bg-[#0F0F0F] p-2.5 rounded border border-[#E5E7EB] dark:border-[#2A2A2A]">
                       <img
-                        src={product.image_url || "/placeholder.svg"}
+                        src={getPrimaryImage(product) || "/placeholder.svg"}
                         alt={product.name}
                         className="w-12 h-12 object-cover rounded border border-[#E5E7EB] dark:border-[#2A2A2A]"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/placeholder.svg";
+                        }}
                       />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] text-[#6B7280] uppercase truncate">

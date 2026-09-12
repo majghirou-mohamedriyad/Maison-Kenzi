@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Flame, RefreshCw, Save, Sparkles, ArrowUp, ArrowDown, CheckCircle2, ShoppingBag } from "lucide-react";
 import { formatMAD } from "@/lib/sizes";
+import { getPrimaryImage } from "@/lib/productImages";
 
 const DEFAULT_BESTSELLER_IDS = [
   '9-pm-night-out-afnan',
@@ -247,9 +248,12 @@ const BestSellersAdmin = () => {
                 {product && (
                   <div className="flex items-center gap-4 bg-[#F8F9FA] dark:bg-[#111827] p-3 rounded-md border border-[#E5E7EB] dark:border-[#2A2A2A]">
                     <img
-                      src={product.image_url || "/placeholder.svg"}
+                      src={getPrimaryImage(product) || "/placeholder.svg"}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded border border-[#E5E7EB] dark:border-[#2A2A2A]"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-widest">

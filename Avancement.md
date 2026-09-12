@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Affichage Universel des Photos dans l'Espace Administration ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/SeasonalAdmin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/SeasonalAdmin.tsx), [`src/admin/pages/BestSellers.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/BestSellers.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
+  - [x] **Extraction Robuste via `getPrimaryImage`** : Remplacement de l'accès direct `p.image_url` par `getPrimaryImage(p)` dans les vues Grille et Tableau pour récupérer sans faille la photo principale, les multi-photos ou le stockage direct.
+  - [x] **Protection & Fallback Image `onError`** : Masquage propre ou remplacement par placeholder en cas d'indisponibilité réseau sans casser l'interface.
+  - [x] **Normalisation HTTPS Complète dans l'Admin** : Affichage net de l'ensemble des vignettes, bannières et fiches produits dans l'espace administration sur Vercel.
+
 - [x] Normalisation & Chargement Sécurisé des Photos Multi-Galerie & Bannières ([`src/lib/productImages.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productImages.ts), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) :
   - [x] **Fonction `normalizeImageUrl` Universelle** : Conversion automatique des adresses d'images `http://185.197.249.4:8000/storage/...` vers le proxy sécurisé `/api/supabase/storage/...` en environnement HTTPS (Vercel).
   - [x] **Élimination du Blocage Navigateur des Images** : Affichage fluide de l'ensemble des photos de parfums, galeries secondaires et bannières de catégories sans aucune coupure de flux.

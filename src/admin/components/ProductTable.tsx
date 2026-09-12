@@ -23,6 +23,7 @@ import {
   Snowflake,
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
+import { getPrimaryImage } from "@/lib/productImages";
 
 type Props = {
   products: AdminParfum[];
@@ -57,6 +58,7 @@ const ProductTable = ({
             const sFull = p.full_bottle_stock ?? 0;
             const stockTotal = isFull ? sFull : s5 + s10;
             const inStock = (p.active ?? true) && stockTotal > 0;
+            const primaryImg = getPrimaryImage(p);
 
             return (
               <div
@@ -66,11 +68,14 @@ const ProductTable = ({
                 <div>
                   {/* Card Visual & Status Bar */}
                   <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted/30 border border-border/50 mb-3">
-                    {p.image_url ? (
+                    {primaryImg ? (
                       <img
-                        src={p.image_url}
+                        src={primaryImg}
                         alt={p.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground font-serif text-3xl font-bold bg-muted/20">
@@ -288,6 +293,7 @@ const ProductTable = ({
                   const sFull = p.full_bottle_stock ?? 0;
                   const stockTotal = isFull ? sFull : s5 + s10;
                   const inStock = (p.active ?? true) && stockTotal > 0;
+                  const primaryImg = getPrimaryImage(p);
 
                   return (
                     <tr
@@ -297,11 +303,14 @@ const ProductTable = ({
                       <td className="px-4 py-3.5 text-muted-foreground font-mono text-xs">{i + 1}</td>
                       <td className="px-4 py-3.5 font-medium text-foreground">
                         <div className="flex items-center gap-3">
-                          {p.image_url ? (
+                          {primaryImg ? (
                             <img
-                              src={p.image_url}
+                              src={primaryImg}
                               alt={p.name}
                               className="w-9 h-9 rounded-lg object-cover bg-muted border border-border shrink-0"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
                             />
                           ) : (
                             <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
