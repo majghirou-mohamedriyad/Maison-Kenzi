@@ -328,9 +328,14 @@ const Navigation = () => {
             aria-label="Maison Kenzi - Accueil"
           >
             <img
-              src="/mk-logo.png"
+              src="/mk-logo-light.png"
               alt="Maison Kenzi"
-              className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-xs"
+              className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-xs dark:hidden"
+            />
+            <img
+              src="/mk-logo-dark.png"
+              alt="Maison Kenzi"
+              className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-xs hidden dark:block"
             />
           </Link>
         </div>

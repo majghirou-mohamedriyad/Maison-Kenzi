@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Déclinaison Haute Définition du Logo Officiel Maison Kenzi (Light & Dark Theme) :
+  - [x] **Logo Light Theme** ([`public/mk-logo-light.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-light.png)) : Monogramme MK or champagne chaud avec goutte d'essence végétale et typographie *Haute Parfumerie* sur fond blanc pur haute définition.
+  - [x] **Logo Dark Theme** ([`public/mk-logo-dark.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-dark.png)) : Monogramme MK or champagne lumineux sur fond noir nuit intense pour un contraste optimal.
+  - [x] **Affichage Adaptatif Automatique** ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/components/header/CheckoutHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/CheckoutHeader.tsx)) : Commutation instantanée et fluide entre le logo clair et sombre selon le mode actif.
+
 - [x] Sublimation Créative de la Page « Service Client & Contact » ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
   - [x] **Galerie Photographique Triptyque Interactive** : 3 cartes de conciergerie photographiques grand format (*Conseil Personnalisé Flacons*, *Emballage Cadeau & Sceau de Cire*, *Livraison Express Sécurisée 24-48h au Maroc*) avec zoom doux au survol et badge d'accès direct.
   - [x] **Canaux de Conciergerie Privée Haute Couture** : 3 fiches de contact direct (*WhatsApp Privé*, *Ligne Téléphonique Dédiée 7j/7*, *Univers Instagram*) avec badges de réactivité et déclencheurs instantanés.
