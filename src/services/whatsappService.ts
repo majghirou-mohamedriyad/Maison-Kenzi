@@ -321,76 +321,45 @@ export const sendOpenWaMessage = async (
     "maison-kenzi",
   ])).filter(Boolean);
 
+  const rawPhone = chatId.replace("@c.us", "");
+
   for (const base of baseUrls) {
     for (const sessKey of sessionCandidates) {
-      const fullPayload = {
-        chatId: chatId,
-        to: chatId,
-        phone: recipientPhone,
-        text: messageText,
-        content: messageText,
-        message: messageText,
-        body: messageText,
-        session: sessKey,
-        sessionId: sessKey,
-        api_key: apiKey,
-        apiKey: apiKey,
-        key: apiKey,
-        token: apiKey,
-        secret: apiKey,
-        args: {
-          to: chatId,
-          content: messageText,
-          chatId: chatId,
-          text: messageText,
-        },
-      };
-
       const attempts = [
-        // 1. Route WAHA / OpenWA REST v0.23+
+        // 1. Route WAHA standard (POST /api/sessions/:session/messages/send-text) avec DTO strict
         {
           url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-          payload: fullPayload,
+          payload: { chatId, text: messageText },
           desc: `POST /api/sessions/${sessKey}/messages/send-text`,
         },
-        // 2. Variante sans /api
+        // 2. Route WAHA standard sans query param (headers seuls)
         {
-          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /sessions/${sessKey}/messages/send-text`,
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
+          payload: { chatId, text: messageText },
+          desc: `POST /api/sessions/${sessKey}/messages/send-text (headers)`,
         },
-        // 3. Format direct /api/sendText
+        // 3. Route globale WAHA /api/sendText avec session
         {
           url: `${base}/api/sendText${authQuery}`,
-          payload: fullPayload,
+          payload: { chatId, text: messageText, session: sessKey },
           desc: `POST /api/sendText`,
         },
         {
-          url: `${base}/sendText${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /sendText`,
-        },
-        // 4. Format session direct /api/sessions/:id/sendText
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /api/sessions/${sessKey}/sendText`,
-        },
-        {
-          url: `${base}/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-          payload: fullPayload,
-          desc: `POST /${sessKey}/sendText`,
-        },
-        // 5. Format sans query param mais avec headers
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-          payload: fullPayload,
-          desc: `POST /api/sessions/${sessKey}/messages/send-text (headers)`,
-        },
-        {
           url: `${base}/api/sendText`,
-          payload: fullPayload,
+          payload: { chatId, text: messageText, session: sessKey },
           desc: `POST /api/sendText (headers)`,
+        },
+        // 4. Variante sans préfixe /api
+        {
+          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+          payload: { chatId, text: messageText },
+          desc: `POST /sessions/${sessKey}/messages/send-text`,
+        },
+        // 5. Format alternatif phone brut
+        {
+          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+          payload: { phone: rawPhone, message: messageText },
+          desc: `POST /api/sessions/${sessKey}/messages/send-text (raw phone)`,
         },
       ];
 

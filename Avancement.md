@@ -9,10 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Résolution de l'Erreur 401 WhatsApp & Automatisation 100% Silencieuse en Arrière-Plan ([`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx)) :
-  - [x] **Intégration de la Clé API Officielle OpenWA / WAHA** : Injection sécurisée de la clé `owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf` dans les requêtes de messagerie WhatsApp pour éliminer définitivement l'erreur `401 Unauthorized`.
-  - [x] **Fonctionnement 100% Invisible & Sans Encombrement UI** : Conservation d'une page Paramètres épurée et exécution asynchrone des confirmations de commande aux clients et alertes gérant sans aucune friction.
-  - [x] **En-têtes d'Authentification Multi-Standards** : Support complet des headers `X-Api-Key`, `x-api-key`, `Authorization: Bearer` et `api_key` pour tous les appels vers le serveur VPS.
+- [x] Résolution de l'Erreur 400/401 WhatsApp & Normalisation DTO Strict ([`api/whatsapp.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/whatsapp.js), [`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts)) :
+  - [x] **Authentification Validée & Clé API Connectée** : Connexion réussie à l'instance WAHA/OpenWA sur la VPS avec la clé officielle et la session `e8fe5adf-cd3b-4470-8cf7-6a85504430ff`.
+  - [x] **Élimination de l'Erreur 400 Bad Request (DTO Strict)** : Envoi de payloads JSON nettoyés conformes aux spécifications WAHA (`chatId: "212...@c.us"`, `text: "..."`) sans aucun surplus de champs non autorisés.
+  - [x] **Fonction Serverless Vercel Node.js (`api/whatsapp.js`)** : Relais serveur-à-serveur direct garantissant l'absence de filtrage d'en-têtes HTTP ou de blocage CORS edge.
 
 - [x] Optimisation Complète du Rendu Responsive (Client & Admin) ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Balise Viewport Mobile Standard** : Ajout de `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />` dans `index.html` pour garantir une mise à l'échelle parfaite sur tous les écrans tactiles et smartphones.

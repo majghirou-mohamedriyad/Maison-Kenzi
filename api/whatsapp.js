@@ -3,7 +3,7 @@
  *
  * Exécute côté serveur Node.js l'envoi de messages vers l'instance OpenWA / WAHA
  * sur la VPS (http://185.197.249.4:2785).
- * Évite tout blocage CORS, filtrage d'en-têtes HTTP par les navigateurs ou proxies edge.
+ * Envoie des payloads DTO stricts (chatId, text) pour éliminer les erreurs 400 Bad Request.
  */
 
 const HARDCODED_OPENWA_KEY = "owa_k1_8e8d1dad118d422c4b0bcc77723a9719eca52913e6813b2f84e32fb479f223cf";
@@ -24,7 +24,6 @@ const formatWhatsAppChatId = (phone) => {
 };
 
 export default async function handler(req, res) {
-  // En-têtes CORS pour autoriser l'appel depuis le client
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key");
@@ -38,76 +37,17 @@ export default async function handler(req, res) {
   const phone = req.body?.phone || req.query?.phone;
   const message = req.body?.message || req.query?.message;
 
-  // Si c'est une requête de vérification de statut
+  // Endpoint de santé / diagnostic
   if (req.method === "GET" || req.query?.action === "status") {
-    const testEndpoints = [
-      `${VPS_BASE_URL}/api/sessions?api_key=${apiKey}&apiKey=${apiKey}`,
-      `${VPS_BASE_URL}/sessions?api_key=${apiKey}&apiKey=${apiKey}`,
-      `${VPS_BASE_URL}/api/sessions/${session}?api_key=${apiKey}&apiKey=${apiKey}`,
-      `${VPS_BASE_URL}/sessions/${session}?api_key=${apiKey}&apiKey=${apiKey}`,
-      `${VPS_BASE_URL}/docs-json`,
-    ];
-
-    const headersList = [
-      { "X-Api-Key": apiKey, "Accept": "application/json" },
-      { "Authorization": `Bearer ${apiKey}`, "Accept": "application/json" },
-      { "x-api-key": apiKey, "Accept": "application/json" },
-    ];
-
-    for (const ep of testEndpoints) {
-      for (const hdrs of headersList) {
-        try {
-          const resp = await fetch(ep, { headers: hdrs });
-          if (resp.ok) {
-            const data = await resp.json().catch(() => ({ status: "ok" }));
-            return res.status(200).json({ ok: true, endpoint: ep, data });
-          }
-        } catch { }
-      }
-    }
-
-    return res.status(200).json({ ok: false, message: "VPS accessible mais authentification en cours de validation" });
+    return res.status(200).json({ ok: true, session, status: "ready" });
   }
 
-  // Requête d'envoi de message (POST)
   if (!phone || !message) {
-    return res.status(400).json({ success: false, error: "Téléphone et message requis." });
+    return res.status(400).json({ success: false, error: "Numéro de téléphone et message requis." });
   }
 
   const chatId = formatWhatsAppChatId(phone);
-
-  const basicAuth1 = Buffer.from(`:${apiKey}`).toString("base64");
-  const basicAuth2 = Buffer.from(`admin:${apiKey}`).toString("base64");
-
-  const headerVariants = [
-    {
-      "Content-Type": "application/json",
-      "X-Api-Key": apiKey,
-      "x-api-key": apiKey,
-      "X-API-KEY": apiKey,
-      "Authorization": `Bearer ${apiKey}`,
-      "api_key": apiKey,
-      "apikey": apiKey,
-    },
-    {
-      "Content-Type": "application/json",
-      "Authorization": `Basic ${basicAuth1}`,
-      "X-Api-Key": apiKey,
-    },
-    {
-      "Content-Type": "application/json",
-      "Authorization": `Basic ${basicAuth2}`,
-      "X-Api-Key": apiKey,
-    },
-    {
-      "Content-Type": "application/json",
-      "X-Api-Key": apiKey,
-    },
-    {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-  ];
+  const rawCleanPhone = chatId.replace("@c.us", "");
 
   const sessionCandidates = Array.from(new Set([
     session,
@@ -116,60 +56,79 @@ export default async function handler(req, res) {
     "maison-kenzi",
   ])).filter(Boolean);
 
-  const authQuery = `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}&key=${encodeURIComponent(apiKey)}&token=${encodeURIComponent(apiKey)}`;
+  const authQuery = `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}&key=${encodeURIComponent(apiKey)}`;
+
+  const headersVariants = [
+    {
+      "Content-Type": "application/json",
+      "X-Api-Key": apiKey,
+    },
+    {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "X-API-KEY": apiKey,
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    {
+      "Content-Type": "application/json",
+      "api_key": apiKey,
+    },
+  ];
 
   let lastErrors = [];
 
   for (const sessKey of sessionCandidates) {
-    const payload = {
-      chatId,
-      to: chatId,
-      phone,
-      text: message,
-      content: message,
-      message,
-      body: message,
-      session: sessKey,
-      sessionId: sessKey,
-      api_key: apiKey,
-      apiKey: apiKey,
-      args: {
-        to: chatId,
-        content: message,
-        chatId,
-        text: message,
-      },
-    };
-
-    const targetUrls = [
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-      `${VPS_BASE_URL}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-      `${VPS_BASE_URL}/api/sendText${authQuery}`,
-      `${VPS_BASE_URL}/api/sendText`,
-      `${VPS_BASE_URL}/sendText${authQuery}`,
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-      `${VPS_BASE_URL}/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+    // Différents schémas DTO stricts supportés par WAHA / OpenWA
+    const payloadVariants = [
+      // 1. Standard WAHA pur (chatId + text)
+      { chatId, text: message },
+      // 2. Standard WAHA avec session explicite
+      { chatId, text: message, session: sessKey },
+      // 3. Format phone brut
+      { phone: rawCleanPhone, message },
+      // 4. Format to + body
+      { to: chatId, body: message },
+      // 5. Format to + content
+      { to: chatId, content: message },
     ];
 
-    for (const headers of headerVariants) {
-      for (const url of targetUrls) {
-        try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-          });
+    const targetUrlTemplates = [
+      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
+      `${VPS_BASE_URL}/api/sendText${authQuery}`,
+      `${VPS_BASE_URL}/api/sendText`,
+      `${VPS_BASE_URL}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
+      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
+      `${VPS_BASE_URL}/sendText${authQuery}`,
+    ];
 
-          if (response.ok || response.status === 200 || response.status === 201 || response.status === 202) {
-            const data = await response.json().catch(() => ({ status: "sent" }));
-            return res.status(200).json({ success: true, url, data });
-          } else {
-            const errText = await response.text().catch(() => "");
-            lastErrors.push(`${url} [${response.status}]: ${errText.slice(0, 100)}`);
+    for (const payload of payloadVariants) {
+      for (const headers of headersVariants) {
+        for (const url of targetUrlTemplates) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(url, {
+              method: "POST",
+              headers,
+              body: JSON.stringify(payload),
+              signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (response.ok || response.status === 200 || response.status === 201 || response.status === 202) {
+              const data = await response.json().catch(() => ({ status: "sent" }));
+              console.info("[WhatsApp Serverless VPS Succès]", url, data);
+              return res.status(200).json({ success: true, url, data });
+            } else {
+              const errText = await response.text().catch(() => "");
+              lastErrors.push(`${url} [${response.status}]: ${errText.slice(0, 150)}`);
+            }
+          } catch (err) {
+            lastErrors.push(`${url} [ERR]: ${err.message}`);
           }
-        } catch (err) {
-          lastErrors.push(`${url} [ERR]: ${err.message}`);
         }
       }
     }
@@ -177,7 +136,7 @@ export default async function handler(req, res) {
 
   return res.status(502).json({
     success: false,
-    error: "Échec de l'envoi via toutes les routes WAHA / OpenWA",
+    error: "Échec de l'envoi après test de tous les formats DTO",
     details: lastErrors.slice(0, 5),
   });
 }
