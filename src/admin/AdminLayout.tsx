@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   Package,
   ShoppingBag,
-  Users,
   Settings,
   LogOut,
   Menu,
@@ -53,7 +52,6 @@ const NAV_GROUPS = [
     items: [
       { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, isOrderLink: true },
       { to: "/admin/finances", label: "Finances & Revenus", icon: Wallet },
-      { to: "/admin/clients", label: "Fichier Clients", icon: Users },
     ],
   },
   {
@@ -70,7 +68,6 @@ const TITLES: Record<string, string> = {
   "/admin/categories": "Univers & Familles Olfactives",
   "/admin/commandes": "Gestion des Commandes Clients",
   "/admin/finances": "Statistiques Financières & Revenus",
-  "/admin/clients": "Base de Données Clients",
   "/admin/parametres": "Paramètres & Statut de la Maison",
 };
 

@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suppression Définitive de la Page « Base de Données Clients » :
+  - [x] [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx) : Retrait du lien de navigation « Fichier Clients » (`/admin/clients`) et du dictionnaire des titres.
+  - [x] [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx) : Suppression de la route `/admin/clients` et nettoyage des imports.
+  - [x] Suppression des fichiers sources dédiés (`src/admin/pages/Clients.tsx` et `src/hooks/useAdminCustomers.ts`).
+
 - [x] Refonte & Sublimation du Sélecteur de Statut de Commande ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
   - [x] **Remplacement du Select Natif par un Dropdown Menu de Prestige** : Conception d'un sélecteur interactif haute parfumerie avec pastille lumineuse animée, icônes vectorielles `lucide-react` et chevron fluide avec micro-animations.
   - [x] **Badges de Statuts Raffinés** :
