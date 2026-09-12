@@ -39,7 +39,7 @@ const DEFAULTS: AppSettings = {
   openwa_auto_status_update: true,
   openwa_admin_notification: true,
   openwa_admin_phone: "212652535301",
-  deepl_api_key: "",
+  deepl_api_key: "77993c1b-141d-4362-b6d2-4eaae702d6d5:fx",
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";

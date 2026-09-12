@@ -33,8 +33,10 @@ const getCacheKey = (text: string, targetLang: string) => {
   return `${CACHE_PREFIX}${targetLang}_${text.trim().toLowerCase().slice(0, 80)}_${text.length}`;
 };
 
+export const OFFICIAL_DEEPL_KEY = "77993c1b-141d-4362-b6d2-4eaae702d6d5:fx";
+
 /**
- * Récupère la clé API configurée (dans AppSettings ou localStorage)
+ * Récupère la clé API configurée (dans AppSettings, localStorage ou officielle)
  */
 export const getActiveDeeplApiKey = (): string => {
   const settings = getAppSettings();
@@ -45,7 +47,7 @@ export const getActiveDeeplApiKey = (): string => {
     const local = localStorage.getItem("mk_deepl_api_key");
     if (local && local.trim()) return local.trim();
   }
-  return "";
+  return OFFICIAL_DEEPL_KEY;
 };
 
 /**

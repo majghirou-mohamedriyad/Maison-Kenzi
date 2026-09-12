@@ -5,7 +5,7 @@
  * olfactive, des saisons d'utilisation idéales, de la contenance et du formulaire de commande express.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
@@ -50,12 +50,28 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 const ParfumDetail = () => {
+  const { t } = useLanguage();
   const { parfumId } = useParams();
   const navigate = useNavigate();
   const { data: parfum, loading, error } = useParfum(parfumId);
   const { addItem, openCart } = useCart();
+
+  const notesJoined = useMemo(() => {
+    return [
+      ...(parfum?.notes_tete || []),
+      ...(parfum?.notes_coeur || []),
+      ...(parfum?.notes_fond || []),
+    ]
+      .filter(Boolean)
+      .join(" • ");
+  }, [parfum]);
+
+  const translatedDescription = useAutoTranslate(parfum?.description);
+  const translatedNotes = useAutoTranslate(notesJoined);
 
   // State des quantités initialisé pour chaque format
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -470,27 +486,25 @@ const ParfumDetail = () => {
                 </div>
 
                 {/* Notes olfactives */}
-                {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])].filter(Boolean).length > 0 && (
+                {translatedNotes && (
                   <div className="space-y-1.5 pt-1 border-t border-border/50">
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                      <Sparkle className="w-3.5 h-3.5" /> Pyramide Olfactive
+                      <Sparkle className="w-3.5 h-3.5" /> {t("product.olfactoryPyramid", "Pyramide Olfactive")}
                     </span>
                     <p className="text-muted-foreground leading-relaxed text-[11px]">
-                      {[...(parfum.notes_tete || []), ...(parfum.notes_coeur || []), ...(parfum.notes_fond || [])]
-                        .filter(Boolean)
-                        .join(" • ")}
+                      {translatedNotes}
                     </p>
                   </div>
                 )}
 
                 {/* Description olfactive */}
-                {parfum.description && (
+                {translatedDescription && (
                   <div className="space-y-1 pt-1 border-t border-border/50">
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
-                      Description & Sillage
+                      {t("product.descriptionAndSillage", "Description & Sillage")}
                     </span>
                     <p className="text-muted-foreground leading-relaxed text-[11px]">
-                      {parfum.description}
+                      {translatedDescription}
                     </p>
                   </div>
                 )}

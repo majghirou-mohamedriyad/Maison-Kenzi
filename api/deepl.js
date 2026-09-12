@@ -8,6 +8,8 @@
  * Élimine les restrictions CORS et protège les clés d'API.
  */
 
+const OFFICIAL_DEEPL_KEY = "77993c1b-141d-4362-b6d2-4eaae702d6d5:fx";
+
 export default async function handler(req, res) {
   // En-têtes CORS universels
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
     req.headers["x-api-key"] ||
     req.query?.apiKey ||
     process.env.DEEPL_API_KEY ||
-    ""
+    OFFICIAL_DEEPL_KEY
   ).trim();
 
   // Test de diagnostic / Quota de la clé DeepL
