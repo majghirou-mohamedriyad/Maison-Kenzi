@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Optimisation des Proportions & Agrandissement de la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx)) :
+  - [x] **Élévation & Harmonie avec le Logo Officiel** : Augmentation de la hauteur et des paddings internes de la navbar pastille (`min-h-[58px] sm:min-h-[66px] md:min-h-[74px]`, `px-4 sm:px-6 md:px-7 py-2.5 sm:py-3.5`) pour une harmonie parfaite avec la taille du logo de prestige.
+  - [x] **Ajustement Spacieux du Conteneur d'En-Tête** : Élargissement du conteneur en `max-w-7xl` offrant une disposition aérée et sans encombrement de tous les liens et boutons d'action.
+  - [x] **Boutons & Pastilles Haute Couture** : Agrandissement proportionnel des boutons d'actions (recherche, panier `w-10 h-10`, pastilles de navigation `px-4 py-2 text-xs font-semibold`).
+
 - [x] Intégration du Lien « Service Client » dans la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Navigation Desktop & Mobile** : Ajout du lien direct vers la page de conciergerie / service client avec l'icône vectorielle `Headset` de `lucide-react`.
   - [x] **Gestion de l'État Actif Multi-Routes** : Détection active sur `/service-client`, `/about/service-client` et `/contact` avec mise en surbrillance cohérente.

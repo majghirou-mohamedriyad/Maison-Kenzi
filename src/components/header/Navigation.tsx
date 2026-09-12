@@ -165,29 +165,29 @@ const Navigation = () => {
   return (
     <div className="relative">
       {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
-      <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-3.5 sm:px-5 py-2 flex items-center justify-between transition-all duration-300">
+      <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-4 sm:px-6 md:px-7 py-2.5 sm:py-3 md:py-3.5 min-h-[58px] sm:min-h-[66px] md:min-h-[74px] flex items-center justify-between transition-all duration-300">
 
         {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
-        <div className="flex items-center gap-1 sm:gap-2 z-10">
+        <div className="flex items-center gap-1.5 sm:gap-2 z-10">
           {/* Mobile Menu Button */}
           <button
             onClick={() => {
               setIsSearchOpen(false);
               setIsMobileMenuOpen((v) => !v);
             }}
-            className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-foreground hover:text-primary hover:bg-muted/50 transition-colors cursor-pointer"
+            className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-foreground hover:text-primary hover:bg-muted/50 transition-colors cursor-pointer"
             aria-label="Menu"
           >
-            {isMobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
           {/* Desktop Nav Pills (Left side) */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-2">
             {/* 1. Bouton « Nos Produits » -> Catalogue */}
             <Link
               to="/collection/all"
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${location.pathname === "/collection/all"
-                  ? "bg-foreground text-background shadow-xs font-semibold"
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${location.pathname === "/collection/all"
+                  ? "bg-foreground text-background shadow-xs"
                   : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
                 }`}
             >
@@ -203,8 +203,8 @@ const Navigation = () => {
               <button
                 type="button"
                 onClick={() => setIsCollectionsHovered((v) => !v)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${isCollectionsHovered || isCollectionsActive
-                    ? "bg-foreground text-background shadow-xs font-semibold"
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isCollectionsHovered || isCollectionsActive
+                    ? "bg-foreground text-background shadow-xs"
                     : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
                   }`}
                 aria-expanded={isCollectionsHovered}
@@ -320,30 +320,30 @@ const Navigation = () => {
               setIsCollectionsHovered(false);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="flex items-center justify-center px-2 py-0.5 transition-transform duration-200 hover:scale-105 select-none cursor-pointer"
+            className="flex items-center justify-center px-3 py-1 transition-transform duration-200 hover:scale-105 select-none cursor-pointer"
             aria-label="Maison Kenzi - Accueil"
           >
             <img
               src="/mk-logo-light-removebg.png"
               alt="Maison Kenzi"
-              className="h-10 sm:h-11 md:h-12 lg:h-14 w-auto max-w-[160px] sm:max-w-[190px] md:max-w-[220px] object-contain drop-shadow-xs dark:hidden"
+              className="h-11 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[170px] sm:max-w-[200px] md:max-w-[240px] object-contain drop-shadow-xs dark:hidden"
             />
             <img
               src="/mk-logo-dark.png"
               alt="Maison Kenzi"
-              className="h-10 sm:h-11 md:h-12 lg:h-14 w-auto max-w-[160px] sm:max-w-[190px] md:max-w-[220px] object-contain drop-shadow-xs hidden dark:block"
+              className="h-11 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[170px] sm:max-w-[200px] md:max-w-[240px] object-contain drop-shadow-xs hidden dark:block"
             />
           </Link>
         </div>
 
-        {/* Right Side: Suivi Commande, À Propos, Theme, Search, Cart */}
-        <div className="flex items-center gap-1 sm:gap-1.5 z-10">
+        {/* Right Side: Suivi Commande, Service Client, À Propos, Theme, Search, Cart */}
+        <div className="flex items-center gap-1 sm:gap-2 z-10">
 
           {/* Desktop Suivi Commande Link */}
           <Link
             to="/suivi-commande"
-            className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/suivi-commande"
-                ? "bg-foreground text-background"
+            className={`hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/suivi-commande"
+                ? "bg-foreground text-background shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             title="Suivre ma commande en direct"
@@ -355,8 +355,8 @@ const Navigation = () => {
           {/* Desktop Service Client Link */}
           <Link
             to="/service-client"
-            className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
-                ? "bg-foreground text-background"
+            className={`hidden md:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
+                ? "bg-foreground text-background shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             title="Service Client & Conciergerie Privée"
@@ -368,8 +368,8 @@ const Navigation = () => {
           {/* Desktop À Propos Link */}
           <Link
             to="/about"
-            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/about"
-                ? "bg-foreground text-background"
+            className={`hidden xl:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/about"
+                ? "bg-foreground text-background shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
           >
@@ -390,25 +390,25 @@ const Navigation = () => {
               setIsCollectionsHovered(false);
               setIsSearchOpen((v) => !v);
             }}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${isSearchOpen
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${isSearchOpen
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             aria-label="Rechercher"
             title="Recherche (Ctrl + K)"
           >
-            <Search size={17} strokeWidth={1.8} />
+            <Search size={18} strokeWidth={1.8} />
           </button>
 
           {/* Cart Button with Animated Badge */}
           <button
             onClick={() => setIsBagOpen(true)}
-            className="relative w-9 h-9 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
+            className="relative w-10 h-10 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
             aria-label="Panier"
           >
-            <BagIcon size={17} strokeWidth={1.8} />
+            <BagIcon size={18} strokeWidth={1.8} />
             {totalItems > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center shadow-xs animate-in zoom-in duration-150">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center shadow-xs animate-in zoom-in duration-150">
                 {totalItems}
               </span>
             )}
