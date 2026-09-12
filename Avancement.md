@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Intégration & Activation de Vercel Speed Insights ([`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Dépendance `@vercel/speed-insights`** : Ajout du package officiel pour le suivi des métriques de performance et Web Vitals en temps réel.
+  - [x] **Montage du Composant `<SpeedInsights />`** : Intégration dans le composant racine `src/App.tsx` pour l'analyse continue des temps de chargement et de navigation sur Vercel.
+
 - [x] Commande Multi-Parfums & Multi-Produits en Achat Direct ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Ajout de Parfums Complémentaires au Formulaire** : Bouton « Ajouter un autre parfum » permettant de parcourir et rechercher l'ensemble du catalogue en temps réel.
   - [x] **Choix Flexible des Formats & Quantités Multiples** : Sélection individuelle de la contenance (Flacon d'origine, 5ml, 10ml) et du nombre d'unités avec recalcul dynamique du montant total.

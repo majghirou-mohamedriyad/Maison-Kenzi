@@ -1,8 +1,15 @@
+/**
+ * Point d'Entrée Principal de l'Application Maison Kenzi
+ * Configure les fournisseurs de contexte globaux (QueryClient, Tooltip, Router, Theme, Panier),
+ * le routage dynamique et les outils de mesure de performance Vercel Speed Insights.
+ */
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import ScrollToTop from "./components/ScrollToTop";
 import { CartProvider } from "./store/cart";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -71,6 +78,7 @@ const App = () => (
             <FloatingCartButton />
             <ChatBotMount />
             <BackToTop />
+            <SpeedInsights />
             </MaintenanceGate>
 
           </CartProvider>
