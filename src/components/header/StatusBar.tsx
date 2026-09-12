@@ -6,15 +6,17 @@
 
 import { useEffect, useState } from "react";
 import { Truck, ShieldCheck, Sparkles, Award } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const StatusBar = () => {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const usps = [
-    { text: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc & en Europe", icon: Sparkles },
-    { text: "100% Flacons Complets & Scellés d'Origine", icon: Award },
-    { text: "Livraison Express partout au Maroc & en Europe", icon: Truck },
-    { text: "Paiement Sécurisé par Internet — Vente Définitive", icon: ShieldCheck },
+    { text: t("statusBar.usp1", "Haute Parfumerie de Niche — Sélection d'Exception au Maroc & en Europe"), icon: Sparkles },
+    { text: t("statusBar.usp2", "100% Flacons Complets & Scellés d'Origine"), icon: Award },
+    { text: t("statusBar.usp3", "Livraison Express partout au Maroc & en Europe"), icon: Truck },
+    { text: t("statusBar.usp4", "Paiement Sécurisé par Internet — Vente Définitive"), icon: ShieldCheck },
   ];
 
   useEffect(() => {

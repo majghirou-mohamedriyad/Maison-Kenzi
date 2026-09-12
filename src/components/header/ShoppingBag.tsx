@@ -23,6 +23,7 @@ import {
   PackageCheck,
   RotateCcw,
   CheckCircle2,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,6 +31,7 @@ import { useCart } from "@/store/cart";
 import { SIZE_META, formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useProducts } from "@/store/useProductStore";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ShoppingBagProps {
   isOpen: boolean;
@@ -37,6 +39,7 @@ interface ShoppingBagProps {
 }
 
 const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
+  const { t } = useLanguage();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
@@ -108,10 +111,10 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-serif text-base sm:text-lg font-bold text-foreground tracking-tight">
-                  Mon Panier
+                  {t("cart.title", "Mon Panier")}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-tight">
-                  {totalItems} {totalItems > 1 ? "articles" : "article"}
+                  {totalItems} {totalItems > 1 ? t("cart.items", "articles") : t("cart.item", "article")}
                 </span>
               </div>
               <span className="text-[11px] text-muted-foreground block">
@@ -137,16 +140,16 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     ? "bg-destructive/15 text-destructive font-bold border border-destructive/30"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
-                title="Vider le panier"
+                title={t("cart.clearCart", "Vider le panier")}
               >
-                {confirmClear ? "Confirmer ?" : "Vider"}
+                {confirmClear ? t("common.confirm", "Confirmer ?") : t("cart.clear", "Vider")}
               </button>
             )}
 
             <button
               onClick={handleClose}
               className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
-              aria-label="Fermer le panier"
+              aria-label={t("common.close", "Fermer le panier")}
             >
               <X size={18} />
             </button>
@@ -160,11 +163,11 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
               <Truck className="w-3.5 h-3.5 shrink-0" />
               {remainingForFree === 0 ? (
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  Livraison Express Offerte partout au Maroc & en Europe !
+                  {t("cart.freeShippingReached", "Livraison Express Offerte partout au Maroc & en Europe !")}
                 </span>
               ) : (
                 <span>
-                  Plus que <strong className="font-bold underline">{formatMAD(remainingForFree)}</strong> pour la livraison offerte
+                  {t("cart.moreForFreeShipping", "Plus que")} <strong className="font-bold underline">{formatMAD(remainingForFree)}</strong> {t("cart.forFreeShipping", "pour la livraison offerte")}
                 </span>
               )}
             </span>
@@ -200,10 +203,10 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
 
               <div className="space-y-1.5 max-w-xs">
                 <h3 className="font-serif text-lg font-bold text-foreground">
-                  Votre panier est vide
+                  {t("cart.emptyTitle", "Votre panier est vide")}
                 </h3>
                 <p className="text-xs text-muted-foreground font-light leading-relaxed">
-                  Explorez nos sillages d'exception en flacons complets scellés et composez votre garde-robe olfactive.
+                  {t("cart.emptySubtitle", "Explorez nos sillages d'exception en flacons complets scellés et composez votre garde-robe olfactive.")}
                 </p>
               </div>
 
@@ -216,7 +219,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 >
                   <Link to="/collection/all" className="flex items-center justify-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Découvrir le Catalogue</span>
+                    <span>{t("cart.exploreCatalog", "Découvrir le Catalogue")}</span>
                   </Link>
                 </Button>
               </div>
@@ -325,22 +328,22 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                 {/* Carte des Totaux */}
                 <div className="space-y-1.5 bg-card/70 border border-border/70 rounded-xl p-3.5 shadow-xs">
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
-                    <span>Sous-total ({totalItems} article{totalItems > 1 ? "s" : ""})</span>
+                    <span>{t("cart.subtotal", "Sous-total")} ({totalItems} {totalItems > 1 ? t("cart.items", "articles") : t("cart.item", "article")})</span>
                     <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
                     <span className="flex items-center gap-1">
                       <Truck className="w-3 h-3 text-primary" />
-                      <span>Livraison partout au Maroc</span>
+                      <span>{t("cart.shippingToMorocco", "Livraison partout au Maroc & Europe")}</span>
                     </span>
                     {remainingForFree === 0 ? (
                       <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                        GRATUITE
+                        {t("cart.free", "GRATUITE")}
                       </span>
                     ) : (
                       <span className="text-[11px] text-primary font-semibold">
-                        Calculée à la commande
+                        {t("cart.calculatedAtCheckout", "Calculée à la commande")}
                       </span>
                     )}
                   </div>
@@ -348,9 +351,9 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                   <div className="flex justify-between items-center pt-2 border-t border-border/50">
                     <div>
                       <span className="text-xs font-bold uppercase tracking-wider text-foreground block">
-                        Total Estimé
+                        {t("cart.estimatedTotal", "Total Estimé")}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">Paiement à la réception</span>
+                      <span className="text-[10px] text-muted-foreground">{t("cart.paymentOnline", "Paiement en ligne sécurisé")}</span>
                     </div>
                     <span className="text-lg font-bold tracking-tight text-primary">
                       {formatMAD(subtotal)}
@@ -364,7 +367,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                   className="w-full rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold uppercase tracking-wider text-xs h-12 shadow-lg shadow-primary/20 gap-2 cursor-pointer transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
                   onClick={handleCheckoutNavigation}
                 >
-                  <span>Valider ma Commande</span>
+                  <span>{t("cart.checkoutButton", "Valider ma Commande")}</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
 
@@ -374,18 +377,18 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                   onClick={handleClose}
                   className="w-full text-center text-[11px] uppercase tracking-wider font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1"
                 >
-                  Continuer mes découvertes
+                  {t("cart.continueShopping", "Continuer mes découvertes")}
                 </button>
 
                 {/* Réassurance & Garanties */}
                 <div className="grid grid-cols-2 gap-2 pt-2 text-[10px] text-muted-foreground/90 border-t border-border/40 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>100% Authentique</span>
+                    <span>{t("cart.guarantee100", "100% Authentique")}</span>
                   </div>
                   <div className="flex items-center justify-center gap-1.5">
                     <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Paiement par internet</span>
+                    <span>{t("cart.paymentInternet", "Paiement par internet")}</span>
                   </div>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
@@ -16,6 +17,7 @@ const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 );
 
 const Footer = () => {
+  const { t } = useLanguage();
   const { settings } = useAppSettings();
   const categories = useCategories();
   const activeCategories = useMemo(
@@ -52,17 +54,17 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-              Haute Parfumerie & Flacons Originaux
+              {t("footer.brandSubtitle", "Haute Parfumerie & Flacons Originaux")}
             </p>
             <p className="text-xs font-light text-muted-foreground leading-relaxed max-w-xs">
-              Sélection exclusive des plus grands chefs-d'œuvre de la parfumerie mondiale. Flacons 100% originaux scellés livrés partout au Maroc et en Europe.
+              {t("footer.brandDescription", "Sélection exclusive des plus grands chefs-d'œuvre de la parfumerie mondiale. Flacons 100% originaux scellés livrés partout au Maroc et en Europe.")}
             </p>
           </div>
 
           {/* Col 2: Collections Links (Catégories Dynamiques) */}
           <div>
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
-              Collections
+              {t("footer.collections", "Collections")}
             </h4>
             <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
               <li>
@@ -70,7 +72,7 @@ const Footer = () => {
                   to="/collection/all"
                   className="hover:text-primary transition-colors font-medium text-foreground"
                 >
-                  Tous les Parfums (Catalogue)
+                  {t("footer.allPerfumes", "Tous les Parfums (Catalogue)")}
                 </Link>
               </li>
               {activeCategories
@@ -97,34 +99,34 @@ const Footer = () => {
           {/* Col 3: Assistance & Client */}
           <div>
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
-              Informations
+              {t("footer.information", "Informations")}
             </h4>
             <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
               <li>
                 <Link to="/about" className="hover:text-primary transition-colors flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  <span>À Propos de Maison Kenzi</span>
+                  <span>{t("footer.aboutUs", "À Propos de Maison Kenzi")}</span>
                 </Link>
               </li>
               <li>
                 <Link to="/suivi-commande" className="hover:text-primary transition-colors flex items-center gap-1.5 font-medium text-foreground">
                   <Truck className="w-3.5 h-3.5 text-primary" />
-                  <span>Suivre ma Commande</span>
+                  <span>{t("footer.trackOrder", "Suivre ma Commande")}</span>
                 </Link>
               </li>
               <li>
                 <Link to="/about/service-client" className="hover:text-primary transition-colors flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-primary" />
-                  <span>Service Client & Contact</span>
+                  <span>{t("footer.customerService", "Service Client & Contact")}</span>
                 </Link>
               </li>
               <li className="pt-1 text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
                 <Truck className="w-3.5 h-3.5 text-primary" />
-                <span>Livraison partout au Maroc & en Europe</span>
+                <span>{t("footer.deliveryNotice", "Livraison partout au Maroc & en Europe")}</span>
               </li>
               <li className="text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                <span>Paiement Sécurisé par Internet</span>
+                <span>{t("footer.securePayment", "Paiement Sécurisé par Internet")}</span>
               </li>
             </ul>
           </div>
@@ -132,7 +134,7 @@ const Footer = () => {
           {/* Col 4: Direct Contact & Socials */}
           <div>
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
-              Nous Contacter
+              {t("footer.contactUs", "Nous Contacter")}
             </h4>
             <div className="space-y-3">
               <a
@@ -143,7 +145,7 @@ const Footer = () => {
               >
                 <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0 group-hover:scale-110 transition-transform" />
                 <div className="min-w-0">
-                  <p className="font-semibold text-xs text-[#25D366]">WhatsApp Direct</p>
+                  <p className="font-semibold text-xs text-[#25D366]">{t("footer.whatsappDirect", "WhatsApp Direct")}</p>
                   <p className="text-[11px] text-muted-foreground truncate">+{waNumber}</p>
                 </div>
               </a>
@@ -156,7 +158,7 @@ const Footer = () => {
               >
                 <Instagram className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                 <div className="min-w-0">
-                  <p className="font-semibold text-xs text-primary">Instagram Officiel</p>
+                  <p className="font-semibold text-xs text-primary">{t("footer.officialInstagram", "Instagram Officiel")}</p>
                   <p className="text-[11px] text-muted-foreground truncate">@maisonkenzi</p>
                 </div>
               </a>
@@ -166,7 +168,7 @@ const Footer = () => {
 
         {/* Bottom copyright bar */}
         <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
-          <p>© {new Date().getFullYear()} Maison Kenzi. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Maison Kenzi. {t("footer.allRightsReserved", "Tous droits réservés.")}</p>
         </div>
       </div>
     </footer>

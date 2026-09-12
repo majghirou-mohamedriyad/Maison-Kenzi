@@ -13,6 +13,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import ScrollToTop from "./components/ScrollToTop";
 import { CartProvider } from "./store/cart";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import MaintenanceGate from "./components/MaintenanceGate";
 import ChatBotMount from "./components/ChatBotMount";
 import FloatingCartButton from "./components/cart/FloatingCartButton";
@@ -43,45 +44,47 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <ThemeProvider>
-          <CartProvider>
-            <Toaster />
-            <Sonner />
-            <ScrollToTop />
-            <MaintenanceGate>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/collection/:collection" element={<Collection />} />
-              <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/service-client" element={<ServiceClient />} />
-              <Route path="/about/service-client" element={<ServiceClient />} />
-              <Route path="/contact" element={<ServiceClient />} />
-              <Route path="/suivi-commande" element={<OrderTracking />} />
-              <Route path="/tracking" element={<OrderTracking />} />
+          <LanguageProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <ScrollToTop />
+              <MaintenanceGate>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/collection/:collection" element={<Collection />} />
+                <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/service-client" element={<ServiceClient />} />
+                <Route path="/about/service-client" element={<ServiceClient />} />
+                <Route path="/contact" element={<ServiceClient />} />
+                <Route path="/suivi-commande" element={<OrderTracking />} />
+                <Route path="/tracking" element={<OrderTracking />} />
 
-              {/* Admin */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route element={<AdminGuard />}>
-                <Route element={<AdminLayout />}>
-                  <Route path="/admin" element={<Dashboard />} />
-                  <Route path="/admin/produits" element={<Produits />} />
-                  <Route path="/admin/categories" element={<CategoriesAdmin />} />
-                  <Route path="/admin/commandes" element={<Commandes />} />
-                  <Route path="/admin/finances" element={<Finances />} />
-                  <Route path="/admin/parametres" element={<Parametres />} />
+                {/* Admin */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route element={<AdminGuard />}>
+                  <Route element={<AdminLayout />}>
+                    <Route path="/admin" element={<Dashboard />} />
+                    <Route path="/admin/produits" element={<Produits />} />
+                    <Route path="/admin/categories" element={<CategoriesAdmin />} />
+                    <Route path="/admin/commandes" element={<Commandes />} />
+                    <Route path="/admin/finances" element={<Finances />} />
+                    <Route path="/admin/parametres" element={<Parametres />} />
+                  </Route>
                 </Route>
-              </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <FloatingCartButton />
-            <ChatBotMount />
-            <BackToTop />
-            <SpeedInsights />
-            </MaintenanceGate>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <FloatingCartButton />
+              <ChatBotMount />
+              <BackToTop />
+              <SpeedInsights />
+              </MaintenanceGate>
 
-          </CartProvider>
+            </CartProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </BrowserRouter>
     </TooltipProvider>

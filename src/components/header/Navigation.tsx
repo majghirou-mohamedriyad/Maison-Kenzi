@@ -31,12 +31,15 @@ import {
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
 
 const Navigation = () => {
+  const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -191,7 +194,7 @@ const Navigation = () => {
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
                 }`}
             >
-              <span>Nos Produits</span>
+              <span>{t("nav.products", "Nos Produits")}</span>
             </Link>
 
             {/* 2. Bouton « Nos Collections » -> Menu déroulant au survol */}
@@ -210,7 +213,7 @@ const Navigation = () => {
                 aria-expanded={isCollectionsHovered}
                 aria-haspopup="true"
               >
-                <span>Nos Collections</span>
+                <span>{t("nav.collections", "Nos Collections")}</span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${isCollectionsHovered ? "rotate-180" : ""
                     }`}
@@ -226,14 +229,14 @@ const Navigation = () => {
                 >
                   <div className="px-3 py-1.5 border-b border-border/60 mb-1 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
-                      Univers & Collections
+                      {t("nav.collections", "Univers & Collections")}
                     </span>
                     <Link
                       to="/collection/all"
                       onClick={() => setIsCollectionsHovered(false)}
                       className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
                     >
-                      <span>Catalogue</span>
+                      <span>{t("nav.catalog", "Catalogue")}</span>
                       <ChevronRight className="w-3 h-3" />
                     </Link>
                   </div>
@@ -249,10 +252,10 @@ const Navigation = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors block truncate">
-                        Toutes les Collections
+                        {t("nav.allCollections", "Toutes les Collections")}
                       </span>
                       <span className="text-[10px] text-muted-foreground truncate block font-light">
-                        Catalogue complet des parfums
+                        {t("nav.catalogSubtitle", "Catalogue complet des parfums")}
                       </span>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
@@ -336,7 +339,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        {/* Right Side: Suivi Commande, Service Client, À Propos, Theme, Search, Cart */}
+        {/* Right Side: Suivi Commande, Service Client, À Propos, Language, Theme, Search, Cart */}
         <div className="flex items-center gap-1 sm:gap-2 z-10">
 
           {/* Desktop Suivi Commande Link */}
@@ -349,7 +352,7 @@ const Navigation = () => {
             title="Suivre ma commande en direct"
           >
             <Truck className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Suivi</span>
+            <span className="hidden lg:inline">{t("nav.tracking", "Suivi")}</span>
           </Link>
 
           {/* Desktop Service Client Link */}
@@ -362,7 +365,7 @@ const Navigation = () => {
             title="Service Client & Conciergerie Privée"
           >
             <Headset className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Service Client</span>
+            <span className="hidden lg:inline">{t("nav.customerService", "Service Client")}</span>
           </Link>
 
           {/* Desktop À Propos Link */}
@@ -374,8 +377,13 @@ const Navigation = () => {
               }`}
           >
             <Info className="w-3.5 h-3.5" />
-            <span>À Propos</span>
+            <span>{t("nav.about", "À Propos")}</span>
           </Link>
+
+          {/* Language Selector (FR / EN) */}
+          <div className="flex items-center">
+            <LanguageSelector variant="compact" />
+          </div>
 
           {/* Theme Toggle */}
           <div className="flex items-center">
@@ -394,7 +402,7 @@ const Navigation = () => {
               ? "bg-primary text-primary-foreground shadow-xs"
               : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
-            aria-label="Rechercher"
+            aria-label={t("nav.search", "Rechercher")}
             title="Recherche (Ctrl + K)"
           >
             <Search size={18} strokeWidth={1.8} />
@@ -404,7 +412,7 @@ const Navigation = () => {
           <button
             onClick={() => setIsBagOpen(true)}
             className="relative w-10 h-10 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
-            aria-label="Panier"
+            aria-label={t("nav.cart", "Panier")}
           >
             <BagIcon size={18} strokeWidth={1.8} />
             {totalItems > 0 && (
@@ -554,6 +562,16 @@ const Navigation = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
+            {/* Langue & Thème rapide en haut du menu mobile */}
+            <div className="flex items-center justify-between pb-2 border-b border-border/60">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                {t("nav.preferences", "Préférences")}
+              </span>
+              <div className="flex items-center gap-2">
+                <LanguageSelector variant="pill" />
+              </div>
+            </div>
+
             {/* 1. Lien principal Nos Produits (Catalogue) */}
             <Link
               to="/collection/all"
@@ -565,7 +583,7 @@ const Navigation = () => {
             >
               <span className="flex items-center gap-2.5 font-semibold text-xs">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span>Nos Produits (Catalogue Complet)</span>
+                <span>{t("nav.allProducts", "Nos Produits (Catalogue Complet)")}</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 opacity-70" />
             </Link>
@@ -574,7 +592,7 @@ const Navigation = () => {
             {activeAdminCategories.length > 0 && (
               <div className="space-y-1.5 pt-1">
                 <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground px-1">
-                  Nos Collections
+                  {t("nav.collections", "Nos Collections")}
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   {activeAdminCategories.map((cat) => {
@@ -627,7 +645,7 @@ const Navigation = () => {
               >
                 <span className="flex items-center gap-2">
                   <Truck className={`w-4 h-4 ${location.pathname === "/suivi-commande" ? "text-background" : "text-primary"}`} />
-                  <span>Suivre ma Commande</span>
+                  <span>{t("nav.tracking", "Suivre ma Commande")}</span>
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
@@ -642,7 +660,7 @@ const Navigation = () => {
               >
                 <span className="flex items-center gap-2">
                   <Headset className={`w-4 h-4 ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact" ? "text-background" : "text-primary"}`} />
-                  <span>Service Client & Conciergerie</span>
+                  <span>{t("nav.customerService", "Service Client & Conciergerie")}</span>
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
@@ -657,7 +675,7 @@ const Navigation = () => {
               >
                 <span className="flex items-center gap-2">
                   <Info className={`w-4 h-4 ${location.pathname === "/about" ? "text-background" : "text-primary"}`} />
-                  <span>À Propos de Maison Kenzi</span>
+                  <span>{t("nav.about", "À Propos de Maison Kenzi")}</span>
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
@@ -669,7 +687,7 @@ const Navigation = () => {
                 className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold shadow-xs transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Conseil & Commande WhatsApp</span>
+                <span>{t("nav.whatsappHelp", "Conseil & Commande WhatsApp")}</span>
               </a>
             </div>
           </div>
