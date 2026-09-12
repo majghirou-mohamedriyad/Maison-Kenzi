@@ -92,15 +92,15 @@ const collectionHeroInfo = (
   if (f === "toutes" || f === "all") {
     return {
       title: "Toutes les Collections",
-      subtitle: "Catalogue Officiel",
-      description: "Explorez l'ensemble de notre sélection de haute parfumerie et flacons originaux.",
+      subtitle: "",
+      description: "Explorez l'ensemble de notre sélection : haute parfumerie, cosmétiques et créations artisanales d'exception.",
       badge: "",
     };
   }
 
   return {
     title: categoryName || filter,
-    subtitle: "Univers Olfactif",
+    subtitle: "",
     description: (categoryDesc || "").trim(),
     badge: isComingSoon ? "À Venir" : "",
   };
