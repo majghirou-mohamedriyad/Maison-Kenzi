@@ -9,7 +9,8 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Résolution des Ressources Visuelles & Bannière Officielle du Hero :
+- [x] Résolution des Ressources Visuelles & Diaporama Hero Multidisciplinaire :
+  - [x] **Mise en Valeur des Collections Artisanat & Antiques** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Intégration de slides immersives dédiées aux **Produits Artisanaux** (*Savoir-Faire & Fait Main*) et aux **Objets Antiques & Raretés** (*Patrimoine & Histoire*) avec liens directs vers leurs univers respectifs.
   - [x] **Intégration de la Bannière Officielle `mk-banner.png`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Affichage de la bannière panoramique de prestige `public/mk-banner.png` en tête du carrousel de la page d'accueil avec transition Ken Burns douce.
   - [x] **Correction de l'Import Manquant `hero-image.jpg`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Remplacement de l'import local manquant par des images haute définition de haute parfumerie pour le carrousel d'accueil, et nettoyage préventif des anciens imports orphelins (`OurStory.tsx`, `ProductImageGallery.tsx`, `ProductGrid.tsx`, `OneThirdTwoThirdsSection.tsx`).
 
