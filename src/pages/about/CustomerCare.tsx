@@ -1,14 +1,20 @@
 /**
  * Page Service Client & Contact — Maison Kenzi
  *
- * Expérience éditoriale haut de gamme dédiée au service client et à la conciergerie olfactive.
- * Respecte le Luxury Nude Design System (Travertin, Albâtre, Or Champagne), zéro emoji,
- * icônes vectorielles lucide-react et liaisons dynamiques vers les paramètres de la boutique.
+ * Expérience éditoriale et visuelle de prestige :
+ * - Hero immersif avec galerie photographique des coulisses de la conciergerie
+ * - Cartes d'accès directs aux conseillers (WhatsApp en direct, Téléphone, Instagram, Email)
+ * - Formulaire de contact interactif avec sélecteur d'univers (Parfums, Artisanat, Antiques, Suivi)
+ * - Parcours client créatif en 4 étapes clés (Conseil, Préparation scellée, Expédition 24-48h, Paiement à réception)
+ * - FAQ interactive haute parfumerie
+ * Conformité Luxury Nude Design System, zéro emoji et icônes vectorielles lucide-react.
  */
 
 import { useState } from "react";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
+import Seo from "@/components/Seo";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   MessageCircle,
@@ -24,9 +30,64 @@ import {
   ChevronDown,
   Mail,
   MapPin,
+  Gift,
+  Compass,
+  ArrowRight,
+  PackageCheck,
+  Crown,
+  Gem,
+  HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
+
+const conciergeGallery = [
+  {
+    title: "Conseil Olfactif Sur-Mesure",
+    tag: "Accompagnement VIP",
+    desc: "Nos spécialistes vous guident selon vos notes de prédilection, la saison ou l'occasion.",
+    image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=900&auto=format&fit=crop",
+  },
+  {
+    title: "Coffrets & Emballages Nobles",
+    tag: "Protection Maximale",
+    desc: "Chaque flacon et création artisanale est préparé dans un écrin anti-choc sécurisé sous blister.",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=900&auto=format&fit=crop",
+  },
+  {
+    title: "Expédition Express 24–48h",
+    tag: "Partout au Maroc",
+    desc: "Livraison suivie en direct à Casablanca, Rabat, Marrakech, Tanger et toutes les villes du Royaume.",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=900&auto=format&fit=crop",
+  },
+];
+
+const processSteps = [
+  {
+    step: "01",
+    title: "Conseil & Choix Personnalisé",
+    desc: "Échangez avec nos conseillers sur WhatsApp pour affiner votre sélection de fragrances, artisanat ou objets d'art.",
+    icon: Compass,
+  },
+  {
+    step: "02",
+    title: "Conditionnement d'Origine",
+    desc: "Préparation soignée de vos articles 100% authentiques et neufs dans leur emballage officiel scellé.",
+    icon: Crown,
+  },
+  {
+    step: "03",
+    title: "Acheminement Express Sécurisé",
+    desc: "Prise en charge prioritaire et remise d'un numéro de suivi MK en temps réel pour suivre votre colis.",
+    icon: Truck,
+  },
+  {
+    step: "04",
+    title: "Règlement en Mains Propres",
+    desc: "Paiement en espèces à la livraison (Cash on Delivery) lors de la remise de votre commande.",
+    icon: PackageCheck,
+  },
+];
 
 const CustomerCare = () => {
   const { settings } = useAppSettings();
@@ -40,12 +101,13 @@ const CustomerCare = () => {
 
   const instagramUrl = settings.instagram_url || "https://instagram.com/maisonkenzi";
   const storeEmail = settings.store_email || "contact@maisonkenzi.com";
-  const storeAddress = settings.store_address || "Casablanca & Partout au Maroc";
+  const storeAddress = settings.store_address || "Casablanca & Partout au Royaume du Maroc";
 
   // État du formulaire
   const [formData, setFormData] = useState({
     name: "",
     contact: "",
+    categoryType: "parfums",
     subject: "Conseil & Choix de Parfum",
     message: "",
   });
@@ -75,12 +137,12 @@ const CustomerCare = () => {
   };
 
   const handleWhatsappSend = () => {
-    const text = `Bonjour Maison Kenzi,\n\nNom: ${formData.name || "Client"}\nContact: ${formData.contact || "Non précisé"}\nSujet: ${formData.subject}\nMessage: ${formData.message || "Bonjour, je souhaiterais obtenir un renseignement."}`;
+    const text = `Bonjour Maison Kenzi,\n\nNom: ${formData.name || "Client"}\nContact: ${formData.contact || "Non précisé"}\nUnivers: ${formData.categoryType}\nSujet: ${formData.subject}\nMessage: ${formData.message || "Bonjour, je souhaiterais obtenir un renseignement."}`;
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   const handleDirectWhatsapp = () => {
-    const defaultText = "Bonjour Maison Kenzi, j'aimerais échanger avec un conseiller pour un renseignement sur vos parfums.";
+    const defaultText = "Bonjour Maison Kenzi, j'aimerais échanger avec un conseiller pour un renseignement sur vos collections.";
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(defaultText)}`, "_blank");
   };
 
@@ -88,138 +150,208 @@ const CustomerCare = () => {
   const faqItems = [
     {
       id: 1,
-      categoryLabel: "Authenticité & Décants",
+      categoryLabel: "Authenticité & Flacons",
       icon: ShieldCheck,
-      question: "Comment garantissez-vous l'authenticité des parfums ?",
+      question: "Les créations vendues sont-elles 100% d'origine et scellées ?",
       answer:
-        "L'intégrité de nos fragrances est notre premier engagement. Chaque flacon est acquis exclusivement auprès des circuits officiels des maisons de haute parfumerie et des distributeurs certifiés. Nos décants sont prélevés avec des instruments stériles de précision directement à partir des bouteilles scellées, sans aucune dilution, altération ou manipulation de la formule originale.",
+        "L'authenticité absolue est notre premier engagement. Chaque parfum est livré dans son flacon d'origine complet, neuf et scellé sous blister avec emballage officiel. Nos pièces artisanales et objets antiques sont minutieusement expertisés.",
     },
     {
       id: 2,
-      categoryLabel: "Authenticité & Décants",
-      icon: Sparkles,
-      question: "Quelle est la qualité des flacons décants nomades ?",
-      answer:
-        "Nos décants (5ml et 10ml) sont confectionnés dans un verre épais haute densité résistant aux chocs, préservant le jus de la lumière et des variations de température. Ils sont équipés d'un atomiseur vaporisateur brume fine premium offrant une diffusion homogène et voluptueuse identique aux flacons grands formats.",
-    },
-    {
-      id: 3,
-      categoryLabel: "Conseils & Formats",
-      icon: Clock,
-      question: "Combien de vaporisations permet un décant 5ml et 10ml ?",
-      answer:
-        "Un décant de 5 ml offre environ 70 à 80 pulvérisations (soit près d'un mois d'utilisation quotidienne pour tester l'évolution des notes sur votre peau). Un format 10 ml permet environ 150 à 160 pulvérisations, idéal pour voyager ou porter une création précieuse durant toute une saison.",
-    },
-    {
-      id: 4,
-      categoryLabel: "Commandes & Livraison",
+      categoryLabel: "Délais & Expédition",
       icon: Truck,
       question: "Quels sont les délais et modalités de livraison au Maroc ?",
       answer:
-        "Nous livrons dans l'ensemble des villes et provinces du Royaume du Maroc sous 24 à 48 heures ouvrées. Chaque flacon est soigneusement capitonné dans un emballage anti-choc isotherme. Vous réglez directement en espèces (Cash on Delivery) lors de la remise en main propre de votre colis par le transporteur.",
+        "Nous expédions vos commandes sous 24 à 48 heures ouvrées partout au Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, etc.). Chaque commande bénéficie d'un suivi en temps réel et d'un emballage de haute sécurité.",
+    },
+    {
+      id: 3,
+      categoryLabel: "Règlement & Sérénité",
+      icon: PackageCheck,
+      question: "Comment s'effectue le paiement de ma commande ?",
+      answer:
+        "Le règlement s'effectue exclusivement en espèces à la livraison (Cash on Delivery). Vous ne payez qu'au moment précis où le transporteur vous remet votre colis en mains propres à votre domicile ou bureau.",
+    },
+    {
+      id: 4,
+      categoryLabel: "Conseil & Personnalisation",
+      icon: Sparkles,
+      question: "Puis-je bénéficier d'une consultation personnalisée pour un cadeau ?",
+      answer:
+        "Absolument. Notre conciergerie privée vous assiste sur WhatsApp pour sélectionner la fragrance idéale, composer un coffret sur-mesure ou préparer une attention délicate pour une occasion spéciale.",
     },
     {
       id: 5,
-      categoryLabel: "Conseils & Formats",
-      icon: Sparkles,
-      question: "Puis-je bénéficier d'une consultation olfactive personnalisée ?",
-      answer:
-        "Avec grand plaisir. Si vous hésitez entre plusieurs sillages ou cherchez une signature olfactive adaptée à votre personnalité, vos goûts ou une saison particulière, notre conciergerie est à votre disposition 6j/7 sur WhatsApp et Instagram pour une recommandation sur-mesure.",
-    },
-    {
-      id: 6,
       categoryLabel: "Garanties & Retours",
       icon: RotateCcw,
-      question: "Quelle est votre politique d'échange et de rétractation ?",
+      question: "Quelle est votre politique de garantie et de retour ?",
       answer:
-        "Pour des raisons d'hygiène et afin de garantir l'authenticité irréprochable de chaque essence pour l'ensemble de notre clientèle, les retours sont acceptés sous un délai de 7 jours après réception, exclusivement pour les articles non ouverts, non vaporisés et toujours dans leur opercule de protection d'origine.",
+        "Afin de préserver l'intégrité et la perfection de nos créations pour l'ensemble de notre clientèle, les retours sont acceptés sous 7 jours pour les articles non descellés, intacts dans leur blister d'origine.",
     },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20">
+      <Seo
+        title="Service Client & Conciergerie Privée | Maison Kenzi Maroc"
+        description="Contactez la conciergerie Maison Kenzi : assistance personnalisée 7j/7, conseils olfactifs, suivi de commande et livraison express partout au Maroc."
+        path="/about/service-client"
+      />
       <Header />
 
-      <main className="flex-1 pt-28 sm:pt-36 pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* =========================================================================
-              1. HERO ÉDITORIAL LUXE
-             ========================================================================= */}
-          <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary text-xs uppercase tracking-[0.25em] font-medium mb-4">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Haute Parfumerie · Conciergerie</span>
+      <main className="flex-1 pt-24 sm:pt-32 pb-24">
+        {/* =========================================================================
+            1. HERO ÉDITORIAL & IMMERSIF AVEC BADGE DE DISPONIBILITÉ
+           ========================================================================= */}
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+          <div className="relative rounded-3xl overflow-hidden border border-border/80 bg-gradient-to-b from-card/90 via-card/50 to-background p-8 sm:p-14 text-center shadow-lg">
+            {/* Halos d'ambiance dorée */}
+            <div className="absolute top-0 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-[#C9A96E]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs uppercase tracking-[0.25em] font-semibold backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Conciergerie Active · Réponse 7j/7</span>
+              </div>
+
+              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-foreground font-light tracking-tight leading-[1.15]">
+                Une Écoute Attentive & un Service d'<span className="text-primary italic font-serif">Excellence</span>
+              </h1>
+
+              <p className="text-muted-foreground text-xs sm:text-base font-light leading-relaxed max-w-2xl mx-auto pt-1">
+                Que vous recherchiez une signature olfactive, des détails sur une pièce artisanale ou le suivi de votre commande, notre équipe est à votre entière disposition.
+              </p>
+
+              {/* Boutons d'Action Immédiate */}
+              <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  onClick={handleDirectWhatsapp}
+                  size="lg"
+                  className="rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs uppercase tracking-wider font-bold h-12 px-8 shadow-md gap-2 cursor-pointer border-0 transition-transform hover:scale-105"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp Direct
+                </Button>
+
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-border hover:border-primary text-xs uppercase tracking-wider font-semibold h-12 px-8 cursor-pointer"
+                >
+                  <Link to="/suivi-commande" className="gap-2 flex items-center">
+                    <Truck className="w-4 h-4 text-primary" />
+                    Suivre une Commande
+                  </Link>
+                </Button>
+              </div>
             </div>
+          </div>
+        </section>
 
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-foreground font-light tracking-tight mb-5 leading-tight">
-              Service Client & Contact
-            </h1>
-
-            <p className="text-muted-foreground text-sm sm:text-base font-light leading-relaxed max-w-2xl mx-auto">
-              Une interrogation sur une création, un suivi de commande ou le désir d'une recommandation olfactive sur-mesure ? Notre maison est à votre entière écoute.
+        {/* =========================================================================
+            2. GALERIE PHOTOGRAPHIQUE INTERACTIVE DES COULISSES
+           ========================================================================= */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
+          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+            <span className="text-xs uppercase tracking-[0.25em] text-primary font-bold">
+              Les Engagements de la Maison
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
+              Une Attention aux Moindres Détails
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground font-light">
+              Découvrez l'exigence qui anime chaque étape de votre expérience chez Maison Kenzi.
             </p>
-
-            <div className="w-16 h-[1px] bg-primary/40 mx-auto mt-6" />
           </div>
 
-          {/* =========================================================================
-              2. CARTES DE CONTACT HAUTE COUTURE
-             ========================================================================= */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 sm:mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {conciergeGallery.map((item, idx) => (
+              <div
+                key={idx}
+                className="group relative rounded-3xl overflow-hidden border border-border/80 bg-card shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1.5 aspect-[4/5] flex flex-col justify-end"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 sm:p-7 flex flex-col justify-end space-y-2 z-10">
+                  <span className="inline-block text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A96E] bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 w-fit">
+                    {item.tag}
+                  </span>
+                  <h3 className="font-serif text-xl sm:text-2xl text-white font-medium">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-white/80 font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            3. CARTES DE CONTACT DIRECTES HAUTE COUTURE
+           ========================================================================= */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Carte WhatsApp */}
-            <div className="group relative rounded-2xl border border-primary/20 bg-card/60 backdrop-blur-md p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+            <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
-                  <MessageCircle className="w-6 h-6" />
+                <div className="w-14 h-14 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center text-[#25D366] transition-transform duration-300 group-hover:scale-110">
+                  <MessageCircle className="w-7 h-7" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-xl font-medium text-foreground mb-1">
-                    Conciergerie WhatsApp
-                  </h2>
-                  <p className="text-xs uppercase tracking-wider text-primary font-medium">
+                  <h3 className="font-serif text-2xl font-medium text-foreground mb-1">
+                    WhatsApp Privé
+                  </h3>
+                  <p className="text-xs uppercase tracking-wider text-primary font-bold">
                     Réponse Instantanée
                   </p>
                 </div>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  Échangez en direct avec nos conseillers pour un conseil personnalisé, une confirmation de commande ou une question urgente.
+                <p className="text-xs sm:text-sm font-light text-muted-foreground leading-relaxed">
+                  Échangez directement avec un conseiller pour un conseil olfactif, un ajout à votre commande ou une urgence.
                 </p>
               </div>
 
               <div className="pt-6 border-t border-border/50 mt-6">
                 <Button
                   onClick={handleDirectWhatsapp}
-                  className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.15em] text-xs h-11 font-medium transition-transform hover:scale-[1.02]"
+                  className="w-full rounded-full bg-[#25D366] text-white hover:bg-[#20ba5a] uppercase tracking-[0.15em] text-xs h-11 font-bold shadow-xs cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
-                  Ouvrir WhatsApp
+                  Échanger sur WhatsApp
                 </Button>
               </div>
             </div>
 
             {/* Carte Téléphone & Horaires */}
-            <div className="group relative rounded-2xl border border-primary/20 bg-card/60 backdrop-blur-md p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+            <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
-                  <Phone className="w-6 h-6" />
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
+                  <Phone className="w-7 h-7" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-xl font-medium text-foreground mb-1">
+                  <h3 className="font-serif text-2xl font-medium text-foreground mb-1">
                     Ligne Directe
-                  </h2>
-                  <p className="text-xs uppercase tracking-wider text-primary font-medium">
+                  </h3>
+                  <p className="text-xs uppercase tracking-wider text-primary font-bold">
                     Appel & Renseignement
                   </p>
                 </div>
-                <div className="space-y-2 text-sm font-light text-muted-foreground">
-                  <p className="text-foreground font-medium text-base tracking-wide">
+                <div className="space-y-2 text-xs sm:text-sm font-light text-muted-foreground">
+                  <p className="text-foreground font-semibold text-base tracking-wide">
                     {formattedPhone}
                   </p>
                   <div className="flex items-center gap-2 text-xs pt-1">
-                    <Clock className="w-4 h-4 text-primary shrink-0" />
-                    <span>Lun — Sam : 10h00 — 19h00</span>
+                    <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>7j/7 : 09h30 — 21h00</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <MapPin className="w-4 h-4 text-primary shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
                     <span>{storeAddress}</span>
                   </div>
                 </div>
@@ -229,32 +361,32 @@ const CustomerCare = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full rounded-full border-primary/30 text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 font-medium"
+                  className="w-full rounded-full border-border hover:border-primary text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 font-semibold cursor-pointer"
                 >
                   <a href={`tel:+${waNumber}`}>
                     <Phone className="w-4 h-4 mr-2 text-primary" />
-                    Composer le numéro
+                    Appeler l'Atelier
                   </a>
                 </Button>
               </div>
             </div>
 
-            {/* Carte Instagram & Réseaux */}
-            <div className="group relative rounded-2xl border border-primary/20 bg-card/60 backdrop-blur-md p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+            {/* Carte Instagram & Galerie */}
+            <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
-                  <Instagram className="w-6 h-6" />
+                <div className="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-500 transition-transform duration-300 group-hover:scale-110">
+                  <Instagram className="w-7 h-7" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-xl font-medium text-foreground mb-1">
+                  <h3 className="font-serif text-2xl font-medium text-foreground mb-1">
                     Univers Instagram
-                  </h2>
-                  <p className="text-xs uppercase tracking-wider text-primary font-medium">
+                  </h3>
+                  <p className="text-xs uppercase tracking-wider text-primary font-bold">
                     @maisonkenzi
                   </p>
                 </div>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  Découvrez nos arrivages exclusifs, nos décantages en atelier et contactez-nous via message privé (DM).
+                <p className="text-xs sm:text-sm font-light text-muted-foreground leading-relaxed">
+                  Découvrez les nouveautés en direct, nos pièces artisanales et envoyez-nous un message privé (DM).
                 </p>
               </div>
 
@@ -262,285 +394,282 @@ const CustomerCare = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full rounded-full border-primary/30 text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 font-medium"
+                  className="w-full rounded-full border-border hover:border-primary text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 font-semibold cursor-pointer"
                 >
-                  <a
-                    href={instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Rejoindre Maison Kenzi sur Instagram"
-                  >
-                    <Instagram className="w-4 h-4 mr-2 text-primary" />
+                  <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+                    <Instagram className="w-4 h-4 mr-2 text-pink-500" />
                     Rejoindre la Maison
                   </a>
                 </Button>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* =========================================================================
-              3. FORMULAIRE DE MESSAGE INTERACTIF
-             ========================================================================= */}
-          <div className="mb-20">
-            <div className="rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-md p-6 sm:p-12 shadow-sm relative overflow-hidden">
-              <div className="max-w-2xl mx-auto text-center mb-10">
-                <p className="text-xs uppercase tracking-[0.3em] text-primary font-medium mb-2">
-                  Formulaire de Contact
-                </p>
-                <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-light tracking-tight mb-3">
-                  Transmettre un Message à l'Atelier
-                </h2>
-                <p className="text-xs sm:text-sm font-light text-muted-foreground">
-                  Remplissez ce formulaire et notre équipe vous recontactera avec la plus grande diligence.
-                </p>
-              </div>
-
-              {submitted ? (
-                <div className="text-center py-10 space-y-5 animate-fade-in max-w-lg mx-auto">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 mx-auto flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-serif text-2xl text-foreground font-medium">
-                    Demande Enregistrée
-                  </h3>
-                  <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                    Merci <span className="font-medium text-foreground">{formData.name}</span>, votre message a bien été transmis. Nous vous répondrons dans les plus brefs délais.
-                  </p>
-                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setSubmitted(false);
-                        setFormData({ name: "", contact: "", subject: "Conseil & Choix de Parfum", message: "" });
-                      }}
-                      variant="outline"
-                      className="rounded-full text-xs uppercase tracking-wider px-6 border-primary/30 hover:bg-primary/5"
-                    >
-                      Nouvelle demande
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleWhatsappSend}
-                      className="rounded-full text-xs uppercase tracking-wider px-6 bg-primary text-primary-foreground hover:bg-primary-hover gap-2"
-                    >
-                      <MessageCircle className="w-4 h-4" /> Continuer sur WhatsApp
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {/* Nom */}
-                    <div className="space-y-2">
-                      <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                        Nom & Prénom <span className="text-primary">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Ex: Yasmine Benjelloun"
-                        className="w-full bg-background/80 border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
-                      />
-                    </div>
-
-                    {/* Contact */}
-                    <div className="space-y-2">
-                      <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                        Téléphone ou Email <span className="text-primary">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.contact}
-                        onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                        placeholder="Ex: 06 12 34 56 78 ou contact@domaine.com"
-                        className="w-full bg-background/80 border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Objet */}
-                  <div className="space-y-2">
-                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                      Objet de la demande
-                    </label>
-                    <select
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-background/80 border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground outline-none transition-all cursor-pointer focus:ring-1 focus:ring-primary/40"
-                    >
-                      <option value="Conseil & Choix de Parfum">Conseil olfactif personnalisé</option>
-                      <option value="Suivi de Commande">Suivi de ma commande</option>
-                      <option value="Flaconnage & Décants">Question sur le flaconnage & décants</option>
-                      <option value="Disponibilité d'un Parfum">Demande de disponibilité d'un parfum</option>
-                      <option value="Autre Demande">Autre demande</option>
-                    </select>
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-2">
-                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                      Votre Message <span className="text-primary">*</span>
-                    </label>
-                    <textarea
-                      required
-                      rows={5}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Décrivez votre besoin, le type de fragrance recherchée ou la référence de votre commande..."
-                      className="w-full bg-background/80 border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all resize-none focus:ring-1 focus:ring-primary/40"
-                    />
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-border/40">
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.2em] text-xs h-12 px-8 shadow-sm transition-all hover:scale-[1.02] font-medium"
-                    >
-                      {loading ? (
-                        "Envoi en cours..."
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          Transmettre le message <Send className="w-3.5 h-3.5" />
-                        </span>
-                      )}
-                    </Button>
-
-                    <button
-                      type="button"
-                      onClick={handleWhatsappSend}
-                      className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline transition-all"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Envoyer directement via WhatsApp
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          </div>
-
-          {/* =========================================================================
-              4. FOIRE AUX QUESTIONS & ENGAGEMENTS (DESIGN ÉPURÉ ET SANS FILTRE)
-             ========================================================================= */}
-          <div className="max-w-4xl mx-auto">
-            {/* Header FAQ */}
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary text-xs uppercase tracking-[0.2em] font-medium mb-3">
-                <Sparkles className="w-3 h-3" />
-                <span>Guide & Transparence</span>
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl text-foreground font-light tracking-tight mb-3">
-                Questions Fréquentes
+        {/* =========================================================================
+            4. PARCOURS D'EXPÉRENCE EN 4 ÉTAPES (TIMELINE CRÉATIVE)
+           ========================================================================= */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
+          <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-card via-card/70 to-background p-8 sm:p-14 shadow-lg">
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+              <span className="text-xs uppercase tracking-[0.25em] text-primary font-bold">
+                Transparence & Sérénité
+              </span>
+              <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
+                Votre Commande en 4 Étapes Clés
               </h2>
-              <p className="text-sm font-light text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Tout ce que vous devez savoir sur la sélection de nos jus authentiques, le processus de décantation et nos livraisons.
-              </p>
-              <div className="w-14 h-[1px] bg-primary/40 mx-auto mt-5" />
             </div>
 
-            {/* Liste des Accordéons de la FAQ */}
-            <div className="space-y-4">
-              {faqItems.map((item, idx) => {
-                const Icon = item.icon;
-                const isOpen = openFaq === item.id;
-                const itemNumber = String(idx + 1).padStart(2, "0");
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {processSteps.map((step, idx) => {
+                const Icon = step.icon;
                 return (
                   <div
-                    key={item.id}
-                    className={`group rounded-2xl border transition-all duration-300 backdrop-blur-md overflow-hidden ${
-                      isOpen
-                        ? "border-primary/50 bg-card/80 shadow-md ring-1 ring-primary/20"
-                        : "border-primary/15 bg-card/40 hover:border-primary/35 hover:bg-card/60"
-                    }`}
+                    key={idx}
+                    className="relative p-6 rounded-2xl bg-card/60 border border-border/80 hover:border-primary/40 space-y-4 transition-all duration-300 shadow-2xs group"
                   >
-                    <button
-                      onClick={() => toggleFaq(item.id)}
-                      className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left gap-4 cursor-pointer"
-                    >
-                      <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-                        {/* Numérotation ou Icône avec effet doré */}
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
-                            isOpen
-                              ? "bg-primary text-primary-foreground shadow-sm scale-110"
-                              : "bg-primary/10 text-primary border border-primary/20 group-hover:scale-105"
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-
-                        <div className="min-w-0">
-                          <span className="block text-[10px] uppercase tracking-[0.2em] text-primary/80 font-semibold mb-1">
-                            {item.categoryLabel} · {itemNumber}
-                          </span>
-                          <h3 className="font-serif text-base sm:text-lg text-foreground font-medium tracking-tight">
-                            {item.question}
-                          </h3>
-                        </div>
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Icon className="w-6 h-6" />
                       </div>
+                      <span className="font-serif text-2xl font-bold text-primary/40 group-hover:text-primary transition-colors">
+                        {step.step}
+                      </span>
+                    </div>
 
-                      <div
-                        className={`w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center shrink-0 transition-all duration-300 ${
-                          isOpen ? "bg-primary/15 rotate-180" : "bg-background/50 group-hover:border-primary/40"
-                        }`}
-                      >
-                        <ChevronDown className="w-4 h-4 text-primary" />
-                      </div>
-                    </button>
-
-                    {isOpen && (
-                      <div className="px-5 sm:px-8 pb-6 pt-0 text-sm sm:text-[15px] font-light text-muted-foreground leading-relaxed border-t border-border/30 mt-1 animate-fade-in">
-                        <div className="pt-4 pl-0 sm:pl-[3.75rem]">
-                          <p>{item.answer}</p>
-                        </div>
-                      </div>
-                    )}
+                    <div className="space-y-1.5">
+                      <h4 className="font-serif text-base font-medium text-foreground">
+                        {step.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground font-light leading-relaxed">
+                        {step.desc}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+        </section>
 
-            {/* Encadré d'Assistance / Contact direct bas de page */}
-            <div className="mt-14 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-card/50 to-primary/10 backdrop-blur-md p-8 sm:p-10 text-center relative overflow-hidden">
-              <div className="max-w-xl mx-auto space-y-3">
-                <div className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 text-primary mx-auto flex items-center justify-center">
-                  <MessageCircle className="w-6 h-6" />
+        {/* =========================================================================
+            5. FORMULAIRE DE MESSAGE AVEC SÉLECTEUR D'UNIVERS
+           ========================================================================= */}
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 mb-20 sm:mb-28">
+          <div className="rounded-3xl border border-primary/30 bg-card/80 backdrop-blur-xl p-6 sm:p-12 shadow-md relative overflow-hidden">
+            <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] uppercase tracking-[0.2em] font-semibold">
+                <Mail className="w-3.5 h-3.5" />
+                <span>Formulaire de Contact</span>
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-medium">
+                Transmettre un Message à la Conciergerie
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground font-light">
+                Indiquez votre besoin et nous reviendrons vers vous avec la plus haute diligence.
+              </p>
+            </div>
+
+            {submitted ? (
+              <div className="text-center py-10 space-y-5 animate-in fade-in max-w-lg mx-auto">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 mx-auto flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="font-serif text-2xl text-foreground font-medium tracking-tight">
-                  Vous avez une autre question ?
+                <h3 className="font-serif text-2xl text-foreground font-medium">
+                  Demande Transmise avec Succès
                 </h3>
-                <p className="text-xs sm:text-sm font-light text-muted-foreground leading-relaxed pb-2">
-                  Notre équipe de conseillers olfactifs vous répond en direct pour vous accompagner dans votre choix.
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Merci <span className="font-semibold text-foreground">{formData.name}</span>, votre message a bien été reçu. Notre conciergerie vous recontactera très rapidement.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Button
-                    onClick={handleDirectWhatsapp}
-                    className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.15em] text-xs h-11 px-6 font-medium shadow-sm transition-transform hover:scale-105"
+                    type="button"
+                    onClick={() => {
+                      setSubmitted(false);
+                      setFormData({ name: "", contact: "", categoryType: "parfums", subject: "Conseil & Choix de Parfum", message: "" });
+                    }}
+                    variant="outline"
+                    className="rounded-full text-xs uppercase tracking-wider px-6 border-border hover:border-primary"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Parler à un conseiller sur WhatsApp
+                    Nouveau message
                   </Button>
                   <Button
-                    asChild
-                    variant="outline"
-                    className="w-full sm:w-auto rounded-full border-primary/30 text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 px-6 font-medium"
+                    type="button"
+                    onClick={handleWhatsappSend}
+                    className="rounded-full text-xs uppercase tracking-wider px-6 bg-[#25D366] hover:bg-[#20ba5a] text-white gap-2"
                   >
-                    <a href={`tel:+${waNumber}`}>
-                      <Phone className="w-4 h-4 mr-2 text-primary" />
-                      Appeler l'Atelier
-                    </a>
+                    <MessageCircle className="w-4 h-4" /> Continuer sur WhatsApp
                   </Button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Sélecteur Visuel d'Univers */}
+                <div className="space-y-2">
+                  <label className="block text-xs uppercase tracking-wider font-semibold text-foreground">
+                    Univers Concerné :
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { key: "parfums", label: "Haute Parfumerie" },
+                      { key: "artisanat", label: "Artisanat d'Art" },
+                      { key: "antiques", label: "Objets Antiques" },
+                      { key: "suivi", label: "Suivi Commande" },
+                    ].map((item) => {
+                      const isSelected = formData.categoryType === item.key;
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, categoryType: item.key })}
+                          className={`py-2.5 px-3 rounded-2xl text-xs font-medium border transition-all cursor-pointer ${
+                            isSelected
+                              ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs scale-[1.02]"
+                              : "bg-background/80 border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Nom */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
+                      Nom & Prénom <span className="text-primary">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Ex: Sarah Benkirane"
+                      className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
+                    />
+                  </div>
+
+                  {/* Contact */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
+                      Téléphone ou Email <span className="text-primary">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.contact}
+                      onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                      placeholder="Ex: 06 12 34 56 78"
+                      className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
+                    />
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
+                    Votre Message ou Demande <span className="text-primary">*</span>
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    placeholder="Décrivez votre besoin, le type de fragrance ou la référence de commande..."
+                    className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all resize-none focus:ring-1 focus:ring-primary/40"
+                  />
+                </div>
+
+                {/* Boutons d'action */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-border/60">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary/90 uppercase tracking-[0.15em] text-xs h-12 px-8 font-bold shadow-sm cursor-pointer"
+                  >
+                    {loading ? "Envoi en cours..." : "Transmettre le Message"}
+                  </Button>
+
+                  <button
+                    type="button"
+                    onClick={handleWhatsappSend}
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-[#25D366] hover:underline cursor-pointer"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Envoyer directement via WhatsApp
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-        </div>
+        </section>
+
+        {/* =========================================================================
+            6. ACCORDÉONS FAQ
+           ========================================================================= */}
+        <section className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 space-y-2">
+            <span className="text-xs uppercase tracking-[0.25em] text-primary font-bold">
+              Transparence
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-medium">
+              Questions Fréquemment Posées
+            </h2>
+          </div>
+
+          <div className="space-y-3.5">
+            {faqItems.map((item) => {
+              const Icon = item.icon;
+              const isOpen = openFaq === item.id;
+
+              return (
+                <div
+                  key={item.id}
+                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    isOpen
+                      ? "border-primary/50 bg-card shadow-md ring-1 ring-primary/20"
+                      : "border-border/80 bg-card/60 hover:border-primary/40"
+                  }`}
+                >
+                  <button
+                    onClick={() => toggleFaq(item.id)}
+                    className="w-full p-5 sm:p-6 flex items-center justify-between text-left gap-4 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase tracking-wider font-semibold text-primary block mb-0.5">
+                          {item.categoryLabel}
+                        </span>
+                        <h4 className="font-serif text-sm sm:text-base font-medium text-foreground">
+                          {item.question}
+                        </h4>
+                      </div>
+                    </div>
+
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${
+                        isOpen ? "rotate-180 text-primary" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm font-light text-muted-foreground leading-relaxed border-t border-border/40 mt-1 animate-in fade-in">
+                      <div className="pt-3 pl-0 sm:pl-[3.25rem]">
+                        <p>{item.answer}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </main>
 
       <Footer />
@@ -549,4 +678,3 @@ const CustomerCare = () => {
 };
 
 export default CustomerCare;
-

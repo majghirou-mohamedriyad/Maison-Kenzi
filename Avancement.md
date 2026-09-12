@@ -9,6 +9,13 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Sublimation Créative de la Page « Service Client & Contact » ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
+  - [x] **Galerie Photographique Triptyque Interactive** : 3 cartes de conciergerie photographiques grand format (*Conseil Personnalisé Flacons*, *Emballage Cadeau & Sceau de Cire*, *Livraison Express Sécurisée 24-48h au Maroc*) avec zoom doux au survol et badge d'accès direct.
+  - [x] **Canaux de Conciergerie Privée Haute Couture** : 3 fiches de contact direct (*WhatsApp Privé*, *Ligne Téléphonique Dédiée 7j/7*, *Univers Instagram*) avec badges de réactivité et déclencheurs instantanés.
+  - [x] **Frise Chronologique en 4 Étapes de l'Expérience d'Achat** : Parcours d'excellence interactif (*01 Conseil & Choix*, *02 Conditionnement d'Origine*, *03 Acheminement Express*, *04 Règlement en Mains Propres*).
+  - [x] **Formulaire de Contact avec Sélecteur d'Univers & Préremplissage WhatsApp** : Sélecteur de catégorie (*Haute Parfumerie*, *Artisanat d'Art*, *Objets Antiques*, *Suivi Commande*), double option d'envoi par message direct ou via WhatsApp, et feedback visuel avec confirmation.
+  - [x] **FAQ Moderne Spécifique & Zéro Emoji** : Accordéons interactifs Radix UI conformes à la charte sans aucune mention de décant (authenticité 100% flacons d'origine sous blister, pièces artisanales, antiquités certifiées).
+
 - [x] Sublimation Visuelle de la Page « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
   - [x] **Galerie Triptyque Haute Joaillerie** : Intégration de 3 cartes photographiques de prestige illustrant la *Haute Parfumerie*, l'*Artisanat d'Art* et les *Objets Antiques & Rares*.
   - [x] **Section Éditoriale 50/50 avec Visuel Atelier** : Mise en scène visuelle des flacons précieux, des matières premières nobles et des engagements de livraison officielle sous blister.
