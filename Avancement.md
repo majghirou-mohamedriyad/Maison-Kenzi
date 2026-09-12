@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Correction de l'Export de Synchronisation Supabase ([`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
+  - [x] **Export `syncParfumToSupabase`** : Exportation de la fonction utilitaire de synchronisation avec support des images optionnelles.
+  - [x] **Résolution du Build Vite / Vercel** : Élimination de l'erreur Rollup pour un déploiement 100% propre sur Vercel.
+
 - [x] Multi-Sélection & Actions Groupées dans l'Espace Administration ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
   - [x] **Gestion Groupée des Parfums** : Cases à cocher individuelles et sélection globale ("Tout sélectionner") sur les vues Tableau et Grille de cartes.
   - [x] **Barre d'Actions Flottante Haute Parfumerie (Produits)** : Compteur de sélection dynamique, changement groupé de catégorie, bascule en stock / rupture de stock en 1 clic, export direct en fichier CSV et suppression sécurisée en lot.

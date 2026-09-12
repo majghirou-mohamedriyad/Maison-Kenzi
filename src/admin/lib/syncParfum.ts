@@ -94,7 +94,7 @@ export const uploadProductImage = async (productId: string, file: File): Promise
  */
 export const upsertParfumToSupabase = async (
   p: AdminParfum,
-  imageUrl: string | null,
+  imageUrl: string | null = null,
   images?: string[]
 ) => {
   const isFull =
@@ -173,6 +173,10 @@ export const upsertParfumToSupabase = async (
       throw err2;
     }
   }
+};
+
+export const syncParfumToSupabase = async (p: AdminParfum) => {
+  return upsertParfumToSupabase(p, p.image_url || null, p.images);
 };
 
 export const deleteParfumFromSupabase = async (id: string) => {
