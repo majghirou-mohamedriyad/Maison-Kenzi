@@ -6,10 +6,6 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 type QA = { id: string; question: string; answer: string };
 type Msg = { id: string; from: "bot" | "user"; text: string };
 
-const WHATSAPP_PHONE = "212752850156";
-const WHATSAPP_MSG = "Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums et passer commande.";
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MSG)}`;
-
 const uid = () => Math.random().toString(36).slice(2);
 
 const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
