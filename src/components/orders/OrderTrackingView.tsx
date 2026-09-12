@@ -102,7 +102,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
     lastSavedOrderNumber,
   } = useOrderTracking(initialCode);
 
-  const [inputVal, setInputVal] = useState(initialCode || lastSavedOrderNumber || "");
+  const [inputVal, setInputVal] = useState(initialCode || "");
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

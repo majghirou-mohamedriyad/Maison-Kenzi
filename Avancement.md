@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suivi de Commande — Champ de Saisie Épuré & Vide par Défaut ([`src/components/orders/OrderTrackingView.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/orders/OrderTrackingView.tsx)) :
+  - [x] **Champ Vide par Défaut** : Le champ de recherche de commande ne préremplit plus automatiquement d'ancien code depuis le stockage local, affichant uniquement le placeholder d'exemple *« Ex : MK-849201 »*.
+  - [x] **Support des Liens Directs Préservé** : Le préremplissage automatique ne s'active désormais que si un code est explicitement transmis dans l'URL de tracking (`?code=MK-XXXXXX`).
+
 - [x] Gestion des Commandes — Copie Automatique Rapide du N° de Commande ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
   - [x] **Copie Instantanée au Clic dans le Presse-Papier** : Le clic direct sur le badge du numéro de commande (`MK-XXXXXX`) dans le tableau ou sur mobile copie automatiquement la référence sans ouvrir la modale de détails.
   - [x] **Feedback Visuel Dynamique & Toast** : Affichage d'une coche verte animée `Check` sur le bouton pendant 2 secondes et notification toast instantanée de confirmation.
