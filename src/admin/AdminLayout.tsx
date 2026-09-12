@@ -132,55 +132,96 @@ const AdminLayout = () => {
 
   const SidebarContent = (
     <div className="flex flex-col h-full w-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
-      {/* Brand Header avec bouton Toggle juste à côté du Logo — Hauteur h-16 synchronisée avec la navbar */}
-      <div className={`h-16 px-4 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center ${isCollapsed ? "justify-center flex-col gap-1" : "justify-between"}`}>
-        <Link 
-          to="/admin" 
-          className="flex items-center gap-2.5 group overflow-hidden min-w-0 transition-transform hover:scale-[1.02]"
-          title="Maison Kenzi Admin"
-        >
-          {/* Logo Officiel Adaptatif Clair & Sombre */}
-          <div className="shrink-0 flex items-center justify-center">
-            <img
-              src="/mk-logo-light-removebg.png"
-              alt="Maison Kenzi"
-              className={`${isCollapsed ? "h-8" : "h-9 sm:h-10"} w-auto object-contain dark:hidden`}
-            />
-            <img
-              src="/mk-logo-dark.png"
-              alt="Maison Kenzi"
-              className={`${isCollapsed ? "h-8" : "h-9 sm:h-10"} w-auto object-contain hidden dark:block`}
-            />
-          </div>
+      {/* Brand Header avec bouton Toggle — Hauteur h-16 synchronisée avec la navbar */}
+      <div className={`h-16 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center transition-all ${
+        isCollapsed ? "justify-center px-2" : "justify-between px-4"
+      }`}>
+        {isCollapsed ? (
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+              <Link 
+                to="/admin" 
+                className="flex items-center justify-center w-full h-full p-1 group transition-transform hover:scale-105"
+                title="Maison Kenzi Admin"
+              >
+                <img
+                  src="/mk-logo-light-removebg.png"
+                  alt="Maison Kenzi"
+                  className="h-9 w-auto max-w-[50px] object-contain dark:hidden"
+                />
+                <img
+                  src="/mk-logo-dark.png"
+                  alt="Maison Kenzi"
+                  className="h-9 w-auto max-w-[50px] object-contain hidden dark:block"
+                />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="bg-[#1C1A18] text-[#FAF7F2] border-[#38332C] text-xs">
+              Maison Kenzi Admin
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <>
+            <Link 
+              to="/admin" 
+              className="flex items-center gap-2.5 group overflow-hidden min-w-0 transition-transform hover:scale-[1.02]"
+              title="Maison Kenzi Admin"
+            >
+              <div className="shrink-0 flex items-center justify-center">
+                <img
+                  src="/mk-logo-light-removebg.png"
+                  alt="Maison Kenzi"
+                  className="h-9 sm:h-10 w-auto object-contain dark:hidden"
+                />
+                <img
+                  src="/mk-logo-dark.png"
+                  alt="Maison Kenzi"
+                  className="h-9 sm:h-10 w-auto object-contain hidden dark:block"
+                />
+              </div>
 
-          {!isCollapsed && (
-            <div className="flex flex-col items-start min-w-0">
-              <span className="font-serif text-sm tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
-                MAISON KENZI
-              </span>
-              <span className="text-[8px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
-                Administration
-              </span>
-            </div>
-          )}
-        </Link>
+              <div className="flex flex-col items-start min-w-0">
+                <span className="font-serif text-sm tracking-wider font-semibold text-[#1A1816] dark:text-[#FAF7F2] group-hover:text-[#C9A96E] transition-colors truncate">
+                  MAISON KENZI
+                </span>
+                <span className="text-[8px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium truncate">
+                  Administration
+                </span>
+              </div>
+            </Link>
 
-        {/* Bouton de réduction / déploiement placé à côté du logo */}
-        <button
-          onClick={toggleSidebar}
-          className={`hidden md:flex items-center justify-center rounded-lg text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 border border-[#EAE3D8] dark:border-[#26221E] transition-all cursor-pointer shrink-0 ${
-            isCollapsed ? "w-8 h-8 mt-1" : "w-8 h-8"
-          }`}
-          title={isCollapsed ? "Déplier le menu latéral" : "Réduire le menu latéral"}
-          aria-label="Réduire ou déplier le menu"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-[#C9A96E]" />
-          ) : (
-            <ChevronLeft className="w-4 h-4 text-[#C9A96E]" />
-          )}
-        </button>
+            <button
+              onClick={toggleSidebar}
+              className="hidden md:flex items-center justify-center rounded-lg text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 border border-[#EAE3D8] dark:border-[#26221E] transition-all cursor-pointer shrink-0 w-8 h-8"
+              title="Réduire le menu latéral"
+              aria-label="Réduire le menu"
+            >
+              <ChevronLeft className="w-4 h-4 text-[#C9A96E]" />
+            </button>
+          </>
+        )}
       </div>
+
+      {/* Bouton pour déplier la sidebar quand elle est réduite */}
+      {isCollapsed && (
+        <div className="pt-3 pb-1 px-3 flex justify-center border-b border-[#EAE3D8]/60 dark:border-[#26221E]/60">
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleSidebar}
+                className="w-11 h-8 flex items-center justify-center rounded-lg text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 border border-[#EAE3D8] dark:border-[#26221E] transition-all cursor-pointer shadow-xs"
+                title="Déplier le menu latéral"
+                aria-label="Déplier le menu"
+              >
+                <ChevronRight className="w-4 h-4 text-[#C9A96E]" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="bg-[#1C1A18] text-[#FAF7F2] border-[#38332C] text-xs">
+              Déplier le menu latéral
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      )}
 
       {/* Navigation Sections */}
       <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto no-scrollbar">

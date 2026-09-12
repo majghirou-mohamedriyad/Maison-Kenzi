@@ -10,6 +10,7 @@
 ## Historique des Tâches Réalisées
 
 - [x] Déclinaison Haute Définition du Logo Officiel Maison Kenzi (Light & Dark Theme) :
+  - [x] **Centrage Parfait en Sidebar Rétractée (Collapsed)** ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx)) : Séparation propre du bouton de déploiement et du conteneur de logo pour un centrage géométrique absolu du monogramme MK en mode réduit.
   - [x] **Intégration dans l'Espace Administration (Sidebar & Login)** ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/AdminLogin.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLogin.tsx)) : Intégration du logo adaptatif en tête du menu latéral (sidebar rétractable ou dépliée) et sur la page de connexion administrateur.
   - [x] **Fond 100% Transparent & Antialiasing de Précision** ([`public/mk-logo-light-removebg.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-light-removebg.png), [`public/mk-logo-dark.png`](file:///c:/Users/PC/Desktop/Maison-Kenzi/public/mk-logo-dark.png)) : Conversion en PNG transparent avec détourage chromatique doux et lissage des contours dorés sans fond opaque.
   - [x] **Recadrage Haute Précision sans Marges** : Suppression des marges superflues pour un cadrage serré autour du monogramme MK et de la typographie, éliminant toute sensation de miniaturisation.
