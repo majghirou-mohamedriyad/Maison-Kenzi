@@ -35,9 +35,12 @@ import {
   Image as ImageIcon,
   Plus,
   GripVertical,
+  Sparkles,
+  Languages,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
+import { translateWithDeepl } from "@/services/deeplService";
 import { getParfumCategories } from "@/lib/productCategories";
 
 type Props = {
@@ -99,10 +102,48 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [translatingDeepl, setTranslatingDeepl] = useState(false);
   const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(null);
   const [dragOverImageIndex, setDragOverImageIndex] = useState<number | null>(null);
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleTranslateWithDeepl = async () => {
+    if (!f.description && !f.notes) {
+      toast.info("Veuillez d'abord saisir une description ou des notes olfactives en français.");
+      return;
+    }
+    setTranslatingDeepl(true);
+    try {
+      let newNotes = f.notes;
+      let newDesc = f.description;
+
+      if (f.notes && f.notes.trim()) {
+        const resNotes = await translateWithDeepl(f.notes, "EN");
+        if (resNotes.success && resNotes.translatedText) {
+          newNotes = resNotes.translatedText;
+        }
+      }
+
+      if (f.description && f.description.trim()) {
+        const resDesc = await translateWithDeepl(f.description, "EN");
+        if (resDesc.success && resDesc.translatedText) {
+          newDesc = resDesc.translatedText;
+        }
+      }
+
+      setF((prev) => ({
+        ...prev,
+        notes: newNotes,
+        description: newDesc,
+      }));
+      toast.success("Traduction DeepL appliquée avec succès !");
+    } catch (e: any) {
+      toast.error("Erreur DeepL: " + (e.message || String(e)));
+    } finally {
+      setTranslatingDeepl(false);
+    }
+  };
 
   // Filtrage réactif des catégories dynamiques issues de Supabase
   const filteredCategories = useMemo(() => {
@@ -686,7 +727,23 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Notes olfactives */}
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>Notes olfactives (séparées par des virgules) *</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className={labelCls}>Notes olfactives (séparées par des virgules) *</label>
+                      <button
+                        type="button"
+                        onClick={handleTranslateWithDeepl}
+                        disabled={translatingDeepl || (!f.notes && !f.description)}
+                        className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-primary hover:text-primary-hover disabled:opacity-40 transition-colors cursor-pointer"
+                        title="Traduire les notes et la description avec DeepL"
+                      >
+                        {translatingDeepl ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3 h-3 text-primary" />
+                        )}
+                        <span>{translatingDeepl ? "Traduction DeepL..." : "Traduire avec DeepL ✨"}</span>
+                      </button>
+                    </div>
                     <input
                       className={errors.notes ? inputErrorCls : inputCls}
                       value={f.notes}

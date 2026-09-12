@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Intégration Complète de l'API DeepL (Traduction Intelligente FR ↔ EN) ([`api/deepl.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/deepl.js), [`src/services/deeplService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/deeplService.ts), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts)) :
+  - [x] **Passerelle Serverless Sécurisée (`api/deepl.js`)** : Relais serveur Node.js vers l'API officielle DeepL (support des clés gratuites `:fx` et DeepL Pro) éliminant les restrictions CORS du navigateur.
+  - [x] **Service de Traduction avec Mise en Cache (`src/services/deeplService.ts`)** : Module de traduction unitaire et par lot avec vérification dynamique du quota en direct et mise en cache des traductions pour économiser les caractères.
+  - [x] **Configuration & Test de Connexion dans l'Admin** : Carte dédiée dans *Paramètres* permettant de renseigner sa clé API DeepL, avec indicateur de validité et suivi du quota consommé en temps réel.
+  - [x] **Bouton « Traduire avec DeepL ✨ » dans le Formulaire Produit** : Bouton d'action instantané dans le modal de création/édition de parfums pour traduire automatiquement les notes et descriptions olfactives.
+
 - [x] Sublimation & Nouveau Design du Sélecteur de Langue FR / EN ([`src/components/LanguageSelector.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/LanguageSelector.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
   - [x] **Design Capsule Haute Joaillerie** : Sélecteur en capsule arrondie (`rounded-full`) à fond semi-transparent et verre dépoli avec micro-bordure raffinée.
   - [x] **Pastilles Actives à Micro-Transitions** : Pastille active à fort contraste (`bg-foreground` / `dark:bg-primary`) et micro-animations fluides de bascule entre Français et Anglais.

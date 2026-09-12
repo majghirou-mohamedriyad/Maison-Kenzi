@@ -19,6 +19,7 @@ export type AppSettings = {
   openwa_auto_status_update?: boolean;
   openwa_admin_notification?: boolean;
   openwa_admin_phone?: string;
+  deepl_api_key?: string;
 };
 
 const DEFAULTS: AppSettings = {
@@ -38,6 +39,7 @@ const DEFAULTS: AppSettings = {
   openwa_auto_status_update: true,
   openwa_admin_notification: true,
   openwa_admin_phone: "212652535301",
+  deepl_api_key: "",
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";
