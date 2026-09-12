@@ -108,16 +108,16 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
     fetchOrder(inputVal);
   };
 
-  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
-  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
+  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
+  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
 
   const waOrderHelpUrl = order
     ? `https://wa.me/${waNumber}?text=${encodeURIComponent(
-        `Bonjour Maison Kenzi, je souhaite obtenir une assistance concernant ma commande n° ${order.order_number}.`
-      )}`
+      `Bonjour Maison Kenzi, je souhaite obtenir une assistance concernant ma commande n° ${order.order_number}.`
+    )}`
     : `https://wa.me/${waNumber}?text=${encodeURIComponent(
-        "Bonjour Maison Kenzi, j'aurais besoin d'un renseignement sur ma commande."
-      )}`;
+      "Bonjour Maison Kenzi, j'aurais besoin d'un renseignement sur ma commande."
+    )}`;
 
   const currentStepIdx = order ? getStepProgressIndex(order.status) : 0;
   const isCancelled = order?.status === "annulee";
@@ -247,23 +247,21 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
                     return (
                       <div
                         key={step.key}
-                        className={`rounded-xl p-3.5 border transition-all duration-300 relative ${
-                          isCurrent
+                        className={`rounded-xl p-3.5 border transition-all duration-300 relative ${isCurrent
                             ? "bg-primary/10 border-primary shadow-sm"
                             : isCompleted
-                            ? "bg-card border-primary/40 text-foreground"
-                            : "bg-card/40 border-border/60 opacity-60 text-muted-foreground"
-                        }`}
+                              ? "bg-card border-primary/40 text-foreground"
+                              : "bg-card/40 border-border/60 opacity-60 text-muted-foreground"
+                          }`}
                       >
                         <div className="flex items-center gap-3 mb-1.5">
                           <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                              isCurrent
+                            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isCurrent
                                 ? "bg-primary text-primary-foreground font-bold shadow-xs"
                                 : isCompleted
-                                ? "bg-primary/20 text-primary border border-primary/30"
-                                : "bg-muted text-muted-foreground"
-                            }`}
+                                  ? "bg-primary/20 text-primary border border-primary/30"
+                                  : "bg-muted text-muted-foreground"
+                              }`}
                           >
                             <StepIcon className="w-4 h-4" />
                           </div>

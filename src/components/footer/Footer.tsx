@@ -23,8 +23,8 @@ const Footer = () => {
     [categories]
   );
 
-  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
-  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
+  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
+  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
   const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.")}`;
   const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
 

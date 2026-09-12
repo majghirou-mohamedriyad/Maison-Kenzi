@@ -57,7 +57,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   // Si non ouvert et pas en train de se fermer, ne rien afficher
   if (!isOpen && !isClosing) return null;
 
-  const rawPhone = settings.whatsapp_phone || "212752850156";
+  const rawPhone = settings.whatsapp_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
 
   // Seuil dynamique de livraison gratuite configuré depuis l'administration
@@ -84,23 +84,21 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
     <div className="fixed inset-0 z-[110] h-screen overflow-hidden select-none">
       {/* Superposition d'arrière-plan avec flou cinématographique et fondu entrée/sortie */}
       <div
-        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
-          isClosing
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${isClosing
             ? "animate-out fade-out-0 duration-280 fill-mode-forwards"
             : "animate-in fade-in-0 duration-300"
-        }`}
+          }`}
         onClick={handleClose}
       />
 
       {/* Tiroir Coulissant Latéral avec animation d'entrée et de sortie */}
       <div
-        className={`absolute right-0 top-0 h-screen w-full sm:w-[440px] bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-l border-border/80 shadow-2xl flex flex-col z-10 ${
-          isClosing
+        className={`absolute right-0 top-0 h-screen w-full sm:w-[440px] bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-l border-border/80 shadow-2xl flex flex-col z-10 ${isClosing
             ? "animate-out slide-out-to-right duration-280 fill-mode-forwards"
             : "animate-in slide-in-from-right duration-300"
-        }`}
+          }`}
       >
-        
+
         {/* En-tête du Panier */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/70 bg-card/50">
           <div className="flex items-center gap-2.5">
@@ -135,11 +133,10 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     setTimeout(() => setConfirmClear(false), 3000);
                   }
                 }}
-                className={`text-[11px] px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                  confirmClear
+                className={`text-[11px] px-2 py-1 rounded-lg transition-all cursor-pointer ${confirmClear
                     ? "bg-destructive/15 text-destructive font-bold border border-destructive/30"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                }`}
+                  }`}
                 title="Vider le panier"
               >
                 {confirmClear ? "Confirmer ?" : "Vider"}
@@ -178,11 +175,10 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
 
           <div className="w-full h-1.5 bg-secondary/80 rounded-full overflow-hidden">
             <div
-              className={`h-full transition-all duration-500 rounded-full ${
-                remainingForFree === 0
+              className={`h-full transition-all duration-500 rounded-full ${remainingForFree === 0
                   ? "bg-emerald-500 shadow-xs shadow-emerald-500/50"
                   : "bg-primary"
-              }`}
+                }`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -332,7 +328,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     <span>Sous-total ({totalItems} article{totalItems > 1 ? "s" : ""})</span>
                     <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                   </div>
-                  
+
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
                     <span className="flex items-center gap-1">
                       <Truck className="w-3 h-3 text-primary" />

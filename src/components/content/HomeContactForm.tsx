@@ -32,8 +32,8 @@ const HomeContactForm = () => {
 
   const handleWhatsappSend = () => {
     const text = `Bonjour Maison Kenzi,\nNom: ${formData.name}\nContact: ${formData.contact}\nSujet: ${formData.subject}\nMessage: ${formData.message}`;
-    const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
-    const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
+    const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
+    const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 

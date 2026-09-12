@@ -59,7 +59,7 @@ const Parametres = () => {
 
   // Store Info State
   const [storeName, setStoreName] = useState(settings.store_name || "Maison Kenzi");
-  const [storePhone, setStorePhone] = useState(settings.whatsapp_phone || "212752850156");
+  const [storePhone, setStorePhone] = useState(settings.whatsapp_phone || "212652535301");
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(
     settings.free_shipping_threshold ?? 500
   );
@@ -77,18 +77,18 @@ const Parametres = () => {
   const [maintMode, setMaintMode] = useState(settings.maintenance_mode);
   const [maintMessage, setMaintMessage] = useState(settings.maintenance_message);
   const [igUrl, setIgUrl] = useState(settings.instagram_url);
-  const [waPhone, setWaPhone] = useState(settings.whatsapp_phone || "212752850156");
+  const [waPhone, setWaPhone] = useState(settings.whatsapp_phone || "212652535301");
   const [savingMaint, setSavingMaint] = useState(false);
 
   useEffect(() => {
     setStoreName(settings.store_name || "Maison Kenzi");
-    setStorePhone(settings.whatsapp_phone || "212752850156");
+    setStorePhone(settings.whatsapp_phone || "212652535301");
     setFreeShippingThreshold(settings.free_shipping_threshold ?? 500);
 
     setMaintMode(settings.maintenance_mode);
     setMaintMessage(settings.maintenance_message);
     setIgUrl(settings.instagram_url);
-    setWaPhone(settings.whatsapp_phone || "212752850156");
+    setWaPhone(settings.whatsapp_phone || "212652535301");
   }, [settings]);
 
   useEffect(() => {
@@ -310,7 +310,7 @@ const Parametres = () => {
               className={inputCls}
               value={waPhone}
               onChange={(e) => setWaPhone(e.target.value)}
-              placeholder="212752850156"
+              placeholder="212652535301"
             />
           </div>
         </div>

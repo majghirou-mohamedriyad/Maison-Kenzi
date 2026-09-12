@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.app_settings (
     maintenance_mode BOOLEAN NOT NULL DEFAULT false,
     maintenance_message TEXT NOT NULL DEFAULT 'Maison Kenzi prépare de nouvelles créations. Revenez très bientôt.',
     instagram_url TEXT NOT NULL DEFAULT 'https://instagram.com/maisonkenzi',
-    whatsapp_phone TEXT NOT NULL DEFAULT '212752850156',
+    whatsapp_phone TEXT NOT NULL DEFAULT '212652535301',
     free_shipping_threshold NUMERIC NOT NULL DEFAULT 500,
     bot_enabled BOOLEAN NOT NULL DEFAULT true,
     bot_name TEXT NOT NULL DEFAULT 'Conseillère Maison Kenzi',
@@ -233,5 +233,5 @@ END $$;
 
 -- 7. CONFIGURATION MINIMALE REQUISE (Paramètres Boutique)
 INSERT INTO maisonkenzi.app_settings (id, maintenance_mode, maintenance_message, instagram_url, whatsapp_phone, bot_enabled, bot_name, bot_welcome)
-VALUES (true, false, 'Maison Kenzi prépare de nouvelles créations. Revenez très bientôt.', 'https://instagram.com/maisonkenzi', '212752850156', true, 'Conseillère Maison Kenzi', 'Bienvenue chez Maison Kenzi. Comment puis-je vous orienter parmi nos créations de niche ?')
+VALUES (true, false, 'Maison Kenzi prépare de nouvelles créations. Revenez très bientôt.', 'https://instagram.com/maisonkenzi', '212652535301', true, 'Conseillère Maison Kenzi', 'Bienvenue chez Maison Kenzi. Comment puis-je vous orienter parmi nos créations de niche ?')
 ON CONFLICT (id) DO NOTHING;

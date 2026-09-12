@@ -10,10 +10,10 @@ const cleanDisplayPhone = (p?: string) => {
 
 const cleanWhatsAppNumber = (p?: string) => {
   if (!p || p.includes("663848099") || p.includes("600000000")) {
-    return "212752850156";
+    return "212652535301";
   }
   const digits = p.replace(/[^0-9]/g, "");
-  return digits.length > 5 ? digits : "212752850156";
+  return digits.length > 5 ? digits : "212652535301";
 };
 
 const Maintenance = () => {

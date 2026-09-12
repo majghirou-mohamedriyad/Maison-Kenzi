@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Configuration du Thème Clair par Défaut (Nude Luxury Albâtre) ([`src/hooks/useTheme.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useTheme.ts), [`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/index.css`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/index.css)) :
+  - [x] **Basculement de la Valeur de Repli par Défaut** : Initialisation par défaut sur le thème `light` au premier chargement pour tous les visiteurs et l'administration.
+  - [x] **Script Anti-Flicker HTML Synchronisé** : Prévention des flashs sombres au démarrage dans `index.html` avec injection immédiate de la classe `light`.
+  - [x] **Variables CSS `:root` Orientées Blanc Albâtre** : Priorité des tokens Nude Luxury sur la racine CSS avec bascule fluide vers `.dark` si demandé par l'utilisateur.
+
 - [x] Commande Directe & Instantanée — Suppression de « Commander via WhatsApp » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Bouton « Commander Directement » Haute Couture** : Remplacement du bouton vert WhatsApp par un bouton de prestige Maison Kenzi noir et or champagne (`ShieldCheck` de `lucide-react`, zéro emoji).
   - [x] **Enregistrement Direct & Automatique en Base de Données** : La validation du formulaire enregistre immédiatement la commande dans Supabase (`orders` et `customers`) avec attribution d'une référence `MK-XXXXXX`.

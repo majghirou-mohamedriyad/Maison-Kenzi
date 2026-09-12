@@ -18,7 +18,7 @@ export const isAdminPath = (path?: string) => {
 export const storageKeyFor = (path?: string) =>
   isAdminPath(path) ? ADMIN_KEY : CUSTOMER_KEY;
 
-export const readTheme = (key: string, fallback: Theme = "dark"): Theme => {
+export const readTheme = (key: string, fallback: Theme = "light"): Theme => {
   if (typeof window === "undefined") return fallback;
   try {
     const v = localStorage.getItem(key);

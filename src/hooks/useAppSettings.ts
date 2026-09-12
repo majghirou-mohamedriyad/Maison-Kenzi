@@ -25,7 +25,7 @@ const DEFAULTS: AppSettings = {
   maintenance_mode: false,
   maintenance_message: "Nous préparons une nouvelle collection. Revenez très bientôt.",
   instagram_url: "https://instagram.com/maisonkenzi",
-  whatsapp_phone: "212752850156",
+  whatsapp_phone: "212652535301",
   bot_enabled: true,
   bot_name: "Conseillère Maison Kenzi",
   bot_welcome: "Bienvenue chez Maison Kenzi. Comment puis-je vous guider dans votre découverte olfactive ?",
@@ -37,7 +37,7 @@ const DEFAULTS: AppSettings = {
   openwa_auto_order_confirmation: true,
   openwa_auto_status_update: true,
   openwa_admin_notification: true,
-  openwa_admin_phone: "212752850156",
+  openwa_admin_phone: "212652535301",
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";
@@ -51,7 +51,7 @@ const getLocalSettings = (): AppSettings => {
       const parsed = JSON.parse(saved);
       return { ...DEFAULTS, ...parsed };
     }
-  } catch {}
+  } catch { }
   return DEFAULTS;
 };
 
@@ -69,7 +69,7 @@ if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         listeners.forEach((l) => l());
       }
     };
-  } catch {}
+  } catch { }
 }
 
 const notify = () => {
@@ -78,7 +78,7 @@ const notify = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       broadcastChannel?.postMessage({ type: "UPDATE_SETTINGS", payload: state });
       window.dispatchEvent(new CustomEvent("maisonkenzi_settings_updated", { detail: state }));
-    } catch {}
+    } catch { }
   }
   listeners.forEach((l) => l());
 };
@@ -90,7 +90,7 @@ if (typeof window !== "undefined") {
       try {
         state = { ...DEFAULTS, ...JSON.parse(e.newValue) };
         listeners.forEach((l) => l());
-      } catch {}
+      } catch { }
     }
   });
 }
@@ -108,7 +108,7 @@ const fetchSettingsFromSupabase = async () => {
       state = { ...DEFAULTS, ...getLocalSettings(), ...(data as Partial<AppSettings>) };
       notify();
     }
-  } catch {}
+  } catch { }
 };
 
 // Initialisation et souscription Supabase Realtime unique (Singleton)
@@ -129,7 +129,7 @@ if (typeof window !== "undefined") {
         }
       )
       .subscribe();
-  } catch {}
+  } catch { }
 }
 
 const SUPABASE_DB_KEYS = new Set([

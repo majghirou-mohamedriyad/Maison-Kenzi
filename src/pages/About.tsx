@@ -78,7 +78,7 @@ const About = () => {
   const { settings } = useAppSettings();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const rawPhone = settings.whatsapp_phone || "212752850156";
+  const rawPhone = settings.whatsapp_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     "Bonjour Maison Kenzi, j'aimerais avoir des conseils sur vos collections de parfums."
@@ -308,9 +308,8 @@ const About = () => {
                         <span>{faq.q}</span>
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${
-                          isOpen ? "rotate-180 text-primary" : ""
-                        }`}
+                        className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180 text-primary" : ""
+                          }`}
                       />
                     </button>
 

@@ -16,7 +16,7 @@ import { getAppSettings, AppSettings } from "@/hooks/useAppSettings";
  */
 export const formatWhatsAppChatId = (phone: string): string => {
   if (!phone) return "";
-  
+
   // Suppression de tous les caractères non numériques
   let cleaned = phone.replace(/[^0-9]/g, "");
 
@@ -233,7 +233,7 @@ export const sendOpenWaMessage = async (
           }
         }
       }
-    } catch {}
+    } catch { }
   }
 
   // Candidats d'identifiant de session
@@ -377,7 +377,7 @@ export const checkOpenWaSessionStatus = async (
             suggestedRoutes: paths,
           };
         }
-      } catch {}
+      } catch { }
     }
 
     // 2. Tester les endpoints JSON de sessions
@@ -414,7 +414,7 @@ export const checkOpenWaSessionStatus = async (
             sessions: detectedSessions,
           };
         }
-      } catch {}
+      } catch { }
     }
 
     // 3. Tester les endpoints de status
@@ -492,7 +492,7 @@ export const dispatchOrderCreatedWhatsAppNotifications = async (order: {
   }
 
   // 2. Notification Gérant Admin
-  const adminPhone = settings.openwa_admin_phone || settings.whatsapp_phone || "212752850156";
+  const adminPhone = settings.openwa_admin_phone || settings.whatsapp_phone || "212652535301";
   if (settings.openwa_admin_notification !== false && adminPhone) {
     const adminMsg = buildAdminOrderAlertMessage(order);
     sendOpenWaMessage(adminPhone, adminMsg).catch((err) => {

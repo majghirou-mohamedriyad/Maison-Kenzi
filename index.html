@@ -7,10 +7,10 @@
         try {
           var key = location.pathname.indexOf('/admin') === 0 ? 'ne_admin_theme' : 'ne_theme';
           var t = localStorage.getItem(key);
-          if (t !== 'light' && t !== 'dark') t = 'dark';
+          if (t !== 'light' && t !== 'dark') t = 'light';
           document.documentElement.classList.add(t);
         } catch (e) {
-          document.documentElement.classList.add('dark');
+          document.documentElement.classList.add('light');
         }
       })();
     </script>

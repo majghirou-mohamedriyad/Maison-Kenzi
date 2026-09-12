@@ -93,8 +93,8 @@ const CustomerCare = () => {
   const { settings } = useAppSettings();
 
   // Téléphone & WhatsApp
-  const rawWa = settings.whatsapp_phone || settings.store_phone || "212752850156";
-  const waNumber = rawWa.replace(/[^0-9]/g, "") || "212752850156";
+  const rawWa = settings.whatsapp_phone || settings.store_phone || "212652535301";
+  const waNumber = rawWa.replace(/[^0-9]/g, "") || "212652535301";
   const formattedPhone = rawWa.startsWith("+")
     ? rawWa
     : `+${rawWa.replace(/^(\d{3})(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})$/, "$1 $2 $3 $4 $5 $6")}`;
@@ -522,11 +522,10 @@ const CustomerCare = () => {
                           key={item.key}
                           type="button"
                           onClick={() => setFormData({ ...formData, categoryType: item.key })}
-                          className={`py-2.5 px-3 rounded-2xl text-xs font-medium border transition-all cursor-pointer ${
-                            isSelected
+                          className={`py-2.5 px-3 rounded-2xl text-xs font-medium border transition-all cursor-pointer ${isSelected
                               ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs scale-[1.02]"
                               : "bg-background/80 border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
-                          }`}
+                            }`}
                         >
                           {item.label}
                         </button>
@@ -627,11 +626,10 @@ const CustomerCare = () => {
               return (
                 <div
                   key={item.id}
-                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isOpen
+                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
                       ? "border-primary/50 bg-card shadow-md ring-1 ring-primary/20"
                       : "border-border/80 bg-card/60 hover:border-primary/40"
-                  }`}
+                    }`}
                 >
                   <button
                     onClick={() => toggleFaq(item.id)}
@@ -652,9 +650,8 @@ const CustomerCare = () => {
                     </div>
 
                     <ChevronDown
-                      className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${
-                        isOpen ? "rotate-180 text-primary" : ""
-                      }`}
+                      className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180 text-primary" : ""
+                        }`}
                     />
                   </button>
 

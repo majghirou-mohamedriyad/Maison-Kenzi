@@ -10,61 +10,8 @@
 @tailwind utilities;
 
 @layer base {
-  /* Mode Sombre : Espresso chaud, Cacao satiné et Doré Champagne (Warm Obsidian Nude) */
+  /* Mode Clair par défaut : Blanc Albâtre, Lin chaud, Travertin et Doré Cuivré (Nude Luxury) */
   :root,
-  .dark {
-    --background: 24 16% 7%;          /* #140F0D espresso feutré */
-    --foreground: 36 30% 93%;         /* #F5EFE8 crème de lin lumineuse */
-
-    --status-bar: 24 16% 6%;
-    --status-bar-foreground: 36 30% 93%;
-
-    --nav-background: 24 16% 7%;
-    --nav-foreground: 36 30% 93%;
-    --nav-hover: 35 42% 64%;          /* #D4B68D */
-
-    --primary: 35 42% 64%;            /* #D4B68D doré champagne brossé */
-    --primary-foreground: 24 16% 7%;
-    --primary-hover: 35 42% 56%;
-
-    --secondary: 24 12% 15%;          /* #2B221E surface cacao */
-    --secondary-foreground: 36 30% 93%;
-
-    --muted: 24 12% 14%;              /* #271E1A */
-    --muted-foreground: 28 12% 68%;   /* #B6AAA0 grège soyeux */
-
-    --accent: 35 42% 64%;
-    --accent-foreground: 24 16% 7%;
-
-    --border: 24 14% 18%;             /* #362B25 bordure feutrée */
-    --input: 24 14% 18%;
-    --ring: 35 42% 64%;
-
-    --card: 24 14% 11%;               /* #1F1815 carte satinée */
-    --card-foreground: 36 30% 93%;
-
-    --popover: 24 14% 11%;
-    --popover-foreground: 36 30% 93%;
-
-    --destructive: 357 45% 42%;
-    --destructive-foreground: 36 30% 93%;
-
-    --radius: 0.5rem;
-
-    --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 24 16% 9%;
-    --sidebar-foreground: 36 30% 93%;
-    --sidebar-primary: 35 42% 64%;
-    --sidebar-primary-foreground: 24 16% 7%;
-    --sidebar-accent: 24 14% 11%;
-    --sidebar-accent-foreground: 36 30% 93%;
-    --sidebar-border: 24 14% 18%;
-    --sidebar-ring: 35 42% 64%;
-  }
-
-  /* Mode Clair : Blanc Albâtre, Lin chaud, Travertin et Doré Cuivré (Nude Luxury) */
   .light {
     --background: 38 30% 96%;         /* #F9F6F0 blanc albâtre / lin poudré */
     --foreground: 24 12% 12%;         /* #1C1714 noir d'ébène profond */
@@ -102,6 +49,11 @@
     --destructive: 357 45% 42%;
     --destructive-foreground: 0 0% 100%;
 
+    --radius: 0.5rem;
+
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
     --sidebar-background: 30 22% 91%;
     --sidebar-foreground: 24 12% 12%;
     --sidebar-primary: 35 38% 54%;
@@ -110,6 +62,54 @@
     --sidebar-accent-foreground: 24 12% 12%;
     --sidebar-border: 30 18% 86%;
     --sidebar-ring: 35 38% 54%;
+  }
+
+  /* Mode Sombre : Espresso chaud, Cacao satiné et Doré Champagne (Warm Obsidian Nude) */
+  .dark {
+    --background: 24 16% 7%;          /* #140F0D espresso feutré */
+    --foreground: 36 30% 93%;         /* #F5EFE8 crème de lin lumineuse */
+
+    --status-bar: 24 16% 6%;
+    --status-bar-foreground: 36 30% 93%;
+
+    --nav-background: 24 16% 7%;
+    --nav-foreground: 36 30% 93%;
+    --nav-hover: 35 42% 64%;          /* #D4B68D */
+
+    --primary: 35 42% 64%;            /* #D4B68D doré champagne brossé */
+    --primary-foreground: 24 16% 7%;
+    --primary-hover: 35 42% 56%;
+
+    --secondary: 24 12% 15%;          /* #2B221E surface cacao */
+    --secondary-foreground: 36 30% 93%;
+
+    --muted: 24 12% 14%;              /* #271E1A */
+    --muted-foreground: 28 12% 68%;   /* #B6AAA0 grège soyeux */
+
+    --accent: 35 42% 64%;
+    --accent-foreground: 24 16% 7%;
+
+    --border: 24 14% 18%;             /* #362B25 bordure feutrée */
+    --input: 24 14% 18%;
+    --ring: 35 42% 64%;
+
+    --card: 24 14% 11%;               /* #1F1815 carte satinée */
+    --card-foreground: 36 30% 93%;
+
+    --popover: 24 14% 11%;
+    --popover-foreground: 36 30% 93%;
+
+    --destructive: 357 45% 42%;
+    --destructive-foreground: 36 30% 93%;
+
+    --sidebar-background: 24 16% 9%;
+    --sidebar-foreground: 36 30% 93%;
+    --sidebar-primary: 35 42% 64%;
+    --sidebar-primary-foreground: 24 16% 7%;
+    --sidebar-accent: 24 14% 11%;
+    --sidebar-accent-foreground: 36 30% 93%;
+    --sidebar-border: 24 14% 18%;
+    --sidebar-ring: 35 42% 64%;
   }
 }
 

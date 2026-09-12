@@ -63,7 +63,7 @@ const pillars = [
 
 const EditorialSection = () => {
   const { settings } = useAppSettings();
-  const rawPhone = settings.whatsapp_phone || "212752850156";
+  const rawPhone = settings.whatsapp_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     "Bonjour Maison Kenzi, j'aimerais recevoir des conseils personnalisés pour choisir un parfum."

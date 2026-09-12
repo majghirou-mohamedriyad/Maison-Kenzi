@@ -105,7 +105,7 @@ const ExpressOrderForm = ({
   const activeItems: OrderSelectionItem[] = items && items.length > 0
     ? items.filter((i) => i.quantity > 0)
     : sizeLabel && quantity
-    ? [
+      ? [
         {
           size: sizeLabel,
           sizeLabel: sizeLabel,
@@ -114,7 +114,7 @@ const ExpressOrderForm = ({
           subtotal: totalPrice,
         },
       ]
-    : [];
+      : [];
 
   const handleCopyOrderNumber = (num: string) => {
     navigator.clipboard.writeText(num);
@@ -262,8 +262,8 @@ const ExpressOrderForm = ({
   };
 
   if (outOfStock) {
-    const targetPhoneRaw = settings.whatsapp_phone || settings.store_phone || "212752850156";
-    const targetWaNumber = targetPhoneRaw.replace(/[^0-9]/g, "") || "212752850156";
+    const targetPhoneRaw = settings.whatsapp_phone || settings.store_phone || "212652535301";
+    const targetWaNumber = targetPhoneRaw.replace(/[^0-9]/g, "") || "212652535301";
     const notifyMsg = `Bonjour, je souhaite être notifié(e) du retour en stock du parfum : ${maison} — ${parfumName}`;
     const notifyUrl = `https://wa.me/${targetWaNumber}?text=${encodeURIComponent(notifyMsg)}`;
 
@@ -458,9 +458,8 @@ const ExpressOrderForm = ({
             onFocus={() => setFocusedField("fullName")}
             onBlur={() => setFocusedField(null)}
             onChange={(e) => setFullName(e.target.value)}
-            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-              focusedField === "fullName" ? "border-primary ring-2 ring-primary/20" : ""
-            }`}
+            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${focusedField === "fullName" ? "border-primary ring-2 ring-primary/20" : ""
+              }`}
           />
         </div>
 
@@ -485,9 +484,8 @@ const ExpressOrderForm = ({
             onFocus={() => setFocusedField("phone")}
             onBlur={() => setFocusedField(null)}
             onChange={(e) => setPhone(e.target.value)}
-            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-              focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
-            }`}
+            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
+              }`}
           />
         </div>
 
@@ -514,11 +512,10 @@ const ExpressOrderForm = ({
                   setCityQuery(c);
                   setShowCityDropdown(false);
                 }}
-                className={`px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-medium transition-all cursor-pointer ${
-                  city.toLowerCase() === c.toLowerCase()
+                className={`px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-medium transition-all cursor-pointer ${city.toLowerCase() === c.toLowerCase()
                     ? "bg-primary text-primary-foreground font-semibold"
                     : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/50"
-                }`}
+                  }`}
               >
                 {c}
               </button>
@@ -542,9 +539,8 @@ const ExpressOrderForm = ({
                 setCity(e.target.value);
                 setShowCityDropdown(true);
               }}
-              className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                focusedField === "city" ? "border-primary ring-2 ring-primary/20" : ""
-              }`}
+              className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${focusedField === "city" ? "border-primary ring-2 ring-primary/20" : ""
+                }`}
             />
           </div>
 
@@ -560,11 +556,10 @@ const ExpressOrderForm = ({
                     setCityQuery(cityName);
                     setShowCityDropdown(false);
                   }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                    city.toLowerCase() === cityName.toLowerCase()
+                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${city.toLowerCase() === cityName.toLowerCase()
                       ? "bg-primary/10 text-primary font-semibold"
                       : "text-foreground hover:bg-secondary/80"
-                  }`}
+                    }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <MapPin className="w-3 h-3 text-primary/70 shrink-0" />
@@ -594,9 +589,8 @@ const ExpressOrderForm = ({
             onFocus={() => setFocusedField("address")}
             onBlur={() => setFocusedField(null)}
             onChange={(e) => setAddress(e.target.value)}
-            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-              focusedField === "address" ? "border-primary ring-2 ring-primary/20" : ""
-            }`}
+            className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${focusedField === "address" ? "border-primary ring-2 ring-primary/20" : ""
+              }`}
           />
         </div>
       </div>

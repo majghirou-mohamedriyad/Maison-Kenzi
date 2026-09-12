@@ -61,8 +61,8 @@ const ChatBot = () => {
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212752850156";
-  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212752850156";
+  const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
+  const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
   const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.")}`;
   const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
 
@@ -264,11 +264,10 @@ const ChatBot = () => {
                 style={{ animation: "chatbot-msg 260ms ease-out" }}
               >
                 <div
-                  className={`max-w-[82%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed shadow-xs whitespace-pre-wrap ${
-                    m.from === "user"
+                  className={`max-w-[82%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed shadow-xs whitespace-pre-wrap ${m.from === "user"
                       ? "bg-primary text-primary-foreground font-medium rounded-br-xs"
                       : "bg-card text-foreground border border-border rounded-bl-xs"
-                  }`}
+                    }`}
                 >
                   {m.text}
                 </div>
