@@ -436,21 +436,23 @@ const Checkout = () => {
 
                       {/* Top Popular City Quick Badges */}
                       <div className="flex flex-wrap gap-1.5 pb-1">
-                        {POPULAR_DESTINATIONS.slice(0, 8).map((c) => (
+                        {POPULAR_DESTINATIONS.slice(0, 8).map((dest) => (
                           <button
-                            key={c}
+                            key={dest.name}
                             type="button"
                             onClick={() => {
-                              setCity(c);
-                              setCityQuery(c);
+                              setCity(dest.name);
+                              setCityQuery(dest.name);
+                              setCountry(dest.country);
                               setShowCityDropdown(false);
                             }}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${city.toLowerCase() === c.toLowerCase()
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                              (city || "").toLowerCase() === (dest.name || "").toLowerCase()
                                 ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                                 : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/60"
-                              }`}
+                            }`}
                           >
-                            {c}
+                            {dest.name}
                           </button>
                         ))}
                       </div>
@@ -491,17 +493,19 @@ const Checkout = () => {
                         <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1.5 max-h-48 overflow-y-auto space-y-0.5 animate-in fade-in-0 duration-150">
                           {matchingDestinations.map((dest) => (
                             <button
-                              key={dest.name}
+                              key={`${dest.name}-${dest.country}`}
                               type="button"
                               onClick={() => {
                                 setCity(dest.name);
                                 setCityQuery(dest.name);
+                                setCountry(dest.country);
                                 setShowCityDropdown(false);
                               }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${city.toLowerCase() === dest.name.toLowerCase()
+                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${
+                                (city || "").toLowerCase() === (dest.name || "").toLowerCase()
                                   ? "bg-primary/10 text-primary font-semibold"
                                   : "text-foreground hover:bg-secondary/80"
-                                }`}
+                              }`}
                             >
                               <span className="flex items-center gap-2">
                                 <MapPin className="w-3 h-3 text-primary/70 shrink-0" />

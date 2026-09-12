@@ -764,7 +764,7 @@ const ExpressOrderForm = ({
                     setShowCityDropdown(false);
                   }}
                   className={`px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-medium transition-all cursor-pointer ${
-                    city.toLowerCase() === dest.name.toLowerCase()
+                    (city || "").toLowerCase() === (dest.name || "").toLowerCase()
                       ? "bg-primary text-primary-foreground font-semibold"
                       : "bg-secondary/50 text-muted-foreground hover:text-foreground border border-border/40"
                   }`}
@@ -811,7 +811,7 @@ const ExpressOrderForm = ({
                       setShowCityDropdown(false);
                     }}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                      city.toLowerCase() === dest.name.toLowerCase()
+                      (city || "").toLowerCase() === (dest.name || "").toLowerCase()
                         ? "bg-primary/10 text-primary font-semibold"
                         : "text-foreground hover:bg-secondary/80"
                     }`}

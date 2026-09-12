@@ -42,38 +42,36 @@ export const EUROPEAN_CITIES: string[] = [
   "Luxembourg",
 ];
 
-export const POPULAR_DESTINATIONS = [
-  "Casablanca",
-  "Rabat",
-  "Marrakech",
-  "Tanger",
-  "Paris",
-  "Bruxelles",
-  "Genève",
-  "Lyon",
-  "Marseille",
-  "Madrid",
-  "Barcelone",
-  "Fès",
-  "Agadir",
+export interface DestinationItem {
+  name: string;
+  country: string;
+}
+
+export const POPULAR_DESTINATIONS: DestinationItem[] = [
+  { name: "Casablanca", country: "Maroc" },
+  { name: "Rabat", country: "Maroc" },
+  { name: "Marrakech", country: "Maroc" },
+  { name: "Tanger", country: "Maroc" },
+  { name: "Paris", country: "France" },
+  { name: "Bruxelles", country: "Belgique" },
+  { name: "Genève", country: "Suisse" },
+  { name: "Madrid", country: "Espagne" },
+  { name: "Lyon", country: "France" },
+  { name: "Marseille", country: "France" },
+  { name: "Fès", country: "Maroc" },
+  { name: "Agadir", country: "Maroc" },
 ];
 
 const normalizeStr = (s: string) =>
-  s
+  (s || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-export const searchDestinations = (query: string, limit = 8): Array<{ name: string; country: string }> => {
+export const searchDestinations = (query: string, limit = 8): DestinationItem[] => {
   if (!query || query.trim() === "") {
-    return POPULAR_DESTINATIONS.slice(0, limit).map((city) => {
-      const isEu = EUROPEAN_CITIES.includes(city);
-      return {
-        name: city,
-        country: isEu ? "Europe" : "Maroc",
-      };
-    });
+    return POPULAR_DESTINATIONS.slice(0, limit);
   }
 
   const cleanQ = normalizeStr(query);
