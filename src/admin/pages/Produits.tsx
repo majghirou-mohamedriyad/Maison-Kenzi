@@ -150,7 +150,125 @@ const Produits = () => {
     }
   };
 
-  // Gestion de la sélection multiple
+  // Liste unique des maisons existantes pour le filtre
+  const uniqueMaisons = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      if (p.maison && p.maison.trim()) set.add(p.maison.trim());
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
+  // Filtrage et Tri combinés
+  const filteredAndSorted = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    // 1. Filtrage
+    const result = products.filter((p) => {
+      // Filtre Genre
+      if (genderFilter !== "Tous") {
+        const pGender = (p.gender || "").toLowerCase().trim();
+        if (pGender !== genderFilter.toLowerCase().trim()) return false;
+      }
+
+      // Filtre Saison
+      if (seasonFilter !== "Toutes") {
+        const pSeasons = getParfumSeasons(p);
+        const targetSeasonNorm = seasonFilter
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim();
+        const hasSeason = pSeasons.some(
+          (s) =>
+            (s || "")
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .trim() === targetSeasonNorm
+        );
+        if (!hasSeason) return false;
+      }
+
+      // Filtre catégorie dynamique
+      if (categoryFilter !== "Tous") {
+        if (!isParfumInCategory(p, categoryFilter)) return false;
+      }
+
+      // Filtre maison
+      if (maisonFilter !== "Toutes" && p.maison !== maisonFilter) return false;
+
+      // Filtre statut & stock
+      const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
+      const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
+      const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
+      const s5 = p.stock_5ml ?? 0;
+      const s10 = p.stock_10ml ?? 0;
+      const sFull = p.full_bottle_stock ?? 0;
+      const stockTotal = isFull ? sFull : s5 + s10;
+      const inStock = (p.active ?? true) && stockTotal > 0;
+
+      if (statusFilter === "in_stock" && !inStock) return false;
+      if (statusFilter === "out_of_stock" && inStock) return false;
+
+      // Recherche textuelle
+      if (q) {
+        const matchesName = p.name.toLowerCase().includes(q);
+        const matchesMaison = p.maison.toLowerCase().includes(q);
+        const cats = getParfumCategories(p);
+        const matchesCat = cats.some((c) => c.toLowerCase().includes(q)) || (p.category || "").toLowerCase().includes(q);
+        if (!matchesName && !matchesMaison && !matchesCat) return false;
+      }
+
+      return true;
+    });
+
+    // 2. Tri
+    result.sort((a, b) => {
+      const getPrice = (p: AdminParfum) => {
+        if (p.sale_mode === "full_bottle") return p.full_bottle_price ?? p.prices["5ml"] ?? 0;
+        return p.prices["5ml"] ?? p.full_bottle_price ?? 0;
+      };
+
+      const getStock = (p: AdminParfum) => {
+        const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
+        const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
+        const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
+        return isFull ? (p.full_bottle_stock ?? 0) : ((p.stock_5ml ?? 0) + (p.stock_10ml ?? 0));
+      };
+
+      if (sortOption === "name_asc") return a.name.localeCompare(b.name);
+      if (sortOption === "name_desc") return b.name.localeCompare(a.name);
+      if (sortOption === "maison_asc") return a.maison.localeCompare(b.maison);
+      if (sortOption === "price_asc") return getPrice(a) - getPrice(b);
+      if (sortOption === "price_desc") return getPrice(b) - getPrice(a);
+      if (sortOption === "stock_asc") return getStock(a) - getStock(b);
+      if (sortOption === "stock_desc") return getStock(b) - getStock(a);
+      return 0;
+    });
+
+    return result;
+  }, [products, search, genderFilter, seasonFilter, categoryFilter, maisonFilter, statusFilter, sortOption]);
+
+  const hasActiveFilters =
+    search.trim() !== "" ||
+    genderFilter !== "Tous" ||
+    seasonFilter !== "Toutes" ||
+    categoryFilter !== "Tous" ||
+    maisonFilter !== "Toutes" ||
+    statusFilter !== "Tous";
+
+  const resetFilters = () => {
+    setSearch("");
+    setGenderFilter("Tous");
+    setSeasonFilter("Toutes");
+    setCategoryFilter("Tous");
+    setMaisonFilter("Toutes");
+    setStatusFilter("Tous");
+    setSortOption("name_asc");
+  };
+
+  // Gestion de la sélection multiple (après l'initialisation de filteredAndSorted)
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -310,124 +428,6 @@ const Produits = () => {
     } finally {
       setIsProcessingBulk(false);
     }
-  };
-
-  // Liste unique des maisons existantes pour le filtre
-  const uniqueMaisons = useMemo(() => {
-    const set = new Set<string>();
-    products.forEach((p) => {
-      if (p.maison && p.maison.trim()) set.add(p.maison.trim());
-    });
-    return Array.from(set).sort();
-  }, [products]);
-
-  // Filtrage et Tri combinés
-  const filteredAndSorted = useMemo(() => {
-    const q = search.trim().toLowerCase();
-
-    // 1. Filtrage
-    const result = products.filter((p) => {
-      // Filtre Genre
-      if (genderFilter !== "Tous") {
-        const pGender = (p.gender || "").toLowerCase().trim();
-        if (pGender !== genderFilter.toLowerCase().trim()) return false;
-      }
-
-      // Filtre Saison
-      if (seasonFilter !== "Toutes") {
-        const pSeasons = getParfumSeasons(p);
-        const targetSeasonNorm = seasonFilter
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .trim();
-        const hasSeason = pSeasons.some(
-          (s) =>
-            (s || "")
-              .toLowerCase()
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .trim() === targetSeasonNorm
-        );
-        if (!hasSeason) return false;
-      }
-
-      // Filtre catégorie dynamique
-      if (categoryFilter !== "Tous") {
-        if (!isParfumInCategory(p, categoryFilter)) return false;
-      }
-
-      // Filtre maison
-      if (maisonFilter !== "Toutes" && p.maison !== maisonFilter) return false;
-
-      // Filtre statut & stock
-      const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
-      const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
-      const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
-      const s5 = p.stock_5ml ?? 0;
-      const s10 = p.stock_10ml ?? 0;
-      const sFull = p.full_bottle_stock ?? 0;
-      const stockTotal = isFull ? sFull : s5 + s10;
-      const inStock = (p.active ?? true) && stockTotal > 0;
-
-      if (statusFilter === "in_stock" && !inStock) return false;
-      if (statusFilter === "out_of_stock" && inStock) return false;
-
-      // Recherche textuelle
-      if (q) {
-        const matchesName = p.name.toLowerCase().includes(q);
-        const matchesMaison = p.maison.toLowerCase().includes(q);
-        const cats = getParfumCategories(p);
-        const matchesCat = cats.some((c) => c.toLowerCase().includes(q)) || (p.category || "").toLowerCase().includes(q);
-        if (!matchesName && !matchesMaison && !matchesCat) return false;
-      }
-
-      return true;
-    });
-
-    // 2. Tri
-    result.sort((a, b) => {
-      const getPrice = (p: AdminParfum) => {
-        if (p.sale_mode === "full_bottle") return p.full_bottle_price ?? p.prices["5ml"] ?? 0;
-        return p.prices["5ml"] ?? p.full_bottle_price ?? 0;
-      };
-
-      const getStock = (p: AdminParfum) => {
-        const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
-        const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
-        const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
-        return isFull ? (p.full_bottle_stock ?? 0) : ((p.stock_5ml ?? 0) + (p.stock_10ml ?? 0));
-      };
-
-      if (sortOption === "name_asc") return a.name.localeCompare(b.name);
-      if (sortOption === "name_desc") return b.name.localeCompare(a.name);
-      if (sortOption === "maison_asc") return a.maison.localeCompare(b.maison);
-      if (sortOption === "price_asc") return getPrice(a) - getPrice(b);
-      if (sortOption === "price_desc") return getPrice(b) - getPrice(a);
-      if (sortOption === "stock_asc") return getStock(a) - getStock(b);
-      if (sortOption === "stock_desc") return getStock(b) - getStock(a);
-      return 0;
-    });
-
-    return result;
-  }, [products, search, genderFilter, seasonFilter, categoryFilter, maisonFilter, statusFilter, sortOption]);
-
-  const hasActiveFilters =
-    search.trim() !== "" ||
-    genderFilter !== "Tous" ||
-    seasonFilter !== "Toutes" ||
-    categoryFilter !== "Tous" ||
-    maisonFilter !== "Toutes" ||
-    statusFilter !== "Tous";
-
-  const resetFilters = () => {
-    setSearch("");
-    setGenderFilter("Tous");
-    setSeasonFilter("Toutes");
-    setCategoryFilter("Tous");
-    setMaisonFilter("Toutes");
-    setStatusFilter("Tous");
-    setSortOption("name_asc");
   };
 
   return (

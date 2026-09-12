@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Résolution de l'Erreur Runtime TDZ `ReferenceError: Cannot access before initialization` ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
+  - [x] **Correction de l'Ordre des Hooks & Variables** : Déplacement de l'initialisation de `filteredAndSorted` en amont des calculs de sélection `isAllSelected` et des handlers d'actions groupées.
+  - [x] **Stabilité Parfaite de la Page Admin Produits** : Élimination du crash JavaScript lors du chargement de la gestion du catalogue sur Vercel.
+
 - [x] Correction de l'Export de Synchronisation Supabase ([`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
   - [x] **Export `syncParfumToSupabase`** : Exportation de la fonction utilitaire de synchronisation avec support des images optionnelles.
   - [x] **Résolution du Build Vite / Vercel** : Élimination de l'erreur Rollup pour un déploiement 100% propre sur Vercel.
