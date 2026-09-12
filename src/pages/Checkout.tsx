@@ -33,6 +33,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
+import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappService";
 
 import { useRef, useEffect } from "react";
 import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
@@ -177,6 +178,24 @@ const Checkout = () => {
     } catch (err) {
       console.warn("Supabase order/customer recording note:", err);
     }
+
+    // Déclenchement automatique des notifications WhatsApp OpenWA (Client + Admin)
+    dispatchOrderCreatedWhatsAppNotifications({
+      order_number: orderNumber,
+      customer_name: fullName.trim(),
+      customer_phone: phone.trim(),
+      total_amount: total,
+      shipping_city: city.trim(),
+      shipping_address: address.trim(),
+      items: items.map((item) => ({
+        name: `${item.maison} — ${item.name}`,
+        size: SIZE_META[item.size]?.label || item.size,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    }).catch((err) => {
+      console.warn("Notification OpenWA auto info:", err);
+    });
 
     const completedState = {
       orderNumber,

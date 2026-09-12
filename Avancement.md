@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Système de Messagerie Automatisée WhatsApp OpenWA VPS ([`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
+  - [x] **Connecteur HTTP Multi-Endpoints & Formatage Marocain (+212)** : Formatage intelligent des numéros nationaux (`06...`, `07...`) en standard WhatsApp international (`212...`), client d'envoi multi-routes OpenWA (`/{session}/sendText`, `/sendText`, `/api/sendText`) vers `http://185.197.249.4:2785`.
+  - [x] **Modèles de Messages Éditoriaux Haute Couture (Zéro Emoji)** : Confirmation complète de commande client (avec référence `MK-XXXXXX`, récapitulatif articles, total MAD et lien de suivi direct), alertes gérant admin et notifications de suivi.
+  - [x] **Panneau de Configuration & Test en Direct dans l'Administration** : Paramétrage de l'URL VPS, session et token, test de connectivité en temps réel (ping statut) et outil d'envoi de message test en direct.
+  - [x] **Automatisation Complète au Checkout & en Gestion des Commandes** : Déclenchement automatique et asynchrone à la validation du panier, notifications lors du changement de statut (Confirmée, Livrée) et bouton d'envoi direct OpenWA dans la fiche commande.
+
 - [x] Optimisation des Proportions & Agrandissement de la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/header/Header.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Header.tsx)) :
   - [x] **Élévation & Harmonie avec le Logo Officiel** : Augmentation de la hauteur et des paddings internes de la navbar pastille (`min-h-[58px] sm:min-h-[66px] md:min-h-[74px]`, `px-4 sm:px-6 md:px-7 py-2.5 sm:py-3.5`) pour une harmonie parfaite avec la taille du logo de prestige.
   - [x] **Ajustement Spacieux du Conteneur d'En-Tête** : Élargissement du conteneur en `max-w-7xl` offrant une disposition aérée et sans encombrement de tous les liens et boutons d'action.

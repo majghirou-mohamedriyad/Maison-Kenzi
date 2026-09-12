@@ -12,6 +12,13 @@ export type AppSettings = {
   bot_welcome: string;
   store_name: string;
   free_shipping_threshold: number;
+  openwa_url?: string;
+  openwa_session?: string;
+  openwa_api_key?: string;
+  openwa_auto_order_confirmation?: boolean;
+  openwa_auto_status_update?: boolean;
+  openwa_admin_notification?: boolean;
+  openwa_admin_phone?: string;
 };
 
 const DEFAULTS: AppSettings = {
@@ -24,6 +31,13 @@ const DEFAULTS: AppSettings = {
   bot_welcome: "Bienvenue chez Maison Kenzi. Comment puis-je vous guider dans votre découverte olfactive ?",
   store_name: "Maison Kenzi",
   free_shipping_threshold: 500,
+  openwa_url: "http://185.197.249.4:2785",
+  openwa_session: "default",
+  openwa_api_key: "",
+  openwa_auto_order_confirmation: true,
+  openwa_auto_status_update: true,
+  openwa_admin_notification: true,
+  openwa_admin_phone: "212752850156",
 };
 
 const STORAGE_KEY = "maisonkenzi_app_settings";

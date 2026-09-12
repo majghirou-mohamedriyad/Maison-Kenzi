@@ -23,8 +23,15 @@ import {
   ChevronDown,
   Check,
   Copy,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { downloadInvoice, sendInvoiceViaWhatsapp } from "@/admin/lib/invoice";
+import {
+  dispatchOrderStatusChangedWhatsAppNotification,
+  sendOpenWaMessage,
+  buildOrderConfirmationMessage,
+} from "@/services/whatsappService";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -121,6 +128,7 @@ const Commandes = () => {
   const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
   const [viewingOrder, setViewingOrder] = useState<Order | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sendingDirectWa, setSendingDirectWa] = useState(false);
 
   const handleCopyOrderNumber = (e: React.MouseEvent, orderNumber: string) => {
     e.stopPropagation();
@@ -137,9 +145,57 @@ const Commandes = () => {
     if (res.error) toast.error("Erreur: " + res.error);
     else {
       toast.success("Statut mis à jour");
+
+      // Notification automatique WhatsApp OpenWA vers le client
+      const targetOrder = orders.find((o) => o.id === id) || viewingOrder;
+      if (targetOrder && targetOrder.customer_phone) {
+        dispatchOrderStatusChangedWhatsAppNotification({
+          order_number: targetOrder.order_number,
+          customer_name: targetOrder.customer_name,
+          customer_phone: targetOrder.customer_phone,
+          status,
+        }).then((sendRes) => {
+          if (sendRes.success) {
+            toast.success("Notification WhatsApp de statut transmise au client");
+          }
+        }).catch(() => {});
+      }
+
       if (viewingOrder && viewingOrder.id === id) {
         setViewingOrder({ ...viewingOrder, status });
       }
+    }
+  };
+
+  const handleSendOpenWaConfirmation = async (o: Order) => {
+    if (!o.customer_phone) {
+      toast.error("Cette commande ne dispose d'aucun numéro de téléphone client");
+      return;
+    }
+    setSendingDirectWa(true);
+    try {
+      const msg = buildOrderConfirmationMessage({
+        order_number: o.order_number,
+        customer_name: o.customer_name,
+        total_amount: o.total_amount,
+        shipping_address: o.customer_address,
+        items: o.items.map((it) => ({
+          name: it.parfum_name || (it as any).name || "Parfum",
+          quantity: it.quantity,
+          size: it.size,
+        })),
+      });
+
+      const res = await sendOpenWaMessage(o.customer_phone, msg);
+      if (res.success) {
+        toast.success(`Confirmation WhatsApp transmise avec succès au ${o.customer_phone} via la VPS !`);
+      } else {
+        toast.error(`Échec d'envoi OpenWA: ${res.error}`);
+      }
+    } catch (err: any) {
+      toast.error("Erreur: " + err.message);
+    } finally {
+      setSendingDirectWa(false);
     }
   };
 
@@ -660,7 +716,7 @@ const Commandes = () => {
                   <span>Supprimer cette commande</span>
                 </button>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={() => handlePdf(viewingOrder)}
@@ -669,13 +725,26 @@ const Commandes = () => {
                     <FileDown className="w-4 h-4" />
                     <span>Facture PDF</span>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSendOpenWaConfirmation(viewingOrder)}
+                    disabled={sendingDirectWa}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-primary hover:bg-primary-hover text-primary-foreground rounded-lg transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+                    title="Envoyer automatiquement le message de confirmation via le serveur OpenWA VPS"
+                  >
+                    {sendingDirectWa ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    <span>{sendingDirectWa ? "Envoi..." : "Envoyer OpenWA"}</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => handleWhatsapp(viewingOrder)}
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-lg transition-colors cursor-pointer shadow-xs"
+                    title="Ouvrir WhatsApp Web / App avec le message prérempli"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span>WhatsApp</span>
+                    <span>WhatsApp Manuel</span>
                   </button>
                 </div>
               </div>
