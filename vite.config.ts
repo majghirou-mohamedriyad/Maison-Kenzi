@@ -9,6 +9,11 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
+      "/api/supabase": {
+        target: "http://185.197.249.4:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/supabase/, ""),
+      },
       "/api/openwa": {
         target: "http://185.197.249.4:2785",
         changeOrigin: true,

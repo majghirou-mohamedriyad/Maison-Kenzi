@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Configuration du Reverse Proxy Vercel & Compatibilité HTTPS/CORS ([`vercel.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vercel.json), [`src/integrations/supabase/client.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/integrations/supabase/client.ts), [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts)) :
+  - [x] **Redirections Sécurisées `rewrites` Vercel** : Création des passerelles `/api/supabase` et `/api/openwa` pour relayer côté serveur les appels vers le VPS (`http://185.197.249.4:8000` et `http://185.197.249.4:2785`).
+  - [x] **Élimination Définitive des Erreurs « Mixed Content »** : Le navigateur communique en HTTPS sécurisé avec Vercel, qui transfère les requêtes vers le VPS sans blocage navigateur.
+  - [x] **Mise à Jour de la Politique CSP & Résolution Dynamique d'URL** : Autorisation des flux réseau et adaptation automatique du client Supabase (`window.location.origin + '/api/supabase'`) sur les domaines de production.
+
 - [x] Configuration du Thème Clair par Défaut (Nude Luxury Albâtre) ([`src/hooks/useTheme.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useTheme.ts), [`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/index.css`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/index.css)) :
   - [x] **Basculement de la Valeur de Repli par Défaut** : Initialisation par défaut sur le thème `light` au premier chargement pour tous les visiteurs et l'administration.
   - [x] **Script Anti-Flicker HTML Synchronisé** : Prévention des flashs sombres au démarrage dans `index.html` avec injection immédiate de la classe `light`.

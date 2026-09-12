@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/api/supabase/:path*", "destination": "http://185.197.249.4:8000/:path*" },
+    { "source": "/api/openwa/:path*", "destination": "http://185.197.249.4:2785/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -8,7 +10,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: http:; connect-src 'self' http://185.197.249.4:8000 ws://185.197.249.4:8000 http://185.197.249.4:* ws://185.197.249.4:* https://*.supabase.co wss://*.supabase.co https: http: ws: wss:; frame-ancestors 'none';"
         },
         {
           "key": "Strict-Transport-Security",
