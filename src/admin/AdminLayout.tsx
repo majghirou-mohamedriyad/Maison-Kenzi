@@ -237,72 +237,69 @@ const AdminLayout = () => {
 
             <div className="space-y-1">
               {group.items.map((item) => {
+                const isCurrent = item.end
+                  ? location.pathname === item.to
+                  : (location.pathname === item.to || location.pathname.startsWith(item.to + "/"));
+
                 const navLinkElement = (
-                  <NavLink
+                  <Link
                     key={item.to}
                     to={item.to}
-                    end={item.end}
                     onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `relative flex items-center rounded-xl text-xs transition-all duration-200 group ${
-                        isCollapsed 
-                          ? "justify-center w-11 h-11 mx-auto" 
-                          : "justify-between px-3.5 py-2.5"
-                      } ${
-                        isActive
-                          ? "bg-[#1A1816] dark:bg-[#C9A96E] text-[#FAF7F2] dark:text-[#121110] font-semibold shadow-sm"
-                          : "text-[#6B635B] dark:text-[#D6CEC4]/80 hover:bg-[#EFE7DC] dark:hover:bg-white/5 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                      }`
-                    }
+                    className={`relative flex items-center rounded-xl text-xs transition-all duration-200 group ${
+                      isCollapsed 
+                        ? "justify-center w-11 h-11 mx-auto" 
+                        : "justify-between px-3.5 py-2.5"
+                    } ${
+                      isCurrent
+                        ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                        : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                    }`}
                   >
-                    {({ isActive }) => (
-                      <>
-                        <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "min-w-0"}`}>
-                          <item.icon
-                            className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                              isActive
-                                ? "text-[#C9A96E] dark:text-[#121110]"
-                                : "text-[#8C827A] dark:text-[#C9A96E] group-hover:scale-110 group-hover:text-[#C9A96E]"
-                            }`}
-                            strokeWidth={isActive ? 2.25 : 1.75}
-                          />
-                          {!isCollapsed && (
-                            <span className="truncate">{item.label}</span>
-                          )}
-                        </div>
+                    <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "min-w-0"}`}>
+                      <item.icon
+                        className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
+                          isCurrent
+                            ? "text-[#C9A96E] dark:text-[#121110]"
+                            : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                        }`}
+                        strokeWidth={isCurrent ? 2.25 : 1.85}
+                      />
+                      {!isCollapsed && (
+                        <span className="truncate">{item.label}</span>
+                      )}
+                    </div>
 
-                        {/* Badges pour version dépliée */}
-                        {!isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
-                              isActive
-                                ? "bg-[#C9A96E] text-[#121110]"
-                                : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
-                            }`}
-                          >
-                            {pendingOrdersCount}
-                          </span>
-                        )}
-
-                        {!isCollapsed && item.badge && !item.isOrderLink && (
-                          <span
-                            className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
-                              isActive
-                                ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
-                                : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-
-                        {/* Point badge pour version repliée */}
-                        {isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
-                          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-[#FAF7F2] dark:ring-[#121110] animate-pulse" />
-                        )}
-                      </>
+                    {/* Badges pour version dépliée */}
+                    {!isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
+                          isCurrent
+                            ? "bg-[#C9A96E] text-[#121110]"
+                            : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
+                        }`}
+                      >
+                        {pendingOrdersCount}
+                      </span>
                     )}
-                  </NavLink>
+
+                    {!isCollapsed && item.badge && !item.isOrderLink && (
+                      <span
+                        className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
+                          isCurrent
+                            ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
+                            : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+
+                    {/* Point badge pour version repliée */}
+                    {isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
+                      <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-[#FAF7F2] dark:ring-[#121110] animate-pulse" />
+                    )}
+                  </Link>
                 );
 
                 if (isCollapsed) {
