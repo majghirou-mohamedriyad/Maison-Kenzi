@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Repositionnement du Logo Maison Kenzi à Gauche de la Barre de Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
+  - [x] **Alignement Naturel à Gauche** : Déplacement du logo de marque directement dans le groupe de gauche (aux côtés du menu mobile et des liens de catalogue « Nos Produits » et « Nos Collections »).
+  - [x] **Épuration de l'Espace Central** : Suppression du positionnement absolu centré pour offrir une vue plus équilibrée et lisible de l'ensemble des contrôles (Recherche, Sélecteur de Langue, Thème et Panier).
+
 - [x] Système Bilingue & Sélecteur de Langue Français / Anglais (FR / EN) ([`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts), [`src/contexts/LanguageContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/LanguageContext.tsx), [`src/components/LanguageSelector.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/LanguageSelector.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/header/StatusBar.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/StatusBar.tsx), [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Dictionnaire Typé & Contexte i18n Réactif** : Création d'un dictionnaire complet FR/EN couvrant navigation, bandeau supérieur, catalogue, panier, tunnel de commande, garanties et pied de page avec bascule instantanée et persistance dans le `localStorage` (`mk_selected_language`).
   - [x] **Composant Sélecteur de Prestige Nude & Zero-Emoji** : Sélecteur épuré avec icône vectorielle `Globe` (`lucide-react`) et pastilles typographiques `FR` / `EN` conformes à la charte Haute Parfumerie (zéro emoji de drapeau).

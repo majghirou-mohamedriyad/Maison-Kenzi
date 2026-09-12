@@ -170,8 +170,8 @@ const Navigation = () => {
       {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
       <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-4 sm:px-6 md:px-7 py-2.5 sm:py-3 md:py-3.5 min-h-[58px] sm:min-h-[66px] md:min-h-[74px] flex items-center justify-between transition-all duration-300">
 
-        {/* Left Side: Mobile Hamburger & Desktop Navigation Links */}
-        <div className="flex items-center gap-1.5 sm:gap-2 z-10">
+        {/* Left Side: Brand Logo, Mobile Hamburger & Desktop Navigation Links */}
+        <div className="flex items-center gap-1.5 sm:gap-3 z-10">
           {/* Mobile Menu Button */}
           <button
             onClick={() => {
@@ -183,6 +183,30 @@ const Navigation = () => {
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+
+          {/* Brand Logo (Aligné à gauche) */}
+          <Link
+            to="/"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              setIsSearchOpen(false);
+              setIsCollectionsHovered(false);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex items-center justify-center pr-1 sm:pr-2 py-0.5 transition-transform duration-200 hover:scale-105 select-none cursor-pointer shrink-0"
+            aria-label="Maison Kenzi - Accueil"
+          >
+            <img
+              src="/mk-logo-light-removebg.png"
+              alt="Maison Kenzi"
+              className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[190px] object-contain drop-shadow-xs dark:hidden"
+            />
+            <img
+              src="/mk-logo-dark.png"
+              alt="Maison Kenzi"
+              className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[190px] object-contain drop-shadow-xs hidden dark:block"
+            />
+          </Link>
 
           {/* Desktop Nav Pills (Left side) */}
           <div className="hidden md:flex items-center gap-2">
@@ -311,32 +335,6 @@ const Navigation = () => {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Absolute Dead Center: Brand Logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto z-20">
-          <Link
-            to="/"
-            onClick={() => {
-              setIsMobileMenuOpen(false);
-              setIsSearchOpen(false);
-              setIsCollectionsHovered(false);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="flex items-center justify-center px-3 py-1 transition-transform duration-200 hover:scale-105 select-none cursor-pointer"
-            aria-label="Maison Kenzi - Accueil"
-          >
-            <img
-              src="/mk-logo-light-removebg.png"
-              alt="Maison Kenzi"
-              className="h-11 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[170px] sm:max-w-[200px] md:max-w-[240px] object-contain drop-shadow-xs dark:hidden"
-            />
-            <img
-              src="/mk-logo-dark.png"
-              alt="Maison Kenzi"
-              className="h-11 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[170px] sm:max-w-[200px] md:max-w-[240px] object-contain drop-shadow-xs hidden dark:block"
-            />
-          </Link>
         </div>
 
         {/* Right Side: Suivi Commande, Service Client, À Propos, Language, Theme, Search, Cart */}
