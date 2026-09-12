@@ -1077,7 +1077,7 @@ const CategoriesAdmin = () => {
 
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-lg w-[95vw] p-6 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto p-5 sm:p-6 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
           <DialogHeader className="pb-3 border-b border-[#EAE3D8] dark:border-[#24211E]">
             <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-2">
               <FolderTree className="w-5 h-5 text-[#C9A96E]" />
