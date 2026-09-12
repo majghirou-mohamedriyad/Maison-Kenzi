@@ -54,14 +54,32 @@ export const isParfumInCategory = (
   const cats = getParfumCategories(p).map((c) => c.toLowerCase().trim());
   if (cats.includes(target)) return true;
 
+  // Catégorie générale Parfums / Parfum
+  if (target === "parfums" || target === "parfum") {
+    if (cats.includes("parfums") || cats.includes("parfum")) return true;
+    const isSpecializedOtherCategory = cats.some((c) => 
+      c.includes("deodorant") || 
+      c.includes("cosmetique") || 
+      c.includes("artisanal") || 
+      c.includes("antique")
+    );
+    // Si ce n'est pas un produit d'une autre catégorie spécifique (déodorants, cosmétiques, antiquités...), c'est un parfum
+    if (!isSpecializedOtherCategory) return true;
+  }
+
   // Rapprochement par genre si la catégorie correspond à un genre
   if (target === "homme" && p.gender?.toLowerCase() === "homme") return true;
   if (target === "femme" && p.gender?.toLowerCase() === "femme") return true;
-  if (target === "mixte" && p.gender?.toLowerCase() === "mixte") return true;
+  if (target === "mixte" && (p.gender?.toLowerCase() === "mixte" || p.gender?.toLowerCase() === "unisexe")) return true;
 
   // Déodorants et Packs
   if (target.includes("deodorant") && (cats.some((c) => c.includes("deodorant")) || p.id?.includes("old-spice"))) return true;
   if (target.includes("pack") && (cats.some((c) => c.includes("pack")) || p.id?.includes("pack"))) return true;
+
+  // Cosmétiques, Artisanat et Antiquités (tolérance singulier/pluriel)
+  if (target.includes("cosmetique") && cats.some((c) => c.includes("cosmetique"))) return true;
+  if ((target.includes("artisanal") || target.includes("artisanat") || target.includes("artisanaux")) && cats.some((c) => c.includes("artisanal") || c.includes("artisanat") || c.includes("artisanaux"))) return true;
+  if ((target.includes("antique") || target.includes("antiquite") || target.includes("antiquités")) && cats.some((c) => c.includes("antique") || c.includes("antiquite") || c.includes("antiquités"))) return true;
 
   return false;
 };

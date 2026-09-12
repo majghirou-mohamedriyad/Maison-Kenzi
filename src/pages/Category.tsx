@@ -323,11 +323,10 @@ const Collection = () => {
               {categoryBanners.map((imgUrl, idx) => (
                 <div
                   key={`${imgUrl}-${idx}`}
-                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                    idx === currentBannerIndex
-                      ? "opacity-100 scale-100"
-                      : "opacity-0 scale-105 pointer-events-none"
-                  }`}
+                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${idx === currentBannerIndex
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-105 pointer-events-none"
+                    }`}
                 >
                   <img
                     src={imgUrl}
@@ -434,11 +433,10 @@ const Collection = () => {
                           e.stopPropagation();
                           setCurrentBannerIndex(dotIdx);
                         }}
-                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                          dotIdx === currentBannerIndex
-                            ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
-                            : "w-2 bg-white/40 hover:bg-white/80"
-                        }`}
+                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${dotIdx === currentBannerIndex
+                          ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
+                          : "w-2 bg-white/40 hover:bg-white/80"
+                          }`}
                         title={`Afficher la photo ${dotIdx + 1} (Manuel)`}
                         aria-label={`Aller à la photo ${dotIdx + 1}`}
                       />
@@ -537,13 +535,12 @@ const Collection = () => {
                         key={item.key}
                         type="button"
                         onClick={() => handleFilterClick(item.key)}
-                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors cursor-pointer ${
-                          active
-                            ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                            : item.isGold
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors cursor-pointer ${active
+                          ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                          : item.isGold
                             ? "text-primary hover:bg-primary/10"
                             : "text-foreground hover:bg-secondary"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <Icon className={`w-4 h-4 ${active ? "text-primary-foreground" : "text-primary"}`} />
@@ -578,34 +575,31 @@ const Collection = () => {
                   key={item.key}
                   type="button"
                   onClick={() => handleFilterClick(item.key)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all duration-200 cursor-pointer ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-[1.02]"
-                      : item.isGold
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all duration-200 cursor-pointer ${active
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-[1.02]"
+                    : item.isGold
                       ? "text-primary hover:bg-primary/10"
                       : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-3.5 h-3.5 shrink-0 ${active ? "text-primary-foreground" : "text-primary"}`} />
                   <span>{item.label}</span>
                   {item.isComingSoon && (
                     <span
-                      className={`text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.2 rounded-full ${
-                        active
-                          ? "bg-black/30 text-white"
-                          : "bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30"
-                      }`}
+                      className={`text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.2 rounded-full ${active
+                        ? "bg-black/30 text-white"
+                        : "bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30"
+                        }`}
                     >
                       À venir
                     </span>
                   )}
                   {count > 0 && (
                     <span
-                      className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
-                        active
-                          ? "bg-black/20 text-primary-foreground"
-                          : "bg-secondary text-muted-foreground"
-                      }`}
+                      className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${active
+                        ? "bg-black/20 text-primary-foreground"
+                        : "bg-secondary text-muted-foreground"
+                        }`}
                     >
                       {count}
                     </span>
@@ -660,11 +654,10 @@ const Collection = () => {
                           key={item.key}
                           type="button"
                           onClick={() => setGenderFilter(item.key)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                            isActive
-                              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                            ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            }`}
                         >
                           <ItemIcon className={`w-3 h-3 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
                           <span>{item.label}</span>
@@ -677,16 +670,14 @@ const Collection = () => {
                   <button
                     type="button"
                     onClick={() => setOnlyInStock((v) => !v)}
-                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer border shadow-2xs select-none ${
-                      onlyInStock
-                        ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-semibold"
-                        : "bg-background/90 dark:bg-[#0C0B0A]/90 border-border/80 text-muted-foreground hover:text-foreground hover:border-primary/40"
-                    }`}
+                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer border shadow-2xs select-none ${onlyInStock
+                      ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-semibold"
+                      : "bg-background/90 dark:bg-[#0C0B0A]/90 border-border/80 text-muted-foreground hover:text-foreground hover:border-primary/40"
+                      }`}
                   >
                     <span
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        onlyInStock ? "bg-emerald-500 shadow-xs animate-pulse" : "bg-muted-foreground/30"
-                      }`}
+                      className={`w-2 h-2 rounded-full transition-all ${onlyInStock ? "bg-emerald-500 shadow-xs animate-pulse" : "bg-muted-foreground/30"
+                        }`}
                     />
                     <span>En stock</span>
                   </button>
@@ -711,11 +702,10 @@ const Collection = () => {
                           <DropdownMenuItem
                             key={opt.value}
                             onClick={() => setSortBy(opt.value)}
-                            className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                              isSelected
-                                ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                                : "text-foreground hover:bg-muted/70"
-                            }`}
+                            className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${isSelected
+                              ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                              : "text-foreground hover:bg-muted/70"
+                              }`}
                           >
                             <span>{opt.label}</span>
                             {isSelected && <Check className="w-3.5 h-3.5 text-primary-foreground shrink-0" />}
@@ -806,9 +796,8 @@ const Collection = () => {
                     <Link
                       key={p.id}
                       to={`/parfum/${p.id}`}
-                      className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${
-                        outOfStock ? "opacity-75" : ""
-                      }`}
+                      className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${outOfStock ? "opacity-75" : ""
+                        }`}
                     >
                       {/* Product Visual Container */}
                       <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5] w-full">
@@ -819,9 +808,8 @@ const Collection = () => {
                           label={p.image_label}
                           aspect="aspect-[4/5]"
                           fitMode="cover"
-                          className={`w-full h-full transition-all duration-700 ease-out ${
-                            outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
-                          }`}
+                          className={`w-full h-full transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
+                            }`}
                         />
 
                         {/* Status Badges - Rupture badge only */}
@@ -845,9 +833,8 @@ const Collection = () => {
 
                       {/* Titre et Bouton Panier sur la même ligne */}
                       <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
-                        <h3 className={`font-serif text-sm sm:text-base font-medium truncate transition-colors duration-300 flex-1 ${
-                          outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                        }`}>
+                        <h3 className={`font-serif text-sm sm:text-base font-medium truncate transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                          }`}>
                           {p.name}
                         </h3>
                         {!outOfStock && (
@@ -889,9 +876,8 @@ const Collection = () => {
 
                       {/* Prix et Contenance en ML */}
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
-                        <span className={`text-xs sm:text-sm font-semibold tracking-tight ${
-                          outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
-                        }`}>
+                        <span className={`text-xs sm:text-sm font-semibold tracking-tight ${outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
+                          }`}>
                           {outOfStock ? "Rupture de stock" : pricing.priceText}
                         </span>
 
