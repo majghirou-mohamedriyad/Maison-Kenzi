@@ -1,9 +1,10 @@
 /**
  * Barre de Navigation Principale & Spotlight Search — Maison Kenzi
  *
- * Fournit la barre de navigation flottante (desktop et mobile), l'accès direct
- * aux collections fondamentales (Catalogue, Homme, Femme, et univers dynamiques),
- * le tiroir panier d'achat et la recherche rapide avec raccourci clavier.
+ * Fournit la barre de navigation flottante de prestige :
+ * - « Nos Produits » redirigeant directement vers le catalogue complet (/collection/all)
+ * - « Nos Collections » affichant au survol / clic la liste élégante des univers olfactifs disponibles
+ * - Logo centré de prestige, Suivi de commande, À Propos, Theme, Recherche rapide et Panier.
  */
 
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -15,6 +16,7 @@ import {
   X,
   Sparkles,
   ChevronRight,
+  ChevronDown,
   Flame,
   Flower2,
   Shield,
@@ -23,6 +25,7 @@ import {
   MessageCircle,
   Truck,
   Tag,
+  Grid,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
@@ -36,6 +39,8 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
+  const collectionsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { totalItems, isOpen: isBagOpen, setIsOpen: setIsBagOpen } = useCart();
   const { data: allParfums } = useParfums();
@@ -51,45 +56,24 @@ const Navigation = () => {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Liste des univers pour la navigation (Catalogue et catégories d'administration actives)
-  const navItems = useMemo(() => {
-    const items: {
-      slug: string;
-      path: string;
-      name: string;
-      icon: any;
-      isPacks?: boolean;
-      description?: string;
-    }[] = [
-      {
-        slug: "all",
-        path: "/collection/all",
-        name: "Catalogue",
-        icon: Sparkles,
-        description: "Tous les parfums",
-      },
-    ];
+  // Gestion douce du survol du menu Nos Collections
+  const handleCollectionsMouseEnter = () => {
+    if (collectionsTimeoutRef.current) clearTimeout(collectionsTimeoutRef.current);
+    setIsCollectionsHovered(true);
+  };
 
-    activeAdminCategories.forEach((cat) => {
-      const s = cat.slug.toLowerCase();
-      if (s !== "homme" && s !== "femme" && s !== "all" && s !== "toutes") {
-        let Icon = Tag;
-        if (s.includes("deodorant")) Icon = Shield;
-        else if (s.includes("pack")) Icon = Crown;
+  const handleCollectionsMouseLeave = () => {
+    collectionsTimeoutRef.current = setTimeout(() => {
+      setIsCollectionsHovered(false);
+    }, 180);
+  };
 
-        items.push({
-          slug: cat.slug,
-          path: `/collection/${cat.slug}`,
-          name: cat.name.replace(/^Parfums\s+/i, ""),
-          icon: Icon,
-          isPacks: s.includes("pack"),
-          description: cat.description || "Collection exclusive",
-        });
-      }
-    });
-
-    return items;
-  }, [activeAdminCategories]);
+  // Fermeture des menus au changement de route
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    setIsCollectionsHovered(false);
+  }, [location.pathname]);
 
   // Suggestions rapides pour le panneau de recherche
   const searchCategorySuggestions = useMemo(() => {
@@ -97,7 +81,7 @@ const Navigation = () => {
       { slug: "all", name: "Tous les Parfums" },
     ];
     const adminSugg = activeAdminCategories
-      .filter((c) => c.slug.toLowerCase() !== "homme" && c.slug.toLowerCase() !== "femme")
+      .filter((c) => c.slug.toLowerCase() !== "all" && c.slug.toLowerCase() !== "toutes")
       .map((c) => ({ slug: c.slug, name: c.name }));
     return [...baseSuggestions, ...adminSugg].slice(0, 4);
   }, [activeAdminCategories]);
@@ -141,6 +125,7 @@ const Navigation = () => {
       } else if (e.key === "Escape") {
         setIsSearchOpen(false);
         setIsMobileMenuOpen(false);
+        setIsCollectionsHovered(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -152,11 +137,6 @@ const Navigation = () => {
       setTimeout(() => searchInputRef.current?.focus(), 50);
     }
   }, [isSearchOpen]);
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setIsSearchOpen(false);
-  }, [location.pathname]);
 
   const filteredParfums = searchQuery.trim()
     ? allParfums
@@ -179,6 +159,8 @@ const Navigation = () => {
   const waNumber = waRaw.replace(/[^0-9]/g, "");
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, j'aurais besoin d'un conseil.")}`;
 
+  const isCollectionsActive = location.pathname.startsWith("/collection") && location.pathname !== "/collection/all";
+
   return (
     <div className="relative">
       {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
@@ -199,23 +181,136 @@ const Navigation = () => {
           </button>
 
           {/* Desktop Nav Pills (Left side) */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.slug}
-                  to={item.path}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
-                    isActive
-                      ? "bg-foreground text-background shadow-xs"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+          <div className="hidden md:flex items-center gap-1.5">
+            {/* 1. Bouton « Nos Produits » -> Catalogue */}
+            <Link
+              to="/collection/all"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+                location.pathname === "/collection/all"
+                  ? "bg-foreground text-background shadow-xs font-semibold"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+              }`}
+            >
+              <span>Nos Produits</span>
+            </Link>
+
+            {/* 2. Bouton « Nos Collections » -> Menu déroulant au survol */}
+            <div
+              className="relative"
+              onMouseEnter={handleCollectionsMouseEnter}
+              onMouseLeave={handleCollectionsMouseLeave}
+            >
+              <button
+                type="button"
+                onClick={() => setIsCollectionsHovered((v) => !v)}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                  isCollectionsHovered || isCollectionsActive
+                    ? "bg-foreground text-background shadow-xs font-semibold"
+                    : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+                }`}
+                aria-expanded={isCollectionsHovered}
+                aria-haspopup="true"
+              >
+                <span>Nos Collections</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isCollectionsHovered ? "rotate-180" : ""
                   }`}
+                />
+              </button>
+
+              {/* Panneau Flottant Déroulant Haute Parfumerie */}
+              {isCollectionsHovered && (
+                <div
+                  onMouseEnter={handleCollectionsMouseEnter}
+                  onMouseLeave={handleCollectionsMouseLeave}
+                  className="absolute top-full left-0 mt-2.5 z-50 w-72 sm:w-80 rounded-2xl bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-2xl p-2.5 space-y-1 animate-in fade-in-0 zoom-in-95 duration-150"
                 >
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
+                  <div className="px-3 py-1.5 border-b border-border/60 mb-1 flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
+                      Univers & Collections
+                    </span>
+                    <Link
+                      to="/collection/all"
+                      onClick={() => setIsCollectionsHovered(false)}
+                      className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                    >
+                      <span>Catalogue</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  {/* Lien général Toutes les Collections */}
+                  <Link
+                    to="/collection/all"
+                    onClick={() => setIsCollectionsHovered(false)}
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors block truncate">
+                        Toutes les Collections
+                      </span>
+                      <span className="text-[10px] text-muted-foreground truncate block font-light">
+                        Catalogue complet des parfums
+                      </span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  {/* Liste des Catégories / Univers dynamiques disponibles */}
+                  {activeAdminCategories.length > 0 ? (
+                    activeAdminCategories.map((cat) => {
+                      const s = cat.slug.toLowerCase();
+                      let Icon = Tag;
+                      if (s === "homme") Icon = Flame;
+                      else if (s === "femme") Icon = Flower2;
+                      else if (s.includes("deodorant")) Icon = Shield;
+                      else if (s.includes("pack")) Icon = Crown;
+
+                      const isCurrent = location.pathname === `/collection/${cat.slug}`;
+
+                      return (
+                        <Link
+                          key={cat.id}
+                          to={`/collection/${cat.slug}`}
+                          onClick={() => setIsCollectionsHovered(false)}
+                          className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${
+                            isCurrent ? "bg-primary/15 border border-primary/30 text-primary" : "hover:bg-primary/10 text-foreground"
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                            isCurrent
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                          }`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-semibold group-hover:text-primary transition-colors truncate">
+                                {cat.name}
+                              </span>
+                              {cat.is_coming_soon && (
+                                <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full font-medium">
+                                  À venir
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-muted-foreground truncate block font-light">
+                              {cat.description || "Collection exclusive"}
+                            </span>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                        </Link>
+                      );
+                    })
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -226,6 +321,7 @@ const Navigation = () => {
             onClick={() => {
               setIsMobileMenuOpen(false);
               setIsSearchOpen(false);
+              setIsCollectionsHovered(false);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center justify-center px-2 py-0.5 transition-transform duration-200 hover:scale-105 select-none cursor-pointer"
@@ -279,6 +375,7 @@ const Navigation = () => {
             ref={searchButtonRef}
             onClick={() => {
               setIsMobileMenuOpen(false);
+              setIsCollectionsHovered(false);
               setIsSearchOpen((v) => !v);
             }}
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${
@@ -446,45 +543,70 @@ const Navigation = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+            {/* 1. Lien principal Nos Produits (Catalogue) */}
+            <Link
+              to="/collection/all"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                location.pathname === "/collection/all"
+                  ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                  : "bg-card border-border/80 text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <span className="flex items-center gap-2.5 font-semibold text-xs">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span>Nos Produits (Catalogue Complet)</span>
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 opacity-70" />
+            </Link>
 
-                return (
-                  <Link
-                    key={item.slug}
-                    to={item.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${
-                      isActive
-                        ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
-                        : item.isPacks
-                        ? "bg-primary/10 border-primary/30 text-primary shadow-xs"
-                        : "bg-card border-border/80 hover:border-primary/40 text-foreground"
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                        isActive
-                          ? "bg-primary-foreground/20 text-primary-foreground"
-                          : item.isPacks
-                          ? "bg-primary/20 text-primary"
-                          : "bg-primary/10 text-primary"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-semibold block truncate">{item.name}</span>
-                      <span className={`text-[10px] truncate block ${isActive ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                        {item.description}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            {/* 2. Liste des Collections */}
+            {activeAdminCategories.length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground px-1">
+                  Nos Collections
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  {activeAdminCategories.map((cat) => {
+                    const s = cat.slug.toLowerCase();
+                    let Icon = Tag;
+                    if (s.includes("deodorant")) Icon = Shield;
+                    else if (s.includes("pack")) Icon = Crown;
+
+                    const isCurrent = location.pathname === `/collection/${cat.slug}`;
+
+                    return (
+                      <Link
+                        key={cat.id}
+                        to={`/collection/${cat.slug}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${
+                          isCurrent
+                            ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
+                            : "bg-card border-border/80 hover:border-primary/40 text-foreground"
+                        }`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                            isCurrent
+                              ? "bg-primary-foreground/20 text-primary-foreground"
+                              : "bg-primary/10 text-primary"
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-semibold block truncate">{cat.name}</span>
+                          <span className={`text-[10px] truncate block ${isCurrent ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                            {cat.description || "Collection"}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="pt-2 border-t border-border/60 flex flex-col gap-2">
               <Link

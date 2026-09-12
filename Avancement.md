@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Navigation « Nos Produits » & Menu Déroulant « Nos Collections » au Survol ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
+  - [x] **Bouton Direct « Nos Produits »** : Pastille de navigation menant directement au catalogue complet de la boutique (`/collection/all`).
+  - [x] **Bouton « Nos Collections » avec Menu Flottant au Survol** : Affichage interactif au survol (`hover` / `mouseenter`) d'un panneau de prestige répertoriant les univers olfactifs disponibles, avec icônes vectorielles `lucide-react`, descriptions, badges et accès direct.
+  - [x] **Hiérarchisation du Tiroir Mobile** : Organisation claire des sections « Nos Produits » et « Nos Collections » dans le menu latéral responsive.
+
 - [x] Suppression du Bouton WhatsApp des Catégories à Venir ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
   - [x] **Épuration de la Vue « À Venir »** : Suppression définitive du bouton *« Être notifié sur WhatsApp »* dans l'encart des catégories en cours d'élaboration.
   - [x] **Recentrage sur le Catalogue** : Conservation d'un bouton d'action principal épuré *« Explorer les autres collections »* avec icône vectorielle `Sparkles`.
