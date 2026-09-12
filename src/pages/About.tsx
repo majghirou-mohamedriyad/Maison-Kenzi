@@ -103,7 +103,7 @@ const About = () => {
           <div className="max-w-4xl mx-auto text-center relative z-10 space-y-5">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold uppercase tracking-[0.25em]">
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-              <span>Maison de Haute Parfumerie</span>
+              <span>Maison de Haute Parfumerie & d'Art</span>
             </div>
 
             <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-foreground font-bold tracking-tight">
@@ -111,7 +111,7 @@ const About = () => {
             </h1>
 
             <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
-              Chez Maison Kenzi, nous sélectionnons les plus grands chefs-d'œuvre de la parfumerie mondiale en flacons complets originaux, pour sublimer chaque instant d'un sillage inoubliable.
+              Chez Maison Kenzi, nous sélectionnons les plus grands chefs-d'œuvre de la parfumerie mondiale, l'artisanat noble et les trésors d'époque pour sublimer chaque instant.
             </p>
 
             {/* Quick Actions */}
@@ -139,6 +139,50 @@ const About = () => {
           </div>
         </section>
 
+        {/* Galerie Triptyque Photographique de Haute Joaillerie */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 -mt-8 relative z-20">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card">
+              <img
+                src="https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=1000&auto=format&fit=crop"
+                alt="Flacon de Haute Parfumerie Maison Kenzi"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-5 sm:p-6 flex flex-col justify-end">
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A96E]">Haute Parfumerie</span>
+                <h3 className="font-serif text-lg sm:text-xl text-white font-medium">Flacons 100% Originaux</h3>
+                <p className="text-xs text-white/80 font-light mt-1">Scellés sous emballage officiel.</p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card sm:-translate-y-4">
+              <img
+                src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1000&auto=format&fit=crop"
+                alt="Matières Premières et Artisanat Noble"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-5 sm:p-6 flex flex-col justify-end">
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A96E]">Artisanat d'Art</span>
+                <h3 className="font-serif text-lg sm:text-xl text-white font-medium">Savoir-Faire Ancestral</h3>
+                <p className="text-xs text-white/80 font-light mt-1">Pièces uniques façonnées à la main.</p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card">
+              <img
+                src="https://images.unsplash.com/photo-1544457070-4cd773b4d71e?q=80&w=1000&auto=format&fit=crop"
+                alt="Trésors Antiques et Pièces Rares"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-5 sm:p-6 flex flex-col justify-end">
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A96E]">Objets Rares</span>
+                <h3 className="font-serif text-lg sm:text-xl text-white font-medium">Antiquités Intemporelles</h3>
+                <p className="text-xs text-white/80 font-light mt-1">Objets précieux de collection.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16 sm:space-y-24 mt-12 sm:mt-16">
           {/* Quote Manifest */}
           <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-card/80 backdrop-blur-xl p-8 sm:p-12 text-center shadow-lg">
@@ -148,6 +192,43 @@ const About = () => {
             </blockquote>
             <div className="mt-4 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-primary font-bold">
               <span>— Philosophie de la Maison Kenzi</span>
+            </div>
+          </div>
+
+          {/* Section 50/50 : L'Atelier & La Passion du Beau */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 items-center bg-card/40 border border-border/80 rounded-3xl p-6 sm:p-10">
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-md border border-border">
+              <img
+                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1200&auto=format&fit=crop"
+                alt="Flacon précieux de parfum de niche"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 text-white text-[11px] font-medium flex items-center justify-between">
+                <span>Sélection Haute Parfumerie</span>
+                <span className="text-[#C9A96E] font-bold">100% Authentique</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-xs uppercase tracking-[0.25em] text-primary font-semibold">
+                L'Exigence du Détail
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-bold">
+                Des Matières Nobles pour un Sillage Unique
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed">
+                Chaque création proposée par Maison Kenzi est rigoureusement choisie pour la pureté de ses essences, l'équilibre subtil de sa pyramide olfactive et la remarquable rémanence de ses notes de fond.
+              </p>
+              <div className="pt-2 grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="font-medium text-foreground">Blister officiel d'origine</span>
+                </div>
+                <div className="p-3 rounded-xl bg-secondary/50 border border-border flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="font-medium text-foreground">Livraison rapide 24–48h</span>
+                </div>
+              </div>
             </div>
           </div>
 

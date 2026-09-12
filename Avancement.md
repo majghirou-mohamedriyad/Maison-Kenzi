@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Sublimation Visuelle de la Page « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
+  - [x] **Galerie Triptyque Haute Joaillerie** : Intégration de 3 cartes photographiques de prestige illustrant la *Haute Parfumerie*, l'*Artisanat d'Art* et les *Objets Antiques & Rares*.
+  - [x] **Section Éditoriale 50/50 avec Visuel Atelier** : Mise en scène visuelle des flacons précieux, des matières premières nobles et des engagements de livraison officielle sous blister.
+
 - [x] Résolution des Ressources Visuelles & Diaporama Hero Multidisciplinaire :
   - [x] **Mise en Valeur des Collections Artisanat & Antiques** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Intégration de slides immersives dédiées aux **Produits Artisanaux** (*Savoir-Faire & Fait Main*) et aux **Objets Antiques & Raretés** (*Patrimoine & Histoire*) avec liens directs vers leurs univers respectifs.
   - [x] **Intégration de la Bannière Officielle `mk-banner.png`** ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx)) : Affichage de la bannière panoramique de prestige `public/mk-banner.png` en tête du carrousel de la page d'accueil avec transition Ken Burns douce.
