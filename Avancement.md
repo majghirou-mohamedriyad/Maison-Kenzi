@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Refonte Éditoriale & Sublimation de la Page 404 ([`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx)) :
+  - [x] **Repositionnement Haute Parfumerie** : Remplacement de la page générique par une expérience immersive signée Maison Kenzi (*« Cette fragrance semble s'être évaporée »*), avec liseré doré champagne et halo lumineux feutré.
+  - [x] **Navigation & Découverte de Secours** : Intégration du Header officiel, du Footer complet, et de boutons d'action rapide (`Retour à l'Accueil`, `Explorer le Catalogue`).
+  - [x] **Cartes d'Accès Directs aux Univers** : Liens directs vers l'univers Homme, Femme et Suivi de commande en temps réel.
+  - [x] **Conciergerie WhatsApp Intégrée** : Accès direct à l'assistance personnalisée en cas de recherche spécifique.
+
 - [x] Unification & Simplification du Bouton de Commande ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)) :
   - [x] **Suppression du Double Bouton** : Remplacement des 2 boutons superposés (« Valider sur WhatsApp » et « Valider sur le site ») par un **unique bouton principal de prestige** : `Valider la Commande (Paiement à la Livraison)`.
   - [x] **Expérience Client Fluide** : Validation directe avec feedback instantané, enregistrement en base Supabase et affichage immédiat de l'écran de confirmation et du numéro de suivi `MK-XXXXXX`.
