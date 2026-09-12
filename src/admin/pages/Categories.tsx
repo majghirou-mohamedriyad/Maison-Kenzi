@@ -30,6 +30,10 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  CheckSquare,
+  Square,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import {
   useCategories,
@@ -81,6 +85,10 @@ const CategoriesAdmin = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
+
+  // Multi-sélection des catégories
+  const [selectedCatIds, setSelectedCatIds] = useState<string[]>([]);
+  const [bulkDeleteCatModalOpen, setBulkDeleteCatModalOpen] = useState(false);
 
   // Mémorisation du mode d'affichage (Tableau ou Grille de cartes)
   const [viewMode, setViewMode] = useState<"table" | "grid">(() => {
@@ -183,6 +191,98 @@ const CategoriesAdmin = () => {
     setSearch("");
     setStatusFilter("Tous");
     setSortOption("name_asc");
+  };
+
+  // Gestion de la sélection multiple des catégories
+  const toggleSelectCat = (id: string) => {
+    setSelectedCatIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllCats = () => {
+    const allIds = filteredAndSorted.map((c) => c.id || c.slug);
+    if (selectedCatIds.length === allIds.length) {
+      setSelectedCatIds([]);
+    } else {
+      setSelectedCatIds(allIds);
+    }
+  };
+
+  const deselectAllCats = () => setSelectedCatIds([]);
+
+  const isAllSelectedCats =
+    filteredAndSorted.length > 0 &&
+    filteredAndSorted.every((c) => selectedCatIds.includes(c.id || c.slug));
+
+  // Action groupée 1 : Activer / Masquer
+  const handleBulkActiveToggle = async (active: boolean) => {
+    if (selectedCatIds.length === 0) return;
+    setIsSaving(true);
+    try {
+      let count = 0;
+      for (const id of selectedCatIds) {
+        await updateCategory(id, { is_active: active });
+        count++;
+      }
+      toast.success(active ? "Catégories activées" : "Catégories masquées", {
+        description: `${count} catégorie(s) mise(s) à jour.`,
+      });
+      setSelectedCatIds([]);
+    } catch (err: any) {
+      toast.error("Erreur lors de la mise à jour groupée", {
+        description: err?.message,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Action groupée 2 : Basculer À Venir
+  const handleBulkComingSoonToggle = async (comingSoon: boolean) => {
+    if (selectedCatIds.length === 0) return;
+    setIsSaving(true);
+    try {
+      let count = 0;
+      for (const id of selectedCatIds) {
+        await updateCategory(id, { is_coming_soon: comingSoon });
+        count++;
+      }
+      toast.success(comingSoon ? "Catégories marquées 'À Venir'" : "Catégories marquées 'Disponibles'", {
+        description: `${count} catégorie(s) mise(s) à jour.`,
+      });
+      setSelectedCatIds([]);
+    } catch (err: any) {
+      toast.error("Erreur lors de la mise à jour groupée", {
+        description: err?.message,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Action groupée 3 : Suppression groupée
+  const handleBulkDeleteCats = async () => {
+    if (selectedCatIds.length === 0) return;
+    setIsSaving(true);
+    try {
+      let count = 0;
+      for (const id of selectedCatIds) {
+        await deleteCategory(id);
+        count++;
+      }
+      toast.success("Suppression groupée effectuée", {
+        description: `${count} catégorie(s) supprimée(s).`,
+      });
+      setSelectedCatIds([]);
+      setBulkDeleteCatModalOpen(false);
+    } catch (err: any) {
+      toast.error("Erreur de suppression groupée", {
+        description: err?.message,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const openAddModal = () => {
@@ -513,6 +613,81 @@ const CategoriesAdmin = () => {
         )}
       </div>
 
+      {/* Barre d'Actions Groupées Flottante pour Catégories */}
+      {selectedCatIds.length > 0 && (
+        <div className="sticky top-4 z-30 bg-[#1A1816] dark:bg-[#FAF7F2] text-[#FAF7F2] dark:text-[#1A1816] p-4 rounded-2xl shadow-2xl border border-[#C9A96E]/40 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#C9A96E] animate-pulse" />
+              <span className="font-semibold text-xs sm:text-sm tracking-wide">
+                {selectedCatIds.length} catégorie{selectedCatIds.length > 1 ? "s" : ""} sélectionnée{selectedCatIds.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={deselectAllCats}
+              className="text-xs text-[#C9A96E] hover:underline cursor-pointer flex items-center gap-1"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Désélectionner</span>
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+            {/* Activer */}
+            <Button
+              type="button"
+              onClick={() => handleBulkActiveToggle(true)}
+              disabled={isSaving}
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs bg-emerald-500/20 border-emerald-500/40 text-emerald-300 dark:text-emerald-700 hover:bg-emerald-500/30 gap-1.5 cursor-pointer rounded-xl"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Activer</span>
+            </Button>
+
+            {/* Masquer */}
+            <Button
+              type="button"
+              onClick={() => handleBulkActiveToggle(false)}
+              disabled={isSaving}
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs bg-stone-500/20 border-stone-500/40 text-stone-300 dark:text-stone-700 hover:bg-stone-500/30 gap-1.5 cursor-pointer rounded-xl"
+            >
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span>Masquer</span>
+            </Button>
+
+            {/* Basculer À Venir */}
+            <Button
+              type="button"
+              onClick={() => handleBulkComingSoonToggle(true)}
+              disabled={isSaving}
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs bg-[#C9A96E]/20 border-[#C9A96E]/40 text-[#C9A96E] hover:bg-[#C9A96E]/30 gap-1.5 cursor-pointer rounded-xl"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>À Venir</span>
+            </Button>
+
+            {/* Supprimer */}
+            <Button
+              type="button"
+              onClick={() => setBulkDeleteCatModalOpen(true)}
+              disabled={isSaving}
+              size="sm"
+              className="h-8 text-xs bg-red-600 hover:bg-red-700 text-white gap-1.5 cursor-pointer rounded-xl"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Supprimer</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Vue 1: GRILLE DE CARTES */}
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -520,11 +695,16 @@ const CategoriesAdmin = () => {
             const count = categoryStats[cat.slug] ?? 0;
             const rawImg = cat.image || cat.icon || (cat.images && cat.images[0]);
             const catImg = rawImg ? normalizeImageUrl(rawImg) : null;
+            const isSelected = selectedCatIds.includes(cat.id || cat.slug);
 
             return (
               <div
                 key={cat.id || cat.slug}
-                className="group relative bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] hover:border-[#C9A96E]/50 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between"
+                className={`group relative bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between ${
+                  isSelected
+                    ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/40 bg-[#C9A96E]/[0.02]"
+                    : "border-[#EAE3D8] dark:border-[#24211E] hover:border-[#C9A96E]/50"
+                }`}
               >
                 <div>
                   {/* Visuel & Statut */}
@@ -569,6 +749,27 @@ const CategoriesAdmin = () => {
                         </span>
                       )}
                     </div>
+
+                    {/* Checkbox Multi-Sélection */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSelectCat(cat.id || cat.slug);
+                      }}
+                      className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-md ${
+                        isSelected
+                          ? "bg-[#C9A96E] text-[#121110] ring-2 ring-[#C9A96E]/40"
+                          : "bg-white/90 dark:bg-[#1C1A18]/90 text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] backdrop-blur-md border border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]"
+                      }`}
+                      title={isSelected ? "Désélectionner cette catégorie" : "Sélectionner cette catégorie"}
+                    >
+                      {isSelected ? (
+                        <CheckSquare className="w-4 h-4" />
+                      ) : (
+                        <Square className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
 
                   {/* Titre & Description */}
@@ -633,6 +834,21 @@ const CategoriesAdmin = () => {
             <table className="w-full text-xs">
               <thead className="bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 text-[#7A726A] dark:text-[#A39B91] text-[10px] uppercase tracking-wider border-b border-[#EAE3D8] dark:border-[#24211E] font-bold">
                 <tr>
+                  <th className="w-12 text-center px-3 py-3.5">
+                    <button
+                      type="button"
+                      onClick={selectAllCats}
+                      className={`w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer mx-auto ${
+                        isAllSelectedCats
+                          ? "bg-[#C9A96E] text-[#121110] ring-1 ring-[#C9A96E]/40"
+                          : "bg-white dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#7A726A] hover:border-[#C9A96E]"
+                      }`}
+                      title={isAllSelectedCats ? "Tout désélectionner" : "Tout sélectionner"}
+                    >
+                      {isAllSelectedCats ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                    </button>
+                  </th>
+
                   <th className="text-left px-5 py-3.5">
                     <button
                       type="button"
@@ -693,11 +909,33 @@ const CategoriesAdmin = () => {
                   const rawImg = cat.image || cat.icon || (cat.images && cat.images[0]);
                   const catImg = rawImg ? normalizeImageUrl(rawImg) : null;
                   const bannerCount = cat.images && cat.images.length > 0 ? cat.images.length : (cat.image || cat.icon ? 1 : 0);
+                  const isSelected = selectedCatIds.includes(cat.id || cat.slug);
+
                   return (
                     <tr
                       key={cat.id || cat.slug || `cat-row-${idx}`}
-                      className="hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A17]/50 transition-colors group"
+                      className={`transition-colors group ${
+                        isSelected
+                          ? "bg-[#C9A96E]/[0.05] dark:bg-[#C9A96E]/[0.1]"
+                          : "hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A17]/50"
+                      }`}
                     >
+                      {/* Checkbox */}
+                      <td className="text-center px-3 py-4">
+                        <button
+                          type="button"
+                          onClick={() => toggleSelectCat(cat.id || cat.slug)}
+                          className={`w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer mx-auto ${
+                            isSelected
+                              ? "bg-[#C9A96E] text-[#121110] ring-1 ring-[#C9A96E]/40"
+                              : "bg-white dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#7A726A] hover:border-[#C9A96E]"
+                          }`}
+                          title={isSelected ? "Désélectionner" : "Sélectionner cette catégorie"}
+                        >
+                          {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                        </button>
+                      </td>
+
                       {/* Name & Thumbnail */}
                       <td className="px-5 py-4 font-medium text-[#1A1816] dark:text-[#FAF7F2]">
                         <div className="flex items-center gap-3">
@@ -1125,6 +1363,39 @@ const CategoriesAdmin = () => {
               className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium px-5 py-2.5 shadow-sm cursor-pointer"
             >
               Supprimer définitivement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modale de Confirmation de Suppression Groupée des Catégories */}
+      <AlertDialog open={bulkDeleteCatModalOpen} onOpenChange={setBulkDeleteCatModalOpen}>
+        <AlertDialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl shadow-2xl p-6 sm:p-8 max-w-md">
+          <AlertDialogHeader className="space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto sm:mx-0">
+              <Trash2 className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <AlertDialogTitle className="font-serif text-xl font-medium text-[#1A1816] dark:text-[#FAF7F2]">
+              Supprimer {selectedCatIds.length} catégorie(s) ?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] leading-relaxed">
+              Êtes-vous certain de vouloir supprimer définitivement les <strong className="text-[#1A1816] dark:text-[#FAF7F2] font-semibold">{selectedCatIds.length} catégories sélectionnées</strong> de la boutique Maison Kenzi ?
+              <br />
+              <span className="text-rose-600 dark:text-rose-400 mt-1 block font-semibold">
+                Attention : Cette suppression retirera les univers olfactifs de la base de données de manière irréversible.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-6 gap-2 sm:gap-3">
+            <AlertDialogCancel className="rounded-xl border border-[#E5DDD0] dark:border-[#332E28] bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] text-xs font-medium px-4 py-2.5 cursor-pointer">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDeleteCats}
+              disabled={isSaving}
+              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium px-5 py-2.5 shadow-sm cursor-pointer"
+            >
+              {isSaving ? "Suppression en cours..." : "Supprimer la sélection"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

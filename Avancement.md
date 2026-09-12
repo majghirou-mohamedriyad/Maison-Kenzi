@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Multi-Sélection & Actions Groupées dans l'Espace Administration ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
+  - [x] **Gestion Groupée des Parfums** : Cases à cocher individuelles et sélection globale ("Tout sélectionner") sur les vues Tableau et Grille de cartes.
+  - [x] **Barre d'Actions Flottante Haute Parfumerie (Produits)** : Compteur de sélection dynamique, changement groupé de catégorie, bascule en stock / rupture de stock en 1 clic, export direct en fichier CSV et suppression sécurisée en lot.
+  - [x] **Gestion Groupée des Catégories & Univers** : Sélection multiple avec barre d'actions dédiée permettant d'activer, masquer, passer en mode "À Venir" ou supprimer plusieurs catégories à la fois avec synchronisation immédiate Supabase.
+
 - [x] Intégration & Activation de Vercel Speed Insights ([`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Dépendance `@vercel/speed-insights`** : Ajout du package officiel pour le suivi des métriques de performance et Web Vitals en temps réel.
   - [x] **Montage du Composant `<SpeedInsights />`** : Intégration dans le composant racine `src/App.tsx` pour l'analyse continue des temps de chargement et de navigation sur Vercel.

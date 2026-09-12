@@ -21,6 +21,8 @@ import {
   Leaf,
   Wind,
   Snowflake,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 import { getPrimaryImage } from "@/lib/productImages";
@@ -32,6 +34,10 @@ type Props = {
   onDelete: (p: AdminParfum) => void;
   sortBy?: string;
   onSortChange?: (field: string) => void;
+  selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
+  onSelectAll?: () => void;
+  isAllSelected?: boolean;
 };
 
 const fmt = (n: number) => `${n.toLocaleString("fr-FR")} MAD`;
@@ -43,6 +49,10 @@ const ProductTable = ({
   onDelete,
   sortBy,
   onSortChange,
+  selectedIds = [],
+  onToggleSelect,
+  onSelectAll,
+  isAllSelected = false,
 }: Props) => {
   return (
     <>
@@ -59,11 +69,16 @@ const ProductTable = ({
             const stockTotal = isFull ? sFull : s5 + s10;
             const inStock = (p.active ?? true) && stockTotal > 0;
             const primaryImg = getPrimaryImage(p);
+            const isSelected = selectedIds.includes(p.id);
 
             return (
               <div
                 key={p.id}
-                className="group relative bg-card border border-border/80 hover:border-primary/50 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between"
+                className={`group relative bg-card border rounded-2xl p-4 transition-all duration-300 hover:shadow-lg flex flex-col justify-between ${
+                  isSelected
+                    ? "border-primary ring-2 ring-primary/40 bg-primary/[0.02]"
+                    : "border-border/80 hover:border-primary/50"
+                }`}
               >
                 <div>
                   {/* Card Visual & Status Bar */}
@@ -96,6 +111,29 @@ const ProductTable = ({
                         {inStock ? "En Stock" : "Rupture"}
                       </span>
                     </div>
+
+                    {/* Checkbox Multi-Sélection */}
+                    {onToggleSelect && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleSelect(p.id);
+                        }}
+                        className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-md ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground ring-2 ring-primary/40"
+                            : "bg-background/90 text-muted-foreground hover:text-foreground backdrop-blur-md border border-border/80 hover:border-primary"
+                        }`}
+                        title={isSelected ? "Désélectionner ce parfum" : "Sélectionner ce parfum"}
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="w-4 h-4" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {/* Title & Brand */}
@@ -140,67 +178,63 @@ const ProductTable = ({
                         <Sparkles className="w-3 h-3" /> Déodorant Stick
                       </span>
                     )}
-                    {isFull && !isPack && !isDeo && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                        <Wine className="w-3 h-3" /> Flacon {p.full_bottle_volume_ml ?? 100}ml
+                    {!isPack && !isDeo && isFull && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                        <Wine className="w-3 h-3" /> Flacon Scellé
                       </span>
                     )}
-                    {!isFull && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        <Droplet className="w-3 h-3" /> Décants (5ml / 10ml)
+                    {!isPack && !isDeo && !isFull && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                        <Droplet className="w-3 h-3" /> Décants 5ml / 10ml
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Pricing & Stock Details Card */}
+                {/* Stock & Prix */}
                 <div className="mt-4 pt-3 border-t border-border/60 space-y-2">
-                  <div className="bg-background/80 rounded-xl p-2.5 flex items-center justify-between text-xs border border-border/50">
-                    <div>
-                      <span className="text-[10px] text-muted-foreground block">Prix Vente</span>
-                      <span className="font-bold tracking-tight text-primary">
-                        {isFull
-                          ? fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)
-                          : `${fmt(p.prices["5ml"])}`}
-                      </span>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-[10px] text-muted-foreground block">Stock Total</span>
-                      <span className={`font-semibold text-xs ${stockTotal === 0 ? "text-red-500" : "text-foreground"}`}>
-                        {stockTotal} {isFull ? "unités" : "flacons"}
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground text-[11px]">Prix Vente :</span>
+                    <span className="font-serif font-bold text-foreground">
+                      {isFull ? fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0) : fmt(p.prices["5ml"] ?? 0)}
+                    </span>
                   </div>
 
-                  {/* Actions Buttons */}
-                  <div className="flex items-center justify-end gap-1.5 pt-1">
-                    <a
-                      href={`/parfum/${p.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                      title="Voir la fiche produit"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => onEdit(p)}
-                      className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                      title="Modifier"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onDelete(p)}
-                      className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors cursor-pointer"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground text-[11px]">Stock Global :</span>
+                    <span className={`font-semibold text-xs ${stockTotal === 0 ? "text-red-500" : "text-foreground"}`}>
+                      {stockTotal} {isFull ? "unités" : "flacons"}
+                    </span>
                   </div>
+                </div>
+
+                {/* Actions Buttons */}
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <a
+                    href={`/parfum/${p.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                    title="Voir la fiche produit"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => onEdit(p)}
+                    className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    title="Modifier"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(p)}
+                    className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors cursor-pointer"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             );
@@ -219,7 +253,23 @@ const ProductTable = ({
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide border-b border-border/80">
                 <tr>
-                  <th className="text-left px-4 py-3.5 font-bold">#</th>
+                  <th className="w-12 text-center px-3 py-3.5">
+                    {onSelectAll && (
+                      <button
+                        type="button"
+                        onClick={onSelectAll}
+                        className={`w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer mx-auto ${
+                          isAllSelected
+                            ? "bg-primary text-primary-foreground ring-1 ring-primary/40"
+                            : "bg-background border border-border/80 text-muted-foreground hover:text-foreground hover:border-primary"
+                        }`}
+                        title={isAllSelected ? "Tout désélectionner" : "Tout sélectionner"}
+                      >
+                        {isAllSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                  </th>
+                  <th className="text-left px-3 py-3.5 font-bold">#</th>
                   <th className="text-left px-4 py-3.5 font-bold">
                     <button
                       type="button"
@@ -293,14 +343,32 @@ const ProductTable = ({
                   const sFull = p.full_bottle_stock ?? 0;
                   const stockTotal = isFull ? sFull : s5 + s10;
                   const inStock = (p.active ?? true) && stockTotal > 0;
-                  const primaryImg = getPrimaryImage(p);
+                  const isSelected = selectedIds.includes(p.id);
 
                   return (
                     <tr
                       key={p.id}
-                      className="hover:bg-muted/30 transition-colors"
+                      className={`transition-colors ${
+                        isSelected ? "bg-primary/[0.04] dark:bg-primary/[0.08]" : "hover:bg-muted/30"
+                      }`}
                     >
-                      <td className="px-4 py-3.5 text-muted-foreground font-mono text-xs">{i + 1}</td>
+                      <td className="text-center px-3 py-3.5">
+                        {onToggleSelect && (
+                          <button
+                            type="button"
+                            onClick={() => onToggleSelect(p.id)}
+                            className={`w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer mx-auto ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground ring-1 ring-primary/40"
+                                : "bg-background border border-border/80 text-muted-foreground hover:text-foreground hover:border-primary"
+                            }`}
+                            title={isSelected ? "Désélectionner" : "Sélectionner ce parfum"}
+                          >
+                            {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                          </button>
+                        )}
+                      </td>
+                      <td className="px-3 py-3.5 text-muted-foreground font-mono text-xs">{i + 1}</td>
                       <td className="px-4 py-3.5 font-medium text-foreground">
                         <div className="flex items-center gap-3">
                           {primaryImg ? (
