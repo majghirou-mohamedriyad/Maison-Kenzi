@@ -710,7 +710,7 @@ const ExpressOrderForm = ({
             />
           </div>
 
-          {/* Field 2: Numéro de Téléphone */}
+          {/* Field 2: Numéro de Téléphone avec Indicatif */}
           <div className="space-y-1">
             <Label
               htmlFor="phone"
@@ -718,23 +718,25 @@ const ExpressOrderForm = ({
             >
               <span className="flex items-center gap-1">
                 <Phone className="w-3 h-3 text-primary shrink-0" />
-                <span>Numéro de Téléphone *</span>
+                <span>Numéro de Téléphone (avec indicatif pays) *</span>
               </span>
-              <span className="text-[8.5px] text-muted-foreground font-mono">06 XX XX XX XX</span>
+              <span className="text-[8.5px] text-primary font-mono font-medium">Ex: 2126... / 336...</span>
             </Label>
-            <Input
-              id="phone"
-              type="tel"
-              required
-              placeholder="0600000000"
-              value={phone}
-              onFocus={() => setFocusedField("phone")}
-              onBlur={() => setFocusedField(null)}
-              onChange={(e) => setPhone(e.target.value)}
-              className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
-              }`}
-            />
+            <div className="relative">
+              <Input
+                id="phone"
+                type="tel"
+                required
+                placeholder="Ex: 212685510301 (ou 33612345678)"
+                value={phone}
+                onFocus={() => setFocusedField("phone")}
+                onBlur={() => setFocusedField(null)}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
+                className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
+                  focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
+                }`}
+              />
+            </div>
           </div>
 
           {/* Field 3 & 4 (Côte à côte): Destination (Pays REST Countries) & Ville */}

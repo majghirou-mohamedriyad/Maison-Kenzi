@@ -410,16 +410,19 @@ const Checkout = () => {
 
                     {/* Phone Number */}
                     <div className="space-y-1.5">
-                      <Label htmlFor="phone" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-primary" /> Numéro de Téléphone (WhatsApp) *
-                      </Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="phone" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5 text-primary" /> Numéro de Téléphone (avec indicatif pays) *
+                        </Label>
+                        <span className="text-[10px] text-primary font-mono font-medium">Ex: 2126... / 336...</span>
+                      </div>
                       <Input
                         id="phone"
                         type="tel"
                         required
-                        placeholder="06 12 34 56 78"
+                        placeholder="Ex: 212652535301 (ou 33612345678)"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
                         className="h-11 text-xs sm:text-sm rounded-xl bg-background border-border/80 focus:border-primary"
                       />
                     </div>
