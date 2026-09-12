@@ -133,6 +133,9 @@ const Collection = () => {
         let icon = Grid;
         if (s.includes("deodorant")) icon = ShieldCheck;
         else if (s.includes("pack")) icon = Crown;
+        else if (s.includes("cosmetique")) icon = Flower2;
+        else if (s.includes("artisanal") || s.includes("livre")) icon = Package;
+        else if (s.includes("antique")) icon = Crown;
 
         options.push({
           key: cat.slug,

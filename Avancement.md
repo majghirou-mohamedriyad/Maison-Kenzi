@@ -10,8 +10,8 @@
 ## Historique des Tâches Réalisées
 
 - [x] Optimisation des Filtres & Catégories Olfactives :
+  - [x] **Réactivation de « Toutes les Collections » en 1ère Position** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Onglet général en tête de liste permettant d'afficher l'intégralité du catalogue d'un seul coup (parfums, cosmétiques, artisanat, antiquités) avec le compteur global et bannière du catalogue officiel.
   - [x] **Résolution de la Catégorie « Parfums »** ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts)) : Inclusion automatique et intelligente de l'ensemble des créations olfactives de la boutique sous la catégorie `parfums` / `parfum`, avec prise en compte de la tolérance singulier/pluriel pour les cosmétiques, artisanat et antiquités.
-  - [x] **Suppression de l'Onglet Redondant « Toutes les Collections »** ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) : Épuration de la barre de navigation des collections pour afficher exclusivement les catégories réelles actives créées par l'administrateur.
 
 - [x] Support Multi-Photos de Bannières de Catégorie & Carrousel Hero Interactif :
   - [x] **Store Catégories Typé & Rétrocompatible** ([`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) : Ajout du champ `images?: string[]`, parseur sécurisé pour chaînes JSON et listes séparées par virgules, synchronisation automatique Supabase et persistance locale.
