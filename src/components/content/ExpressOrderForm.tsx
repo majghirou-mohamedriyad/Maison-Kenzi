@@ -1,14 +1,41 @@
+/**
+ * Formulaire de Commande Directe & Express — Maison Kenzi
+ *
+ * Permet au client de passer commande directement et instantanément pour les formats sélectionnés
+ * sans passer par l'application externe WhatsApp. Enregistre la commande dans Supabase,
+ * déclenche l'automatisation de notification en arrière-plan et affiche un récapitulatif avec lien de suivi.
+ */
+
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { formatMAD } from "@/lib/sizes";
 import { toast } from "sonner";
-import { User, Phone, MapPin, Sparkles, CheckCircle2, ShoppingBag, AlertCircle, Bell, Building2 } from "lucide-react";
+import {
+  User,
+  Phone,
+  MapPin,
+  Sparkles,
+  CheckCircle2,
+  ShoppingBag,
+  AlertCircle,
+  Bell,
+  Building2,
+  ShieldCheck,
+  Truck,
+  Loader2,
+  ArrowRight,
+  RotateCcw,
+  Copy,
+  Check,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { POPULAR_CITIES, searchMoroccanCities } from "@/data/moroccanCities";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { saveLastOrderNumber } from "@/hooks/useOrderTracking";
+import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappService";
 
 export interface OrderSelectionItem {
   size: string;
@@ -29,8 +56,6 @@ interface ExpressOrderFormProps {
   outOfStock?: boolean;
 }
 
-const STORE_WHATSAPP = "212752850156";
-
 const ExpressOrderForm = ({
   parfumName,
   maison,
@@ -41,6 +66,7 @@ const ExpressOrderForm = ({
   onAddToCart,
   outOfStock = false,
 }: ExpressOrderFormProps) => {
+  const navigate = useNavigate();
   const { settings } = useAppSettings();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -51,6 +77,17 @@ const ExpressOrderForm = ({
   const [address, setAddress] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  // État de confirmation de commande réussie
+  const [completedOrder, setCompletedOrder] = useState<{
+    orderNumber: string;
+    customerName: string;
+    customerPhone: string;
+    customerAddress: string;
+    totalPrice: number;
+    items: OrderSelectionItem[];
+  } | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,7 +101,7 @@ const ExpressOrderForm = ({
 
   const matchingCities = searchMoroccanCities(cityQuery, 8);
 
-  // Normalize selected items list
+  // Normalisation de la liste des formats sélectionnés
   const activeItems: OrderSelectionItem[] = items && items.length > 0
     ? items.filter((i) => i.quantity > 0)
     : sizeLabel && quantity
@@ -79,9 +116,14 @@ const ExpressOrderForm = ({
       ]
     : [];
 
-  const totalQuantity = activeItems.reduce((s, i) => s + i.quantity, 0);
+  const handleCopyOrderNumber = (num: string) => {
+    navigator.clipboard.writeText(num);
+    setCopiedCode(true);
+    toast.success("Numéro de commande copié dans le presse-papier !");
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
-  const handleWhatsAppOrder = async (e: React.FormEvent) => {
+  const handleDirectOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (outOfStock) {
@@ -112,14 +154,14 @@ const ExpressOrderForm = ({
 
     setIsSubmitting(true);
 
-    // Generate unique order number MK-XXXXXX
+    // Génération du numéro de commande unique MK-XXXXXX
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `MK-${randomSuffix}`;
     const cleanEmail = `${fullName.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
     const fullAddressText = `${address.trim()}, ${city.trim()}, Maroc`;
     saveLastOrderNumber(orderNumber);
 
-    // Save order record directly to Supabase database for /admin/commandes visibility
+    // Enregistrement de la commande dans Supabase
     try {
       const { data, error: dbError } = await supabase.from("orders").insert([
         {
@@ -181,36 +223,42 @@ const ExpressOrderForm = ({
       console.warn("Exception lors de l'enregistrement de la commande/client:", err);
     }
 
-    // Build concise, clean WhatsApp message without emojis
-    const formattedItemsLines = activeItems
-      .map((it) => `- ${it.sizeLabel} x${it.quantity}`)
-      .join("\n");
+    // Déclenchement automatique des notifications WhatsApp OpenWA en tâche de fond (Client + Admin)
+    dispatchOrderCreatedWhatsAppNotifications({
+      order_number: orderNumber,
+      customer_name: fullName.trim(),
+      customer_phone: phone.trim(),
+      customer_address: fullAddressText,
+      total_amount: totalPrice,
+      items: activeItems.map((it) => ({
+        name: `${maison} — ${parfumName}`,
+        size: it.sizeLabel,
+        quantity: it.quantity,
+        price: it.unitPrice,
+      })),
+    }).catch((err) => {
+      console.warn("Notification WhatsApp auto info:", err);
+    });
 
-    const message = [
-      `Bonjour Maison Kenzi,`,
-      "",
-      `Je souhaite commander (#${orderNumber}) :`,
-      `- Produit : ${maison} - ${parfumName}`,
-      formattedItemsLines,
-      "",
-      `Livraison :`,
-      `- Nom : ${fullName.trim()}`,
-      `- Tél : ${phone.trim()}`,
-      `- Ville : ${city.trim()}`,
-      `- Adresse : ${address.trim()}`,
-      "",
-      `Total produits : ${formatMAD(totalPrice)}`,
-      `Merci de me confirmer le montant total avec la livraison.`,
-    ].join("\n");
+    // Mémorisation de l'état de complétion
+    setCompletedOrder({
+      orderNumber,
+      customerName: fullName.trim(),
+      customerPhone: phone.trim(),
+      customerAddress: fullAddressText,
+      totalPrice,
+      items: [...activeItems],
+    });
 
-    const encoded = encodeURIComponent(message);
-    const targetPhoneRaw = settings.whatsapp_phone || settings.store_phone || "212752850156";
-    const targetWaNumber = targetPhoneRaw.replace(/[^0-9]/g, "") || "212752850156";
-    const whatsappUrl = `https://wa.me/${targetWaNumber}?text=${encoded}`;
-
-    window.open(whatsappUrl, "_blank");
     setIsSubmitting(false);
-    toast.success("Commande enregistrée et transmise sur WhatsApp !");
+    toast.success(`Commande n° ${orderNumber} validée avec succès !`);
+  };
+
+  const handleResetForm = () => {
+    setCompletedOrder(null);
+    setFullName("");
+    setPhone("");
+    setAddress("");
   };
 
   if (outOfStock) {
@@ -252,9 +300,88 @@ const ExpressOrderForm = ({
     );
   }
 
+  // ÉCRAN DE CONFIRMATION DE COMMANDE EFFECTUÉE DIRECTEMENT
+  if (completedOrder) {
+    return (
+      <div className="relative overflow-hidden bg-card/95 backdrop-blur-md border-2 border-primary/40 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl animate-in fade-in zoom-in-95">
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-bold block">
+            Commande Confirmée
+          </span>
+          <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+            Merci pour votre commande !
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+            Votre commande pour <strong>{maison} — {parfumName}</strong> a été enregistrée avec succès. Notre conciergerie prépare votre flacon pour une expédition rapide sous 24-48h.
+          </p>
+        </div>
+
+        {/* Bloc Numéro de Commande & Récapitulatif */}
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">
+                Référence de commande
+              </span>
+              <span className="font-mono text-sm sm:text-base font-bold text-primary tracking-wide">
+                {completedOrder.orderNumber}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyOrderNumber(completedOrder.orderNumber)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg border border-border/80 hover:border-primary/50 text-foreground bg-background/80 transition-colors cursor-pointer"
+              title="Copier la référence"
+            >
+              {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span className="text-[11px]">{copiedCode ? "Copié" : "Copier"}</span>
+            </button>
+          </div>
+
+          <div className="border-t border-border/50 pt-2 flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Total à régler à la livraison :</span>
+            <span className="font-bold text-foreground text-sm tracking-tight">
+              {formatMAD(completedOrder.totalPrice)}
+            </span>
+          </div>
+
+          <div className="text-[10.5px] text-muted-foreground flex items-center gap-1.5 pt-0.5">
+            <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span>Livraison à {completedOrder.customerAddress}</span>
+          </div>
+        </div>
+
+        {/* Boutons d'action : Suivi ou Nouvelle commande */}
+        <div className="space-y-2 pt-1">
+          <Button
+            type="button"
+            onClick={() => navigate(`/suivi?code=${completedOrder.orderNumber}`)}
+            className="w-full h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] text-xs font-bold shadow-md hover:shadow-lg transition-all duration-300 gap-2 cursor-pointer"
+          >
+            <span>Suivre l'état de ma commande</span>
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleResetForm}
+            className="w-full h-10 rounded-full border-border/80 hover:bg-secondary/70 text-foreground text-xs font-medium gap-2 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Commander un autre article</span>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form
-      onSubmit={handleWhatsAppOrder}
+      onSubmit={handleDirectOrder}
       className="relative overflow-hidden bg-card/90 backdrop-blur-md border-2 border-primary/40 rounded-2xl p-3.5 sm:p-5 space-y-3 sm:space-y-3.5 shadow-xl transition-all duration-300 hover:border-primary animate-in fade-in zoom-in-95"
     >
       {/* Glow highlight background ornament */}
@@ -474,7 +601,7 @@ const ExpressOrderForm = ({
         </div>
       </div>
 
-      {/* ACTION BUTTONS (Ajouter au Panier + WhatsApp) */}
+      {/* ACTION BUTTONS (Ajouter au Panier + Commander Directement) */}
       <div className="space-y-2 pt-1">
         {onAddToCart && (
           <Button
@@ -487,16 +614,29 @@ const ExpressOrderForm = ({
           </Button>
         )}
 
+        {/* BOUTON COMMANDER DIRECTEMENT */}
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="relative overflow-hidden group w-full h-10 sm:h-11 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold text-[11px] sm:text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer"
+          className="relative overflow-hidden group w-full h-11 sm:h-12 rounded-full bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] font-bold text-xs sm:text-sm uppercase tracking-[0.14em] sm:tracking-[0.18em] shadow-lg hover:shadow-xl transition-all duration-300 gap-2.5 cursor-pointer disabled:opacity-60 select-none border-0"
         >
-          <svg viewBox="0 0 24 24" className="h-4 sm:h-4.5 w-4 sm:w-4.5 fill-current shrink-0 group-hover:rotate-12 transition-transform duration-300" aria-hidden="true">
-            <path d="M20.52 3.48A11.86 11.86 0 0 0 12.02 0C5.5 0 .2 5.3.2 11.83c0 2.08.55 4.12 1.6 5.92L0 24l6.42-1.68a11.83 11.83 0 0 0 5.6 1.43h.01c6.52 0 11.82-5.3 11.82-11.83 0-3.16-1.23-6.13-3.33-8.44ZM12.03 21.7h-.01a9.85 9.85 0 0 1-5.02-1.38l-.36-.21-3.81 1 1.02-3.71-.24-.38a9.83 9.83 0 0 1-1.51-5.19c0-5.43 4.42-9.85 9.85-9.85 2.63 0 5.1 1.03 6.96 2.89a9.78 9.78 0 0 1 2.88 6.96c0 5.43-4.42 9.87-9.76 9.87Zm5.4-7.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.15-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5l-.56-.01a1.08 1.08 0 0 0-.78.36c-.27.3-1.03 1.01-1.03 2.46 0 1.45 1.06 2.86 1.21 3.06.15.2 2.08 3.17 5.03 4.45.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.12.56-.08 1.75-.71 2-1.4.25-.69.25-1.28.17-1.4-.07-.13-.27-.2-.57-.35Z" />
-          </svg>
-          <span>Commander via WhatsApp</span>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Validation de votre commande…</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-4 h-4 stroke-[2.2]" />
+              <span>Commander Directement</span>
+            </>
+          )}
         </Button>
+
+        <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
+          <Truck className="w-3 h-3 text-primary shrink-0" />
+          <span>Livraison express 24–48h partout au Maroc • Paiement à la réception</span>
+        </div>
       </div>
     </form>
   );

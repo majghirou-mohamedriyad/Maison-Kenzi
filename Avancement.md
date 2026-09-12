@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Commande Directe & Instantanée — Suppression de « Commander via WhatsApp » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Bouton « Commander Directement » Haute Couture** : Remplacement du bouton vert WhatsApp par un bouton de prestige Maison Kenzi noir et or champagne (`ShieldCheck` de `lucide-react`, zéro emoji).
+  - [x] **Enregistrement Direct & Automatique en Base de Données** : La validation du formulaire enregistre immédiatement la commande dans Supabase (`orders` et `customers`) avec attribution d'une référence `MK-XXXXXX`.
+  - [x] **Déclenchement Automatique de la Messagerie WhatsApp VPS en Tâche de Fond** : Envoi asynchrone des confirmations sans forcer l'ouverture d'un onglet WhatsApp chez le client.
+  - [x] **Écran de Confirmation In-Situ & Lien de Suivi Direct** : Affichage instantané d'une carte de confirmation élégante avec numéro de commande copiable, récapitulatif du total et bouton d'accès direct au suivi (`/suivi?code=MK-XXXXXX`).
+
 - [x] Système de Messagerie Automatisée WhatsApp OpenWA VPS — 100% Opérationnel & Validé en Direct ([`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts), [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
   - [x] **Intégration Conforme API Officielle OpenWA v0.23+** : Routage direct `POST /api/sessions/{sessionId}/messages/send-text` avec payload `{ chatId, text }`, en-tête `X-API-Key`, proxy Vite `/api/openwa` éliminant tout blocage CORS et formatage automatique des numéros marocains (+212 / 06 / 07).
   - [x] **Modèles de Messages Éditoriaux Haute Couture (Zéro Emoji)** : Confirmation complète de commande client (référence `MK-XXXXXX`, récapitulatif articles, total MAD et lien de suivi direct), alertes gérant admin et notifications de suivi.
