@@ -178,6 +178,7 @@ if (typeof window !== "undefined") {
             if (!error && Array.isArray(data)) {
               const currentLocal = getProducts();
               const mapped: AdminParfum[] = data.map((r: any) => {
+                const localMatch = currentLocal.find((lp) => lp.id === r.id);
                 const rawLabel = typeof r.image_label === "string" ? r.image_label.trim() : "";
                 const isJsonLabel = rawLabel.startsWith("[") && rawLabel.endsWith("]");
                 let extractedImagesFromLabel: string[] = [];

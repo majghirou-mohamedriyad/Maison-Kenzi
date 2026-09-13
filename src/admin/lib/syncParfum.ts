@@ -120,7 +120,7 @@ export const upsertParfumToSupabase = async (
 
   const primaryImageUrl = allImages[0] || imageUrl || null;
   const cleanImageLabel = typeof p.imageLabel === "string" && !p.imageLabel.startsWith("[")
-    ? p.imageLabel.trim()
+    ? p.imageLabel
     : "";
 
   const numPrice = Number(p.full_bottle_price ?? p.prices?.["5ml"] ?? p.prices?.["100ml"] ?? 0);
@@ -145,7 +145,7 @@ export const upsertParfumToSupabase = async (
     seasons: currentSeasons,
     images: allImages,
     description: p.description || "",
-    description_en: p.description_en ? p.description_en.trim() : null,
+    description_en: p.description_en ? p.description_en : null,
     notes_tete: Array.isArray(p.notes?.tete) ? p.notes.tete : [],
     notes_coeur: Array.isArray(p.notes?.coeur) ? p.notes.coeur : [],
     notes_fond: Array.isArray(p.notes?.fond) ? p.notes.fond : [],
@@ -154,7 +154,7 @@ export const upsertParfumToSupabase = async (
     price_10ml: Number(p.prices?.["10ml"] ?? numPrice),
     price_20ml: Number(p.prices?.["100ml"] ?? numPrice),
     image_label: cleanImageLabel,
-    image_label_en: p.image_label_en ? p.image_label_en.trim() : null,
+    image_label_en: p.image_label_en && !p.image_label_en.startsWith("[") ? p.image_label_en : null,
     image_url: primaryImageUrl,
     is_active: p.active ?? true,
     is_new: !!p.isNew,

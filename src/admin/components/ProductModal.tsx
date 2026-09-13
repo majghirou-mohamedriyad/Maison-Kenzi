@@ -203,9 +203,9 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           }
         }
 
-        const rawImageLabel = initial.imageLabel || "";
+        const rawImageLabel = initial.imageLabel || (initial as any).image_label || "";
         const cleanImageLabel = rawImageLabel.startsWith("[") ? "" : rawImageLabel;
-        const rawImageLabelEn = (initial as any).image_label_en || "";
+        const rawImageLabelEn = (initial as any).image_label_en || (initial as any).imageLabelEn || "";
         const cleanImageLabelEn = rawImageLabelEn.startsWith("[") ? "" : rawImageLabelEn;
 
         setF({
@@ -498,20 +498,26 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       f.volumeValue ? `${f.volumeValue} ${f.volumeUnit}` : "",
     ].filter(Boolean).join(" • ");
 
-    const finalImageLabel = (f.imageLabel || "").trim() || (isCosmetic ? cosmeticFormatLabel : "") || slugify(f.name) || "produit";
+    const finalImageLabel = (f.imageLabel && f.imageLabel.length > 0)
+      ? f.imageLabel
+      : (isCosmetic ? cosmeticFormatLabel : (slugify(f.name) || "produit"));
+
+    const finalImageLabelEn = (f.imageLabelEn && f.imageLabelEn.length > 0)
+      ? f.imageLabelEn
+      : undefined;
 
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
-      name_en: (f.nameEn || "").trim() || undefined,
+      name_en: f.nameEn ? f.nameEn.trim() : undefined,
       maison: f.maison.trim(),
       gender: f.gender || "Mixte",
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
       seasons: currentSeasonsList,
-      description: (f.description || "").trim(),
-      description_en: (f.descriptionEn || "").trim() || undefined,
-      notes_en: (f.notesEn || "").trim() || undefined,
+      description: f.description || "",
+      description_en: f.descriptionEn ? f.descriptionEn : undefined,
+      notes_en: f.notesEn ? f.notesEn.trim() : undefined,
       notes: {
         tete: parsedNotes.length > 0 ? parsedNotes : (isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
         coeur: [],
@@ -523,7 +529,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         "100ml": numPrice,
       },
       imageLabel: finalImageLabel,
-      image_label_en: (f.imageLabelEn || "").trim() || (isCosmetic ? cosmeticFormatLabel : undefined),
+      image_label_en: finalImageLabelEn,
       image_url: primaryImageUrl,
       images: finalImages,
       isNew: f.isNew,
@@ -777,7 +783,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1816] dark:text-[#FAF7F2]">
                               Poids & Contenance du Soin
                             </span>
-                            <span className="text-[10px] font-bold text-red-500">*</span>
+                            <span className="text-[10px] font-bold text-black-500">*</span>
                           </div>
                           <span className={`text-[9px] font-medium ${errors.volume ? "text-red-500 font-semibold" : "text-[#C9A96E]"}`}>
                             (Au moins un des deux requis)
@@ -931,7 +937,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         <div>
                           <label className={labelCls}>Description du soin & bienfaits (FR)</label>
                           <textarea
-                            className={inputCls + " min-h-[60px] resize-y"}
+                            className={inputCls + " min-h-[72px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.description}
                             onChange={(e) => set("description", e.target.value)}
                             placeholder="Formule enrichie en actifs précieux pour hydrater, nourrir et illuminer le teint en profondeur..."
@@ -941,11 +947,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                         <div>
                           <label className={labelCls}>Sous-titre / Conseils d'application (FR)</label>
-                          <input
-                            className={inputCls}
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.imageLabel}
                             onChange={(e) => set("imageLabel", e.target.value)}
-                            placeholder="Ex: Appliquer matin et soir sur peau propre et sèche"
+                            placeholder="Ex: Appliquer matin et soir sur peau propre et sèche..."
+                            rows={2}
                           />
                         </div>
                       </div>
@@ -965,7 +972,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         <div>
                           <label className={labelCls}>Product Description & Benefits (EN)</label>
                           <textarea
-                            className={inputCls + " min-h-[60px] resize-y"}
+                            className={inputCls + " min-h-[72px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.descriptionEn}
                             onChange={(e) => set("descriptionEn", e.target.value)}
                             placeholder="Luxurious skincare formula designed to nourish, hydrate, and reveal radiant skin..."
@@ -975,11 +982,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                         <div>
                           <label className={labelCls}>Subtitle / Application Tips (EN)</label>
-                          <input
-                            className={inputCls}
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.imageLabelEn}
                             onChange={(e) => set("imageLabelEn", e.target.value)}
-                            placeholder="Ex: Apply morning and evening to clean, dry skin"
+                            placeholder="Ex: Apply morning and evening to clean, dry skin..."
+                            rows={2}
                           />
                         </div>
                       </div>
@@ -1234,7 +1242,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         <div>
                           <label className={labelCls}>Description olfactive (FR)</label>
                           <textarea
-                            className={inputCls + " min-h-[50px] resize-y"}
+                            className={inputCls + " min-h-[60px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.description}
                             onChange={(e) => set("description", e.target.value)}
                             placeholder="Notes ambrées florales et boisées d'une élégance rare..."
@@ -1244,11 +1252,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                         <div>
                           <label className={labelCls}>Sous-titre / Accroche (FR)</label>
-                          <input
-                            className={inputCls}
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.imageLabel}
                             onChange={(e) => set("imageLabel", e.target.value)}
-                            placeholder="Ex: Extrait de Parfum — Flacon de Prestige"
+                            placeholder="Ex: Extrait de Parfum — Flacon de Prestige..."
+                            rows={2}
                           />
                         </div>
                       </div>
@@ -1278,7 +1287,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         <div>
                           <label className={labelCls}>Olfactory Description (EN)</label>
                           <textarea
-                            className={inputCls + " min-h-[50px] resize-y"}
+                            className={inputCls + " min-h-[60px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.descriptionEn}
                             onChange={(e) => set("descriptionEn", e.target.value)}
                             placeholder="Luminous and sophisticated amber floral breeze..."
@@ -1288,11 +1297,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                         <div>
                           <label className={labelCls}>Subtitle / Tagline (EN)</label>
-                          <input
-                            className={inputCls}
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.imageLabelEn}
                             onChange={(e) => set("imageLabelEn", e.target.value)}
-                            placeholder="Ex: Extrait de Parfum — Prestige Bottle"
+                            placeholder="Ex: Extrait de Parfum — Prestige Bottle..."
+                            rows={2}
                           />
                         </div>
                       </div>

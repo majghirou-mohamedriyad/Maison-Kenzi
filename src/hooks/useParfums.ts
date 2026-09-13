@@ -122,15 +122,41 @@ export const refreshProductsFromSupabase = async () => {
             })()
           : (localMatch?.seasons ?? []);
 
+        const rawLabel = typeof r.image_label === "string" ? r.image_label.trim() : "";
+        const isJsonLabel = rawLabel.startsWith("[") && rawLabel.endsWith("]");
+        let extractedImagesFromLabel: string[] = [];
+        if (isJsonLabel) {
+          try {
+            const parsed = JSON.parse(rawLabel);
+            if (Array.isArray(parsed)) extractedImagesFromLabel = parsed.filter(Boolean);
+          } catch {}
+        }
+
+        const remoteImages = Array.isArray(r.images) && r.images.length > 0
+          ? r.images
+          : (extractedImagesFromLabel.length > 0
+            ? extractedImagesFromLabel
+            : (r.image_url ? [r.image_url] : []));
+
+        const finalImages = remoteImages.length > 0 ? remoteImages : (localMatch?.images ?? []);
+
+        const cleanImageLabel = !isJsonLabel && rawLabel
+          ? rawLabel
+          : (localMatch?.imageLabel && !localMatch.imageLabel.startsWith("[") ? localMatch.imageLabel : "");
+
         return {
           id: r.id,
           name: r.name,
+          name_en: r.name_en || localMatch?.name_en || "",
           maison: r.maison,
           gender: r.gender,
           category: r.category ?? localMatch?.category,
           categories: Array.isArray(r.categories) && r.categories.length > 0 ? r.categories : (r.category ? [r.category] : []),
           seasons: parsedSeasons,
           description: r.description || "",
+          description_en: r.description_en || localMatch?.description_en || "",
+          notes_en: r.notes_en || localMatch?.notes_en || "",
+          image_label_en: r.image_label_en || localMatch?.image_label_en || "",
           notes: {
             tete: r.notes_tete ?? localMatch?.notes?.tete ?? [],
             coeur: r.notes_coeur ?? localMatch?.notes?.coeur ?? [],
@@ -140,9 +166,9 @@ export const refreshProductsFromSupabase = async () => {
             "5ml": Number(r.price_5ml ?? localMatch?.prices?.["5ml"] ?? 0),
             "10ml": Number(r.price_10ml ?? localMatch?.prices?.["10ml"] ?? 0),
           },
-          imageLabel: r.image_label || localMatch?.imageLabel || r.id,
-          image_url: r.image_url ?? localMatch?.image_url ?? null,
-          images: Array.isArray(r.images) && r.images.length > 0 ? r.images : (r.image_url ? [r.image_url] : (localMatch?.images ?? [])),
+          imageLabel: cleanImageLabel,
+          image_url: finalImages[0] || r.image_url || localMatch?.image_url || null,
+          images: finalImages,
           isNew: !!r.is_new,
           isBestseller: !!r.is_bestseller,
           sale_mode: r.sale_mode ?? localMatch?.sale_mode ?? "full_bottle",
@@ -153,6 +179,10 @@ export const refreshProductsFromSupabase = async () => {
           stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
           stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
           active: r.is_active ?? localMatch?.active ?? true,
+          weight_value: r.weight_value || localMatch?.weight_value,
+          weight_unit: r.weight_unit || localMatch?.weight_unit || "g",
+          volume_value: r.volume_value || localMatch?.volume_value,
+          volume_unit: r.volume_unit || localMatch?.volume_unit || "ml",
         };
       });
       setProducts(adminProducts);

@@ -3,11 +3,21 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Obligation Alternative Poids / Volume Cosmétique Validée & UI Intuitive — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Persistance Bilingue & Préservation du Style d'Écriture (Multiligne) Résolue — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Persistance des Descriptions & Conseils Bilingues (FR/EN) et Conservation du Style d'Écriture ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)) :
+  - [x] **Correction de la Perte des Données Bilingues au Rafraîchissement** :
+    - Rétablissement du mapping complet de `name_en`, `description_en`, `notes_en`, `image_label_en`, `weight_value`, `volume_value` dans `refreshProductsFromSupabase` (`useParfums.ts`) qui écrasait le store lors du chargement de la page.
+    - Correction du crash JavaScript (`localMatch is not defined`) dans le listener Realtime de `useProductStore.ts`.
+  - [x] **Conservation Intégrale du Style d'Écriture & Sauts de Ligne** :
+    - Remplacement des simples `<input>` textuels par des `<textarea>` avec support `whitespace-pre-wrap` et `font-sans` pour les champs Sous-titre / Conseils d'application (FR & EN).
+    - Suppression des troncatures agressives `.trim()` qui écrasaient les sauts de ligne et le formatage voulu par l'utilisateur.
+    - Application de la classe CSS `whitespace-pre-wrap` sur l'affichage des descriptions et conseils dans la fiche produit ([`ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)).
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre `#C9A96E`.
 
 - [x] Règle d'Obligation Alternative Poids & Contenance du Soin ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
   - [x] **Validation Alternative Obligatoire (OU logique)** : Au moins l'un des deux champs (« Poids solide / pâte » en `g`/`kg` OU « Volume liquide » en `ml`/`L`) doit être renseigné pour valider et enregistrer un produit cosmétique.

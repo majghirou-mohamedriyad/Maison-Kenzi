@@ -513,7 +513,7 @@ const ParfumDetail = () => {
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
                       {t.product.description}
                     </span>
-                    <p className="text-muted-foreground leading-relaxed text-[11px]">
+                    <p className="text-muted-foreground leading-relaxed text-[11px] whitespace-pre-wrap">
                       {translatedDescription}
                     </p>
                   </div>
