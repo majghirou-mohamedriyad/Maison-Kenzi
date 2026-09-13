@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Correction du Positionnement & Priorité d'Affichage des Modales (Z-Index `z-[120]` au-dessus de la Navbar fixe) & Triptyque Photographique de Prestige Opérationnels
+- **Statut général** : Espacement Supérieur & Dégagement de la Navbar sur la Page « À Propos » Opérationnels — Tag « Maison de Haute Parfumerie & d'Art » Parfaitement Aéré & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Ajustement de l'Espacement Supérieur de la Bannière « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
+  - [x] **Dégagement & Respiration Visuelle (`pt-32 sm:pt-36 md:pt-40`)** : Augmentation du padding supérieur du bandeau pour offrir un espace aéré généreux sous la barre de navigation fixe, évitant tout contact ou chevauchement avec le tag « Maison de Haute Parfumerie & d'Art ».
+  - [x] **Conformité Minimalist Spatial Composition** : Mise en valeur de la hiérarchie éditoriale haut de gamme.
 
 - [x] Correction du Chevauchement de la Navbar sur la Modale « Ajouter un autre parfum à votre commande » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/components/ui/dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/dialog.tsx), [`src/components/ui/alert-dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/alert-dialog.tsx)) :
   - [x] **Élévation de Priorité Z-Index (`z-[120]`)** : Augmentation du niveau d'empilement de la modale au-dessus du Header fixe (`z-[100]`) et du panier latéral (`z-[110]`), garantissant que la fenêtre n'est plus masquée par la barre de navigation.

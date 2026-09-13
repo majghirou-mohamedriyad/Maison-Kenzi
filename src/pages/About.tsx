@@ -130,7 +130,7 @@ const About = () => {
 
       <main className="flex-1 pb-20">
         {/* Luxury Hero Banner */}
-        <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-card/70 via-card/30 to-background pt-20 sm:pt-24 pb-16 px-4 sm:px-6">
+        <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-card/70 via-card/30 to-background pt-32 sm:pt-36 md:pt-40 pb-16 px-4 sm:px-6">
           {/* Subtle Ambient Glows */}
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
