@@ -137,17 +137,20 @@ export const PayPalPaymentSection = ({
           const currentTotal = Number(totalRef.current || 0);
           const formattedAmount = (currentTotal > 0 ? currentTotal : 1).toFixed(2);
 
-          return actions.order.create({
-            purchase_units: [
-              {
-                description: "Commande Maison Kenzi Haute Parfumerie",
-                amount: {
-                  currency_code: "EUR",
-                  value: formattedAmount,
+          return actions.order
+            .create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: formattedAmount,
+                  },
                 },
-              },
-            ],
-          });
+              ],
+            })
+            .catch((err: any) => {
+              console.error("Détail d'erreur createOrder PayPal:", err);
+              throw err;
+            });
         },
         onApprove: async (data: any, actions: any) => {
           setProcessingPayment(true);
@@ -177,7 +180,7 @@ export const PayPalPaymentSection = ({
           toast.info("Paiement annulé. Aucun montant n'a été débité.");
         },
         onError: (err: any) => {
-          console.warn("Détail callback PayPal onError:", err);
+          console.error("Détail callback PayPal onError:", err);
           // Si l'erreur provient du formulaire incomplet intercepté par onClick
           if (isFormRejectedRef.current) {
             isFormRejectedRef.current = false;
