@@ -204,8 +204,8 @@ const About = () => {
 
             <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card sm:-translate-y-4">
               <img
-                src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1000&auto=format&fit=crop"
-                alt="Matières Premières et Artisanat Noble"
+                src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=1000&auto=format&fit=crop"
+                alt="Artisanat d'Art et Savoir-Faire Ancestral Maison Kenzi"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-5 sm:p-6 flex flex-col justify-end">
@@ -289,7 +289,7 @@ const About = () => {
                 </div>
                 <div className="p-3 rounded-xl bg-secondary/50 border border-border flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="font-medium text-foreground">{isEn ? "Express shipping 24–48h" : "Livraison rapide 24–48h"}</span>
+                  <span className="font-medium text-foreground">{isEn ? "Express shipping" : "Livraison rapide"}</span>
                 </div>
               </div>
             </div>

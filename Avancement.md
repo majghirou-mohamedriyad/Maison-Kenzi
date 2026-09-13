@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Actualisation Visuelle de la Page « À Propos » (Carte « Haute Parfumerie / Flacons 100% Originaux » sublimée par un flacon de parfum de prestige) & Modales d'Administration Ultra-Compactes Opérationnelles
+- **Statut général** : Actualisation Photographique de Prestige de la Page « À Propos » (Cartes « Haute Parfumerie » & « Artisanat d'Art / Savoir-Faire Ancestral ») & Modales d'Administration Ultra-Compactes Opérationnelles
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Sublimation Photographique de la Carte « Artisanat d'Art / Savoir-Faire Ancestral » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
+  - [x] **Visuel Savoir-Faire Noble** : Remplacement de l'image par une photographie haute résolution illustrant le travail méticuleux et manuel des matières nobles et de la poterie d'art.
+  - [x] **Harmonisation Éditoriale & Nude Design** : Accord chromatique parfait avec les tons nude, lin et travertin du site.
 
 - [x] Sublimation Photographique de la Carte « Haute Parfumerie / Flacons 100% Originaux » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`src/pages/about/OurStory.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/OurStory.tsx)) :
   - [x] **Visuel Flacon Haute Parfumerie** : Remplacement de l'image précédente par une photographie haute définition d'un flacon de parfum de niche d'exception aux nuances ambrées et dorées.
