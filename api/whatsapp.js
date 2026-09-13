@@ -49,12 +49,8 @@ export default async function handler(req, res) {
   const chatId = formatWhatsAppChatId(phone);
   const rawCleanPhone = chatId.replace("@c.us", "");
 
-  const sessionCandidates = Array.from(new Set([
-    session,
-    "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
-    "default",
-    "maison-kenzi",
-  ])).filter(Boolean);
+  // ISOLATION STRICTE : Utiliser exclusivement la session exacte de Maison Kenzi, sans aucun fallback vers d'autres sessions
+  const targetSession = (session || "e8fe5adf-cd3b-4470-8cf7-6a85504430ff").trim();
 
   const authQuery = `?api_key=${encodeURIComponent(apiKey)}&apiKey=${encodeURIComponent(apiKey)}&key=${encodeURIComponent(apiKey)}`;
 
@@ -77,58 +73,51 @@ export default async function handler(req, res) {
 
   let lastErrors = [];
 
-  for (const sessKey of sessionCandidates) {
-    // Différents schémas DTO stricts supportés par WAHA / OpenWA
-    const payloadVariants = [
-      // 1. Standard WAHA pur (chatId + text)
-      { chatId, text: message },
-      // 2. Standard WAHA avec session explicite
-      { chatId, text: message, session: sessKey },
-      // 3. Format phone brut
-      { phone: rawCleanPhone, message },
-      // 4. Format to + body
-      { to: chatId, body: message },
-      // 5. Format to + content
-      { to: chatId, content: message },
-    ];
+  // Différents schémas DTO stricts supportés par WAHA / OpenWA pour la session ciblée
+  const payloadVariants = [
+    // 1. Standard WAHA pur (chatId + text)
+    { chatId, text: message },
+    // 2. Standard WAHA avec session explicite
+    { chatId, text: message, session: targetSession },
+    // 3. Format phone brut
+    { phone: rawCleanPhone, message },
+    // 4. Format to + body
+    { to: chatId, body: message },
+  ];
 
-    const targetUrlTemplates = [
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-      `${VPS_BASE_URL}/api/sendText${authQuery}`,
-      `${VPS_BASE_URL}/api/sendText`,
-      `${VPS_BASE_URL}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-      `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(sessKey)}/sendText${authQuery}`,
-      `${VPS_BASE_URL}/sendText${authQuery}`,
-    ];
+  const targetUrlTemplates = [
+    `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(targetSession)}/messages/send-text${authQuery}`,
+    `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(targetSession)}/messages/send-text`,
+    `${VPS_BASE_URL}/sessions/${encodeURIComponent(targetSession)}/messages/send-text${authQuery}`,
+    `${VPS_BASE_URL}/api/sessions/${encodeURIComponent(targetSession)}/sendText${authQuery}`,
+  ];
 
-    for (const payload of payloadVariants) {
-      for (const headers of headersVariants) {
-        for (const url of targetUrlTemplates) {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+  for (const payload of payloadVariants) {
+    for (const headers of headersVariants) {
+      for (const url of targetUrlTemplates) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-            const response = await fetch(url, {
-              method: "POST",
-              headers,
-              body: JSON.stringify(payload),
-              signal: controller.signal,
-            });
+          const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
 
-            clearTimeout(timeoutId);
+          clearTimeout(timeoutId);
 
-            if (response.ok || response.status === 200 || response.status === 201 || response.status === 202) {
-              const data = await response.json().catch(() => ({ status: "sent" }));
-              console.info("[WhatsApp Serverless VPS Succès]", url, data);
-              return res.status(200).json({ success: true, url, data });
-            } else {
-              const errText = await response.text().catch(() => "");
-              lastErrors.push(`${url} [${response.status}]: ${errText.slice(0, 150)}`);
-            }
-          } catch (err) {
-            lastErrors.push(`${url} [ERR]: ${err.message}`);
+          if (response.ok || response.status === 200 || response.status === 201 || response.status === 202) {
+            const data = await response.json().catch(() => ({ status: "sent" }));
+            console.info("[WhatsApp Serverless VPS Succès - Session Dédiée]", targetSession, url, data);
+            return res.status(200).json({ success: true, session: targetSession, url, data });
+          } else {
+            const errText = await response.text().catch(() => "");
+            lastErrors.push(`${url} [${response.status}]: ${errText.slice(0, 150)}`);
           }
+        } catch (err) {
+          lastErrors.push(`${url} [ERR]: ${err.message}`);
         }
       }
     }
@@ -136,7 +125,8 @@ export default async function handler(req, res) {
 
   return res.status(502).json({
     success: false,
-    error: "Échec de l'envoi après test de tous les formats DTO",
+    session: targetSession,
+    error: `Échec de l'envoi WhatsApp sur la session dédiée ${targetSession}`,
     details: lastErrors.slice(0, 5),
   });
 }

@@ -3,11 +3,23 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Dégagement & Espacement Supérieur Global Harmonisé sur l'Ensemble des Pages du Site (Catalogue, Détail Parfum, Tunnel de Commande, Pages Institutionnelles, 404, À Propos) — Zéro Chevauchement avec la Barre de Navigation & Zéro Emoji
+- **Statut général** : Intégration Officielle du Paiement en Ligne Sécurisé par Carte Bancaire (Visa, Mastercard, Amex) & PayPal dans le Tunnel de Commande — 100% Fonctionnel, Sécurisé (Client ID / SSL 256 bits) & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Isolation Stricte & Dédiée de la Session WhatsApp OpenWA ([`api/whatsapp.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/whatsapp.js), [`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts)) :
+  - [x] **Suppression Complète des Sessions de Fallback** : Élimination de tout basculement ou test vers d'autres sessions (`default`, découverte multi-sessions `/api/sessions`, etc.).
+  - [x] **Routage 100% Dédié** : Tous les messages de notifications clients et alertes de Maison Kenzi transitent exclusivement et de manière strictement étanche par la session dédiée configurée (`e8fe5adf-cd3b-4470-8cf7-6a85504430ff`).
+
+- [x] Intégration Officielle du Paiement en Ligne Sécurisé par Carte Bancaire & PayPal ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env)) :
+  - [x] **Composant Dédié `PayPalPaymentSection`** : Intégration du SDK JavaScript PayPal officiel avec boutons intelligents dynamiques (« PayPal » et « Débit ou Carte de crédit / Carte Bancaire »).
+  - [x] **Support Universel des Cartes Bancaires** : Permet aux clients sans compte PayPal de régler directement et instantanément par CB, Visa, Mastercard en toute fluidité.
+  - [x] **Couverture Complète (Checkout & Formulaire Express Fiche Produit)** : Intégration sur la page de paiement (`/checkout`) ainsi que sur le formulaire express de commande directe (`ExpressOrderForm.tsx`) pour garantir 100% de paiements réglés en ligne avant confirmation.
+  - [x] **Validation Préalable des Coordonnées de Livraison** : Contrôle automatique de la complétude du formulaire de livraison (nom, téléphone, pays, ville, adresse) avant d'autoriser le déclenchement de la transaction.
+  - [x] **Enregistrement Automatique de Commande & Base Clients** : Capture du paiement avec traçabilité de l'identifiant de transaction PayPal, insertion de la commande dans Supabase avec le statut `paye`, mise à jour des statistiques du client dans `customers` et déclenchement des notifications WhatsApp OpenWA en arrière-plan.
+  - [x] **Sécurisation & Zéro Emoji** : Configuration exclusive via `VITE_PAYPAL_CLIENT_ID` (aucune Secret Key exposée côté client), badges de confiance SSL 256-bit et icônes vectorielles `lucide-react`.
 
 - [x] Harmonisation Globale de l'Espacement Supérieur sous la Barre de Navigation ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`src/pages/PrivacyPolicy.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/PrivacyPolicy.tsx), [`src/pages/TermsOfService.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/TermsOfService.tsx), [`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx), [`src/components/about/PageHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/about/PageHeader.tsx), [`src/components/about/AboutSidebar.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/about/AboutSidebar.tsx), [`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
   - [x] **Dégagement Systématique (`pt-28 sm:pt-32 md:pt-36`)** : Application d'un padding supérieur aéré sur toutes les pages pour empêcher tout chevauchement ou frottement visuel avec la navbar flottante.

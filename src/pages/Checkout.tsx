@@ -42,6 +42,7 @@ import { useRef, useEffect, useMemo } from "react";
 import { useCountries } from "@/hooks/useCountries";
 import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/destinations";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { PayPalPaymentSection } from "@/components/checkout/PayPalPaymentSection";
 
 const Checkout = () => {
   const { t } = useLanguage();
@@ -142,28 +143,34 @@ const Checkout = () => {
     return encodeURIComponent(lines.join("\n"));
   };
 
-  const processOrderSubmission = async (viaWhatsApp = false) => {
-    if (submitting) return;
-
-    if (!isFormValid) {
-      toast.error("Veuillez renseigner votre Nom, Téléphone et Adresse de livraison.");
-      return;
+  const validateFormBeforePayment = (): boolean => {
+    if (!fullName.trim() || !phone.trim() || !address.trim() || !city.trim()) {
+      toast.error("Veuillez renseigner votre Nom, Téléphone, Ville et Adresse de livraison.");
+      return false;
     }
+    return true;
+  };
 
+  const handlePayPalPaymentSuccess = async (details: {
+    paypalOrderId: string;
+    payerName?: string;
+    payerEmail?: string;
+  }) => {
     setSubmitting(true);
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `MK-${randomSuffix}`;
     const fullAddressText = `${address.trim()}, ${city}, ${country}`;
-    const cleanEmail = `client_${Date.now()}@maisonkenzi.ma`;
+    const cleanEmail = details.payerEmail || `client_${Date.now()}@maisonkenzi.ma`;
+    const customerFinalName = fullName.trim() || details.payerName || "Client Maison Kenzi";
 
     const orderPayload = {
       order_number: orderNumber,
-      customer_name: fullName.trim(),
+      customer_name: customerFinalName,
       customer_email: cleanEmail,
       customer_phone: phone.trim(),
       customer_address: fullAddressText,
       total_amount: total,
-      status: "en_attente" as const,
+      status: "paye" as const, // Paiement confirmé en ligne par Carte Bancaire / PayPal
       items: items.map((item) => ({
         name: `${item.maison} — ${item.name}`,
         size: SIZE_META[item.size]?.label || item.size,
@@ -190,9 +197,9 @@ const Checkout = () => {
         await supabase
           .from("customers")
           .update({
-            name: fullName.trim(),
+            name: customerFinalName,
             address: fullAddressText,
-            phone: cleanPhone,
+            phone: cleanPhone || existingCust.phone,
             total_orders: (existingCust.total_orders || 0) + 1,
             total_spent: Number(existingCust.total_spent || 0) + Number(total || 0),
           })
@@ -200,7 +207,7 @@ const Checkout = () => {
       } else {
         await supabase.from("customers").insert([
           {
-            name: fullName.trim(),
+            name: customerFinalName,
             phone: cleanPhone,
             address: fullAddressText,
             email: cleanEmail,
@@ -216,7 +223,7 @@ const Checkout = () => {
     // Déclenchement automatique des notifications WhatsApp OpenWA (Client + Admin)
     dispatchOrderCreatedWhatsAppNotifications({
       order_number: orderNumber,
-      customer_name: fullName.trim(),
+      customer_name: customerFinalName,
       customer_phone: phone.trim(),
       total_amount: total,
       shipping_city: city.trim(),
@@ -234,22 +241,15 @@ const Checkout = () => {
     const completedState = {
       orderNumber,
       total,
-      name: fullName.trim(),
+      name: customerFinalName,
       address: fullAddressText,
       phone: phone.trim(),
       items: [...items],
+      paymentRef: details.paypalOrderId,
     };
 
     saveLastOrderNumber(orderNumber);
-
-    if (viaWhatsApp) {
-      const url = `https://wa.me/${waNumber}?text=${buildWhatsAppMessage(orderNumber)}`;
-      window.open(url, "_blank");
-      toast.success("Commande enregistrée et transmise sur WhatsApp !");
-    } else {
-      toast.success(`Commande n° ${orderNumber} validée avec succès !`);
-    }
-
+    toast.success(`Paiement validé avec succès ! Commande n° ${orderNumber} enregistrée.`);
     setCompleteOrder(completedState);
     clear();
     setSubmitting(false);
@@ -639,17 +639,14 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* Single Main Order Confirmation Button */}
-                  <div className="pt-3">
-                    <Button
-                      type="button"
-                      disabled={submitting}
-                      onClick={() => processOrderSubmission(false)}
-                      className="w-full h-12.5 rounded-2xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 gap-2 cursor-pointer border-0"
-                    >
-                      <ShieldCheck className="w-5 h-5" />
-                      <span>{submitting ? "Validation en cours…" : "Valider la Commande"}</span>
-                    </Button>
+                  {/* Section de Paiement Sécurisé en Ligne PayPal & Carte Bancaire */}
+                  <div className="pt-2">
+                    <PayPalPaymentSection
+                      total={total}
+                      isFormValid={isFormValid}
+                      onValidateForm={validateFormBeforePayment}
+                      onPaymentSuccess={handlePayPalPaymentSuccess}
+                    />
                   </div>
                 </div>
               </div>

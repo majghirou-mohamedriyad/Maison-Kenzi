@@ -48,6 +48,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { getPrimaryImage } from "@/lib/productImages";
 import type { Parfum } from "@/types/database";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { PayPalPaymentSection } from "@/components/checkout/PayPalPaymentSection";
 
 export interface OrderSelectionItem {
   size: string;
@@ -270,148 +271,160 @@ const ExpressOrderForm = ({
     );
   };
 
-  const handleDirectOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+    const isFormValid = Boolean(
+      fullName.trim() !== "" &&
+        phone.trim() !== "" &&
+        city.trim() !== "" &&
+        address.trim() !== ""
+    );
 
-    if (outOfStock && extraItems.length === 0) {
-      toast.error("Ce produit est actuellement en rupture de stock.");
-      return;
-    }
+    const validateFormBeforePayPal = (): boolean => {
+      if (outOfStock && extraItems.length === 0) {
+        toast.error("Ce produit est actuellement en rupture de stock.");
+        return false;
+      }
+      if (!fullName.trim()) {
+        toast.error("Veuillez saisir votre Nom & Prénom");
+        return false;
+      }
+      if (!phone.trim()) {
+        toast.error("Veuillez saisir votre numéro de téléphone");
+        return false;
+      }
+      if (!city.trim()) {
+        toast.error("Veuillez sélectionner votre ville");
+        return false;
+      }
+      if (!address.trim()) {
+        toast.error("Veuillez saisir votre adresse de livraison");
+        return false;
+      }
+      return true;
+    };
 
-    const allItemsToOrder: Array<{
-      name: string;
-      size: string;
-      quantity: number;
-      price: number;
-      subtotal: number;
-    }> = [
-      ...activeMainItems.map((it) => ({
-        name: `${maison} — ${parfumName}`,
-        size: it.sizeLabel,
-        quantity: it.quantity,
-        price: it.unitPrice,
-        subtotal: it.subtotal,
-      })),
-      ...extraItems.map((it) => ({
-        name: `${it.maison} — ${it.parfumName}`,
-        size: it.sizeLabel,
-        quantity: it.quantity,
-        price: it.unitPrice,
-        subtotal: it.subtotal,
-      })),
-    ];
+    const handlePayPalPaymentSuccess = async (details: {
+      paypalOrderId: string;
+      payerName?: string;
+      payerEmail?: string;
+    }) => {
+      const allItemsToOrder: Array<{
+        name: string;
+        size: string;
+        quantity: number;
+        price: number;
+        subtotal: number;
+      }> = [
+        ...activeMainItems.map((it) => ({
+          name: `${maison} — ${parfumName}`,
+          size: it.sizeLabel,
+          quantity: it.quantity,
+          price: it.unitPrice,
+          subtotal: it.subtotal,
+        })),
+        ...extraItems.map((it) => ({
+          name: `${it.maison} — ${it.parfumName}`,
+          size: it.sizeLabel,
+          quantity: it.quantity,
+          price: it.unitPrice,
+          subtotal: it.subtotal,
+        })),
+      ];
 
-    if (allItemsToOrder.length === 0) {
-      toast.error("Veuillez sélectionner au moins un format ou parfum pour commander");
-      return;
-    }
-    if (!fullName.trim()) {
-      toast.error("Veuillez saisir votre Nom & Prénom");
-      return;
-    }
-    if (!phone.trim()) {
-      toast.error("Veuillez saisir votre numéro de téléphone");
-      return;
-    }
-    if (!city.trim()) {
-      toast.error("Veuillez sélectionner votre ville");
-      return;
-    }
-    if (!address.trim()) {
-      toast.error("Veuillez saisir votre adresse de livraison");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Génération du numéro de commande unique MK-XXXXXX
-    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    const orderNumber = `MK-${randomSuffix}`;
-    const cleanEmail = `${fullName.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
-    const fullAddressText = `${address.trim()}, ${city.trim()}, ${country}`;
-    saveLastOrderNumber(orderNumber);
-
-    // Enregistrement de la commande dans Supabase
-    try {
-      const { data, error: dbError } = await supabase.from("orders").insert([
-        {
-          order_number: orderNumber,
-          customer_name: fullName.trim(),
-          customer_email: cleanEmail,
-          customer_phone: phone.trim(),
-          customer_address: fullAddressText,
-          total_amount: cumulativeTotalPrice,
-          status: "en_attente",
-          items: allItemsToOrder,
-        },
-      ]);
-
-      if (dbError) {
-        console.error("Erreur enregistrement commande Supabase:", dbError);
-      } else {
-        console.log("Commande enregistrée avec succès dans Supabase Admin:", data);
+      if (allItemsToOrder.length === 0) {
+        toast.error("Veuillez sélectionner au moins un format ou parfum pour commander");
+        return;
       }
 
-      // Enregistrement et mise à jour automatique dans la base clients
-      const cleanPhone = phone.trim();
-      const { data: existingCust } = await supabase
-        .from("customers")
-        .select("*")
-        .or(`phone.eq.${cleanPhone},email.eq.${cleanEmail}`)
-        .maybeSingle();
+      setIsSubmitting(true);
 
-      if (existingCust) {
-        await supabase
-          .from("customers")
-          .update({
-            name: fullName.trim(),
-            address: fullAddressText,
-            phone: cleanPhone,
-            total_orders: (existingCust.total_orders || 0) + 1,
-            total_spent: Number(existingCust.total_spent || 0) + Number(cumulativeTotalPrice || 0),
-          })
-          .eq("id", existingCust.id);
-      } else {
-        await supabase.from("customers").insert([
+      const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+      const orderNumber = `MK-${randomSuffix}`;
+      const customerFinalName = fullName.trim() || details.payerName || "Client Maison Kenzi";
+      const cleanEmail =
+        details.payerEmail ||
+        `${customerFinalName.toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
+      const fullAddressText = `${address.trim()}, ${city.trim()}, ${country}`;
+      saveLastOrderNumber(orderNumber);
+
+      // Enregistrement de la commande dans Supabase
+      try {
+        const { data, error: dbError } = await supabase.from("orders").insert([
           {
-            name: fullName.trim(),
-            phone: cleanPhone,
-            address: fullAddressText,
-            email: cleanEmail,
-            total_orders: 1,
-            total_spent: Number(cumulativeTotalPrice || 0),
+            order_number: orderNumber,
+            customer_name: customerFinalName,
+            customer_email: cleanEmail,
+            customer_phone: phone.trim(),
+            customer_address: fullAddressText,
+            total_amount: cumulativeTotalPrice,
+            status: "paye", // Statut payé en ligne par Carte Bancaire / PayPal
+            items: allItemsToOrder,
           },
         ]);
+
+        if (dbError) {
+          console.error("Erreur enregistrement commande Supabase:", dbError);
+        }
+
+        // Enregistrement et mise à jour automatique dans la base clients
+        const cleanPhone = phone.trim();
+        const { data: existingCust } = await supabase
+          .from("customers")
+          .select("*")
+          .or(`phone.eq.${cleanPhone},email.eq.${cleanEmail}`)
+          .maybeSingle();
+
+        if (existingCust) {
+          await supabase
+            .from("customers")
+            .update({
+              name: customerFinalName,
+              address: fullAddressText,
+              phone: cleanPhone,
+              total_orders: (existingCust.total_orders || 0) + 1,
+              total_spent: Number(existingCust.total_spent || 0) + Number(cumulativeTotalPrice || 0),
+            })
+            .eq("id", existingCust.id);
+        } else {
+          await supabase.from("customers").insert([
+            {
+              name: customerFinalName,
+              phone: cleanPhone,
+              address: fullAddressText,
+              email: cleanEmail,
+              total_orders: 1,
+              total_spent: Number(cumulativeTotalPrice || 0),
+            },
+          ]);
+        }
+      } catch (err) {
+        console.warn("Exception lors de l'enregistrement de la commande/client:", err);
       }
-    } catch (err) {
-      console.warn("Exception lors de l'enregistrement de la commande/client:", err);
-    }
 
-    // Déclenchement automatique des notifications WhatsApp OpenWA en tâche de fond (Client + Admin)
-    dispatchOrderCreatedWhatsAppNotifications({
-      order_number: orderNumber,
-      customer_name: fullName.trim(),
-      customer_phone: phone.trim(),
-      customer_address: fullAddressText,
-      total_amount: cumulativeTotalPrice,
-      items: allItemsToOrder,
-    }).catch((err) => {
-      console.warn("Notification WhatsApp auto info:", err);
-    });
+      // Déclenchement automatique des notifications WhatsApp OpenWA en tâche de fond (Client + Admin)
+      dispatchOrderCreatedWhatsAppNotifications({
+        order_number: orderNumber,
+        customer_name: customerFinalName,
+        customer_phone: phone.trim(),
+        customer_address: fullAddressText,
+        total_amount: cumulativeTotalPrice,
+        items: allItemsToOrder,
+      }).catch((err) => {
+        console.warn("Notification WhatsApp auto info:", err);
+      });
 
-    // Mémorisation de l'état de complétion
-    setCompletedOrder({
-      orderNumber,
-      customerName: fullName.trim(),
-      customerPhone: phone.trim(),
-      customerAddress: fullAddressText,
-      totalPrice: cumulativeTotalPrice,
-      items: allItemsToOrder,
-    });
+      // Mémorisation de l'état de complétion
+      setCompletedOrder({
+        orderNumber,
+        customerName: customerFinalName,
+        customerPhone: phone.trim(),
+        customerAddress: fullAddressText,
+        totalPrice: cumulativeTotalPrice,
+        items: allItemsToOrder,
+      });
 
-    setIsSubmitting(false);
-    toast.success(`Commande n° ${orderNumber} validée avec succès !`);
-  };
+      setIsSubmitting(false);
+      toast.success(`Paiement validé avec succès ! Commande n° ${orderNumber} confirmée.`);
+    };
 
   const handleResetForm = () => {
     setCompletedOrder(null);
@@ -549,7 +562,7 @@ const ExpressOrderForm = ({
   return (
     <>
       <form
-        onSubmit={handleDirectOrder}
+        onSubmit={(e) => e.preventDefault()}
         className="relative overflow-hidden bg-card/90 backdrop-blur-md border-2 border-primary/40 rounded-2xl p-3.5 sm:p-5 space-y-3 sm:space-y-3.5 shadow-xl transition-all duration-300 hover:border-primary animate-in fade-in zoom-in-95"
       >
         {/* Glow highlight background ornament */}
@@ -962,24 +975,15 @@ const ExpressOrderForm = ({
             </Button>
           )}
 
-          {/* BOUTON COMMANDER DIRECTEMENT */}
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="relative overflow-hidden group w-full h-11 sm:h-12 rounded-full bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] font-bold text-xs sm:text-sm uppercase tracking-[0.14em] sm:tracking-[0.18em] shadow-lg hover:shadow-xl transition-all duration-300 gap-2.5 cursor-pointer disabled:opacity-60 select-none border-0"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>{t.expressOrder.submittingBtn}</span>
-              </>
-            ) : (
-              <>
-                <ShieldCheck className="w-4 h-4 stroke-[2.2]" />
-                <span>{t.expressOrder.submitBtn} ({formatMAD(cumulativeTotalPrice)})</span>
-              </>
-            )}
-          </Button>
+          {/* SECTION DE PAIEMENT EN LIGNE SÉCURISÉ PAYPAL & CARTE BANCAIRE */}
+          <div className="pt-2">
+            <PayPalPaymentSection
+              total={cumulativeTotalPrice}
+              isFormValid={isFormValid}
+              onValidateForm={validateFormBeforePayPal}
+              onPaymentSuccess={handlePayPalPaymentSuccess}
+            />
+          </div>
 
           <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
             <ShieldCheck className="w-3 h-3 text-primary shrink-0" />

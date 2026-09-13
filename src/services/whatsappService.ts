@@ -287,116 +287,75 @@ export const sendOpenWaMessage = async (
   const baseUrls = getTargetBaseUrls(rawUrl);
   let lastError = "Impossible de joindre le serveur OpenWA.";
 
-  // 1. Récupération dynamique des sessions actives
-  let discoveredSessionKeys: string[] = [];
-  for (const base of baseUrls) {
-    for (const headers of headerVariants.slice(0, 2)) {
-      for (const ep of [`${base}/api/sessions${authQuery}`, `${base}/sessions${authQuery}`, `${base}/api/sessions`, `${base}/sessions`]) {
-        try {
-          const sessRes = await fetch(ep, { headers: { ...headers, "Accept": "application/json" } });
-          if (sessRes.ok) {
-            const sessList = await sessRes.json();
-            if (Array.isArray(sessList)) {
-              for (const s of sessList) {
-                if (typeof s === "string") discoveredSessionKeys.push(s);
-                if (s && typeof s === "object") {
-                  if (s.id) discoveredSessionKeys.push(s.id);
-                  if (s.sessionId) discoveredSessionKeys.push(s.sessionId);
-                  if (s.name) discoveredSessionKeys.push(s.name);
-                  if (s.session) discoveredSessionKeys.push(s.session);
-                }
-              }
-            }
-          }
-        } catch { }
-      }
-    }
-  }
-
-  // Candidats d'identifiant de session
-  const sessionCandidates = Array.from(new Set([
-    session,
-    ...discoveredSessionKeys,
-    "e8fe5adf-cd3b-4470-8cf7-6a85504430ff",
-    "default",
-    "maison-kenzi",
-  ])).filter(Boolean);
-
+  // 1. ISOLATION STRICTE : Utilisation exclusive de la session dédiée de Maison Kenzi
+  const targetSession = session || "e8fe5adf-cd3b-4470-8cf7-6a85504430ff";
   const rawPhone = chatId.replace("@c.us", "");
 
   for (const base of baseUrls) {
-    for (const sessKey of sessionCandidates) {
-      const attempts = [
-        // 1. Route WAHA standard (POST /api/sessions/:session/messages/send-text) avec DTO strict
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-          payload: { chatId, text: messageText },
-          desc: `POST /api/sessions/${sessKey}/messages/send-text`,
-        },
-        // 2. Route WAHA standard sans query param (headers seuls)
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text`,
-          payload: { chatId, text: messageText },
-          desc: `POST /api/sessions/${sessKey}/messages/send-text (headers)`,
-        },
-        // 3. Route globale WAHA /api/sendText avec session
-        {
-          url: `${base}/api/sendText${authQuery}`,
-          payload: { chatId, text: messageText, session: sessKey },
-          desc: `POST /api/sendText`,
-        },
-        {
-          url: `${base}/api/sendText`,
-          payload: { chatId, text: messageText, session: sessKey },
-          desc: `POST /api/sendText (headers)`,
-        },
-        // 4. Variante sans préfixe /api
-        {
-          url: `${base}/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-          payload: { chatId, text: messageText },
-          desc: `POST /sessions/${sessKey}/messages/send-text`,
-        },
-        // 5. Format alternatif phone brut
-        {
-          url: `${base}/api/sessions/${encodeURIComponent(sessKey)}/messages/send-text${authQuery}`,
-          payload: { phone: rawPhone, message: messageText },
-          desc: `POST /api/sessions/${sessKey}/messages/send-text (raw phone)`,
-        },
-      ];
+    const attempts = [
+      // 1. Route WAHA standard (POST /api/sessions/:session/messages/send-text) avec DTO strict
+      {
+        url: `${base}/api/sessions/${encodeURIComponent(targetSession)}/messages/send-text${authQuery}`,
+        payload: { chatId, text: messageText },
+        desc: `POST /api/sessions/${targetSession}/messages/send-text`,
+      },
+      // 2. Route WAHA standard sans query param (headers seuls)
+      {
+        url: `${base}/api/sessions/${encodeURIComponent(targetSession)}/messages/send-text`,
+        payload: { chatId, text: messageText },
+        desc: `POST /api/sessions/${targetSession}/messages/send-text (headers)`,
+      },
+      // 3. Route globale WAHA /api/sendText avec session explicite
+      {
+        url: `${base}/api/sendText${authQuery}`,
+        payload: { chatId, text: messageText, session: targetSession },
+        desc: `POST /api/sendText`,
+      },
+      // 4. Variante sans préfixe /api
+      {
+        url: `${base}/sessions/${encodeURIComponent(targetSession)}/messages/send-text${authQuery}`,
+        payload: { chatId, text: messageText },
+        desc: `POST /sessions/${targetSession}/messages/send-text`,
+      },
+      // 5. Format alternatif phone brut
+      {
+        url: `${base}/api/sessions/${encodeURIComponent(targetSession)}/messages/send-text${authQuery}`,
+        payload: { phone: rawPhone, message: messageText },
+        desc: `POST /api/sessions/${targetSession}/messages/send-text (raw phone)`,
+      },
+    ];
 
-      for (const headers of headerVariants) {
-        for (const attempt of attempts) {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+    for (const headers of headerVariants) {
+      for (const attempt of attempts) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch(attempt.url, {
-              method: "POST",
-              headers,
-              body: JSON.stringify(attempt.payload),
-              signal: controller.signal,
-            });
+          const response = await fetch(attempt.url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(attempt.payload),
+            signal: controller.signal,
+          });
 
-            clearTimeout(timeoutId);
+          clearTimeout(timeoutId);
 
-            if (response.ok || response.status === 201 || response.status === 200 || response.status === 202) {
-              const data = await response.json().catch(() => ({ status: "sent" }));
-              console.info("[OpenWA Succès] Message délivré via:", attempt.url, data);
-              return { success: true, messageId: data.messageId, details: data };
-            } else if (response.status === 401 || response.status === 403) {
-              const errorJson = await response.json().catch(() => null);
-              lastError = `Erreur d'authentification (${response.status}) sur ${attempt.desc} : ${errorJson?.message || ""}`;
-              // Ne pas abort le loop, continuer d'essayer les autres variantes d'en-têtes / routes
-            } else {
-              const errorText = await response.text().catch(() => response.statusText);
-              lastError = `Erreur OpenWA (${response.status}) sur ${attempt.desc} : ${errorText || response.statusText}`;
-            }
-          } catch (err: any) {
-            if (err.name === "AbortError") {
-              lastError = "Délai d'attente dépassé (Timeout 10s) lors de l'envoi WhatsApp.";
-            } else {
-              lastError = err.message || String(err);
-            }
+          if (response.ok || response.status === 201 || response.status === 200 || response.status === 202) {
+            const data = await response.json().catch(() => ({ status: "sent" }));
+            console.info("[OpenWA Succès - Session Dédiée]", targetSession, attempt.url, data);
+            return { success: true, messageId: data.messageId, details: data };
+          } else if (response.status === 401 || response.status === 403) {
+            const errorJson = await response.json().catch(() => null);
+            lastError = `Erreur d'authentification (${response.status}) sur ${attempt.desc} : ${errorJson?.message || ""}`;
+          } else {
+            const errorText = await response.text().catch(() => response.statusText);
+            lastError = `Erreur OpenWA (${response.status}) sur ${attempt.desc} : ${errorText || response.statusText}`;
+          }
+        } catch (err: any) {
+          if (err.name === "AbortError") {
+            lastError = "Délai d'attente dépassé (Timeout 10s) lors de l'envoi WhatsApp.";
+          } else {
+            lastError = err.message || String(err);
           }
         }
       }
