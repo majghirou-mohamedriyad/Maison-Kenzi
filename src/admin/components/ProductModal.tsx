@@ -1,13 +1,13 @@
 /**
  * Modal d'Ajout & Modification de Parfum — Maison Kenzi Admin
  *
- * Formulaire épuré pour flacons complets :
- * - Boutons d'action (Annuler / Créer le produit) intégrés en haut à la même ligne que le titre
- * - Validation stricte des champs obligatoires : Nom *, Maison *, Genre *, Saisons *, Prix *, Stock *, Notes *, Catégorie *
- * - Sélecteur de Catégorie Haute Parfumerie : Cartes de catégories réelles et synchronisées
- * - Téléversement d'image haute définition
- * - Statut de visibilité & badges (Nouveau, Best-Seller)
- * Conformité Haute Parfumerie & Zéro Emoji.
+ * Formulaire de haute parfumerie pour flacons complets :
+ * - Structure ergonomique : En-tête fixe avec badge, corps défilant équilibré (6/6 colonnes), pied de page fixe
+ * - Support bilingue FR / EN pour le nom, notes olfactives, descriptions et sous-titres
+ * - Validation stricte des champs obligatoires (Nom, Maison, Genre, Saisons, Prix, Contenance, Stock, Notes, Catégorie)
+ * - Gestion multi-photos avec glisser-déposer, réorganisation et indicateur de couverture
+ * - Sélecteur de catégories réelles synchronisées avec Supabase
+ * - Conformité Haute Parfumerie & Zéro Emoji (icônes vectorielles lucide-react).
  */
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -92,11 +92,11 @@ const emptyForm = {
 const isUuid = (s: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 
-const labelCls = "block text-xs font-semibold text-[#111827] dark:text-[#F9FAFB] mb-1";
+const labelCls = "block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1.5";
 const inputCls =
-  "w-full px-3 py-2 text-xs bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A96E] text-[#111827] dark:text-[#F9FAFB] transition-colors";
+  "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A96E]/40 focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF] transition-all";
 const inputErrorCls =
-  "w-full px-3 py-2 text-xs bg-red-50/50 dark:bg-red-950/20 border border-red-500 dark:border-red-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 text-[#111827] dark:text-[#F9FAFB] transition-colors";
+  "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-red-50/40 dark:bg-red-950/20 border border-red-500 dark:border-red-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 text-[#1A1816] dark:text-[#FAF7F2] transition-all";
 
 const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const availableCategories = useCategories();
@@ -181,19 +181,18 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       } else {
         setF(emptyForm);
       }
+      setErrors({});
       setContentLang("fr");
       setCategorySearch("");
-      setErrors({});
     }
   }, [open, initial]);
 
-  const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => {
-    setF((s) => ({ ...s, [k]: v }));
-    // Effacer l'erreur à la saisie
-    if (errors[k]) {
+  const set = (key: string, val: any) => {
+    setF((prev) => ({ ...prev, [key]: val }));
+    if (errors[key]) {
       setErrors((prev) => {
         const next = { ...prev };
-        delete next[k];
+        delete next[key];
         return next;
       });
     }
@@ -201,13 +200,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   const toggleSeason = (season: string) => {
     setF((prev) => {
-      const current = Array.isArray(prev.seasons) ? prev.seasons : [];
-      const norm = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-      const exists = current.some((s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === norm);
-      const next = exists
-        ? current.filter((s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() !== norm)
-        : [...current, season];
-      return { ...prev, seasons: next };
+      const list = Array.isArray(prev.seasons) ? [...prev.seasons] : [];
+      const isSelected = isSeasonSelected(season, list);
+      const nextList = isSelected
+        ? list.filter((s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() !== (season || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim())
+        : [...list, season];
+      return { ...prev, seasons: nextList };
     });
     if (errors.seasons) {
       setErrors((prev) => {
@@ -218,26 +216,22 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     }
   };
 
-  const toggleCategory = (catSlug: string) => {
+  const toggleCategory = (slug: string) => {
     setF((prev) => {
-      const current = Array.isArray(prev.categories) && prev.categories.length > 0
-        ? prev.categories
-        : (prev.category ? [prev.category] : []);
-      const exists = current.includes(catSlug);
-      const next = exists
-        ? current.filter((s) => s !== catSlug)
-        : [...current, catSlug];
+      const list = Array.isArray(prev.categories) ? [...prev.categories] : [];
+      const isSelected = list.includes(slug);
+      const nextList = isSelected ? list.filter((c) => c !== slug) : [...list, slug];
       return {
         ...prev,
-        categories: next,
-        category: next[0] || "",
+        categories: nextList,
+        category: nextList[0] || "",
       };
     });
-    if (errors.categories || errors.category) {
+    if (errors.category || errors.categories) {
       setErrors((prev) => {
         const next = { ...prev };
-        delete next.categories;
         delete next.category;
+        delete next.categories;
         return next;
       });
     }
@@ -479,54 +473,48 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#FFFFFF] dark:bg-[#1A1A1A] max-w-6xl xl:max-w-7xl w-[96vw] max-h-[94vh] overflow-y-auto p-6 sm:p-8 lg:p-9 rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
-        <form onSubmit={submit} className="space-y-6">
-          {/* En-tête avec Titre à gauche et Boutons d'Action à droite */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A] pr-8 sm:pr-10">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <DialogTitle className="text-lg sm:text-xl font-serif font-bold text-[#111827] dark:text-[#F9FAFB]">
+      <DialogContent className="bg-white dark:bg-[#141312] max-w-5xl lg:max-w-6xl xl:max-w-7xl w-[96vw] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+        {/* EN-TÊTE FIXE DU DIALOGUE */}
+        <div className="p-5 sm:p-6 pb-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 shrink-0">
+          <div className="flex items-center justify-between flex-wrap gap-3 pr-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
                   {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
                 </DialogTitle>
-                {initial && (
-                  <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                    {initial.name}
-                  </span>
-                )}
+                <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-0.5">
+                  {initial
+                    ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels de cette création."
+                    : "Renseignez les détails pour ajouter une nouvelle création de haute parfumerie."}
+                </DialogDescription>
               </div>
-              <DialogDescription className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                {initial
-                  ? "Modifiez les caractéristiques, pyramide olfactive et visuels de cette création."
-                  : "Renseignez les détails pour ajouter une nouvelle création de haute parfumerie."}
-              </DialogDescription>
             </div>
 
-            {/* Boutons d'action dans l'en-tête */}
-            <div className="flex items-center gap-2.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => onOpenChange(false)}
-                className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#F9FAFB] hover:bg-[#F8F9FA] dark:hover:bg-white/5 transition-colors cursor-pointer"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                disabled={saving || uploading}
-                className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-lg shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
-              >
-                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                <span>{initial ? "Mettre à jour le produit" : "Créer le produit"}</span>
-              </button>
-            </div>
+            {initial && (
+              <span className="text-xs font-sans font-medium px-3 py-1 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                {initial.name}
+              </span>
+            )}
           </div>
+        </div>
 
-          {/* Grille principale en 2 colonnes */}
+        {/* CORPS DÉFILANT DU FORMULAIRE */}
+        <form id="product-form" onSubmit={submit} className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
+          {/* Grille principale équilibrée en 2 colonnes égales (6 / 6) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* COLONNE GAUCHE : Informations Générales, Prix, Genre, Saisons & Notes (7 colonnes) */}
-            <div className="lg:col-span-7 space-y-6">
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Informations générales & Prix</h3>
+            {/* COLONNE GAUCHE (6 colonnes) : Informations Générales, Tarifs & Pyramide Olfactive */}
+            <div className="lg:col-span-6 space-y-5">
+              {/* Carte 1 : Informations Générales & Tarifs */}
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
+                <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                  <div className="w-2 h-2 rounded-full bg-[#C9A96E]" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+                    Informations générales & Tarifs
+                  </h3>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {/* Nom du parfum */}
@@ -539,7 +527,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Baccarat Rouge 540"
                     />
                     {errors.name && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>{errors.name}</span>
                       </div>
@@ -556,7 +544,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Maison Francis Kurkdjian"
                     />
                     {errors.maison && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>{errors.maison}</span>
                       </div>
@@ -573,15 +561,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           type="button"
                           onClick={() => {
                             set("gender", g);
-                            // Mettre à jour la catégorie par défaut si non modifiée manuellement
                             if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
                               set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
                             }
                           }}
-                          className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
+                          className={`py-2.5 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                             f.gender === g
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                              : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                              : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
                           }`}
                         >
                           {g}
@@ -589,7 +576,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       ))}
                     </div>
                     {errors.gender && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>{errors.gender}</span>
                       </div>
@@ -598,9 +585,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Saisons d'utilisation (Choix multiples) */}
                   <div className="sm:col-span-2">
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
                       <label className={labelCls}>Saisons d'utilisation *</label>
-                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">
+                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
                         {currentSeasons.length === 0
                           ? "Aucune sélectionnée"
                           : `${currentSeasons.length} sélectionnée${currentSeasons.length > 1 ? "s" : ""}`}
@@ -617,7 +604,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             className={`py-2 px-3 text-xs font-medium rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
                               isSelected
                                 ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                                : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                                : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
                             }`}
                           >
                             <span>{season}</span>
@@ -626,101 +613,95 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       })}
                     </div>
                     {errors.seasons && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>{errors.seasons}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Prix de vente */}
-                  <div>
-                    <label className={labelCls}>Prix de vente (€) *</label>
-                    <div className="relative">
+                  {/* Tarification & Stock en 3 colonnes */}
+                  <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    {/* Prix de vente */}
+                    <div>
+                      <label className={labelCls}>Prix (€) *</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={1}
+                          className={(errors.price ? inputErrorCls : inputCls) + " pr-8 font-semibold"}
+                          value={f.price}
+                          onChange={(e) => set("price", e.target.value)}
+                          placeholder="Ex: 85"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
+                          €
+                        </span>
+                      </div>
+                      {errors.price && (
+                        <div className="text-[11px] text-red-500 mt-1">{errors.price}</div>
+                      )}
+                    </div>
+
+                    {/* Contenance */}
+                    <div>
+                      <label className={labelCls}>Contenance *</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={1}
+                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-8 font-semibold"}
+                          value={f.volume}
+                          onChange={(e) => set("volume", e.target.value)}
+                          placeholder="Ex: 100"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                          ml
+                        </span>
+                      </div>
+                      {errors.volume && (
+                        <div className="text-[11px] text-red-500 mt-1">{errors.volume}</div>
+                      )}
+                    </div>
+
+                    {/* Stock disponible */}
+                    <div>
+                      <label className={labelCls}>Stock (flacons) *</label>
                       <input
                         type="number"
-                        min={1}
-                        className={(errors.price ? inputErrorCls : inputCls) + " pr-12 font-medium"}
-                        value={f.price}
-                        onChange={(e) => set("price", e.target.value)}
-                        placeholder="Ex: 85"
+                        min={0}
+                        className={errors.stock ? inputErrorCls : inputCls}
+                        value={f.stock}
+                        onChange={(e) => set("stock", e.target.value)}
+                        placeholder="Ex: 10"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
-                        €
-                      </span>
+                      {errors.stock && (
+                        <div className="text-[11px] text-red-500 mt-1">{errors.stock}</div>
+                      )}
                     </div>
-                    {errors.price && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{errors.price}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Volume du flacon */}
-                  <div>
-                    <label className={labelCls}>Volume / Contenance (ml) *</label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min={1}
-                        className={(errors.volume ? inputErrorCls : inputCls) + " pr-10 font-medium"}
-                        value={f.volume}
-                        onChange={(e) => set("volume", e.target.value)}
-                        placeholder="Ex: 100"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#6B7280] dark:text-[#9CA3AF] pointer-events-none">
-                        ml
-                      </span>
-                    </div>
-                    {errors.volume && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{errors.volume}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Stock disponible */}
-                  <div className="sm:col-span-2">
-                    <label className={labelCls}>Stock disponible (flacons) *</label>
-                    <input
-                      type="number"
-                      min={0}
-                      className={errors.stock ? inputErrorCls : inputCls}
-                      value={f.stock}
-                      onChange={(e) => set("stock", e.target.value)}
-                      placeholder="Ex: 10"
-                    />
-                    {errors.stock && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{errors.stock}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </section>
 
-              {/* SECTION BILINGUE : Descriptions & Pyramide Olfactive (FR / EN) */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+              {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
                   <div className="flex items-center gap-2">
                     <Languages className="w-4 h-4 text-[#C9A96E]" />
                     <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
-                      Descriptions & Pyramide Olfactive
+                      Descriptions & Notes Olfactives
                     </h3>
                   </div>
 
                   {/* Onglets de sélection de langue (FR / EN) */}
-                  <div className="inline-flex p-1 bg-[#F3F4F6] dark:bg-[#1A1A1A] rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
+                  <div className="inline-flex p-1 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26]">
                     <button
                       type="button"
                       onClick={() => setContentLang("fr")}
                       className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                         contentLang === "fr"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                          : "text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB]"
+                          : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                       }`}
                     >
                       <span>Français (FR)</span>
@@ -734,14 +715,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                         contentLang === "en"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                          : "text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB]"
+                          : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                       }`}
                     >
                       <span>English (EN)</span>
                       {f.notesEn ? (
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                       ) : (
-                        <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
+                        <span className="text-[10px] text-[#A39B91] italic">Optionnel</span>
                       )}
                     </button>
                   </div>
@@ -759,11 +740,11 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         onChange={(e) => set("notes", e.target.value)}
                         placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
                       />
-                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
+                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 block">
                         Indiquez les accords et notes olfactives séparés par une virgule.
                       </span>
                       {errors.notes && (
-                        <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                        <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                           <span>{errors.notes}</span>
                         </div>
@@ -795,7 +776,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 ) : (
                   /* CONTENU EN ANGLAIS */
                   <div className="space-y-3.5 animate-in fade-in duration-200">
-                    <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#6B7280] dark:text-[#9CA3AF]">
+                    <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
                       Ce contenu sera automatiquement affiché pour les clients anglophones lorsque la langue du site est sur English (EN).
                     </div>
 
@@ -819,7 +800,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         onChange={(e) => set("notesEn", e.target.value)}
                         placeholder="Ex: Jasmine, Saffron, Amberwood, Ambergris, Cedar"
                       />
-                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
+                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 block">
                         Comma-separated notes in English.
                       </span>
                     </div>
@@ -850,10 +831,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
             </div>
 
-            {/* COLONNE DROITE : Image, Catégorie & Visibilité (5 colonnes) */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Visuels du Produit (Multi-photos) */}
-              {/* Visuels du Produit (Multi-photos avec Drag & Drop de réorganisation) */}
+            {/* COLONNE DROITE (6 colonnes) : Visuels, Catégories & Visibilité */}
+            <div className="lg:col-span-6 space-y-5">
+              {/* Carte 3 : Visuels du Produit (Multi-photos) */}
               <section
                 onDragOver={(e) => {
                   if (e.dataTransfer.types.includes("Files")) {
@@ -872,10 +852,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     handleFiles(e.dataTransfer.files);
                   }
                 }}
-                className={`relative bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border transition-all duration-200 space-y-3.5 ${
+                className={`relative bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border transition-all duration-200 space-y-3.5 ${
                   isDraggingFiles
                     ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30 bg-[#C9A96E]/5"
-                    : "border-[#E5E7EB] dark:border-[#2A2A2A]"
+                    : "border-[#E5DDD0] dark:border-[#2D2A26]"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -890,21 +870,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </span>
                 </div>
 
-                {/* Consignes de dimensions & fonctionnement du survol et drag & drop */}
-                <div className="p-2.5 rounded-xl bg-[#F8F9FA] dark:bg-white/[0.03] border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-1">
-                  <p className="text-[11px] font-semibold text-[#111827] dark:text-[#F9FAFB]">
-                    Dimensions recommandées : 800 × 1000 px (Portrait 4:5) ou 1000 × 1000 px (Carré 1:1)
-                  </p>
-                  <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
-                    • <strong>1ère photo</strong> : Couverture principale affichée sur la boutique.<br />
-                    • <strong>2ème photo</strong> : Image interactive révélée au survol du produit.<br />
-                    • <strong>Glisser-déposer (Drag & Drop)</strong> : Saisissez n'importe quelle photo pour réorganiser l'ordre d'affichage.
-                  </p>
+                {/* Consignes de dimensions */}
+                <div className="p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] text-[10px] text-[#7A726A] dark:text-[#A39B91] leading-relaxed">
+                  Recommandé : 800 × 1000 px. <strong>1ère photo</strong> = Couverture • <strong>2ème</strong> = Survol. Glissez pour réorganiser.
                 </div>
 
-                {/* Grille des photos avec support du Drag & Drop */}
+                {/* Grille des photos avec Drag & Drop */}
                 {(f.images || []).length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                  <div className="grid grid-cols-3 gap-2.5 pt-1">
                     {(f.images || []).map((imgUrl, idx) => {
                       const isCover = idx === 0;
                       const isHover = idx === 1;
@@ -952,7 +925,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                               ? "ring-2 ring-[#C9A96E] scale-[1.03] border-[#C9A96E] shadow-lg z-10 bg-[#C9A96E]/10"
                               : isCover
                               ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30"
-                              : "border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50"
+                              : "border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
                           }`}
                         >
                           <img
@@ -961,76 +934,69 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             className="w-full h-full object-cover pointer-events-none"
                           />
 
-                          {/* Badge de position et poignée de Drag en haut */}
+                          {/* Badge de position */}
                           <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
                             {isCover ? (
                               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#C9A96E] text-[#111827] flex items-center gap-1 shadow-md">
-                                <Star className="w-2.5 h-2.5 fill-[#111827]" /> 1 • Couverture
+                                <Star className="w-2.5 h-2.5 fill-[#111827]" /> 1 • Couv.
                               </span>
                             ) : isHover ? (
                               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#111827]/85 dark:bg-black/85 text-white backdrop-blur-xs shadow-md">
-                                2 • Survol boutique
+                                2 • Survol
                               </span>
                             ) : (
                               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-black/75 text-white backdrop-blur-xs">
-                                Photo {idx + 1}
+                                #{idx + 1}
                               </span>
                             )}
 
-                            {/* Poignée de Drag visuelle */}
-                            <div className="w-5 h-5 rounded-md bg-black/60 backdrop-blur-xs flex items-center justify-center text-white/80 opacity-70 group-hover:opacity-100 transition-opacity shadow-xs" title="Glisser pour réorganiser">
-                              <GripVertical className="w-3 h-3" />
+                            <div className="w-4 h-4 rounded-md bg-black/60 backdrop-blur-xs flex items-center justify-center text-white/80 opacity-70 group-hover:opacity-100 transition-opacity shadow-xs">
+                              <GripVertical className="w-2.5 h-2.5" />
                             </div>
                           </div>
 
-                          {/* Barre d'actions en bas de chaque photo */}
-                          <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 z-10" onClick={(e) => e.stopPropagation()}>
+                          {/* Barre d'actions */}
+                          <div className="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 z-10" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center gap-1">
-                              {/* Bouton Définir comme photo principale */}
                               {!isCover && (
                                 <button
                                   type="button"
-                                  title="Définir comme photo de couverture"
+                                  title="Photo principale"
                                   onClick={() => setPrimaryImage(idx)}
-                                  className="p-1 rounded-lg bg-black/60 hover:bg-[#C9A96E] text-white hover:text-[#111827] transition-colors cursor-pointer"
+                                  className="p-1 rounded bg-black/60 hover:bg-[#C9A96E] text-white hover:text-[#111827] transition-colors cursor-pointer"
                                 >
-                                  <Star className="w-3 h-3" />
+                                  <Star className="w-2.5 h-2.5" />
                                 </button>
                               )}
-
-                              {/* Bouton Déplacer vers la gauche */}
                               {idx > 0 && (
                                 <button
                                   type="button"
-                                  title="Déplacer vers la gauche"
+                                  title="Gauche"
                                   onClick={() => moveImage(idx, idx - 1)}
-                                  className="p-1 rounded-lg bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                  className="p-1 rounded bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
                                 >
-                                  <ArrowLeft className="w-3 h-3" />
+                                  <ArrowLeft className="w-2.5 h-2.5" />
                                 </button>
                               )}
-
-                              {/* Bouton Déplacer vers la droite */}
                               {idx < (f.images || []).length - 1 && (
                                 <button
                                   type="button"
-                                  title="Déplacer vers la droite"
+                                  title="Droite"
                                   onClick={() => moveImage(idx, idx + 1)}
-                                  className="p-1 rounded-lg bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                                  className="p-1 rounded bg-black/60 hover:bg-white/20 text-white transition-colors cursor-pointer"
                                 >
-                                  <ArrowRight className="w-3 h-3" />
+                                  <ArrowRight className="w-2.5 h-2.5" />
                                 </button>
                               )}
                             </div>
 
-                            {/* Bouton Supprimer la photo */}
                             <button
                               type="button"
-                              title="Supprimer cette photo"
+                              title="Supprimer"
                               onClick={() => removeImage(idx)}
-                              className="p-1 rounded-lg bg-red-600/80 hover:bg-red-600 text-white transition-colors cursor-pointer"
+                              className="p-1 rounded bg-red-600/80 hover:bg-red-600 text-white transition-colors cursor-pointer"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <Trash2 className="w-2.5 h-2.5" />
                             </button>
                           </div>
                         </div>
@@ -1039,8 +1005,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Zone d'ajout de photos (multi-fichiers + drag & drop direct) */}
-                <div className="pt-1">
+                {/* Bouton d'ajout de photos */}
+                <div>
                   <input
                     ref={fileRef}
                     type="file"
@@ -1056,7 +1022,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     className={`w-full flex items-center justify-center gap-2 p-3 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
                       isDraggingFiles
                         ? "border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E] scale-[1.01]"
-                        : "border-[#C9A96E]/40 hover:border-[#C9A96E] bg-[#C9A96E]/5 hover:bg-[#C9A96E]/10 text-[#111827] dark:text-[#F9FAFB]"
+                        : "border-[#C9A96E]/40 hover:border-[#C9A96E] bg-white dark:bg-[#141312] hover:bg-[#C9A96E]/10 text-[#1A1816] dark:text-[#FAF7F2]"
                     } disabled:opacity-50`}
                   >
                     {uploading ? (
@@ -1069,8 +1035,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <Plus className="w-4 h-4 text-[#C9A96E]" />
                         <span>
                           {(f.images || []).length === 0
-                            ? "Ajouter des photos du produit (ou glissez-déposez vos fichiers ici)"
-                            : "Ajouter d'autres photos (ou glissez-déposez vos fichiers ici)"}
+                            ? "Ajouter des photos (ou glissez-déposez ici)"
+                            : "Ajouter d'autres photos"}
                         </span>
                       </>
                     )}
@@ -1078,8 +1044,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 </div>
               </section>
 
-              {/* Section Sélecteur Multi-Catégories Haute Parfumerie (Positionnée au-dessus de Visibilité & Badges) */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3.5">
+              {/* Carte 4 : Catégories du parfum */}
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
@@ -1094,14 +1060,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </span>
                 </div>
 
-                {/* Champ de recherche rapide de catégorie si plus de 4 catégories */}
+                {/* Champ de recherche rapide */}
                 {availableCategories.length > 4 && (
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                     <input
                       type="text"
                       className={inputCls + " pl-8 py-1.5 text-[11px]"}
-                      placeholder="Filtrer les catégories..."
+                      placeholder="Filtrer les univers..."
                       value={categorySearch}
                       onChange={(e) => setCategorySearch(e.target.value)}
                     />
@@ -1109,7 +1075,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       <button
                         type="button"
                         onClick={() => setCategorySearch("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1A1816] dark:hover:text-white"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -1117,9 +1083,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Grille des catégories dynamiques issues de Supabase */}
+                {/* Grille des catégories */}
                 {filteredCategories.length > 0 ? (
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[190px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category || errors.categories ? "ring-1 ring-red-500/50" : ""}`}>
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[170px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category || errors.categories ? "ring-1 ring-red-500/50" : ""}`}>
                     {filteredCategories.map((cat) => {
                       const isSelected = (f.categories || []).includes(cat.slug);
                       const isPrimary = (f.categories || [])[0] === cat.slug;
@@ -1131,7 +1097,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
                             isSelected
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                              : "bg-[#FFFFFF] dark:bg-[#1A1A1A] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2A2A2A] hover:border-[#C9A96E]/50 hover:bg-[#F8F9FA] dark:hover:bg-white/5"
+                              : "bg-white dark:bg-[#141312] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50 hover:bg-[#FAF7F2] dark:hover:bg-white/5"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
@@ -1155,42 +1121,35 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     })}
                   </div>
                 ) : (
-                  <div className="p-3.5 rounded-xl border border-dashed border-[#E5E7EB] dark:border-[#2A2A2A] text-center space-y-1">
-                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
+                  <div className="p-3 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] text-center space-y-0.5">
+                    <p className="text-xs text-[#7A726A] dark:text-[#A39B91]">
                       Aucune catégorie trouvée
-                    </p>
-                    <p className="text-[10px] text-[#9CA3AF]">
-                      Créez vos univers dans l'onglet Catégories du panneau d'administration.
                     </p>
                   </div>
                 )}
 
-                <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
-                  Sélection multiple autorisée. La première catégorie cochée sert de référence principale.
-                </p>
-
                 {(errors.category || errors.categories) && (
-                  <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                  <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{errors.category || errors.categories}</span>
                   </div>
                 )}
               </section>
 
-              {/* Visibilité & Badges */}
-              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-3">
+              {/* Carte 5 : Visibilité & Badges */}
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
-                <div className="space-y-2.5">
-                  <label className="flex items-center justify-between text-xs p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                    <span className="font-medium">Produit actif (visible en boutique)</span>
+                <div className="space-y-2">
+                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Produit actif (visible en boutique)</span>
                     <Switch checked={f.active} onCheckedChange={(v) => set("active", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-xs p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                    <span className="font-medium">Nouveau produit (badge "Nouveau")</span>
+                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Nouveau produit (badge "Nouveau")</span>
                     <Switch checked={f.isNew} onCheckedChange={(v) => set("isNew", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-xs p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                    <span className="font-medium">Best Seller (mis en vedette)</span>
+                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Best Seller (mis en vedette)</span>
                     <Switch checked={f.isBestseller} onCheckedChange={(v) => set("isBestseller", v)} />
                   </label>
                 </div>
@@ -1198,6 +1157,40 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             </div>
           </div>
         </form>
+
+        {/* PIED DE PAGE (FOOTER) FIXE — TOUJOURS ACCESSIBLE */}
+        <div className="p-4 sm:p-5 px-6 sm:px-8 bg-[#FAF7F2]/90 dark:bg-[#1C1A18]/90 backdrop-blur-md border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+          <div className="text-xs text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-2">
+            {f.name && <span className="font-semibold text-[#1A1816] dark:text-[#FAF7F2]">{f.name}</span>}
+            {f.price && <span>• {f.price} €</span>}
+            {f.volume && <span>• {f.volume} ml</span>}
+            {f.stock && <span>• {f.stock} en stock</span>}
+            {(f.images || []).length > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">
+                {(f.images || []).length} photo{(f.images || []).length > 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-end gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="px-4 py-2.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              form="product-form"
+              disabled={saving || uploading}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-lg shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+            >
+              {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              <span>{initial ? "Mettre à jour le produit" : "Créer le produit"}</span>
+            </button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
