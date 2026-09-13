@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Modales d'Administration Ultra-Compactes & Adaptatives (Option A — max-h-[86vh] avec disposition ergonomique resserrée) Opérationnelles — Zéro Défilement Inutile, Affichage Parfait & Zéro Emoji
+- **Statut général** : Actualisation Visuelle de la Page « À Propos » (Carte « Haute Parfumerie / Flacons 100% Originaux » sublimée par un flacon de parfum de prestige) & Modales d'Administration Ultra-Compactes Opérationnelles
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Sublimation Photographique de la Carte « Haute Parfumerie / Flacons 100% Originaux » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`src/pages/about/OurStory.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/OurStory.tsx)) :
+  - [x] **Visuel Flacon Haute Parfumerie** : Remplacement de l'image précédente par une photographie haute définition d'un flacon de parfum de niche d'exception aux nuances ambrées et dorées.
+  - [x] **Harmonisation Éditoriale & Nude Design** : Alignement parfait avec les cartes d'artisanat et d'antiquités du triptyque de prestige.
 
 - [x] Optimisation Ergonomique & Modale Adaptative Ultra-Compacte — Option A ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
   - [x] **Hauteur Adaptative Intelligente (`max-h-[86vh] h-auto`)** : Suppression de la hauteur forcée à 100% pour que la modale s'ajuste naturellement à son contenu et soit parfaitement centrée sur l'écran.

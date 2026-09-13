@@ -9,7 +9,7 @@ import ContentSection from "../../components/about/ContentSection";
 import AboutSidebar from "../../components/about/AboutSidebar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const notreHistoireImg = "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=1024&auto=format&fit=crop";
+const notreHistoireImg = "https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=1024&auto=format&fit=crop";
 
 const NotreHistoire = () => {
   const { language } = useLanguage();

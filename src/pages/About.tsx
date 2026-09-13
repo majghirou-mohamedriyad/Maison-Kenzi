@@ -185,7 +185,7 @@ const About = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card">
               <img
-                src="https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=1000&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=1000&auto=format&fit=crop"
                 alt="Flacon de Haute Parfumerie Maison Kenzi"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
