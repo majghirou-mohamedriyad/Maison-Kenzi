@@ -13,6 +13,15 @@
   - [x] **Suppression Complète des Sessions de Fallback** : Élimination de tout basculement ou test vers d'autres sessions (`default`, découverte multi-sessions `/api/sessions`, etc.).
   - [x] **Routage 100% Dédié** : Tous les messages de notifications clients et alertes de Maison Kenzi transitent exclusivement et de manière strictement étanche par la session dédiée configurée (`e8fe5adf-cd3b-4470-8cf7-6a85504430ff`).
 
+- [x] Sélection Multiple & Actions Groupées dans la Gestion des Commandes ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx), [`src/hooks/useAdminOrders.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAdminOrders.ts)) :
+  - [x] **Sélection Individuelle & « Tout Sélectionner »** : Cases à cocher interactives sur chaque ligne/carte avec bouton maître d'en-tête (états coché, semi-coché et décoché), sélection au clic sur la ligne avec mise en surbrillance.
+  - [x] **Barre d'Actions Groupées Flottante** : Apparition instantanée d'une barre de contrôle en bas d'écran avec compteur dynamique de sélection (`X commandes sélectionnées`) et bouton de désélection rapide.
+  - [x] **Changement de Statut Groupé** : Menu déroulant pour modifier simultanément le statut de toutes les commandes sélectionnées (`En attente`, `Confirmée`, `Livrée`, `Annulée`) avec synchronisation Supabase en lot et mise à jour client automatique.
+  - [x] **Téléchargement Groupé des Factures PDF** : Téléchargement successif automatisé des factures PDF de toutes les commandes cochées.
+  - [x] **Suppression Groupée avec Dialogue de Sécurité** : Fenêtre modale de confirmation pour supprimer en toute sécurité la sélection en un seul clic.
+  - [x] **Compatibilité Desktop & Mobile** : Prise en charge complète sur grand écran (tableau de bord) et smartphone (cartes tactiles).
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles sobres `lucide-react` (`CheckSquare`, `Square`, `MinusSquare`, `Trash2`, `FileDown`, `Package`, `Check`), typographie soignée et commentaires en français.
+
 - [x] Suspension Totale des Modules de Paiement en Ligne & Bouton Incliquable ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Suppression Complète des Méthodes de Paiement en Ligne** : Retrait intégral des passerelles et modules de paiement en ligne.
   - [x] **Bouton de Règlement Strictement Incliquable** : Bouton désactivé (`disabled={true}`), état inactif verrouillé avec curseur non autorisé et opacité estompée indiquant la suspension du paiement.

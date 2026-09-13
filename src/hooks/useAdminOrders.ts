@@ -80,6 +80,75 @@ export const useAdminOrders = () => {
     return { ok: true };
   };
 
+  const updateMultipleOrderStatus = async (ids: string[], status: OrderStatus) => {
+    if (ids.length === 0) return { ok: true };
+    const { error: err } = await supabase
+      .from("orders")
+      .update({ status })
+      .in("id", ids);
+    if (err) return { error: err.message };
+
+    // Si le statut est "livree", synchroniser les clients concernes
+    if (status === "livree") {
+      for (const id of ids) {
+        const targetOrder = orders.find((o) => o.id === id);
+        if (targetOrder) {
+          const clientEmail =
+            targetOrder.customer_email ||
+            `${targetOrder.customer_name.toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
+          const clientPhone = targetOrder.customer_phone?.trim() || "";
+
+          try {
+            let query = supabase.from("customers").select("*");
+            if (clientPhone) {
+              query = query.or(`phone.eq.${clientPhone},email.eq.${clientEmail}`);
+            } else {
+              query = query.eq("email", clientEmail);
+            }
+            const { data: existingCustomer } = await query.maybeSingle();
+
+            if (existingCustomer) {
+              await supabase
+                .from("customers")
+                .update({
+                  name: targetOrder.customer_name,
+                  phone: targetOrder.customer_phone || existingCustomer.phone,
+                  address: targetOrder.customer_address || existingCustomer.address,
+                  total_orders: (existingCustomer.total_orders || 0) + 1,
+                  total_spent: Number(existingCustomer.total_spent || 0) + Number(targetOrder.total_amount || 0),
+                })
+                .eq("id", existingCustomer.id);
+            } else {
+              await supabase.from("customers").insert([
+                {
+                  email: clientEmail,
+                  name: targetOrder.customer_name,
+                  phone: targetOrder.customer_phone,
+                  address: targetOrder.customer_address,
+                  total_orders: 1,
+                  total_spent: Number(targetOrder.total_amount || 0),
+                },
+              ]);
+            }
+          } catch (cErr) {
+            console.warn("Automated customer upsert on bulk delivery:", cErr);
+          }
+        }
+      }
+    }
+
+    await load();
+    return { ok: true };
+  };
+
+  const deleteMultipleOrders = async (ids: string[]) => {
+    if (ids.length === 0) return { ok: true };
+    const { error: err } = await supabase.from("orders").delete().in("id", ids);
+    if (err) return { error: err.message };
+    await load();
+    return { ok: true };
+  };
+
   const deleteOrder = async (id: string) => {
     const { error: err } = await supabase.from("orders").delete().eq("id", id);
     if (err) return { error: err.message };
@@ -87,5 +156,14 @@ export const useAdminOrders = () => {
     return { ok: true };
   };
 
-  return { orders, loading, error, refetch: load, updateOrderStatus, deleteOrder };
+  return {
+    orders,
+    loading,
+    error,
+    refetch: load,
+    updateOrderStatus,
+    updateMultipleOrderStatus,
+    deleteOrder,
+    deleteMultipleOrders,
+  };
 };

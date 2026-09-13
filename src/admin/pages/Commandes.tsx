@@ -1,3 +1,9 @@
+/**
+ * Page de Gestion des Commandes Clients — Maison Kenzi (Administration)
+ * Permet la visualisation, le filtrage, le suivi des statuts, l'impression des factures PDF,
+ * l'envoi de messages de confirmation WhatsApp, ainsi que la sélection multiple et les actions groupées (Statut, PDF, Suppression).
+ */
+
 import { useState, useMemo } from "react";
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import { ORDER_STATUS_LABEL, type OrderStatus, type OrderItem, type Order } from "@/types/database";
@@ -25,6 +31,11 @@ import {
   Copy,
   Send,
   Loader2,
+  CheckSquare,
+  Square,
+  MinusSquare,
+  X,
+  Sparkles,
 } from "lucide-react";
 import { downloadInvoice, sendInvoiceViaWhatsapp } from "@/admin/lib/invoice";
 import {
@@ -122,13 +133,27 @@ const summarizeItems = (items: OrderItem[]) =>
     .join(", ");
 
 const Commandes = () => {
-  const { orders, loading, error, updateOrderStatus, deleteOrder } = useAdminOrders();
+  const {
+    orders,
+    loading,
+    error,
+    updateOrderStatus,
+    updateMultipleOrderStatus,
+    deleteOrder,
+    deleteMultipleOrders,
+  } = useAdminOrders();
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
   const [viewingOrder, setViewingOrder] = useState<Order | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sendingDirectWa, setSendingDirectWa] = useState(false);
+
+  // États pour la sélection multiple
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
 
   const handleCopyOrderNumber = (e: React.MouseEvent, orderNumber: string) => {
     e.stopPropagation();
@@ -154,11 +179,13 @@ const Commandes = () => {
           customer_name: targetOrder.customer_name,
           customer_phone: targetOrder.customer_phone,
           status,
-        }).then((sendRes) => {
-          if (sendRes.success) {
-            toast.success("Notification WhatsApp de statut transmise au client");
-          }
-        }).catch(() => {});
+        })
+          .then((sendRes) => {
+            if (sendRes.success) {
+              toast.success("Notification WhatsApp de statut transmise au client");
+            }
+          })
+          .catch(() => {});
       }
 
       if (viewingOrder && viewingOrder.id === id) {
@@ -206,6 +233,7 @@ const Commandes = () => {
       toast.error("Erreur lors de la suppression : " + res.error);
     } else {
       toast.success(`Commande ${deletingOrder.order_number} supprimée`);
+      setSelectedOrderIds((prev) => prev.filter((id) => id !== deletingOrder.id));
       if (viewingOrder && viewingOrder.id === deletingOrder.id) {
         setViewingOrder(null);
       }
@@ -213,7 +241,7 @@ const Commandes = () => {
     }
   };
 
-  // Filtered orders list
+  // Liste des commandes filtrées
   const filteredOrders = useMemo(() => {
     const q = search.trim().toLowerCase();
     return orders.filter((o) => {
@@ -236,7 +264,89 @@ const Commandes = () => {
     });
   }, [orders, search, statusFilter]);
 
-  // Statistics KPI
+  // Logique de sélection multiple
+  const isAllFilteredSelected =
+    filteredOrders.length > 0 &&
+    filteredOrders.every((o) => selectedOrderIds.includes(o.id));
+
+  const isSomeFilteredSelected =
+    filteredOrders.some((o) => selectedOrderIds.includes(o.id)) &&
+    !isAllFilteredSelected;
+
+  const handleToggleSelectOrder = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setSelectedOrderIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAllFiltered = () => {
+    if (isAllFilteredSelected) {
+      const filteredIds = new Set(filteredOrders.map((o) => o.id));
+      setSelectedOrderIds((prev) => prev.filter((id) => !filteredIds.has(id)));
+    } else {
+      const filteredIds = filteredOrders.map((o) => o.id);
+      setSelectedOrderIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
+    }
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedOrderIds([]);
+  };
+
+  // Actions groupées (Bulk actions)
+  const handleBulkStatusChange = async (status: OrderStatus) => {
+    if (selectedOrderIds.length === 0) return;
+    setIsBulkUpdating(true);
+    try {
+      const res = await updateMultipleOrderStatus(selectedOrderIds, status);
+      if (res.error) {
+        toast.error("Erreur lors de la mise à jour groupée: " + res.error);
+      } else {
+        toast.success(
+          `${selectedOrderIds.length} commande${selectedOrderIds.length > 1 ? "s" : ""} mise${selectedOrderIds.length > 1 ? "s" : ""} à jour : ${ORDER_STATUS_LABEL[status]}`
+        );
+      }
+    } catch (err: any) {
+      toast.error("Erreur: " + err.message);
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
+  const handleBulkDownloadPdf = () => {
+    if (selectedOrderIds.length === 0) return;
+    const selectedOrders = orders.filter((o) => selectedOrderIds.includes(o.id));
+    toast.info(`Téléchargement de ${selectedOrders.length} facture${selectedOrders.length > 1 ? "s" : ""} PDF en cours...`);
+    
+    selectedOrders.forEach((o, index) => {
+      setTimeout(() => {
+        try {
+          downloadInvoice(o);
+        } catch (err) {
+          console.error(`Erreur téléchargement PDF pour ${o.order_number}:`, err);
+        }
+      }, index * 250);
+    });
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedOrderIds.length === 0) return;
+    const count = selectedOrderIds.length;
+    const res = await deleteMultipleOrders(selectedOrderIds);
+    if (res.error) {
+      toast.error("Erreur lors de la suppression groupée: " + res.error);
+    } else {
+      toast.success(`${count} commande${count > 1 ? "s" : ""} supprimée${count > 1 ? "s" : ""}`);
+      if (viewingOrder && selectedOrderIds.includes(viewingOrder.id)) {
+        setViewingOrder(null);
+      }
+      setSelectedOrderIds([]);
+      setIsBulkDeleting(false);
+    }
+  };
+
+  // Statistiques KPI
   const stats = useMemo(() => {
     const total = orders.length;
     const pending = orders.filter((o) => o.status === "en_attente").length;
@@ -338,7 +448,7 @@ const Commandes = () => {
   };
 
   const Actions = ({ o }: { o: Order }) => (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
         onClick={() => setViewingOrder(o)}
@@ -375,7 +485,7 @@ const Commandes = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative pb-20">
       {/* Top KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
@@ -433,36 +543,38 @@ const Commandes = () => {
           />
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          <button
-            type="button"
-            onClick={() => setStatusFilter("all")}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
-              statusFilter === "all"
-                ? "bg-foreground text-background border-foreground"
-                : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
-            }`}
-          >
-            Toutes ({orders.length})
-          </button>
-          {STATUSES.map((s) => {
-            const count = orders.filter((o) => o.status === s).length;
-            const active = statusFilter === s;
-            return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
-                  active
-                    ? "bg-primary text-primary-foreground border-primary shadow-xs"
-                    : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
-                }`}
-              >
-                {ORDER_STATUS_LABEL[s]} ({count})
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+          <div className="flex gap-1.5">
+            <button
+              type="button"
+              onClick={() => setStatusFilter("all")}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
+                statusFilter === "all"
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+              }`}
+            >
+              Toutes ({orders.length})
+            </button>
+            {STATUSES.map((s) => {
+              const count = orders.filter((o) => o.status === s).length;
+              const active = statusFilter === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                      : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {ORDER_STATUS_LABEL[s]} ({count})
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -472,7 +584,24 @@ const Commandes = () => {
           <table className="w-full text-sm">
             <thead className="bg-secondary/70 text-muted-foreground text-xs uppercase tracking-wide border-b border-border">
               <tr>
-                <th className="text-left px-4 py-3"># Commande</th>
+                {/* Checkbox Tout Sélectionner */}
+                <th className="w-10 px-4 py-3 text-center">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllFiltered}
+                    className="p-1 rounded-md text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                    title={isAllFilteredSelected ? "Désélectionner tout" : "Sélectionner toutes les commandes"}
+                  >
+                    {isAllFilteredSelected ? (
+                      <CheckSquare className="w-4 h-4 text-primary" />
+                    ) : isSomeFilteredSelected ? (
+                      <MinusSquare className="w-4 h-4 text-primary" />
+                    ) : (
+                      <Square className="w-4 h-4 text-muted-foreground/70 hover:text-primary" />
+                    )}
+                  </button>
+                </th>
+                <th className="text-left px-3 py-3"># Commande</th>
                 <th className="text-left px-4 py-3">Client</th>
                 <th className="text-left px-4 py-3">Produits</th>
                 <th className="text-right px-4 py-3">Total</th>
@@ -483,19 +612,41 @@ const Commandes = () => {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">Chargement des commandes…</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">Chargement des commandes…</td></tr>
               )}
               {error && !loading && (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-destructive">{error}</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-destructive">{error}</td></tr>
               )}
               {!loading && !error && filteredOrders.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">Aucune commande ne correspond à cette recherche.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">Aucune commande ne correspond à cette recherche.</td></tr>
               )}
               {filteredOrders.map((o) => {
+                const isSelected = selectedOrderIds.includes(o.id);
                 const hasRealEmail = o.customer_email && o.customer_email.includes("@") && !o.customer_email.endsWith("@client.tabat.ma") && !o.customer_email.endsWith("@tabat.ma") && !o.customer_email.endsWith("@client.maisonkenzi.ma") && !o.customer_email.endsWith("@maisonkenzi.ma");
                 return (
-                  <tr key={o.id} className="border-t border-border hover:bg-muted/30 transition-colors align-top">
-                    <td className="px-4 py-3 font-semibold text-foreground">
+                  <tr
+                    key={o.id}
+                    onClick={() => handleToggleSelectOrder(o.id)}
+                    className={`border-t border-border transition-colors align-top cursor-pointer ${
+                      isSelected ? "bg-primary/10 border-primary/30" : "hover:bg-muted/30"
+                    }`}
+                  >
+                    {/* Checkbox de ligne */}
+                    <td className="w-10 px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleSelectOrder(o.id, e)}
+                        className="p-1 rounded-md text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="w-4 h-4 text-primary" />
+                        ) : (
+                          <Square className="w-4 h-4 text-muted-foreground/60 hover:text-primary" />
+                        )}
+                      </button>
+                    </td>
+
+                    <td className="px-3 py-3 font-semibold text-foreground">
                       <button
                         type="button"
                         onClick={(e) => handleCopyOrderNumber(e, o.order_number)}
@@ -521,7 +672,9 @@ const Commandes = () => {
                     <td className="px-4 py-3 text-right font-bold tracking-tight text-foreground whitespace-nowrap">
                       {Number(o.total_amount).toLocaleString("fr-FR")} €
                     </td>
-                    <td className="px-4 py-3"><StatusSelect id={o.id} status={o.status} /></td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <StatusSelect id={o.id} status={o.status} />
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">{formatDate(o.created_at)}</td>
                     <td className="px-4 py-3"><div className="flex justify-end"><Actions o={o} /></div></td>
                   </tr>
@@ -540,28 +693,53 @@ const Commandes = () => {
           <p className="text-center text-sm text-muted-foreground py-10">Aucune commande trouvée.</p>
         )}
         {filteredOrders.map((o) => {
+          const isSelected = selectedOrderIds.includes(o.id);
           const hasRealEmail = o.customer_email && o.customer_email.includes("@") && !o.customer_email.endsWith("@client.tabat.ma") && !o.customer_email.endsWith("@tabat.ma") && !o.customer_email.endsWith("@client.maisonkenzi.ma") && !o.customer_email.endsWith("@maisonkenzi.ma");
           return (
-            <div key={o.id} className="bg-card border border-border rounded-xl p-4 space-y-3 shadow-xs">
+            <div
+              key={o.id}
+              onClick={() => handleToggleSelectOrder(o.id)}
+              className={`bg-card border rounded-xl p-4 space-y-3 shadow-xs transition-all cursor-pointer ${
+                isSelected ? "border-primary ring-1 ring-primary bg-primary/5" : "border-border"
+              }`}
+            >
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                   <button
                     type="button"
-                    onClick={(e) => handleCopyOrderNumber(e, o.order_number)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-primary/15 text-foreground hover:text-primary border border-border/80 hover:border-primary/40 font-mono text-xs font-bold transition-all cursor-pointer group"
-                    title="Cliquer pour copier le N° de commande"
+                    onClick={(e) => handleToggleSelectOrder(o.id, e)}
+                    className="p-1 rounded-md text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                   >
-                    <span>{o.order_number}</span>
-                    {copiedId === o.order_number ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 stroke-[2.5]" />
+                    {isSelected ? (
+                      <CheckSquare className="w-4 h-4 text-primary" />
                     ) : (
-                      <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
+                      <Square className="w-4 h-4 text-muted-foreground/60 hover:text-primary" />
                     )}
                   </button>
-                  <div className="text-xs text-muted-foreground mt-1">{formatDate(o.created_at)}</div>
+
+                  <div>
+                    <button
+                      type="button"
+                      onClick={(e) => handleCopyOrderNumber(e, o.order_number)}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-primary/15 text-foreground hover:text-primary border border-border/80 hover:border-primary/40 font-mono text-xs font-bold transition-all cursor-pointer group"
+                      title="Cliquer pour copier le N° de commande"
+                    >
+                      <span>{o.order_number}</span>
+                      {copiedId === o.order_number ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 stroke-[2.5]" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </button>
+                    <div className="text-xs text-muted-foreground mt-1">{formatDate(o.created_at)}</div>
+                  </div>
                 </div>
-                <StatusSelect id={o.id} status={o.status} />
+
+                <div onClick={(e) => e.stopPropagation()}>
+                  <StatusSelect id={o.id} status={o.status} />
+                </div>
               </div>
+
               <div className="text-sm">
                 <div className="font-semibold text-foreground truncate">{o.customer_name}</div>
                 {hasRealEmail && <div className="text-xs text-muted-foreground truncate">{o.customer_email}</div>}
@@ -579,6 +757,108 @@ const Commandes = () => {
           );
         })}
       </div>
+
+      {/* Barre Flottante d'Actions Groupées (Multi-Sélection) */}
+      {selectedOrderIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-2xl bg-card/95 backdrop-blur-xl border border-primary/40 shadow-2xl rounded-2xl p-3 sm:p-4 animate-in slide-in-from-bottom-5 duration-300">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* Compteur & Annulation */}
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-xs">
+                <Check className="w-3.5 h-3.5" />
+                <span>
+                  {selectedOrderIds.length} commande{selectedOrderIds.length > 1 ? "s" : ""} sélectionnée{selectedOrderIds.length > 1 ? "s" : ""}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleDeselectAll}
+                className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Désélectionner</span>
+              </button>
+            </div>
+
+            {/* Boutons d'actions groupées */}
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+              {/* Changer Statut Groupé */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    disabled={isBulkUpdating}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    {isBulkUpdating ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Package className="w-3.5 h-3.5 text-primary" />
+                    )}
+                    <span>Changer Statut</span>
+                    <ChevronDown className="w-3 h-3 opacity-60" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={6}
+                  className="w-56 p-1.5 bg-card/95 backdrop-blur-xl border border-border/80 shadow-xl rounded-xl z-50"
+                >
+                  <div className="px-2.5 py-1.5 text-[10px] uppercase font-bold tracking-widest text-muted-foreground border-b border-border/50 mb-1">
+                    Appliquer le statut à la sélection
+                  </div>
+                  <div className="space-y-0.5">
+                    {STATUSES.map((s) => {
+                      const cfg = STATUS_CONFIG[s];
+                      const IconComp = cfg.icon;
+                      return (
+                        <DropdownMenuItem
+                          key={s}
+                          onClick={() => handleBulkStatusChange(s)}
+                          className={`flex items-start gap-2 px-2.5 py-2 rounded-lg text-xs cursor-pointer ${cfg.hoverCls} text-muted-foreground hover:text-foreground`}
+                        >
+                          <IconComp className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="font-semibold text-xs text-foreground">
+                              {cfg.label}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-normal leading-tight">
+                              {cfg.sublabel}
+                            </div>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Télécharger PDF Groupé */}
+              <button
+                type="button"
+                onClick={handleBulkDownloadPdf}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all cursor-pointer shadow-xs"
+                title="Télécharger les factures PDF des commandes sélectionnées"
+              >
+                <FileDown className="w-3.5 h-3.5 text-primary" />
+                <span>Factures PDF</span>
+              </button>
+
+              {/* Supprimer Groupé */}
+              <button
+                type="button"
+                onClick={() => setIsBulkDeleting(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 transition-all cursor-pointer shadow-xs"
+                title="Supprimer toutes les commandes sélectionnées"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Supprimer ({selectedOrderIds.length})</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Order Details Modal (Voir les détails de la commande) */}
       <Dialog open={!!viewingOrder} onOpenChange={(open) => !open && setViewingOrder(null)}>
@@ -753,7 +1033,7 @@ const Commandes = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Dialogue de Confirmation de Suppression Individuelle */}
       <AlertDialog open={!!deletingOrder} onOpenChange={(open) => !open && setDeletingOrder(null)}>
         <AlertDialogContent className="bg-card">
           <AlertDialogHeader>
@@ -769,6 +1049,29 @@ const Commandes = () => {
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               Supprimer la commande
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Dialogue de Confirmation de Suppression Groupée */}
+      <AlertDialog open={isBulkDeleting} onOpenChange={setIsBulkDeleting}>
+        <AlertDialogContent className="bg-card">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-foreground">
+              Supprimer {selectedOrderIds.length} commande{selectedOrderIds.length > 1 ? "s" : ""} ?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Êtes-vous certain de vouloir supprimer définitivement les <strong className="text-foreground">{selectedOrderIds.length}</strong> commandes sélectionnées ? Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBulkDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Supprimer les {selectedOrderIds.length} commandes
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
