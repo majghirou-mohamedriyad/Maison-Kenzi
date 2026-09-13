@@ -18,7 +18,7 @@
   - [x] **Centrage & Confort Visuel** : Ajustement du conteneur avec backdrop flouté (`backdrop-blur-md`), animations douces et marges de sécurité sur tous les appareils.
 
 - [x] Sublimation Photographique de la Carte « Objets Rares / Antiquités Intemporelles » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
-  - [x] **Visuel Trésors d'Époque** : Remplacement de l'image par une photographie haute définition d'un instrument d'horlogerie et d'orfèvrerie ancienne en laiton et bois précieux.
+  - [x] **Visuel Trésors d'Époque & Sculpture Antique** : Remplacement de l'image par une photographie muséale d'art antique classique aux reflets dorés et marbrés de collection.
   - [x] **Harmonisation Éditoriale & Nude Design** : Triptyque photographique (Parfum, Artisanat, Antiquités) 100% harmonieux et luxueux.
 
 - [x] Sublimation Photographique de la Carte « Artisanat d'Art / Savoir-Faire Ancestral » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :

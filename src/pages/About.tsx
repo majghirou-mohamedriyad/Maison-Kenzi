@@ -223,7 +223,7 @@ const About = () => {
 
             <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card">
               <img
-                src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000&auto=format&fit=crop"
                 alt="Trésors Antiques et Pièces Rares Maison Kenzi"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
