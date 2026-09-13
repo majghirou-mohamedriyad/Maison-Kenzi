@@ -17,51 +17,13 @@ import {
   MessageCircle,
   ArrowRight,
   Sparkles,
-  PackageCheck,
   CheckCircle2,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
-
-const pillars = [
-  {
-    number: "01",
-    icon: Crown,
-    title: "100% Flacons Originaux",
-    subtitle: "Authenticité Certifiée",
-    description:
-      "Chaque parfum est garanti 100% authentique, neuf et scellé dans son packaging d'origine de la maison créatrice.",
-    tag: "Origine Garantie",
-  },
-  {
-    number: "02",
-    icon: Truck,
-    title: "Livraison Maroc & Europe",
-    subtitle: "Acheminement Express & Sécurisé",
-    description:
-      "Expédition rapide et soignée dans toutes les villes du Royaume du Maroc et en Europe avec numéro de suivi en direct.",
-    tag: "Emballage Haute Protection",
-  },
-  {
-    number: "03",
-    icon: ShieldCheck,
-    title: "Paiement Sécurisé par Internet",
-    subtitle: "Transactions Chiffrées SSL",
-    description:
-      "Réglez votre commande en toute sécurité par internet avec des protocoles de chiffrement bancaire de pointe.",
-    tag: "100% Sécurisé",
-  },
-  {
-    number: "04",
-    icon: MessageCircle,
-    title: "Conseil & Conciergerie",
-    subtitle: "Accompagnement Sur-Mesure",
-    description:
-      "Notre équipe vous guide sur WhatsApp pour choisir le sillage idéal selon vos préférences et occasions.",
-    tag: "Service Dédié",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const EditorialSection = () => {
+  const { t } = useLanguage();
   const { settings } = useAppSettings();
   const rawPhone = settings.whatsapp_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "");
@@ -69,21 +31,56 @@ const EditorialSection = () => {
     "Bonjour Maison Kenzi, j'aimerais recevoir des conseils personnalisés pour choisir un parfum."
   )}`;
 
+  const pillars = [
+    {
+      number: "01",
+      icon: Crown,
+      title: t.commitments.c1Title,
+      subtitle: t.commitments.c1Sub,
+      description: t.commitments.c1Desc,
+      tag: t.commitments.c1Tag,
+    },
+    {
+      number: "02",
+      icon: Truck,
+      title: t.commitments.c2Title,
+      subtitle: t.commitments.c2Sub,
+      description: t.commitments.c2Desc,
+      tag: t.commitments.c2Tag,
+    },
+    {
+      number: "03",
+      icon: ShieldCheck,
+      title: t.commitments.c3Title,
+      subtitle: t.commitments.c3Sub,
+      description: t.commitments.c3Desc,
+      tag: t.commitments.c3Tag,
+    },
+    {
+      number: "04",
+      icon: MessageCircle,
+      title: t.commitments.c4Title,
+      subtitle: t.commitments.c4Sub,
+      description: t.commitments.c4Desc,
+      tag: t.commitments.c4Tag,
+    },
+  ];
+
   return (
     <section className="w-full mb-16 sm:mb-28 px-4 sm:px-6 max-w-7xl mx-auto relative">
       {/* En-tête de Section */}
       <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-semibold tracking-[0.25em] uppercase mb-3 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-          <span>L'Engagement Maison Kenzi</span>
+          <span>{t.commitments.badge}</span>
         </div>
 
         <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-normal tracking-tight leading-tight">
-          Pourquoi Choisir <span className="text-primary italic font-serif">Maison Kenzi</span> ?
+          {t.commitments.titlePrefix}<span className="text-primary italic font-serif">{t.commitments.titleHighlight}</span> ?
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed mt-3 max-w-xl mx-auto">
-          L'exigence de la haute parfumerie, la certitude d'un flacon d'origine scellé et un service de conciergerie attentif à chaque instant.
+          {t.commitments.subtitle}
         </p>
 
         <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-4 rounded-full" />
@@ -141,7 +138,7 @@ const EditorialSection = () => {
           to="/about/service-client"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs uppercase tracking-[0.16em] font-semibold text-foreground hover:text-primary py-3 px-6 rounded-full border border-border/80 hover:border-primary/50 bg-card/60 backdrop-blur-md shadow-xs transition-all"
         >
-          <span>En Savoir Plus sur la Maison</span>
+          <span>{t.nav.serviceClient}</span>
           <ArrowRight size={14} />
         </Link>
 
@@ -152,7 +149,7 @@ const EditorialSection = () => {
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs uppercase tracking-[0.16em] font-bold text-white py-3 px-6 rounded-full bg-[#25D366] hover:bg-[#20ba5a] shadow-md hover:shadow-lg transition-all"
         >
           <MessageCircle className="w-4 h-4" />
-          <span>Contacter la Conciergerie WhatsApp</span>
+          <span>{t.customerCare.chatBtn}</span>
         </a>
       </div>
     </section>

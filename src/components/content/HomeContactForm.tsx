@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Send, CheckCircle2, MessageSquare, Mail, Phone } from "lucide-react";
+import { Send, CheckCircle2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HomeContactForm = () => {
+  const { t } = useLanguage();
   const { settings } = useAppSettings();
   const [formData, setFormData] = useState({
     name: "",
@@ -26,7 +28,7 @@ const HomeContactForm = () => {
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
-      toast.success("Votre message a été envoyé avec succès !");
+      toast.success(t.contactHome.successTitle);
     }, 600);
   };
 
@@ -42,12 +44,15 @@ const HomeContactForm = () => {
       {/* Section Header */}
       <div className="text-center max-w-xl mx-auto mb-10">
         <p className="text-xs uppercase tracking-[0.35em] text-primary font-medium mb-2.5">
-          Besoin d'aide ou d'un conseil ?
+          {t.contactHome.tag}
         </p>
         <h2 className="font-serif text-3xl sm:text-4xl text-foreground tracking-tight mb-3">
-          Contactez-Nous
+          {t.contactHome.title}
         </h2>
-        <div className="w-12 h-[1px] bg-primary/40 mx-auto" />
+        <p className="text-xs sm:text-sm text-muted-foreground font-light max-w-md mx-auto">
+          {t.contactHome.subtitle}
+        </p>
+        <div className="w-12 h-[1px] bg-primary/40 mx-auto mt-3" />
       </div>
 
       {/* Form Container */}
@@ -58,10 +63,10 @@ const HomeContactForm = () => {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h3 className="font-serif text-2xl text-foreground font-medium">
-              Message Transmis avec Succès !
+              {t.contactHome.successTitle}
             </h3>
             <p className="text-sm font-light text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Merci {formData.name}, nous avons bien reçu votre message. Notre équipe d'experts vous répondra dans les plus brefs délais.
+              {t.contactHome.successDesc}
             </p>
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button
@@ -73,14 +78,14 @@ const HomeContactForm = () => {
                 variant="outline"
                 className="rounded-full text-xs uppercase tracking-wider px-6 border-primary/30 hover:bg-primary/5"
               >
-                Envoyer un autre message
+                {t.contactHome.sendAnother}
               </Button>
               <Button
                 type="button"
                 onClick={handleWhatsappSend}
                 className="rounded-full text-xs uppercase tracking-wider px-6 bg-[#25D366] hover:bg-[#20bd5a] text-white gap-2"
               >
-                <MessageSquare className="w-4 h-4" /> Continuer sur WhatsApp
+                <MessageSquare className="w-4 h-4" /> {t.contactHome.continueWhatsApp}
               </Button>
             </div>
           </div>
@@ -90,14 +95,14 @@ const HomeContactForm = () => {
               {/* Name input */}
               <div>
                 <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80 mb-2">
-                  Nom & Prénom <span className="text-primary">*</span>
+                  {t.contactHome.nameLabel}
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ex: Mohamed Alami"
+                  placeholder={t.contactHome.namePlaceholder}
                   className="w-full bg-background border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors"
                 />
               </div>
@@ -105,14 +110,14 @@ const HomeContactForm = () => {
               {/* Contact (Phone/Email) input */}
               <div>
                 <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80 mb-2">
-                  Téléphone ou Email <span className="text-primary">*</span>
+                  {t.contactHome.contactLabel}
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.contact}
                   onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                  placeholder="Ex: 06 12 34 56 78"
+                  placeholder={t.contactHome.contactPlaceholder}
                   className="w-full bg-background border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors"
                 />
               </div>
@@ -121,31 +126,30 @@ const HomeContactForm = () => {
             {/* Subject Select */}
             <div>
               <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80 mb-2">
-                Sujet de votre demande
+                {t.contactHome.subjectLabel}
               </label>
               <select
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 className="w-full bg-background border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground outline-none transition-colors cursor-pointer"
               >
-                <option value="Conseil Parfumerie">Conseil & Choix de Parfum</option>
-                <option value="Suivi de Commande">Suivi de ma Commande</option>
-                <option value="Information Produit">Question sur la Décantation</option>
-                <option value="Autre">Autre Demande</option>
+                <option value="Conseil Parfumerie">{t.contactHome.subjectAdvice}</option>
+                <option value="Suivi de Commande">{t.contactHome.subjectOrder}</option>
+                <option value="Demande Spécifique">{t.contactHome.subjectSpecial}</option>
               </select>
             </div>
 
             {/* Message Textarea */}
             <div>
               <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80 mb-2">
-                Votre Message <span className="text-primary">*</span>
+                {t.contactHome.messageLabel}
               </label>
               <textarea
                 required
                 rows={4}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Posez votre question ou décrivez votre besoin..."
+                placeholder={t.contactHome.messagePlaceholder}
                 className="w-full bg-background border border-border/80 focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors resize-none"
               />
             </div>
@@ -158,10 +162,10 @@ const HomeContactForm = () => {
                 className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary-hover uppercase tracking-[0.2em] text-xs h-12 px-8 shadow-md hover:scale-105 transition-all gap-2 font-medium"
               >
                 {loading ? (
-                  "Envoi en cours..."
+                  t.contactHome.sending
                 ) : (
                   <>
-                    Envoyer le Message <Send className="w-4 h-4" />
+                    {t.contactHome.sendBtn} <Send className="w-4 h-4" />
                   </>
                 )}
               </Button>
@@ -169,9 +173,9 @@ const HomeContactForm = () => {
               <button
                 type="button"
                 onClick={handleWhatsappSend}
-                className="inline-flex items-center gap-2 text-xs font-medium text-[#25D366] hover:underline"
+                className="inline-flex items-center gap-2 text-xs font-medium text-[#25D366] hover:underline cursor-pointer"
               >
-                <MessageSquare className="w-4 h-4" /> Préférer contacter directement sur WhatsApp
+                <MessageSquare className="w-4 h-4" /> {t.contactHome.continueWhatsApp}
               </button>
             </div>
           </form>

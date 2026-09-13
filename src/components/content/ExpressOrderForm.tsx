@@ -47,6 +47,7 @@ import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappSe
 import { useParfums } from "@/hooks/useParfums";
 import { getPrimaryImage } from "@/lib/productImages";
 import type { Parfum } from "@/types/database";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface OrderSelectionItem {
   size: string;
@@ -93,6 +94,7 @@ const ExpressOrderForm = ({
   onAddToCart,
   outOfStock = false,
 }: ExpressOrderFormProps) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { settings } = useAppSettings();
   const { data: parfums = [] } = useParfums();
@@ -583,7 +585,7 @@ const ExpressOrderForm = ({
 
             <div className="text-right shrink-0">
               <span className="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block">
-                Total Commande
+                {t.expressOrder.summary}
               </span>
               <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
                 {formatMAD(cumulativeTotalPrice)}
@@ -595,7 +597,7 @@ const ExpressOrderForm = ({
           {extraItems.length > 0 && (
             <div className="border-t border-primary/20 pt-2 space-y-1.5">
               <span className="text-[9px] uppercase tracking-wider font-semibold text-primary block">
-                Autres parfums inclus dans cette commande :
+                {t.expressOrder.extraTitle}
               </span>
               <div className="space-y-1 max-h-32 overflow-y-auto pr-1">
                 {extraItems.map((item) => (
@@ -667,7 +669,7 @@ const ExpressOrderForm = ({
               className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
             >
               <PlusCircle className="w-3.5 h-3.5" />
-              <span>+ Ajouter un autre parfum à cette commande</span>
+              <span>{t.expressOrder.addExtra}</span>
             </button>
           </div>
         </div>
@@ -675,12 +677,12 @@ const ExpressOrderForm = ({
         {/* Header Livraison */}
         <div className="flex items-center justify-between border-b border-border/50 pb-2 flex-wrap gap-1">
           <h3 className="font-serif text-xs sm:text-sm font-semibold text-foreground tracking-wide">
-            Informations de Livraison
+            {t.expressOrder.deliveryInfo}
           </h3>
 
           <span className="text-[8.5px] sm:text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
             <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
-            <span>Paiement sécurisé par internet</span>
+            <span>{t.common.securePayment}</span>
           </span>
         </div>
 
@@ -693,13 +695,13 @@ const ExpressOrderForm = ({
               className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
             >
               <User className="w-3 h-3 text-primary shrink-0" />
-              <span>Prénom et Nom *</span>
+              <span>{t.expressOrder.fullName}</span>
             </Label>
             <Input
               id="fullName"
               type="text"
               required
-              placeholder="Ex: Mohamed Alami"
+              placeholder={t.expressOrder.fullNamePlaceholder}
               value={fullName}
               onFocus={() => setFocusedField("fullName")}
               onBlur={() => setFocusedField(null)}
@@ -718,16 +720,16 @@ const ExpressOrderForm = ({
             >
               <span className="flex items-center gap-1">
                 <Phone className="w-3 h-3 text-primary shrink-0" />
-                <span>Numéro de Téléphone (avec indicatif pays) *</span>
+                <span>{t.expressOrder.phone}</span>
               </span>
-              <span className="text-[8.5px] text-primary font-mono font-medium">Ex: 2126... / 336...</span>
+              <span className="text-[8.5px] text-primary font-mono font-medium">{t.expressOrder.phoneHelper}</span>
             </Label>
             <div className="relative">
               <Input
                 id="phone"
                 type="tel"
                 required
-                placeholder="Ex: 212685510301 (ou 33612345678)"
+                placeholder={t.expressOrder.phonePlaceholder}
                 value={phone}
                 onFocus={() => setFocusedField("phone")}
                 onBlur={() => setFocusedField(null)}
@@ -749,7 +751,7 @@ const ExpressOrderForm = ({
                   className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
                 >
                   <Globe className="w-3 h-3 text-primary shrink-0" />
-                  <span>Pays (Maroc & Europe) *</span>
+                  <span>{t.expressOrder.country}</span>
                 </Label>
               </div>
 
@@ -758,7 +760,7 @@ const ExpressOrderForm = ({
                   id="country"
                   type="text"
                   required
-                  placeholder="Rechercher pays (Maroc, France...)"
+                  placeholder={t.expressOrder.countryPlaceholder}
                   value={countryQuery}
                   onFocus={() => {
                     setFocusedField("country");
@@ -844,7 +846,7 @@ const ExpressOrderForm = ({
                   className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
                 >
                   <Building2 className="w-3 h-3 text-primary shrink-0" />
-                  <span>Ville de Destination *</span>
+                  <span>{t.expressOrder.city}</span>
                 </Label>
               </div>
 
@@ -853,7 +855,7 @@ const ExpressOrderForm = ({
                   id="city"
                   type="text"
                   required
-                  placeholder="Ex: Casablanca, Paris, Bruxelles..."
+                  placeholder={t.expressOrder.cityPlaceholder}
                   value={cityQuery}
                   onFocus={() => {
                     setFocusedField("city");
@@ -929,13 +931,13 @@ const ExpressOrderForm = ({
               className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
             >
               <MapPin className="w-3 h-3 text-primary shrink-0" />
-              <span>Adresse de Livraison Précise *</span>
+              <span>{t.expressOrder.address}</span>
             </Label>
             <Input
               id="address"
               type="text"
               required
-              placeholder="Quartier, Rue, N° Immeuble / Résidence..."
+              placeholder={t.expressOrder.addressPlaceholder}
               value={address}
               onFocus={() => setFocusedField("address")}
               onBlur={() => setFocusedField(null)}
@@ -956,7 +958,7 @@ const ExpressOrderForm = ({
               className="w-full h-10 sm:h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:shadow-lg hover:shadow-primary/25 border border-primary/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer select-none"
             >
               <ShoppingBag className="w-4 h-4 stroke-[2]" />
-              <span>Ajouter au Panier</span>
+              <span>{t.product.addToBag}</span>
             </Button>
           )}
 
@@ -969,19 +971,19 @@ const ExpressOrderForm = ({
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Validation de votre commande…</span>
+                <span>{t.expressOrder.submittingBtn}</span>
               </>
             ) : (
               <>
                 <ShieldCheck className="w-4 h-4 stroke-[2.2]" />
-                <span>Commander Directement ({formatMAD(cumulativeTotalPrice)})</span>
+                <span>{t.expressOrder.submitBtn} ({formatMAD(cumulativeTotalPrice)})</span>
               </>
             )}
           </Button>
 
           <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
             <ShieldCheck className="w-3 h-3 text-primary shrink-0" />
-            <span>Paiement sécurisé par internet • Vente définitive sans retour</span>
+            <span>{t.common.securePayment} • {t.common.noReturnPolicy}</span>
           </div>
         </div>
       </form>

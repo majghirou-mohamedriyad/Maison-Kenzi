@@ -14,15 +14,9 @@ import {
   EyeOff,
   Save,
   Loader2,
-  Languages,
-  Sparkles,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { supabase } from "@/lib/supabase";
-import { checkDeeplUsage, DeepLUsageResult } from "@/services/deeplService";
 
 const inputCls =
   "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] placeholder-[#A8A196] dark:placeholder-[#5E5851] transition-colors";
@@ -87,13 +81,6 @@ const Parametres = () => {
   const [waPhone, setWaPhone] = useState(settings.whatsapp_phone || "212652535301");
   const [savingMaint, setSavingMaint] = useState(false);
 
-  // DeepL API State
-  const [deeplKey, setDeeplKey] = useState(settings.deepl_api_key || "");
-  const [showDeeplKey, setShowDeeplKey] = useState(false);
-  const [savingDeepl, setSavingDeepl] = useState(false);
-  const [testingDeepl, setTestingDeepl] = useState(false);
-  const [deeplQuota, setDeeplQuota] = useState<DeepLUsageResult | null>(null);
-
   useEffect(() => {
     setStoreName(settings.store_name || "Maison Kenzi");
     setStorePhone(settings.whatsapp_phone || "212652535301");
@@ -103,8 +90,6 @@ const Parametres = () => {
     setMaintMessage(settings.maintenance_message);
     setIgUrl(settings.instagram_url);
     setWaPhone(settings.whatsapp_phone || "212652535301");
-
-    setDeeplKey(settings.deepl_api_key || "");
   }, [settings]);
 
   useEffect(() => {
@@ -142,7 +127,7 @@ const Parametres = () => {
         setAdminPassword("");
         setAdminConfirmPassword("");
       } else {
-        toast.info("Compte administrateur vérifié (Entrez un nouveau mot de passe pour le modifier)");
+        toast.info("Compte administrateur vérifié");
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Échec de la mise à jour";
@@ -181,42 +166,6 @@ const Parametres = () => {
     setSavingMaint(false);
     if (error) toast.error("Erreur: " + error.message);
     else toast.success("Paramètres de maintenance enregistrés");
-  };
-
-  const testDeeplConnection = async () => {
-    if (!deeplKey.trim()) {
-      toast.error("Veuillez saisir votre clé API DeepL.");
-      return;
-    }
-    setTestingDeepl(true);
-    setDeeplQuota(null);
-    try {
-      const res = await checkDeeplUsage(deeplKey.trim());
-      setDeeplQuota(res);
-      if (res.ok) {
-        toast.success(`Connexion DeepL réussie ! (${res.isFreeKey ? "Clé Gratuite :fx" : "Clé Pro"})`);
-      } else {
-        toast.error(res.error || "Échec de validation de la clé DeepL.");
-      }
-    } catch (e: any) {
-      toast.error("Erreur de test DeepL: " + (e.message || String(e)));
-    } finally {
-      setTestingDeepl(false);
-    }
-  };
-
-  const saveDeeplConfig = async () => {
-    setSavingDeepl(true);
-    const { error } = await update({
-      deepl_api_key: deeplKey.trim(),
-    });
-    setSavingDeepl(false);
-    if (error) {
-      toast.error("Erreur d'enregistrement DeepL: " + error.message);
-    } else {
-      toast.success("Clé API DeepL enregistrée avec succès !");
-      testDeeplConnection();
-    }
   };
 
   return (
@@ -258,88 +207,6 @@ const Parametres = () => {
           <p className="text-[11px] text-[#7A726A] dark:text-[#A39B91] mt-1">
             Définit le montant d'achat à partir duquel la livraison devient offerte dans le panier client.
           </p>
-        </div>
-      </Card>
-
-      {/* 2. DeepL API — Traduction Automatique des Parfums */}
-      <Card
-        title="Traduction Intelligente DeepL (FR ↔ EN)"
-        subtitle="Automatisation des fiches parfums et descriptions olfactives"
-        onSave={saveDeeplConfig}
-        saving={savingDeepl}
-      >
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className={labelCls}>Clé d'authentification DeepL API</label>
-            <a
-              href="https://www.deepl.com/fr/pro-api"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] text-primary hover:underline inline-flex items-center gap-1 font-semibold"
-            >
-              <span>Obtenir ma clé gratuite</span>
-              <ExternalLink className="w-2.5 h-2.5" />
-            </a>
-          </div>
-          <div className="relative">
-            <input
-              type={showDeeplKey ? "text" : "password"}
-              className={`${inputCls} pr-20 font-mono text-xs`}
-              placeholder="Ex: 8a9b2c...:fx"
-              value={deeplKey}
-              onChange={(e) => {
-                setDeeplKey(e.target.value);
-                setDeeplQuota(null);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowDeeplKey(!showDeeplKey)}
-              tabIndex={-1}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB] transition-colors cursor-pointer"
-              title={showDeeplKey ? "Masquer la clé" : "Afficher la clé"}
-            >
-              {showDeeplKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          <p className="text-[10.5px] text-[#7A726A] dark:text-[#A39B91] mt-1.5 leading-relaxed">
-            Compatible avec le plan <strong>DeepL API Free</strong> (se terminant par <code>:fx</code>, 500k car./mois offerts) et <strong>DeepL Pro</strong>.
-          </p>
-        </div>
-
-        {/* Bouton de test et statut du quota */}
-        <div className="pt-2 border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
-          <button
-            type="button"
-            onClick={testDeeplConnection}
-            disabled={testingDeepl || !deeplKey.trim()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {testingDeepl ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="w-3.5 h-3.5" />
-            )}
-            <span>{testingDeepl ? "Vérification..." : "Tester la connexion DeepL"}</span>
-          </button>
-
-          {deeplQuota && (
-            <div className="text-xs">
-              {deeplQuota.ok ? (
-                <div className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>
-                    Connecté · Quota : {deeplQuota.character_count?.toLocaleString()} / {deeplQuota.character_limit?.toLocaleString()} car.
-                  </span>
-                </div>
-              ) : (
-                <div className="inline-flex items-center gap-1.5 text-red-600 dark:text-red-400 font-medium">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate max-w-xs">{deeplQuota.error}</span>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </Card>
 
@@ -468,4 +335,3 @@ const Parametres = () => {
 };
 
 export default Parametres;
-

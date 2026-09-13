@@ -8,6 +8,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Clock } from "lucide-react";
 import { useCategories } from "@/store/useCategoryStore";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Card = ({
   title,
@@ -16,6 +17,8 @@ const Card = ({
   tag,
   image,
   isComingSoon,
+  discoverText,
+  comingSoonText,
 }: {
   title: string;
   text: string;
@@ -23,6 +26,8 @@ const Card = ({
   tag: string;
   image?: string;
   isComingSoon?: boolean;
+  discoverText: string;
+  comingSoonText: string;
 }) => (
   <Link
     to={href}
@@ -54,7 +59,7 @@ const Card = ({
       {isComingSoon && (
         <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md bg-[#C9A96E]/20 text-[#C9A96E] border border-[#C9A96E]/40 shadow-xs">
           <Clock className="w-2.5 h-2.5" strokeWidth={2} />
-          <span>À Venir</span>
+          <span>{comingSoonText}</span>
         </span>
       )}
     </div>
@@ -71,7 +76,7 @@ const Card = ({
       )}
 
       <div className="pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-primary uppercase tracking-[0.2em] transition-all group-hover:translate-x-1">
-        <span>{isComingSoon ? "Découvrir l'univers" : "Explorer"}</span>
+        <span>{discoverText}</span>
         <ArrowRight size={13} strokeWidth={1.5} />
       </div>
     </div>
@@ -79,6 +84,7 @@ const Card = ({
 );
 
 const FiftyFiftySection = () => {
+  const { t } = useLanguage();
   const categories = useCategories();
   const activeCategories = categories.filter((c) => c.is_active);
 
@@ -92,11 +98,14 @@ const FiftyFiftySection = () => {
       <div className="text-center mb-8 sm:mb-14">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-medium tracking-[0.25em] uppercase mb-3 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-primary" strokeWidth={1.5} />
-          <span>Haute Parfumerie</span>
+          <span>{t.univers.tag}</span>
         </div>
         <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-light tracking-tight">
-          Nos Univers Olfactifs
+          {t.univers.title}
         </h2>
+        <p className="text-xs sm:text-sm text-muted-foreground font-light max-w-xl mx-auto mt-2">
+          {t.univers.subtitle}
+        </p>
         <div className="w-12 h-0.5 bg-primary/40 mx-auto mt-3 rounded-full" />
       </div>
 
@@ -110,6 +119,8 @@ const FiftyFiftySection = () => {
             tag={cat.name}
             image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : undefined)}
             isComingSoon={cat.is_coming_soon}
+            discoverText={cat.is_coming_soon ? t.univers.discover : t.common.explore}
+            comingSoonText={t.univers.comingSoon}
           />
         ))}
       </div>

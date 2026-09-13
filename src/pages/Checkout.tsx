@@ -41,8 +41,10 @@ import { dispatchOrderCreatedWhatsAppNotifications } from "@/services/whatsappSe
 import { useRef, useEffect, useMemo } from "react";
 import { useCountries } from "@/hooks/useCountries";
 import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/destinations";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Checkout = () => {
+  const { t } = useLanguage();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
   const navigate = useNavigate();

@@ -1,7 +1,12 @@
+/**
+ * Assistant Virtuel & Conciergerie ChatBot — Maison Kenzi
+ * Support bilingue FR / EN avec assistance directe WhatsApp et FAQ instantanée.
+ */
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Sparkles, Instagram } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useLanguage } from "@/context/LanguageContext";
 
 type QA = { id: string; question: string; answer: string };
 type Msg = { id: string; from: "bot" | "user"; text: string };
@@ -19,7 +24,7 @@ const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
   </svg>
 );
 
-const DEFAULT_QAS: QA[] = [
+const DEFAULT_QAS_FR: QA[] = [
   {
     id: "qa-1",
     question: "Quels sont vos délais d'expédition et de livraison ?",
@@ -52,19 +57,61 @@ const DEFAULT_QAS: QA[] = [
   },
 ];
 
+const DEFAULT_QAS_EN: QA[] = [
+  {
+    id: "qa-1",
+    question: "What are your shipping and delivery lead times?",
+    answer: "We deliver across Morocco (24-48h) and throughout Europe (3-5 business days). Shipping is secure and every parcel receives a direct live tracking number.",
+  },
+  {
+    id: "qa-2",
+    question: "Are your perfumes 100% genuine and sealed?",
+    answer: "100% Authenticity Guarantee. All our bottles and essences are sourced directly from authorized channels of the finest haute parfumerie houses.",
+  },
+  {
+    id: "qa-3",
+    question: "How do I choose the ideal bottle size?",
+    answer: "• 5ml (~75 sprays): Ideal to explore and test on your skin.\n• 10ml (~150 sprays): Travel format for 3 to 4 weeks.\n• Full Bottle: For your daily signature sillage.",
+  },
+  {
+    id: "qa-4",
+    question: "What payment methods are supported?",
+    answer: "Payment is processed 100% securely online via encrypted SSL card checkout upon placing your order.",
+  },
+  {
+    id: "qa-5",
+    question: "What is your return and exchange policy?",
+    answer: "To preserve hygiene, pure essence preservation, and the inviolable seal of every fragrance, all sales are final once dispatched.",
+  },
+  {
+    id: "qa-6",
+    question: "Do you offer discovery sets and bundles?",
+    answer: "Yes, explore our curated selection of Discovery Sets in the Collection section for exclusive olfactory harmonies.",
+  },
+];
+
 const ChatBot = () => {
   const { settings } = useAppSettings();
+  const { language } = useLanguage();
+  const isEn = language === "en";
+
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [qas, setQas] = useState<QA[]>(DEFAULT_QAS);
+  const [qas, setQas] = useState<QA[]>(isEn ? DEFAULT_QAS_EN : DEFAULT_QAS_FR);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
-  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.")}`;
+  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+    isEn ? "Hello Maison Kenzi, I would like information about your fragrances." : "Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums."
+  )}`;
   const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
+
+  useEffect(() => {
+    setQas(isEn ? DEFAULT_QAS_EN : DEFAULT_QAS_FR);
+  }, [isEn]);
 
   useEffect(() => {
     if (!settings.bot_enabled) return;
@@ -80,9 +127,12 @@ const ChatBot = () => {
 
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ id: uid(), from: "bot", text: settings.bot_welcome }]);
+      const welcomeMsg = isEn
+        ? "Hello, welcome to Maison Kenzi! How may I assist you in discovering our fragrances?"
+        : (settings.bot_welcome || "Bonjour, bienvenue chez Maison Kenzi ! Comment puis-je vous aider aujourd'hui ?");
+      setMessages([{ id: uid(), from: "bot", text: welcomeMsg }]);
     }
-  }, [open, settings.bot_welcome, messages.length]);
+  }, [open, settings.bot_welcome, messages.length, isEn]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -115,12 +165,14 @@ const ChatBot = () => {
             }
           }}
           className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-black/90 hover:bg-black text-white border border-primary/40 shadow-2xl backdrop-blur-xl transition-all duration-300 active:scale-95 cursor-pointer hover:border-primary"
-          aria-label="Besoin d'aide"
+          aria-label={isEn ? "Need assistance" : "Besoin d'aide"}
         >
           {open || menuOpen ? (
             <>
               <X className="w-4 h-4 text-primary" />
-              <span className="text-xs font-semibold tracking-wider uppercase">Fermer</span>
+              <span className="text-xs font-semibold tracking-wider uppercase">
+                {isEn ? "Close" : "Fermer"}
+              </span>
             </>
           ) : (
             <>
@@ -128,7 +180,9 @@ const ChatBot = () => {
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400" />
               </div>
-              <span className="text-xs font-semibold tracking-wider uppercase">Besoin d'Aide ?</span>
+              <span className="text-xs font-semibold tracking-wider uppercase">
+                {isEn ? "Need Help?" : "Besoin d'Aide ?"}
+              </span>
             </>
           )}
         </button>
@@ -145,7 +199,9 @@ const ChatBot = () => {
             <div className="flex items-center justify-between px-1 pb-1 border-b border-border/60">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold uppercase tracking-wider text-foreground">Assistance Maison Kenzi</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  {isEn ? "Maison Kenzi Assistance" : "Assistance Maison Kenzi"}
+                </span>
               </div>
               <button
                 onClick={() => setMenuOpen(false)}
@@ -168,10 +224,10 @@ const ChatBot = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-foreground group-hover:text-[#25D366] transition-colors">
-                  WhatsApp Direct
+                  {isEn ? "WhatsApp Direct" : "WhatsApp Direct"}
                 </div>
                 <div className="text-[11px] text-muted-foreground truncate">
-                  Réponse rapide par message
+                  {isEn ? "Instant fast assistance" : "Réponse rapide par message"}
                 </div>
               </div>
             </a>
@@ -191,10 +247,10 @@ const ChatBot = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-                    Assistant Virtuel IA
+                    {isEn ? "AI Virtual Assistant" : "Assistant Virtuel IA"}
                   </div>
                   <div className="text-[11px] text-muted-foreground truncate">
-                    Conseils parfums & FAQ instantanés
+                    {isEn ? "Perfume advice & instant FAQ" : "Conseils parfums & FAQ instantanés"}
                   </div>
                 </div>
               </button>
@@ -214,7 +270,7 @@ const ChatBot = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-                    Instagram Officiel
+                    {isEn ? "Official Instagram" : "Instagram Officiel"}
                   </div>
                   <div className="text-[11px] text-muted-foreground truncate">
                     @maisonkenzi
@@ -239,14 +295,16 @@ const ChatBot = () => {
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-background" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-bold truncate">{settings.bot_name}</div>
-              <div className="text-[10px] text-muted-foreground">En ligne · Support Maison Kenzi</div>
+              <div className="text-xs font-bold truncate">{settings.bot_name || "Maison Kenzi Bot"}</div>
+              <div className="text-[10px] text-muted-foreground">
+                {isEn ? "Online · Maison Kenzi Concierge" : "En ligne · Support Maison Kenzi"}
+              </div>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
               className="p-1.5 rounded-full hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              aria-label="Fermer"
+              aria-label={isEn ? "Close" : "Fermer"}
             >
               <X className="w-4 h-4" />
             </button>
@@ -287,12 +345,12 @@ const ChatBot = () => {
           {/* Quick questions */}
           <div className="border-t border-border bg-card px-3 py-3 space-y-2">
             <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">
-              Questions fréquentes
+              {isEn ? "Frequently Asked Questions" : "Questions fréquentes"}
             </div>
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto no-scrollbar">
               {qas.length === 0 && (
                 <div className="text-xs text-muted-foreground px-1">
-                  Aucune question configurée.
+                  {isEn ? "No questions configured." : "Aucune question configurée."}
                 </div>
               )}
               {qas.map((qa) => (
@@ -311,7 +369,7 @@ const ChatBot = () => {
               onClick={contactWhatsapp}
               className="w-full mt-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
             >
-              <WhatsAppIcon className="w-4 h-4" /> Discuter sur WhatsApp
+              <WhatsAppIcon className="w-4 h-4" /> {isEn ? "Chat on WhatsApp" : "Discuter sur WhatsApp"}
             </button>
           </div>
         </div>

@@ -453,11 +453,11 @@ const ParfumDetail = () => {
               <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground text-center">
                 <div className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-card/40 border border-border/60">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>100% Authentique</span>
+                  <span>{t.product.authenticity}</span>
                 </div>
                 <div className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-card/40 border border-border/60">
                   <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>Livraison 24–48h</span>
+                  <span>{t.common.freeShipping}</span>
                 </div>
               </div>
 
@@ -466,7 +466,7 @@ const ParfumDetail = () => {
                 {/* Saisons d'utilisation */}
                 <div className="space-y-1.5">
                   <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" /> Saisons d'utilisation
+                    <Calendar className="w-3.5 h-3.5" /> Saisons
                   </span>
                   <div className="flex flex-wrap gap-1.5 pt-0.5">
                     {getParfumSeasons(parfum).map((season) => {
@@ -489,7 +489,7 @@ const ParfumDetail = () => {
                 {translatedNotes && (
                   <div className="space-y-1.5 pt-1 border-t border-border/50">
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                      <Sparkle className="w-3.5 h-3.5" /> {t("product.olfactoryPyramid", "Pyramide Olfactive")}
+                      <Sparkle className="w-3.5 h-3.5" /> {t.product.notes}
                     </span>
                     <p className="text-muted-foreground leading-relaxed text-[11px]">
                       {translatedNotes}
@@ -501,7 +501,7 @@ const ParfumDetail = () => {
                 {translatedDescription && (
                   <div className="space-y-1 pt-1 border-t border-border/50">
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
-                      {t("product.descriptionAndSillage", "Description & Sillage")}
+                      {t.product.description}
                     </span>
                     <p className="text-muted-foreground leading-relaxed text-[11px]">
                       {translatedDescription}
@@ -563,10 +563,7 @@ const ParfumDetail = () => {
               <div className="space-y-2 pt-1">
                 <div className="flex justify-between items-center flex-wrap gap-1">
                   <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
-                    <Droplets className="w-3.5 h-3.5 text-primary shrink-0" /> Choix des Formats & Quantités
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-muted-foreground font-medium">
-                    Sélectionnez la quantité souhaitée
+                    <Droplets className="w-3.5 h-3.5 text-primary shrink-0" /> {t.product.sizeSelect}
                   </span>
                 </div>
 

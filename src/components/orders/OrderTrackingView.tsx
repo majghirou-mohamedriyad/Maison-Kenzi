@@ -1,11 +1,3 @@
-/**
- * Composant d'Affichage du Suivi de Commande — Maison Kenzi
- *
- * Expérience Haute Parfumerie permettant au client de suivre en direct l'état
- * d'avancement de son colis (En attente, Confirmée/Préparation, Livrée, Annulée).
- * Respecte le Luxury Nude Design System, zéro emoji et typographie d'exception.
- */
-
 import { useState } from "react";
 import { useOrderTracking } from "@/hooks/useOrderTracking";
 import { formatMAD } from "@/lib/sizes";
@@ -28,6 +20,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import type { OrderStatus } from "@/types/database";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface OrderTrackingViewProps {
   initialCode?: string;
@@ -90,6 +83,7 @@ const getStepProgressIndex = (status: OrderStatus) => {
 };
 
 export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: OrderTrackingViewProps) => {
+  const { t } = useLanguage();
   const { settings } = useAppSettings();
   const {
     orderNumberInput,
@@ -100,6 +94,30 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
     searched,
     fetchOrder,
   } = useOrderTracking(initialCode);
+
+  const STATUS_STEPS = [
+    {
+      key: "en_attente" as OrderStatus,
+      stepNumber: "01",
+      label: t.tracking.step1Title,
+      sublabel: t.tracking.step1Sub,
+      icon: Clock,
+    },
+    {
+      key: "confirmee" as OrderStatus,
+      stepNumber: "02",
+      label: t.tracking.step2Title,
+      sublabel: t.tracking.step2Sub,
+      icon: Package,
+    },
+    {
+      key: "livree" as OrderStatus,
+      stepNumber: "03",
+      label: t.tracking.step3Title,
+      sublabel: t.tracking.step3Sub,
+      icon: Truck,
+    },
+  ];
 
   const [inputVal, setInputVal] = useState(initialCode || "");
 
@@ -128,7 +146,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
       <div className="bg-card/70 border border-primary/20 rounded-2xl p-4 sm:p-6 backdrop-blur-md shadow-xs space-y-3">
         <form onSubmit={handleSearchSubmit} className="space-y-3">
           <label className="block text-xs uppercase tracking-[0.2em] font-semibold text-primary">
-            Saisissez votre code de commande
+            {t.tracking.inputLabel}
           </label>
 
           <div className="flex flex-col sm:flex-row gap-2.5">
@@ -138,7 +156,7 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value.toUpperCase())}
-                placeholder="Ex : MK-849201"
+                placeholder={t.tracking.placeholder}
                 className="pl-10 h-11 text-xs sm:text-sm font-mono uppercase rounded-xl bg-background/90 border-border/80 focus:border-primary tracking-wider"
               />
             </div>
@@ -151,11 +169,11 @@ export const OrderTrackingView = ({ initialCode, onClose, isModal = false }: Ord
               {loading ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Recherche...</span>
+                  <span>{t.tracking.searching}</span>
                 </>
               ) : (
                 <>
-                  <span>Suivre</span>
+                  <span>{t.tracking.searchBtn}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}

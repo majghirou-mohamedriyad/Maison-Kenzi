@@ -12,8 +12,10 @@ import { formatMAD, getParfumPricingSummary } from "@/lib/sizes";
 import { Sparkles, Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ProductCarousel = () => {
+  const { t } = useLanguage();
   const { data: allParfums, loading } = useParfums();
   const featured = allParfums.filter((p) => p.is_bestseller).slice(0, 4);
   const displayItems = featured.length > 0 ? featured : allParfums.slice(0, 4);
@@ -25,20 +27,20 @@ const ProductCarousel = () => {
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/80 border border-border text-xs uppercase tracking-widest text-muted-foreground mb-3 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Sélection Exclusive</span>
+            <span>{t.bestsellers.badge}</span>
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-foreground font-normal">
-            Nos Meilleures Ventes
+            {t.bestsellers.title}
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground font-light mt-1 max-w-xl">
-            Les créations olfactives les plus plébiscitées par nos connaisseurs, en flacons complets 100% originaux et scellés.
+            {t.bestsellers.subtitle}
           </p>
         </div>
         <Link
           to="/collection/all"
           className="hidden sm:inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-foreground hover:text-primary transition-colors py-2 border-b border-foreground/30 hover:border-primary"
         >
-          Tout le catalogue
+          {t.bestsellers.viewAll}
         </Link>
       </div>
 

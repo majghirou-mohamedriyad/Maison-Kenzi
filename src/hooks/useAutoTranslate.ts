@@ -1,66 +1,51 @@
 /**
- * Hook de Traduction Automatique Transparente DeepL — Maison Kenzi
+ * Hook de Traduction Bilingue Instantané — Maison Kenzi
  *
- * Traduit automatiquement et silencieusement les textes dynamiques
- * (descriptions de parfums, notes olfactives, accords) lorsque l'utilisateur est en mode Anglais ('en').
- * Met en cache immédiatement dans localStorage/sessionStorage pour une vitesse instantanée.
+ * Fonctionne de façon 100% autonome et immédiate sans appel réseau ni dépendance externe.
  */
 
-import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { translateWithDeepl } from "@/services/deeplService";
+
+/**
+ * Traduction immédiate des termes et textes récurrents
+ */
+const COMMON_DICTIONARY: Record<string, string> = {
+  "Flacon Complet Scellé": "Full Sealed Bottle",
+  "Flacon d'origine": "Original Flacon",
+  "Format Découverte 5 ml": "5 ml Discovery Sample",
+  "Format Voyage 10 ml": "10 ml Travel Spray",
+  "Rupture de Stock": "Out of Stock",
+  "En stock": "In Stock",
+  "Homme": "Men",
+  "Femme": "Women",
+  "Mixte": "Unisex",
+  "Unisexe": "Unisex",
+  "Printemps": "Spring",
+  "Été": "Summer",
+  "Automne": "Autumn",
+  "Hiver": "Winter",
+  "Toutes saisons": "All Seasons",
+  "Frais": "Fresh",
+  "Boisé": "Woody",
+  "Oriental": "Oriental",
+  "Gourmand": "Gourmand",
+  "Floral": "Floral",
+  "Épicé": "Spicy",
+  "Ambré": "Ambery",
+  "Cuiré": "Leathery",
+  "Agrumes": "Citrus",
+};
 
 export const useAutoTranslate = (frenchText: string | undefined | null): string => {
   const { language } = useLanguage();
-  const [translated, setTranslated] = useState<string>(frenchText || "");
 
-  useEffect(() => {
-    if (!frenchText || !frenchText.trim()) {
-      setTranslated("");
-      return;
-    }
+  if (!frenchText) return "";
+  if (language === "fr") return frenchText;
 
-    // Si on est en Français, afficher immédiatement le texte original
-    if (language === "fr") {
-      setTranslated(frenchText);
-      return;
-    }
+  // Si une traduction standard existe dans le dictionnaire
+  if (COMMON_DICTIONARY[frenchText]) {
+    return COMMON_DICTIONARY[frenchText];
+  }
 
-    // Si on est en Anglais ('en'), traduire automatiquement et silencieusement via DeepL
-    let isMounted = true;
-    const cacheKey = `mk_deepl_cache_en_${frenchText.trim().toLowerCase().slice(0, 80)}_${frenchText.length}`;
-
-    // Vérifier le cache local pour affichage instantané à 0ms
-    try {
-      const cached = sessionStorage.getItem(cacheKey) || localStorage.getItem(cacheKey);
-      if (cached) {
-        setTranslated(cached);
-        return;
-      }
-    } catch { }
-
-    // Traduction en arrière-plan sans bloquer l'UI
-    translateWithDeepl(frenchText, "EN")
-      .then((res) => {
-        if (isMounted && res.success && res.translatedText) {
-          setTranslated(res.translatedText);
-          try {
-            localStorage.setItem(cacheKey, res.translatedText);
-          } catch { }
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setTranslated(frenchText);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [frenchText, language]);
-
-  return translated;
+  return frenchText;
 };
-
-export default useAutoTranslate;

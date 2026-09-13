@@ -15,52 +15,54 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
-const SLIDES = [
-  {
-    id: 1,
-    tag: "MAISON KENZI · HAUTE PARFUMERIE",
-    titlePrefix: "L'Essence du ",
-    titleHighlight: "Prestige",
-    subtitle: "Parfums de niche d'exception et flacons complets scellés sélectionnés pour les connaisseurs au Maroc et en Europe.",
-    btnText: "Découvrir les Collections",
-    btnLink: "/collection/all",
-    bgImage: "/mk-banner.png",
-  },
-  {
-    id: 2,
-    tag: "SAVOIR-FAIRE & TRADITION · FAIT MAIN",
-    titlePrefix: "L'Excellence de ",
-    titleHighlight: "L'Artisanat",
-    subtitle: "Créations artisanales d'exception, pièces uniques façonnées avec passion selon les traditions nobles marocaines.",
-    btnText: "Découvrir l'Artisanat",
-    btnLink: "/collection/produits-artisanaux",
-    bgImage: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=2000&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    tag: "OBJETS DE COLLECTION · PATRIMOINE & HISTOIRE",
-    titlePrefix: "Le Charme des ",
-    titleHighlight: "Antiquités",
-    subtitle: "Pièces rares, objets précieux d'époque et trésors intemporels chargés d'histoire et d'élégance.",
-    btnText: "Explorer les Antiques",
-    btnLink: "/collection/antiques",
-    bgImage: "https://images.unsplash.com/photo-1544457070-4cd773b4d71e?q=80&w=2000&auto=format&fit=crop",
-  },
-  {
-    id: 4,
-    tag: "FLACONS COMPLETS & SILLAGES NOBLES",
-    titlePrefix: "L'Art du ",
-    titleHighlight: "Sillage",
-    subtitle: "Explorez les plus grands chefs-d'œuvre olfactifs en flacons d'origine 100% scellés et authentiques.",
-    btnText: "Explorer les Parfums",
-    btnLink: "/collection/parfums",
-    bgImage: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=2000&auto=format&fit=crop",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const LargeHero = () => {
+  const { t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const SLIDES = [
+    {
+      id: 1,
+      tag: t.hero.slide1Tag,
+      titlePrefix: t.hero.slide1Prefix,
+      titleHighlight: t.hero.slide1Highlight,
+      subtitle: t.hero.slide1Sub,
+      btnText: t.hero.slide1Btn,
+      btnLink: "/collection/all",
+      bgImage: "/mk-banner.png",
+    },
+    {
+      id: 2,
+      tag: t.hero.slide2Tag,
+      titlePrefix: t.hero.slide2Prefix,
+      titleHighlight: t.hero.slide2Highlight,
+      subtitle: t.hero.slide2Sub,
+      btnText: t.hero.slide2Btn,
+      btnLink: "/collection/produits-artisanaux",
+      bgImage: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=2000&auto=format&fit=crop",
+    },
+    {
+      id: 3,
+      tag: t.hero.slide3Tag,
+      titlePrefix: t.hero.slide3Prefix,
+      titleHighlight: t.hero.slide3Highlight,
+      subtitle: t.hero.slide3Sub,
+      btnText: t.hero.slide3Btn,
+      btnLink: "/collection/antiques",
+      bgImage: "https://images.unsplash.com/photo-1544457070-4cd773b4d71e?q=80&w=2000&auto=format&fit=crop",
+    },
+    {
+      id: 4,
+      tag: t.hero.slide4Tag,
+      titlePrefix: t.hero.slide4Prefix,
+      titleHighlight: t.hero.slide4Highlight,
+      subtitle: t.hero.slide4Sub,
+      btnText: t.hero.slide4Btn,
+      btnLink: "/collection/parfums",
+      bgImage: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=2000&auto=format&fit=crop",
+    },
+  ];
 
   // Rotation automatique toutes les 7 secondes
   useEffect(() => {
@@ -68,7 +70,7 @@ const LargeHero = () => {
       setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, []);
+  }, [SLIDES.length]);
 
   const slide = SLIDES[currentSlide];
 
