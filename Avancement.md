@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Épuration de la Vue & Filtres Produits Cosmétiques (Suppression Catégorie/Genres/Saisons, Conservation Recherche/Statut/Tri Exclusifs) — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Correction de Syntaxe JSX (`ProductTable.tsx`) & Épuration Cosmétiques — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Correction de Syntaxe JSX dans le Tableau des Produits ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
+  - [x] **Rétablissement de la Balise `</h3>`** : Fermeture correcte du titre du produit dans la vue grille de cartes pour éliminer l'erreur Vite SWC (`Expected '</', got 'jsx text'`).
+  - [x] **Élimination de la Balise `</td>` Résiduelle** : Suppression du tag fermant dupliqué dans la colonne conditionnelle des catégories.
 
 - [x] Épuration du Tableau & de la Barre de Filtres des Produits Cosmétiques ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
   - [x] **Suppression des Filtres Inutiles sur les Cosmétiques** :

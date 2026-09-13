@@ -147,7 +147,9 @@ const ProductTable = ({
                   </p>
                   <h3 className="font-serif text-sm font-bold text-foreground truncate mt-0.5" title={p.name}>
                     {p.name}
-                                    {/* Badges Genre & Saisons d'utilisation (uniquement pour les parfums) */}
+                  </h3>
+
+                  {/* Badges Genre & Saisons d'utilisation (uniquement pour les parfums) */}
                   {!isCosmetics && (
                     <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-2">
                       {p.gender && (
@@ -468,7 +470,7 @@ const ProductTable = ({
                             )}
                           </div>
                         </td>
-                      )}                  </td>
+                      )}
                       <td className="px-4 py-3.5 text-right font-medium text-foreground">
                         {isFull ? (
                           <span className="font-bold tracking-tight text-primary text-sm">{fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)}</span>
