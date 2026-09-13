@@ -37,6 +37,10 @@ import {
   GripVertical,
   Sparkles,
   Languages,
+  Flower2,
+  Palette,
+  Landmark,
+  Package,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
@@ -46,6 +50,7 @@ type Props = {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   initial?: AdminParfum | null;
+  defaultCategory?: string;
 };
 
 const SEASON_OPTIONS = ["Printemps", "Été", "Automne", "Hiver"] as const;
@@ -98,7 +103,7 @@ const inputCls =
 const inputErrorCls =
   "w-full px-3 py-2 text-xs bg-red-50/40 dark:bg-red-950/20 border border-red-500 dark:border-red-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 text-[#1A1816] dark:text-[#FAF7F2] transition-all";
 
-const ProductModal = ({ open, onOpenChange, initial }: Props) => {
+const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) => {
   const availableCategories = useCategories();
   const [f, setF] = useState(emptyForm);
   const [contentLang, setContentLang] = useState<"fr" | "en">("fr");
@@ -179,13 +184,19 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           isBestseller: !!initial.isBestseller,
         });
       } else {
-        setF(emptyForm);
+        const initCategory = defaultCategory && defaultCategory !== "Tous" ? defaultCategory : "";
+        const initCategories = initCategory ? [initCategory] : [];
+        setF({
+          ...emptyForm,
+          category: initCategory,
+          categories: initCategories,
+        });
       }
       setErrors({});
       setContentLang("fr");
       setCategorySearch("");
     }
-  }, [open, initial]);
+  }, [open, initial, defaultCategory]);
 
   const set = (key: string, val: any) => {
     setF((prev) => ({ ...prev, [key]: val }));
@@ -471,6 +482,52 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
 
+  const modalConfig = useMemo(() => {
+    if (initial) {
+      return {
+        title: "Modifier le produit",
+        subtitle: "Modifiez les caractéristiques, informations bilingues et visuels.",
+        icon: Sparkles,
+      };
+    }
+    const cat = (defaultCategory || f.category || "").toLowerCase();
+    if (cat.includes("cosmetique")) {
+      return {
+        title: "Nouveau Produit Cosmétique",
+        subtitle: "Renseignez les détails pour ajouter un nouveau soin ou cosmétique d'exception.",
+        icon: Flower2,
+      };
+    }
+    if (cat.includes("artisan") || cat.includes("artisanat") || cat.includes("artisanaux")) {
+      return {
+        title: "Nouveau Produit Artisanal",
+        subtitle: "Renseignez les détails pour ajouter une création artisanale et savoir-faire d'art.",
+        icon: Palette,
+      };
+    }
+    if (cat.includes("antique") || cat.includes("antiquite") || cat.includes("antiquités")) {
+      return {
+        title: "Nouvelle Pièce Antique",
+        subtitle: "Renseignez les détails pour ajouter une pièce antique ou objet d'époque rare.",
+        icon: Landmark,
+      };
+    }
+    if (cat.includes("parfum")) {
+      return {
+        title: "Nouveau Parfum",
+        subtitle: "Renseignez les détails pour ajouter une nouvelle création de parfum de niche.",
+        icon: Sparkles,
+      };
+    }
+    return {
+      title: "Ajouter un nouveau produit",
+      subtitle: "Renseignez les détails pour ajouter une nouvelle référence au catalogue.",
+      icon: Package,
+    };
+  }, [initial, defaultCategory, f.category]);
+
+  const ModalIcon = modalConfig.icon;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -481,16 +538,14 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           <div className="flex items-center justify-between gap-3 pr-8 sm:pr-10">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <ModalIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="min-w-0">
                 <DialogTitle className="text-xs sm:text-sm font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
-                  {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
+                  {modalConfig.title}
                 </DialogTitle>
                 <DialogDescription className="text-[10px] text-[#7A726A] dark:text-[#A39B91] truncate">
-                  {initial
-                    ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels."
-                    : "Renseignez les détails pour ajouter une nouvelle création."}
+                  {modalConfig.subtitle}
                 </DialogDescription>
               </div>
             </div>

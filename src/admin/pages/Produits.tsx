@@ -72,16 +72,70 @@ type SortOption = "name_asc" | "name_desc" | "maison_asc" | "price_asc" | "price
 const SEASON_FILTER_OPTIONS = ["Toutes", "Printemps", "Été", "Automne", "Hiver"] as const;
 const GENDER_FILTER_OPTIONS = ["Tous", "Homme", "Femme", "Mixte"] as const;
 
-const CATEGORY_TITLES: Record<string, { title: string; subtitle: string; icon: any }> = {
-  parfums: { title: "Gestion des Parfums", subtitle: "Catalogue des créations & parfums de niche", icon: Sparkles },
-  parfum: { title: "Gestion des Parfums", subtitle: "Catalogue des créations & parfums de niche", icon: Sparkles },
-  cosmetiques: { title: "Produits Cosmétiques", subtitle: "Catalogue des soins & cosmétiques d'exception", icon: Flower2 },
-  "produits-cosmetiques": { title: "Produits Cosmétiques", subtitle: "Catalogue des soins & cosmétiques d'exception", icon: Flower2 },
-  artisanat: { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
-  "produits-artisanaux": { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
-  artisanal: { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
-  antiques: { title: "Antiques & Pièces Rares", subtitle: "Objets de collection, antiquités et trésors d'époque", icon: Landmark },
-  antiquites: { title: "Antiques & Pièces Rares", subtitle: "Objets de collection, antiquités et trésors d'époque", icon: Landmark },
+const CATEGORY_TITLES: Record<string, { title: string; subtitle: string; icon: any; addButtonText: string; categorySlug: string }> = {
+  parfums: {
+    title: "Gestion des Parfums",
+    subtitle: "Catalogue des créations & parfums de niche",
+    icon: Sparkles,
+    addButtonText: "Nouveau Parfum",
+    categorySlug: "parfums",
+  },
+  parfum: {
+    title: "Gestion des Parfums",
+    subtitle: "Catalogue des créations & parfums de niche",
+    icon: Sparkles,
+    addButtonText: "Nouveau Parfum",
+    categorySlug: "parfums",
+  },
+  cosmetiques: {
+    title: "Produits Cosmétiques",
+    subtitle: "Catalogue des soins & cosmétiques d'exception",
+    icon: Flower2,
+    addButtonText: "Nouveau Produit Cosmétique",
+    categorySlug: "cosmetiques",
+  },
+  "produits-cosmetiques": {
+    title: "Produits Cosmétiques",
+    subtitle: "Catalogue des soins & cosmétiques d'exception",
+    icon: Flower2,
+    addButtonText: "Nouveau Produit Cosmétique",
+    categorySlug: "cosmetiques",
+  },
+  artisanat: {
+    title: "Produits Artisanaux",
+    subtitle: "Créations artisanales & savoir-faire d'excellence",
+    icon: Palette,
+    addButtonText: "Nouveau Produit Artisanal",
+    categorySlug: "artisanat",
+  },
+  "produits-artisanaux": {
+    title: "Produits Artisanaux",
+    subtitle: "Créations artisanales & savoir-faire d'excellence",
+    icon: Palette,
+    addButtonText: "Nouveau Produit Artisanal",
+    categorySlug: "artisanat",
+  },
+  artisanal: {
+    title: "Produits Artisanaux",
+    subtitle: "Créations artisanales & savoir-faire d'excellence",
+    icon: Palette,
+    addButtonText: "Nouveau Produit Artisanal",
+    categorySlug: "artisanat",
+  },
+  antiques: {
+    title: "Antiques & Pièces Rares",
+    subtitle: "Objets de collection, antiquités et trésors d'époque",
+    icon: Landmark,
+    addButtonText: "Nouveau Produit Antique",
+    categorySlug: "antiques",
+  },
+  antiquites: {
+    title: "Antiques & Pièces Rares",
+    subtitle: "Objets de collection, antiquités et trésors d'époque",
+    icon: Landmark,
+    addButtonText: "Nouveau Produit Antique",
+    categorySlug: "antiques",
+  },
 };
 
 const Produits = () => {
@@ -480,6 +534,8 @@ const Produits = () => {
         title: "Gestion des Produits",
         subtitle: `${products.length} créations enregistrées • ${filteredAndSorted.length} affichées`,
         icon: Package,
+        addButtonText: "Nouveau Produit",
+        categorySlug: "parfums",
       };
     }
     const slugNorm = categoryFilter.toLowerCase().trim();
@@ -490,6 +546,8 @@ const Produits = () => {
         title: matched.title,
         subtitle: `${matched.subtitle} • ${filteredAndSorted.length} produit(s) affiché(s)`,
         icon: matched.icon,
+        addButtonText: matched.addButtonText,
+        categorySlug: matched.categorySlug,
       };
     }
     const foundCat = categories.find((c) => c.slug === categoryFilter);
@@ -498,6 +556,8 @@ const Produits = () => {
       title: foundCat ? foundCat.name : categoryFilter,
       subtitle: `${filteredAndSorted.length} produit(s) dans cet univers`,
       icon: FolderTree,
+      addButtonText: `Nouveau (${foundCat ? foundCat.name : categoryFilter})`,
+      categorySlug: categoryFilter,
     };
   }, [categoryFilter, products.length, filteredAndSorted.length, categories]);
 
@@ -552,13 +612,13 @@ const Produits = () => {
             </button>
           </div>
 
-          {/* Bouton Nouveau Produit */}
+          {/* Bouton Nouveau Produit Contextuel */}
           <Button
             onClick={onAdd}
             className="rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs font-medium uppercase tracking-[0.15em] h-10 px-5 gap-2 shadow-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Nouveau Parfum</span>
+            <span>{currentCategoryInfo.addButtonText}</span>
           </Button>
         </div>
       </div>
@@ -802,8 +862,13 @@ const Produits = () => {
         isAllSelected={isAllSelected}
       />
 
-      {/* Modale d'ajout / modification de parfum */}
-      <ProductModal open={modalOpen} onOpenChange={setModalOpen} initial={editingProduct} />
+      {/* Modale d'ajout / modification de produit contextuelle */}
+      <ProductModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        initial={editingProduct}
+        defaultCategory={currentCategoryInfo.categorySlug}
+      />
 
       {/* Modale de confirmation de suppression unitaire */}
       <DeleteDialog

@@ -3,11 +3,23 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Sous-menu Déroulant « Produits » dans la Sidebar Admin (Parfums, Produits Cosmétiques, Produits Artisanaux, Antiques) — 100% Fonctionnel, Filtrage Dynamique & Zéro Emoji
+- **Statut général** : Boutons d'Ajout Contextuels (« Nouveau Produit Cosmétique », « Nouveau Produit Artisanal », « Nouveau Produit Antique », « Nouveau Parfum ») & Modales Dédiées — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Boutons d'Ajout Contextuels & Modales Adaptatives par Univers ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
+  - [x] **Boutons d'Ajout Dynamiques selon l'Univers Actif** :
+    - Page Produits Cosmétiques : bouton **« Nouveau Produit Cosmétique »**.
+    - Page Produits Artisanaux : bouton **« Nouveau Produit Artisanal »**.
+    - Page Antiques : bouton **« Nouveau Produit Antique »**.
+    - Page Parfums : bouton **« Nouveau Parfum »**.
+    - Vue Globale : bouton **« Nouveau Produit »**.
+  - [x] **Modale d'Ajout & Modification Contextuelle (`ProductModal.tsx`)** :
+    - Adaptation dynamique du titre, sous-titre et de l'icône de l'en-tête de la modale (`Flower2` pour cosmétiques, `Palette` pour artisanat, `Landmark` pour antiques, `Sparkles` pour parfums).
+    - Présélection automatique de la catégorie cible (`defaultCategory`) lors de la création d'une nouvelle référence.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles professionnelles `lucide-react`, palette dorée `#C9A96E` et commentaires en français.
 
 - [x] Sous-Menu Déroulant « Produits » dans la Sidebar de l'Administration ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
   - [x] **Menu Déroulant Collapsible / Accordéon** : Le bouton « Produits » dans la sidebar devient extensible avec un chevron animé (`ChevronDown`), révélant les 4 sous-boutons demandés.
