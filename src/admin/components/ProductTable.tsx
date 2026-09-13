@@ -267,10 +267,10 @@ const ProductTable = ({
         /* 2. TABLE VIEW */
         <div className="bg-card border border-border/80 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-fixed">
               <thead className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide border-b border-border/80">
                 <tr>
-                  <th className="w-12 text-center px-3 py-3.5">
+                  <th className="w-10 text-center px-2 py-3.5">
                     {onSelectAll && (
                       <button
                         type="button"
@@ -286,8 +286,8 @@ const ProductTable = ({
                       </button>
                     )}
                   </th>
-                  <th className="text-left px-3 py-3.5 font-bold">#</th>
-                  <th className="text-left px-4 py-3.5 font-bold">
+                  <th className="w-10 text-left px-2 py-3.5 font-bold">#</th>
+                  <th className={`${isCosmetics ? "w-[300px]" : "w-[240px]"} text-left px-3.5 py-3.5 font-bold`}>
                     <button
                       type="button"
                       onClick={() => onSortChange && onSortChange("name")}
@@ -297,7 +297,7 @@ const ProductTable = ({
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-left px-4 py-3.5 font-bold">
+                  <th className="w-[140px] text-left px-3.5 py-3.5 font-bold">
                     <button
                       type="button"
                       onClick={() => onSortChange && onSortChange("maison")}
@@ -308,7 +308,7 @@ const ProductTable = ({
                     </button>
                   </th>
                   {!hideCategory && !isCosmetics && (
-                    <th className="text-left px-4 py-3.5 font-bold">
+                    <th className="w-[150px] text-left px-3.5 py-3.5 font-bold">
                       <button
                         type="button"
                         onClick={() => onSortChange && onSortChange("category")}
@@ -319,7 +319,7 @@ const ProductTable = ({
                       </button>
                     </th>
                   )}
-                  <th className="text-right px-4 py-3.5 font-bold">
+                  <th className="w-24 text-right px-3.5 py-3.5 font-bold">
                     <button
                       type="button"
                       onClick={() => onSortChange && onSortChange("price")}
@@ -329,7 +329,7 @@ const ProductTable = ({
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-right px-4 py-3.5 font-bold">
+                  <th className="w-24 text-right px-3.5 py-3.5 font-bold">
                     <button
                       type="button"
                       onClick={() => onSortChange && onSortChange("stock")}
@@ -339,7 +339,7 @@ const ProductTable = ({
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-center px-4 py-3.5 font-bold">
+                  <th className="w-24 text-center px-3.5 py-3.5 font-bold">
                     <button
                       type="button"
                       onClick={() => onSortChange && onSortChange("status")}
@@ -349,7 +349,7 @@ const ProductTable = ({
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-right px-4 py-3.5 font-bold">Actions</th>
+                  <th className="w-28 text-right px-3.5 py-3.5 font-bold">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
@@ -372,7 +372,7 @@ const ProductTable = ({
                         isSelected ? "bg-primary/[0.04] dark:bg-primary/[0.08]" : "hover:bg-muted/30"
                       }`}
                     >
-                      <td className="text-center px-3 py-3.5">
+                      <td className="text-center px-2 py-3 w-10">
                         {onToggleSelect && (
                           <button
                             type="button"
@@ -388,52 +388,59 @@ const ProductTable = ({
                           </button>
                         )}
                       </td>
-                      <td className="px-3 py-3.5 text-muted-foreground font-mono text-xs">{i + 1}</td>
-                      <td className="px-4 py-3.5 font-medium text-foreground">
-                        <div className="flex items-center gap-3">
+                      <td className="px-2 py-3 text-muted-foreground font-mono text-xs w-10">{i + 1}</td>
+                      <td className={`${isCosmetics ? "w-[300px] max-w-[300px]" : "w-[240px] max-w-[240px]"} px-3.5 py-3 font-medium text-foreground overflow-hidden`}>
+                        <div className="flex items-center gap-2.5 min-w-0">
                           {primaryImg ? (
                             <img
                               src={primaryImg}
                               alt={p.name}
-                              className="w-9 h-9 rounded-lg object-cover bg-muted border border-border shrink-0"
+                              className="w-8 h-8 rounded-lg object-cover bg-muted border border-border shrink-0"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
                             />
                           ) : (
-                            <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
                               {p.name.charAt(0)}
                             </div>
                           )}
-                          <div className="min-w-0">
-                            <div className="font-serif font-bold text-sm leading-snug truncate">{p.name}</div>
-                            <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <div
+                              className="font-serif font-bold text-xs sm:text-sm leading-snug truncate block text-foreground"
+                              title={p.name}
+                            >
+                              {p.name}
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5 truncate">
                               {isCosmetics ? (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                                  <Flower2 className="w-2.5 h-2.5" />
-                                  {p.weight_value ? `${p.weight_value} ${p.weight_unit || "g"}` : ""}
-                                  {p.weight_value && p.volume_value ? " • " : ""}
-                                  {p.volume_value ? `${p.volume_value} ${p.volume_unit || "ml"}` : (!p.weight_value ? (p.imageLabel || "Cosmétique") : "")}
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30 truncate max-w-full">
+                                  <Flower2 className="w-2.5 h-2.5 shrink-0" />
+                                  <span className="truncate">
+                                    {p.weight_value ? `${p.weight_value} ${p.weight_unit || "g"}` : ""}
+                                    {p.weight_value && p.volume_value ? " • " : ""}
+                                    {p.volume_value ? `${p.volume_value} ${p.volume_unit || "ml"}` : (!p.weight_value ? (p.imageLabel || "Cosmétique") : "")}
+                                  </span>
                                 </span>
                               ) : (
                                 <>
                                   {isPack && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 shrink-0">
                                       <Gift className="w-2.5 h-2.5" /> Pack
                                     </span>
                                   )}
                                   {isDeo && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30 shrink-0">
                                       <Sparkles className="w-2.5 h-2.5" /> Déodorant
                                     </span>
                                   )}
                                   {isFull && !isPack && !isDeo && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30 shrink-0">
                                       <Wine className="w-2.5 h-2.5" /> Flacon {p.full_bottle_volume_ml ?? 100}ml
                                     </span>
                                   )}
                                   {!isFull && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
                                       <Droplet className="w-2.5 h-2.5" /> Décants
                                     </span>
                                   )}
@@ -443,15 +450,17 @@ const ProductTable = ({
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-muted-foreground text-xs font-semibold">{p.maison}</td>
+                      <td className="w-[140px] max-w-[140px] px-3.5 py-3 text-muted-foreground text-xs font-semibold truncate" title={p.maison}>
+                        {p.maison}
+                      </td>
                       {!hideCategory && !isCosmetics && (
-                        <td className="px-4 py-3.5">
-                          <div className="flex flex-col gap-1 items-start">
-                            <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold">
+                        <td className="w-[150px] max-w-[150px] px-3.5 py-3 overflow-hidden">
+                          <div className="flex flex-col gap-1 items-start truncate">
+                            <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold truncate max-w-full">
                               {p.gender}
                             </span>
                             {Array.isArray(p.seasons) && p.seasons.length > 0 && (
-                              <div className="flex items-center gap-1 flex-wrap">
+                              <div className="flex items-center gap-1 flex-wrap truncate">
                                 {p.seasons.map((season) => {
                                   const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                                   const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
@@ -471,7 +480,7 @@ const ProductTable = ({
                           </div>
                         </td>
                       )}
-                      <td className="px-4 py-3.5 text-right font-medium text-foreground">
+                      <td className="w-24 px-3.5 py-3 text-right font-medium text-foreground whitespace-nowrap">
                         {isFull ? (
                           <span className="font-bold tracking-tight text-primary text-sm">{fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)}</span>
                         ) : (
@@ -481,12 +490,12 @@ const ProductTable = ({
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3.5 text-right">
+                      <td className="w-24 px-3.5 py-3 text-right whitespace-nowrap">
                         <span className={`font-semibold text-xs ${stockTotal === 0 ? "text-red-500" : "text-foreground"}`}>
                           {stockTotal} {isFull ? "unités" : "flacons"}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-center">
+                      <td className="w-24 px-3.5 py-3 text-center whitespace-nowrap">
                         <span
                           className={`inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full font-bold ${
                             inStock
@@ -498,7 +507,7 @@ const ProductTable = ({
                           <span>{inStock ? "Actif" : "Rupture"}</span>
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right">
+                      <td className="w-28 px-3.5 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           <a
                             href={`/parfum/${p.id}`}

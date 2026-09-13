@@ -265,13 +265,13 @@ const Dashboard = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-fixed">
               <thead className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] border-b border-[#EAE3D8] dark:border-[#24211E]">
                 <tr>
-                  <th className="text-left py-3 font-medium">Création Olfactive</th>
-                  <th className="text-left py-3 font-medium">Contenance</th>
-                  <th className="text-right py-3 font-medium">Volume</th>
-                  <th className="text-right py-3 font-medium">Revenus</th>
+                  <th className="w-[45%] text-left py-3 font-medium">Création Olfactive</th>
+                  <th className="w-[20%] text-left py-3 font-medium">Contenance</th>
+                  <th className="w-[15%] text-right py-3 font-medium">Volume</th>
+                  <th className="w-[20%] text-right py-3 font-medium">Revenus</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EAE3D8]/60 dark:divide-[#24211E]/60">
@@ -284,10 +284,12 @@ const Dashboard = () => {
                 )}
                 {top.map((s) => (
                   <tr key={`${s.parfum_name}-${s.size}`} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.parfum_name}</td>
-                    <td className="py-3.5 text-xs text-[#7A726A] dark:text-[#A39B91]">{s.size}</td>
-                    <td className="py-3.5 text-right font-medium text-[#1A1816] dark:text-[#FAF7F2]">{s.qty}</td>
-                    <td className="py-3.5 text-right font-bold tracking-tight text-[#C9A96E]">{fmtMad(s.revenue)}</td>
+                    <td className="py-3.5 font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate max-w-[200px]" title={s.parfum_name}>
+                      {s.parfum_name}
+                    </td>
+                    <td className="py-3.5 text-xs text-[#7A726A] dark:text-[#A39B91] whitespace-nowrap">{s.size}</td>
+                    <td className="py-3.5 text-right font-medium text-[#1A1816] dark:text-[#FAF7F2] whitespace-nowrap">{s.qty}</td>
+                    <td className="py-3.5 text-right font-bold tracking-tight text-[#C9A96E] whitespace-nowrap">{fmtMad(s.revenue)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -3,11 +3,20 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Persistance Bilingue & Préservation du Style d'Écriture (Multiligne) Résolue — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Formatage Fixe des Tableaux Admin & Troncature des Titres Déployé — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Formatage Fixe des Tableaux Admin & Troncature des Titres de Produits ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
+  - [x] **Stabilisation Visuelle du Tableau (`table-fixed`)** :
+    - Application de `table-fixed` et de largeurs explicites sur chaque colonne pour figer la largeur du tableau et empêcher tout étirement indésirable.
+  - [x] **Limitation & Troncature des Titres de Produits** :
+    - Troncature élégante du nom du produit (`truncate block max-w-[...]`) pour ne plus afficher les titres longs en entier dans le tableau.
+    - Conservation du nom complet dans l'infobulle native (`title={p.name}`) au survol pour les administrateurs.
+    - Protection contre le débordement des badges et colonnes de prix, stock, statut et actions (`whitespace-nowrap`).
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre `#C9A96E`.
 
 - [x] Persistance des Descriptions & Conseils Bilingues (FR/EN) et Conservation du Style d'Écriture ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)) :
   - [x] **Correction de la Perte des Données Bilingues au Rafraîchissement** :
