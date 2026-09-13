@@ -3,11 +3,22 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Intégration Officielle du Paiement en Ligne Sécurisé par Carte Bancaire (Visa, Mastercard, Amex) & PayPal dans le Tunnel de Commande — 100% Fonctionnel, Sécurisé (Client ID / SSL 256 bits) & Zéro Emoji
+- **Statut général** : Sous-menu Déroulant « Produits » dans la Sidebar Admin (Parfums, Produits Cosmétiques, Produits Artisanaux, Antiques) — 100% Fonctionnel, Filtrage Dynamique & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Sous-Menu Déroulant « Produits » dans la Sidebar de l'Administration ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
+  - [x] **Menu Déroulant Collapsible / Accordéon** : Le bouton « Produits » dans la sidebar devient extensible avec un chevron animé (`ChevronDown`), révélant les 4 sous-boutons demandés.
+  - [x] **4 Sous-Boutons d'Univers Dédiés** :
+    - **Parfums** (`/admin/produits?category=parfums`) avec icône vectorielle `Sparkles`.
+    - **Produits Cosmétiques** (`/admin/produits?category=cosmetiques`) avec icône vectorielle `Flower2`.
+    - **Produits Artisanaux** (`/admin/produits?category=artisanat`) avec icône vectorielle `Palette`.
+    - **Antiques** (`/admin/produits?category=antiques`) avec icône vectorielle `Landmark`.
+  - [x] **Synchronisation Dynamique du Catalogue** : Synchronisation automatique des paramètres d'URL (`useSearchParams`) avec le catalogue (`Produits.tsx`), adaptation instantanée du titre, du sous-titre et du filtre de catégorie.
+  - [x] **Support Sidebar Rétractée (Flyout Dropdown)** : Menu déroulant contextuel flottant (`DropdownMenu`) lorsque la barre latérale est en mode compact / replié.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Utilisation exclusive des icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E` et commentaires descriptifs en français.
 
 - [x] Isolation Stricte & Dédiée de la Session WhatsApp OpenWA ([`api/whatsapp.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/whatsapp.js), [`src/services/whatsappService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/whatsappService.ts)) :
   - [x] **Suppression Complète des Sessions de Fallback** : Élimination de tout basculement ou test vers d'autres sessions (`default`, découverte multi-sessions `/api/sessions`, etc.).

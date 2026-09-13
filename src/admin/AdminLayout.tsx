@@ -6,8 +6,8 @@
  * navigation par univers et design Haute Parfumerie (zéro emoji).
  */
 
-import { useState, useEffect } from "react";
-import { NavLink, Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
@@ -23,6 +23,11 @@ import {
   FolderTree,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Sparkles,
+  Flower2,
+  Palette,
+  Landmark,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -32,8 +37,38 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const NAV_GROUPS = [
+export type SubNavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  categoryKey?: string;
+};
+
+export type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  end?: boolean;
+  isOrderLink?: boolean;
+  badge?: string;
+  subItems?: SubNavItem[];
+};
+
+export type NavGroup = {
+  title: string;
+  items: NavItem[];
+};
+
+const NAV_GROUPS: NavGroup[] = [
   {
     title: "Vue d'ensemble",
     items: [
@@ -43,8 +78,18 @@ const NAV_GROUPS = [
   {
     title: "Catalogue & Niche",
     items: [
-      { to: "/admin/produits", label: "Tous les Parfums", icon: Package },
-      { to: "/admin/categories", label: "Catégories & Univers", icon: FolderTree },
+      {
+        to: "/admin/produits",
+        label: "Produits",
+        icon: Package,
+        subItems: [
+          { to: "/admin/produits?category=parfums", label: "Parfums", icon: Sparkles, categoryKey: "parfums" },
+          { to: "/admin/produits?category=cosmetiques", label: "Produits Cosmétiques", icon: Flower2, categoryKey: "cosmetiques" },
+          { to: "/admin/produits?category=artisanat", label: "Produits Artisanaux", icon: Palette, categoryKey: "artisanat" },
+          { to: "/admin/produits?category=antiques", label: "Antiques", icon: Landmark, categoryKey: "antiques" },
+        ],
+      },
+      { to: "/admin/categories", label: "Catégories", icon: FolderTree },
     ],
   },
   {
@@ -64,11 +109,24 @@ const NAV_GROUPS = [
 
 const TITLES: Record<string, string> = {
   "/admin": "Tableau de Bord Privé",
-  "/admin/produits": "Catalogue des Parfums de Niche",
+  "/admin/produits": "Catalogue des Produits",
   "/admin/categories": "Univers & Familles Olfactives",
   "/admin/commandes": "Gestion des Commandes Clients",
   "/admin/finances": "Statistiques Financières & Revenus",
   "/admin/parametres": "Paramètres & Statut de la Maison",
+};
+
+const getPageTitle = (pathname: string, search: string) => {
+  if (pathname === "/admin/produits") {
+    const params = new URLSearchParams(search);
+    const cat = params.get("category")?.toLowerCase();
+    if (cat === "parfums" || cat === "parfum") return "Catalogue — Parfums de Niche";
+    if (cat === "cosmetiques" || cat === "produits-cosmetiques") return "Catalogue — Produits Cosmétiques";
+    if (cat === "artisanat" || cat === "produits-artisanaux" || cat === "artisanal") return "Catalogue — Produits Artisanaux";
+    if (cat === "antiques" || cat === "antiquites") return "Catalogue — Antiques & Pièces Rares";
+    return "Catalogue des Produits";
+  }
+  return TITLES[pathname] || "Administration";
 };
 
 const AdminLayout = () => {
@@ -86,6 +144,32 @@ const AdminLayout = () => {
     }
   });
 
+  // État d'ouverture des sous-menus (ex: Produits)
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
+    const isProducts = location.pathname.startsWith("/admin/produits");
+    return {
+      "/admin/produits": isProducts,
+    };
+  });
+
+  // Maintenir le menu ouvert si l'utilisateur navigue vers /admin/produits
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/produits")) {
+      setOpenMenus((prev) => ({ ...prev, "/admin/produits": true }));
+    }
+  }, [location.pathname]);
+
+  const toggleSubmenu = (menuKey: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    setOpenMenus((prev) => ({
+      ...prev,
+      [menuKey]: !prev[menuKey],
+    }));
+  };
+
   const toggleSidebar = () => {
     setIsCollapsed((prev) => {
       const next = !prev;
@@ -98,7 +182,7 @@ const AdminLayout = () => {
     });
   };
 
-  const title = TITLES[location.pathname] || "Administration";
+  const title = getPageTitle(location.pathname, location.search);
 
   // Récupération des commandes en attente pour le badge
   useEffect(() => {
@@ -129,6 +213,10 @@ const AdminLayout = () => {
     }
     navigate("/admin/login", { replace: true });
   };
+
+  const currentCategoryParam = useMemo(() => {
+    return new URLSearchParams(location.search).get("category")?.toLowerCase() || null;
+  }, [location.search]);
 
   const SidebarContent = (
     <div className="flex flex-col h-full w-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
@@ -237,76 +325,108 @@ const AdminLayout = () => {
 
             <div className="space-y-1">
               {group.items.map((item) => {
+                const hasSubItems = Array.isArray(item.subItems) && item.subItems.length > 0;
+                const isMenuOpen = hasSubItems && !!openMenus[item.to];
+                
                 const isCurrent = item.end
                   ? location.pathname === item.to
                   : (location.pathname === item.to || location.pathname.startsWith(item.to + "/"));
 
-                const navLinkElement = (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setMobileOpen(false)}
-                    className={`relative flex items-center rounded-xl text-xs transition-all duration-200 group ${
-                      isCollapsed 
-                        ? "justify-center w-11 h-11 mx-auto" 
-                        : "justify-between px-3.5 py-2.5"
-                    } ${
-                      isCurrent
-                        ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
-                        : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                    }`}
-                  >
-                    <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "min-w-0"}`}>
-                      <item.icon
-                        className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
-                          isCurrent
-                            ? "text-[#C9A96E] dark:text-[#121110]"
-                            : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
-                        }`}
-                        strokeWidth={isCurrent ? 2.25 : 1.85}
-                      />
-                      {!isCollapsed && (
-                        <span className="truncate">{item.label}</span>
-                      )}
-                    </div>
-
-                    {/* Badges pour version dépliée */}
-                    {!isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
-                          isCurrent
-                            ? "bg-[#C9A96E] text-[#121110]"
-                            : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
-                        }`}
+                // Si la sidebar est repliée et que l'item a des sous-menus -> Menu déroulant compact
+                if (isCollapsed && hasSubItems) {
+                  return (
+                    <DropdownMenu key={item.to}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group cursor-pointer ${
+                            isCurrent
+                              ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                              : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                          title={item.label}
+                        >
+                          <item.icon
+                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
+                              isCurrent
+                                ? "text-[#C9A96E] dark:text-[#121110]"
+                                : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                            }`}
+                            strokeWidth={isCurrent ? 2.25 : 1.85}
+                          />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side="right"
+                        align="start"
+                        className="w-56 bg-[#FAF7F2] dark:bg-[#1A1816] border-[#EAE3D8] dark:border-[#2D2924] shadow-xl p-1.5 rounded-xl z-50 text-xs"
                       >
-                        {pendingOrdersCount}
-                      </span>
-                    )}
+                        <DropdownMenuLabel className="font-serif font-semibold text-[#1A1816] dark:text-[#FAF7F2] px-2.5 py-1.5 flex items-center justify-between">
+                          <span>{item.label}</span>
+                          <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] font-medium">Catalogue</span>
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to={item.to}
+                            className={`flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${
+                              isCurrent && !currentCategoryParam
+                                ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-medium"
+                                : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF]"
+                            }`}
+                          >
+                            <Package className="w-4 h-4 text-[#C9A96E] shrink-0" />
+                            <span>Tous les Produits</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-[#EAE3D8] dark:bg-[#2D2924] my-1" />
+                        {item.subItems?.map((sub) => {
+                          const isSubActive = isCurrent && currentCategoryParam === sub.categoryKey;
+                          return (
+                            <DropdownMenuItem key={sub.to} asChild>
+                              <Link
+                                to={sub.to}
+                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${
+                                  isSubActive
+                                    ? "bg-[#C9A96E]/20 text-[#C9A96E] font-semibold"
+                                    : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] hover:text-[#C9A96E]"
+                                }`}
+                              >
+                                <sub.icon className={`w-4 h-4 shrink-0 ${isSubActive ? "text-[#C9A96E]" : "text-[#7A726A] dark:text-[#A39B91]"}`} />
+                                <span>{sub.label}</span>
+                              </Link>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  );
+                }
 
-                    {!isCollapsed && item.badge && !item.isOrderLink && (
-                      <span
-                        className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
-                          isCurrent
-                            ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
-                            : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-
-                    {/* Point badge pour version repliée */}
-                    {isCollapsed && item.isOrderLink && pendingOrdersCount > 0 && (
-                      <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-[#FAF7F2] dark:ring-[#121110] animate-pulse" />
-                    )}
-                  </Link>
-                );
-
+                // Si la sidebar est repliée et sans sous-menu -> Tooltip standard
                 if (isCollapsed) {
                   return (
                     <Tooltip key={item.to} delayDuration={100}>
                       <TooltipTrigger asChild>
-                        {navLinkElement}
+                        <Link
+                          to={item.to}
+                          onClick={() => setMobileOpen(false)}
+                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group ${
+                            isCurrent
+                              ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                              : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <item.icon
+                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
+                              isCurrent
+                                ? "text-[#C9A96E] dark:text-[#121110]"
+                                : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                            }`}
+                            strokeWidth={isCurrent ? 2.25 : 1.85}
+                          />
+                          {item.isOrderLink && pendingOrdersCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-[#FAF7F2] dark:ring-[#121110] animate-pulse" />
+                          )}
+                        </Link>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="bg-[#1A1816] text-[#FAF7F2] dark:bg-[#1C1A18] dark:text-[#FAF7F2] border-[#38332C] text-xs font-medium">
                         {item.label}
@@ -316,7 +436,127 @@ const AdminLayout = () => {
                   );
                 }
 
-                return navLinkElement;
+                // Version dépliée (Expanded)
+                return (
+                  <div key={item.to} className="space-y-1">
+                    <div
+                      className={`relative flex items-center justify-between rounded-xl text-xs transition-all duration-200 group ${
+                        isCurrent
+                          ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                          : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                      }`}
+                    >
+                      <Link
+                        to={item.to}
+                        onClick={() => {
+                          if (hasSubItems && !isMenuOpen) {
+                            setOpenMenus((prev) => ({ ...prev, [item.to]: true }));
+                          }
+                          setMobileOpen(false);
+                        }}
+                        className="flex-1 flex items-center gap-3 px-3.5 py-2.5 min-w-0"
+                      >
+                        <item.icon
+                          className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
+                            isCurrent
+                              ? "text-[#C9A96E] dark:text-[#121110]"
+                              : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                          }`}
+                          strokeWidth={isCurrent ? 2.25 : 1.85}
+                        />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+
+                      <div className="flex items-center gap-1.5 pr-2.5 shrink-0">
+                        {/* Badges pour version dépliée */}
+                        {item.isOrderLink && pendingOrdersCount > 0 && (
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
+                              isCurrent
+                                ? "bg-[#C9A96E] text-[#121110]"
+                                : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
+                            }`}
+                          >
+                            {pendingOrdersCount}
+                          </span>
+                        )}
+
+                        {item.badge && !item.isOrderLink && (
+                          <span
+                            className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
+                              isCurrent
+                                ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
+                                : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
+                            }`}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+
+                        {/* Bouton Chevron pour ouvrir/fermer le sous-menu */}
+                        {hasSubItems && (
+                          <button
+                            type="button"
+                            onClick={(e) => toggleSubmenu(item.to, e)}
+                            className={`p-1 rounded-lg transition-transform duration-200 cursor-pointer ${
+                              isCurrent
+                                ? "text-[#FAF7F2] hover:bg-white/10 dark:text-[#121110] dark:hover:bg-black/10"
+                                : "text-[#8C827A] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
+                            }`}
+                            title={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
+                            aria-label={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
+                          >
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform duration-200 ${
+                                isMenuOpen ? "rotate-180" : "rotate-0"
+                              }`}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sous-Menu Dépliable (Accordeon) */}
+                    {hasSubItems && isMenuOpen && (
+                      <div className="pl-4 ml-4.5 border-l-2 border-[#EAE3D8] dark:border-[#26221E] space-y-1 my-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                        {item.subItems?.map((sub) => {
+                          const isSubActive =
+                            location.pathname === "/admin/produits" &&
+                            currentCategoryParam === sub.categoryKey;
+
+                          return (
+                            <Link
+                              key={sub.to}
+                              to={sub.to}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all duration-150 group ${
+                                isSubActive
+                                  ? "bg-[#C9A96E]/15 text-[#C9A96E] font-semibold border-l-2 border-[#C9A96E]"
+                                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <sub.icon
+                                  className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${
+                                    isSubActive
+                                      ? "text-[#C9A96E] scale-110"
+                                      : "text-[#8C827A] dark:text-[#7A726A] group-hover:text-[#C9A96E] group-hover:scale-105"
+                                  }`}
+                                  strokeWidth={isSubActive ? 2.2 : 1.75}
+                                />
+                                <span className="truncate">{sub.label}</span>
+                              </div>
+
+                              {isSubActive && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#C9A96E] shrink-0" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
               })}
             </div>
           </div>

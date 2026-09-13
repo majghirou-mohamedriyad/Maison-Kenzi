@@ -5,7 +5,9 @@
  * et suppression des parfums de niche avec vue tableau ou cartes.
  */
 
-import { useMemo, useState } from "react";
+
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -31,6 +33,9 @@ import {
   CheckSquare,
   Square,
   Loader2,
+  Flower2,
+  Palette,
+  Landmark,
 } from "lucide-react";
 import ProductTable from "../components/ProductTable";
 import ProductModal from "../components/ProductModal";
@@ -67,11 +72,47 @@ type SortOption = "name_asc" | "name_desc" | "maison_asc" | "price_asc" | "price
 const SEASON_FILTER_OPTIONS = ["Toutes", "Printemps", "Été", "Automne", "Hiver"] as const;
 const GENDER_FILTER_OPTIONS = ["Tous", "Homme", "Femme", "Mixte"] as const;
 
+const CATEGORY_TITLES: Record<string, { title: string; subtitle: string; icon: any }> = {
+  parfums: { title: "Gestion des Parfums", subtitle: "Catalogue des créations & parfums de niche", icon: Sparkles },
+  parfum: { title: "Gestion des Parfums", subtitle: "Catalogue des créations & parfums de niche", icon: Sparkles },
+  cosmetiques: { title: "Produits Cosmétiques", subtitle: "Catalogue des soins & cosmétiques d'exception", icon: Flower2 },
+  "produits-cosmetiques": { title: "Produits Cosmétiques", subtitle: "Catalogue des soins & cosmétiques d'exception", icon: Flower2 },
+  artisanat: { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
+  "produits-artisanaux": { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
+  artisanal: { title: "Produits Artisanaux", subtitle: "Créations artisanales & savoir-faire d'excellence", icon: Palette },
+  antiques: { title: "Antiques & Pièces Rares", subtitle: "Objets de collection, antiquités et trésors d'époque", icon: Landmark },
+  antiquites: { title: "Antiques & Pièces Rares", subtitle: "Objets de collection, antiquités et trésors d'époque", icon: Landmark },
+};
+
 const Produits = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const products = useProducts();
   const categories = useCategories();
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("Tous");
+  
+  const categoryFromUrl = searchParams.get("category");
+  const [categoryFilter, setCategoryFilter] = useState<string>(categoryFromUrl || "Tous");
+
+  // Synchronisation si le query param change dans l'URL
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setCategoryFilter(categoryFromUrl);
+    } else {
+      setCategoryFilter("Tous");
+    }
+  }, [categoryFromUrl]);
+
+  const handleCategoryChange = (newCat: string) => {
+    setCategoryFilter(newCat);
+    if (newCat === "Tous") {
+      searchParams.delete("category");
+      setSearchParams(searchParams, { replace: true });
+    } else {
+      searchParams.set("category", newCat);
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
+
   const [maisonFilter, setMaisonFilter] = useState<string>("Toutes");
   const [genderFilter, setGenderFilter] = useState<string>("Tous");
   const [seasonFilter, setSeasonFilter] = useState<string>("Toutes");
@@ -266,6 +307,8 @@ const Produits = () => {
     setMaisonFilter("Toutes");
     setStatusFilter("Tous");
     setSortOption("name_asc");
+    searchParams.delete("category");
+    setSearchParams(searchParams, { replace: true });
   };
 
   // Gestion de la sélection multiple (après l'initialisation de filteredAndSorted)
@@ -430,17 +473,50 @@ const Produits = () => {
     }
   };
 
+  const currentCategoryInfo = useMemo(() => {
+    if (categoryFilter === "Tous") {
+      return {
+        tag: "Catalogue & Créations",
+        title: "Gestion des Produits",
+        subtitle: `${products.length} créations enregistrées • ${filteredAndSorted.length} affichées`,
+        icon: Package,
+      };
+    }
+    const slugNorm = categoryFilter.toLowerCase().trim();
+    const matched = CATEGORY_TITLES[slugNorm];
+    if (matched) {
+      return {
+        tag: "Univers Spécialisé",
+        title: matched.title,
+        subtitle: `${matched.subtitle} • ${filteredAndSorted.length} produit(s) affiché(s)`,
+        icon: matched.icon,
+      };
+    }
+    const foundCat = categories.find((c) => c.slug === categoryFilter);
+    return {
+      tag: "Catégorie & Univers",
+      title: foundCat ? foundCat.name : categoryFilter,
+      subtitle: `${filteredAndSorted.length} produit(s) dans cet univers`,
+      icon: FolderTree,
+    };
+  }, [categoryFilter, products.length, filteredAndSorted.length, categories]);
+
   return (
     <div className="space-y-6">
-      {/* Barre d'En-tête */}
+      {/* Barre d'En-tête Dynamique */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
         <div>
-          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Catalogue & Créations</span>
-          <h1 className="font-serif text-2xl sm:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight mt-0.5">
-            Gestion des Parfums
-          </h1>
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">
+            {currentCategoryInfo.tag}
+          </span>
+          <div className="flex items-center gap-2.5 mt-0.5">
+            <currentCategoryInfo.icon className="w-6 h-6 text-[#C9A96E] shrink-0" />
+            <h1 className="font-serif text-2xl sm:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight">
+              {currentCategoryInfo.title}
+            </h1>
+          </div>
           <p className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-1">
-            {products.length} créations enregistrées • {filteredAndSorted.length} affichées
+            {currentCategoryInfo.subtitle}
           </p>
         </div>
 
@@ -562,7 +638,7 @@ const Produits = () => {
           <div className="relative">
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
             >
               <option value="Tous">Toutes Catégories</option>
