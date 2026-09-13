@@ -9,10 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Traduction DeepL 100% Transparente & Automatique en Arrière-Plan ([`api/deepl.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/deepl.js), [`src/services/deeplService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/deeplService.ts), [`src/hooks/useAutoTranslate.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAutoTranslate.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/hooks/useAppSettings.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAppSettings.ts)) :
+- [x] Résolution de l'Erreur de Connexion DeepL Locale & Proxy Vite ([`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`src/services/deeplService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/deeplService.ts), [`api/deepl.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/deepl.js), [`src/admin/pages/Parametres.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Parametres.tsx)) :
+  - [x] **Élimination de l'Erreur Navigateur CORS `Failed to fetch`** : Intégration d'un middleware serveur de développement et de proxies directs `/api/deepl-free` et `/api/deepl-pro` dans `vite.config.ts` relayant les requêtes en toute transparence sans blocage de sécurité navigateur.
   - [x] **Clé API Officielle Activée par Défaut** : Intégration de la clé `77993c1b-141d-4362-b6d2-4eaae702d6d5:fx` directement dans les services et relais serverless Node.js sans aucune configuration manuelle requise.
   - [x] **Traduction Dynamique Invisible à la Volée (`useAutoTranslate`)** : Dès qu'un visiteur passe le site en Anglais (`EN`), les descriptions olfactives et pyramides de notes de chaque parfum sont automatiquement et silencieusement traduites avec DeepL et conservées en cache local (0 ms de délai pour les visites ultérieures).
-  - [x] **Expérience Client & Admin Sans Friction** : Traduction 100% transparente en temps réel pour l'utilisateur sans effort de saisie.
+  - [x] **Expérience Client & Admin Sans Friction** : Bouton « Tester la connexion DeepL » 100% fonctionnel affichant l'état du quota (500 000 caractères) et traduction transparente en temps réel.
 
 - [x] Sublimation & Nouveau Design du Sélecteur de Langue FR / EN ([`src/components/LanguageSelector.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/LanguageSelector.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
   - [x] **Design Capsule Haute Joaillerie** : Sélecteur en capsule arrondie (`rounded-full`) à fond semi-transparent et verre dépoli avec micro-bordure raffinée.
