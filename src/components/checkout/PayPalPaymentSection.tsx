@@ -148,7 +148,11 @@ export const PayPalPaymentSection = ({
               ],
             })
             .catch((err: any) => {
-              console.error("Détail d'erreur createOrder PayPal:", err);
+              try {
+                console.error("Détail d'erreur createOrder PayPal:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+              } catch (e) {
+                console.error("Détail d'erreur createOrder PayPal:", err);
+              }
               throw err;
             });
         },
