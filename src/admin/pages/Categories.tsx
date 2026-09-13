@@ -1091,30 +1091,44 @@ const CategoriesAdmin = () => {
 
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[94vw] h-[86vh] max-h-[86vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
-          {/* En-tête Fixe */}
-          <div className="p-4 sm:p-5 pb-3 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 shrink-0">
-            <div className="flex items-center justify-between flex-wrap gap-2 pr-8">
-              <div className="flex items-center gap-2.5">
+        <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[94vw] h-[85vh] max-h-[85vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+          {/* En-tête Fixe avec Actions Rapides */}
+          <div className="p-3.5 sm:p-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
+            <div className="flex items-center justify-between gap-3 pr-10">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
                   <FolderTree className="w-4 h-4" />
                 </div>
-                <div>
-                  <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                <div className="min-w-0">
+                  <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
                     {editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}
                   </DialogTitle>
-                  <DialogDescription className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                  <DialogDescription className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] truncate">
                     {editingCat
                       ? "Modifiez les informations, univers olfactif et bannières."
                       : "Configurez un nouvel univers olfactif pour vos créations."}
                   </DialogDescription>
                 </div>
               </div>
-              {editingCat && (
-                <span className="text-[11px] font-sans font-medium px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                  {editingCat.name}
-                </span>
-              )}
+
+              {/* Boutons d'action rapides */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  form="category-form"
+                  disabled={isSaving}
+                  className="px-4 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
+                >
+                  {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour" : "Sauvegarder"}
+                </button>
+              </div>
             </div>
           </div>
 

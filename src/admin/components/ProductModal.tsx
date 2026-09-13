@@ -473,36 +473,50 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl xl:max-w-6xl w-[94vw] h-[88vh] max-h-[88vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
-        {/* EN-TÊTE FIXE DU DIALOGUE */}
-        <div className="p-4 sm:p-5 pb-3 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 shrink-0">
-          <div className="flex items-center justify-between flex-wrap gap-2 pr-8">
-            <div className="flex items-center gap-2.5">
+      <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl xl:max-w-6xl w-[94vw] h-[85vh] max-h-[85vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+        {/* EN-TÊTE FIXE AVEC BOUTONS D'ACTION IMMÉDIATEMENT VISIBLES */}
+        <div className="p-3.5 sm:p-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
+          <div className="flex items-center justify-between gap-3 pr-10">
+            <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <div>
-                <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+              <div className="min-w-0">
+                <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
                   {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
                 </DialogTitle>
-                <DialogDescription className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                <DialogDescription className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] truncate">
                   {initial
                     ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels."
-                    : "Renseignez les détails pour ajouter une nouvelle création de haute parfumerie."}
+                    : "Renseignez les détails pour ajouter une nouvelle création."}
                 </DialogDescription>
               </div>
             </div>
 
-            {initial && (
-              <span className="text-[11px] font-sans font-medium px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                {initial.name}
-              </span>
-            )}
+            {/* BOUTONS D'ACTION RAPIDES EN HAUT */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="px-3 py-1.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                form="product-form"
+                disabled={saving || uploading}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-md shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+              >
+                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>{initial ? "Mettre à jour" : "Sauvegarder"}</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* CORPS DÉFILANT AVEC MIN-H-0 STRICT */}
-        <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4">
           {/* Grille principale équilibrée en 2 colonnes égales (6 / 6) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
             {/* COLONNE GAUCHE (6 colonnes) : Informations Générales, Tarifs & Pyramide Olfactive */}
