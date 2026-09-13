@@ -136,22 +136,19 @@ export const PayPalPaymentSection = ({
             return Promise.reject(new Error("Formulaire incomplet"));
           }
 
-          const currentTotal = totalRef.current;
-          const formattedAmount = Number(currentTotal || 0).toFixed(2);
+          const currentTotal = Number(totalRef.current || 0);
+          const formattedAmount = (currentTotal > 0 ? currentTotal : 1).toFixed(2);
 
           return actions.order.create({
             purchase_units: [
               {
-                description: "Commande Parfums d'Exception - Maison Kenzi",
+                description: "Commande Maison Kenzi",
                 amount: {
                   currency_code: "EUR",
                   value: formattedAmount,
                 },
               },
             ],
-            application_context: {
-              shipping_preference: "NO_SHIPPING",
-            },
           });
         },
         onApprove: async (data: any, actions: any) => {
