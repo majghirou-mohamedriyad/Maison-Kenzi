@@ -82,82 +82,11 @@ const CACHE_KEY = "mk_rest_countries_cache_v1";
 const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 7; // 7 jours de cache
 
 /**
- * Récupère la liste des pays (Maroc + Europe) via l'API REST Countries
+ * Récupère la liste des pays (Maroc + Europe) avec indicatifs téléphoniques et capitales
+ * Fourniture instantanée 0-ms garantie sans latence réseau ni blocage CORS.
  */
 export async function fetchMoroccoAndEuropeCountries(): Promise<RestCountry[]> {
-  try {
-    // 1. Vérification du cache local
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed.timestamp && Date.now() - parsed.timestamp < CACHE_EXPIRY_MS && Array.isArray(parsed.data)) {
-          return parsed.data;
-        }
-      } catch (e) {
-        // Ignorer et refetch
-      }
-    }
-
-    // 2. Appel aux endpoints REST Countries (Europe + Maroc)
-    const [europeRes, moroccoRes] = await Promise.all([
-      fetch("https://restcountries.com/v3.1/region/europe?fields=name,cca2,idd,capital,flags,region"),
-      fetch("https://restcountries.com/v3.1/name/morocco?fields=name,cca2,idd,capital,flags,region"),
-    ]);
-
-    const europeData = europeRes.ok ? await europeRes.json() : [];
-    const moroccoData = moroccoRes.ok ? await moroccoRes.json() : [];
-
-    const rawCountries = [
-      ...(Array.isArray(moroccoData) ? moroccoData : [moroccoData]),
-      ...(Array.isArray(europeData) ? europeData : []),
-    ];
-
-    const formatted: RestCountry[] = rawCountries
-      .filter((c: any) => c && c.name)
-      .map((c: any) => {
-        const frenchName = c.translations?.fra?.common || c.name?.common || "Pays";
-        const officialFra = c.translations?.fra?.official || c.name?.official || frenchName;
-        const code = c.cca2 || "";
-        const iddRoot = c.idd?.root || "";
-        const iddSuffix = c.idd?.suffixes && c.idd.suffixes.length > 0 ? c.idd.suffixes[0] : "";
-        const phonePrefix = iddRoot ? `${iddRoot}${iddSuffix}` : "+";
-        const capital = Array.isArray(c.capital) && c.capital.length > 0 ? c.capital[0] : "";
-
-        return {
-          code,
-          name: frenchName,
-          officialName: officialFra,
-          phonePrefix,
-          capital,
-          region: c.region || "Europe",
-          flagEmoji: c.flag || "",
-          flagSvg: c.flags?.svg || "",
-        };
-      });
-
-    // Mettre Maroc en 1ère position puis tri alphabétique
-    const sorted = formatted.sort((a, b) => {
-      if (a.code === "MA") return -1;
-      if (b.code === "MA") return 1;
-      if (a.name === "France") return -1;
-      if (b.name === "France") return 1;
-      return a.name.localeCompare(b.name, "fr");
-    });
-
-    if (sorted.length > 0) {
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({ timestamp: Date.now(), data: sorted })
-      );
-      return sorted;
-    }
-
-    return FALLBACK_COUNTRIES;
-  } catch (err) {
-    console.warn("Utilisation du référentiel local de secours pour les pays (REST Countries):", err);
-    return FALLBACK_COUNTRIES;
-  }
+  return FALLBACK_COUNTRIES;
 }
 
 /**
