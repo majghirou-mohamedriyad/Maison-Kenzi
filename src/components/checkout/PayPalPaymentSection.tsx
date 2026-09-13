@@ -113,6 +113,8 @@ export const PayPalPaymentSection = ({
     // Vider le conteneur proprement
     targetElement.innerHTML = "";
 
+    const isFormRejectedRef = { current: false };
+
     try {
       const buttonsInstance = window.paypal.Buttons({
         style: {
@@ -125,24 +127,20 @@ export const PayPalPaymentSection = ({
         onClick: (data: any, actions: any) => {
           const valid = onValidateFormRef.current();
           if (!valid) {
-            toast.error("Veuillez d'abord remplir vos coordonnées de livraison ci-dessus.");
+            isFormRejectedRef.current = true;
             return actions.reject();
           }
+          isFormRejectedRef.current = false;
           return actions.resolve();
         },
         createOrder: (data: any, actions: any) => {
-          if (!isFormValidRef.current && !onValidateFormRef.current()) {
-            toast.error("Veuillez renseigner vos coordonnées de livraison.");
-            return Promise.reject(new Error("Formulaire incomplet"));
-          }
-
           const currentTotal = Number(totalRef.current || 0);
           const formattedAmount = (currentTotal > 0 ? currentTotal : 1).toFixed(2);
 
           return actions.order.create({
             purchase_units: [
               {
-                description: "Commande Maison Kenzi",
+                description: "Commande Maison Kenzi Haute Parfumerie",
                 amount: {
                   currency_code: "EUR",
                   value: formattedAmount,
@@ -179,8 +177,18 @@ export const PayPalPaymentSection = ({
           toast.info("Paiement annulé. Aucun montant n'a été débité.");
         },
         onError: (err: any) => {
-          console.error("Erreur PayPal:", err);
-          toast.error("Erreur lors de la communication avec le service de paiement.");
+          console.warn("Détail callback PayPal onError:", err);
+          // Si l'erreur provient du formulaire incomplet intercepté par onClick
+          if (isFormRejectedRef.current) {
+            isFormRejectedRef.current = false;
+            return;
+          }
+          // Si l'utilisateur a simplement fermé la fenêtre
+          const errStr = String(err || "");
+          if (errStr.includes("detected popup close") || errStr.includes("popup_closed") || errStr.includes("window closed")) {
+            return;
+          }
+          toast.error("Veuillez vérifier les informations renseignées ou réessayer.");
         },
       });
 
