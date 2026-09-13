@@ -76,7 +76,7 @@ const filterToSlug = (key: FilterKey): string => {
 };
 
 const Collection = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { collection } = useParams();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterKey>(slugToFilter(collection));
@@ -139,10 +139,12 @@ const Collection = () => {
         else if (s.includes("artisanal") || s.includes("livre")) icon = Package;
         else if (s.includes("antique")) icon = Crown;
 
+        const displayName = (language === "en" && cat.name_en) ? cat.name_en : cat.name;
+
         options.push({
           key: cat.slug,
-          label: cat.name,
-          shortLabel: cat.name,
+          label: displayName,
+          shortLabel: displayName,
           icon,
           isGold: s.includes("pack"),
           isComingSoon: Boolean(cat.is_coming_soon),
@@ -151,7 +153,7 @@ const Collection = () => {
     });
 
     return options;
-  }, [activeAdminCategories]);
+  }, [activeAdminCategories, language, t]);
 
   const { data: parfums, loading, error } = useParfums();
 
@@ -176,8 +178,8 @@ const Collection = () => {
 
   const hero = collectionHeroInfo(
     filter,
-    currentCategoryObj?.name,
-    currentCategoryObj?.description,
+    (language === "en" && currentCategoryObj?.name_en) ? currentCategoryObj.name_en : currentCategoryObj?.name,
+    (language === "en" && currentCategoryObj?.description_en) ? currentCategoryObj.description_en : currentCategoryObj?.description,
     Boolean(currentCategoryObj?.is_coming_soon)
   );
 

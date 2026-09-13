@@ -13,13 +13,17 @@ export type ParfumSize = '5ml' | '10ml' | 'full';
 export type Parfum = {
   id: string;
   name: string;
+  name_en?: string;
   maison: string;
   gender: Gender;
   category?: CollectionCategory;
   description: string;
+  description_en?: string;
   notes: { tete: string[]; coeur: string[]; fond: string[] };
+  notes_en?: string | { tete?: string[]; coeur?: string[]; fond?: string[] };
   prices: { '5ml': number; '10ml': number };
   imageLabel: string;
+  image_label_en?: string;
   image_url?: string | null;
   images?: string[];
   isNew?: boolean;

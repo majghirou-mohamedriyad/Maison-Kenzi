@@ -67,6 +67,7 @@ const slugify = (s: string) =>
 
 const emptyForm = {
   name: "",
+  nameEn: "",
   maison: "",
   gender: "" as unknown as Gender,
   category: "",
@@ -76,8 +77,11 @@ const emptyForm = {
   volume: "",
   stock: "",
   notes: "",
+  notesEn: "",
   description: "",
+  descriptionEn: "",
   imageLabel: "",
+  imageLabelEn: "",
   imageUrl: "" as string,
   images: [] as string[],
   active: true,
@@ -97,6 +101,7 @@ const inputErrorCls =
 const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const availableCategories = useCategories();
   const [f, setF] = useState(emptyForm);
+  const [contentLang, setContentLang] = useState<"fr" | "en">("fr");
   const [categorySearch, setCategorySearch] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
@@ -152,6 +157,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
         setF({
           name: initial.name || "",
+          nameEn: (initial as any).name_en || "",
           maison: initial.maison || "",
           gender: initial.gender || ("" as unknown as Gender),
           category: initialCategories[0] || (initial.category as string) || "",
@@ -161,8 +167,11 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           volume: initialVolume,
           stock: initialStock,
           notes: initialNotes,
+          notesEn: (initial as any).notes_en || "",
           description: initial.description || "",
+          descriptionEn: (initial as any).description_en || "",
           imageLabel: initial.imageLabel || "",
+          imageLabelEn: (initial as any).image_label_en || "",
           imageUrl: initialImages[0] || initial.image_url || "",
           images: initialImages,
           active: initial.active ?? true,
@@ -172,6 +181,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
       } else {
         setF(emptyForm);
       }
+      setContentLang("fr");
       setCategorySearch("");
       setErrors({});
     }
@@ -399,12 +409,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
+      name_en: (f.nameEn || "").trim() || undefined,
       maison: f.maison.trim(),
       gender: f.gender,
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
       seasons: currentSeasons,
       description: (f.description || "").trim(),
+      description_en: (f.descriptionEn || "").trim() || undefined,
+      notes_en: (f.notesEn || "").trim() || undefined,
       notes: {
         tete: parsedNotes,
         coeur: [],
@@ -416,6 +429,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
         "100ml": numPrice,
       },
       imageLabel: (f.imageLabel || "").trim() || slugify(f.name) || "produit",
+      image_label_en: (f.imageLabelEn || "").trim() || undefined,
       image_url: primaryImageUrl,
       images: finalImages,
       isNew: f.isNew,
@@ -685,39 +699,154 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       </div>
                     )}
                   </div>
+                </div>
+              </section>
 
-                  {/* Notes olfactives */}
-                  {/* Notes olfactives */}
-                  <div className="sm:col-span-2">
-                    <label className={labelCls}>Notes olfactives (séparées par des virgules) *</label>
-                    <input
-                      className={errors.notes ? inputErrorCls : inputCls}
-                      value={f.notes}
-                      onChange={(e) => set("notes", e.target.value)}
-                      placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
-                    />
-                    <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
-                      Indiquez les accords et notes olfactives séparés par une virgule.
-                    </span>
-                    {errors.notes && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{errors.notes}</span>
-                      </div>
-                    )}
+              {/* SECTION BILINGUE : Descriptions & Pyramide Olfactive (FR / EN) */}
+              <section className="bg-[#FFFFFF] dark:bg-[#141414] p-5 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+                  <div className="flex items-center gap-2">
+                    <Languages className="w-4 h-4 text-[#C9A96E]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+                      Descriptions & Pyramide Olfactive
+                    </h3>
                   </div>
 
-                  {/* Description olfactive */}
-                  <div className="sm:col-span-2">
-                    <label className={labelCls}>Description olfactive</label>
-                    <textarea
-                      className={inputCls + " min-h-[95px] resize-y"}
-                      value={f.description}
-                      onChange={(e) => set("description", e.target.value)}
-                      placeholder="Notes ambrées florales et boisées d'une élégance rare..."
-                    />
+                  {/* Onglets de sélection de langue (FR / EN) */}
+                  <div className="inline-flex p-1 bg-[#F3F4F6] dark:bg-[#1A1A1A] rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
+                    <button
+                      type="button"
+                      onClick={() => setContentLang("fr")}
+                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                        contentLang === "fr"
+                          ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                          : "text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB]"
+                      }`}
+                    >
+                      <span>Français (FR)</span>
+                      {f.notes && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setContentLang("en")}
+                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                        contentLang === "en"
+                          ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                          : "text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB]"
+                      }`}
+                    >
+                      <span>English (EN)</span>
+                      {f.notesEn ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                      ) : (
+                        <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
+                      )}
+                    </button>
                   </div>
                 </div>
+
+                {/* CONTENU EN FRANÇAIS */}
+                {contentLang === "fr" ? (
+                  <div className="space-y-3.5 animate-in fade-in duration-200">
+                    {/* Notes olfactives FR */}
+                    <div>
+                      <label className={labelCls}>Notes olfactives (FR) *</label>
+                      <input
+                        className={errors.notes ? inputErrorCls : inputCls}
+                        value={f.notes}
+                        onChange={(e) => set("notes", e.target.value)}
+                        placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
+                      />
+                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
+                        Indiquez les accords et notes olfactives séparés par une virgule.
+                      </span>
+                      {errors.notes && (
+                        <div className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 mt-1.5 font-medium animate-in fade-in">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{errors.notes}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description olfactive FR */}
+                    <div>
+                      <label className={labelCls}>Description olfactive (FR)</label>
+                      <textarea
+                        className={inputCls + " min-h-[90px] resize-y"}
+                        value={f.description}
+                        onChange={(e) => set("description", e.target.value)}
+                        placeholder="Notes ambrées florales et boisées d'une élégance rare..."
+                      />
+                    </div>
+
+                    {/* Sous-titre / Accroche FR */}
+                    <div>
+                      <label className={labelCls}>Sous-titre / Accroche (FR)</label>
+                      <input
+                        className={inputCls}
+                        value={f.imageLabel}
+                        onChange={(e) => set("imageLabel", e.target.value)}
+                        placeholder="Ex: Extrait de Parfum — Flacon de Prestige"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* CONTENU EN ANGLAIS */
+                  <div className="space-y-3.5 animate-in fade-in duration-200">
+                    <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#6B7280] dark:text-[#9CA3AF]">
+                      Ce contenu sera automatiquement affiché pour les clients anglophones lorsque la langue du site est sur English (EN).
+                    </div>
+
+                    {/* Nom en anglais (optionnel si différent) */}
+                    <div>
+                      <label className={labelCls}>Nom du parfum (EN - Optionnel)</label>
+                      <input
+                        className={inputCls}
+                        value={f.nameEn}
+                        onChange={(e) => set("nameEn", e.target.value)}
+                        placeholder={f.name ? `Laisser vide pour utiliser "${f.name}"` : "Ex: Baccarat Rouge 540"}
+                      />
+                    </div>
+
+                    {/* Notes olfactives EN */}
+                    <div>
+                      <label className={labelCls}>Olfactory Notes (EN)</label>
+                      <input
+                        className={inputCls}
+                        value={f.notesEn}
+                        onChange={(e) => set("notesEn", e.target.value)}
+                        placeholder="Ex: Jasmine, Saffron, Amberwood, Ambergris, Cedar"
+                      />
+                      <span className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF] mt-1 block">
+                        Comma-separated notes in English.
+                      </span>
+                    </div>
+
+                    {/* Description olfactive EN */}
+                    <div>
+                      <label className={labelCls}>Olfactory Description (EN)</label>
+                      <textarea
+                        className={inputCls + " min-h-[90px] resize-y"}
+                        value={f.descriptionEn}
+                        onChange={(e) => set("descriptionEn", e.target.value)}
+                        placeholder="Luminous and sophisticated amber floral breeze..."
+                      />
+                    </div>
+
+                    {/* Sous-titre / Accroche EN */}
+                    <div>
+                      <label className={labelCls}>Subtitle / Tagline (EN)</label>
+                      <input
+                        className={inputCls}
+                        value={f.imageLabelEn}
+                        onChange={(e) => set("imageLabelEn", e.target.value)}
+                        placeholder="Ex: Extrait de Parfum — Prestige Bottle"
+                      />
+                    </div>
+                  </div>
+                )}
               </section>
             </div>
 

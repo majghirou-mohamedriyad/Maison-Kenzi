@@ -13,7 +13,9 @@ export type AdminCategory = {
   id: string;
   slug: string;
   name: string;
+  name_en?: string;
   description: string;
+  description_en?: string;
   image?: string;
   icon?: string;
   images?: string[];
@@ -71,6 +73,8 @@ const load = (): AdminCategory[] => {
           return {
             ...cat,
             id: cat.id || cat.slug || `cat_${index}_${Date.now()}`,
+            name_en: cat.name_en || "",
+            description_en: cat.description_en || "",
             image: primaryImage,
             icon: primaryImage,
             images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
@@ -104,7 +108,9 @@ export const fetchCategoriesFromSupabase = async () => {
           id: c.id || c.slug || `cat_${index}`,
           slug: c.slug,
           name: c.name,
+          name_en: c.name_en || "",
           description: c.description || "",
+          description_en: c.description_en || "",
           image: primaryImage,
           icon: primaryImage,
           images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
@@ -196,8 +202,10 @@ export const addCategory = async (
   const fullCat: AdminCategory = {
     id,
     name: cat.name.trim(),
+    name_en: cat.name_en ? cat.name_en.trim() : "",
     slug: cat.slug.trim(),
     description: cat.description ? cat.description.trim() : "",
+    description_en: cat.description_en ? cat.description_en.trim() : "",
     image: primaryImage,
     icon: primaryImage,
     images: imgs.length > 0 ? imgs : primaryImage ? [primaryImage] : [],
@@ -216,8 +224,10 @@ export const addCategory = async (
     const payload: any = {
       id: fullCat.id,
       name: fullCat.name,
+      name_en: fullCat.name_en || null,
       slug: fullCat.slug,
       description: fullCat.description,
+      description_en: fullCat.description_en || null,
       icon: fullCat.images && fullCat.images.length > 0 ? JSON.stringify(fullCat.images) : (fullCat.image || null),
       is_active: fullCat.is_active,
       is_coming_soon: fullCat.is_coming_soon,
@@ -227,8 +237,8 @@ export const addCategory = async (
     const { error } = await supabase.from("categories").upsert(payload as never);
 
     if (error) {
-      console.warn("Tentative sans colonne is_coming_soon pour compatibilité:", error.message);
-      const { is_coming_soon: _ics, ...fallbackPayload } = payload;
+      console.warn("Tentative sans colonne optionnelle pour compatibilité:", error.message);
+      const { name_en: _ne, description_en: _de, is_coming_soon: _ics, ...fallbackPayload } = payload;
       const { error: err2 } = await supabase.from("categories").upsert(fallbackPayload as never);
       if (err2) {
         console.error("Erreur lors de l'enregistrement de la catégorie dans Supabase :", err2);
@@ -269,8 +279,10 @@ export const updateCategory = async (
       const payload: any = {
         id: updated.id,
         name: updated.name,
+        name_en: updated.name_en || null,
         slug: updated.slug,
         description: updated.description,
+        description_en: updated.description_en || null,
         icon: updated.images && updated.images.length > 0 ? JSON.stringify(updated.images) : (updated.image || null),
         is_active: updated.is_active,
         is_coming_soon: !!updated.is_coming_soon,
@@ -280,8 +292,8 @@ export const updateCategory = async (
       const { error } = await supabase.from("categories").upsert(payload as never);
 
       if (error) {
-        console.warn("Tentative mise à jour sans is_coming_soon:", error.message);
-        const { is_coming_soon: _ics, ...fallbackPayload } = payload;
+        console.warn("Tentative mise à jour sans colonnes optionnelles:", error.message);
+        const { name_en: _ne, description_en: _de, is_coming_soon: _ics, ...fallbackPayload } = payload;
         const { error: err2 } = await supabase.from("categories").upsert(fallbackPayload as never);
         if (err2) {
           console.error("Erreur lors de la mise à jour de la catégorie dans Supabase :", err2);

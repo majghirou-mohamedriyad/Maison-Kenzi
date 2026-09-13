@@ -36,6 +36,10 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
 
   return {
     ...p,
+    name_en: p.name_en || "",
+    description_en: p.description_en || "",
+    notes_en: p.notes_en || "",
+    image_label_en: p.image_label_en || "",
     active: p.active ?? true,
     categories: cats,
     category: p.category || cats[0] || "",

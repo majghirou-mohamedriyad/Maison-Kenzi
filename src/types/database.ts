@@ -9,18 +9,25 @@ export type CollectionCategory = 'homme' | 'femme' | 'deodorants-stick' | 'packs
 export type Parfum = {
   id: string;
   name: string;
+  name_en?: string;
   maison: string;
   gender: Gender;
   category?: CollectionCategory | string;
   categories?: string[];
   seasons?: string[];
   description: string;
+  description_en?: string;
   notes_tete: string[];
   notes_coeur: string[];
   notes_fond: string[];
+  notes_en?: string;
+  notes_tete_en?: string[];
+  notes_coeur_en?: string[];
+  notes_fond_en?: string[];
   price_5ml: number;
   price_10ml: number;
   image_label: string;
+  image_label_en?: string;
   image_url: string | null;
   images?: string[];
   is_active: boolean;

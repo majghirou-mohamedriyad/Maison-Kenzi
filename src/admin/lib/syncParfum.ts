@@ -135,6 +135,7 @@ export const upsertParfumToSupabase = async (
   const row: Record<string, any> = {
     id: p.id,
     name: p.name.trim(),
+    name_en: p.name_en ? p.name_en.trim() : null,
     maison: p.maison.trim(),
     gender: p.gender || "Mixte",
     category: primaryCategory,
@@ -142,13 +143,16 @@ export const upsertParfumToSupabase = async (
     seasons: currentSeasons,
     images: allImages,
     description: p.description || "",
+    description_en: p.description_en ? p.description_en.trim() : null,
     notes_tete: Array.isArray(p.notes?.tete) ? p.notes.tete : [],
     notes_coeur: Array.isArray(p.notes?.coeur) ? p.notes.coeur : [],
     notes_fond: Array.isArray(p.notes?.fond) ? p.notes.fond : [],
+    notes_en: p.notes_en ? (typeof p.notes_en === "string" ? p.notes_en.trim() : JSON.stringify(p.notes_en)) : null,
     price_5ml: Number(p.prices?.["5ml"] ?? numPrice),
     price_10ml: Number(p.prices?.["10ml"] ?? numPrice),
     price_20ml: Number(p.prices?.["100ml"] ?? numPrice),
     image_label: imageLabelValue,
+    image_label_en: p.image_label_en || null,
     image_url: primaryImageUrl,
     is_active: p.active ?? true,
     is_new: !!p.isNew,
@@ -161,12 +165,21 @@ export const upsertParfumToSupabase = async (
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (categories, images, seasons incluses)
+  // 1. Tentative avec toutes les colonnes modernes (categories, images, seasons, bilingue incluses)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
     console.warn("Supabase upsert - tentative sans colonnes additionnelles:", error.message);
-    // 2. Repli de compatibilité sans les colonnes `categories`, `seasons` ou `images` si non encore migrées sur le VPS
-    const { categories: _cat, seasons: _sea, images: _img, ...fallbackRow } = row;
+    // 2. Repli de compatibilité sans les colonnes optionnelles si non encore migrées sur le VPS
+    const {
+      categories: _cat,
+      seasons: _sea,
+      images: _img,
+      name_en: _ne,
+      description_en: _de,
+      notes_en: _no,
+      image_label_en: _ile,
+      ...fallbackRow
+    } = row;
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
       console.error("Erreur critique Supabase parfums upsert:", err2);

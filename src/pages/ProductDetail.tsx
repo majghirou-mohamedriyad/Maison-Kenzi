@@ -54,13 +54,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 const ParfumDetail = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { parfumId } = useParams();
   const navigate = useNavigate();
   const { data: parfum, loading, error } = useParfum(parfumId);
   const { addItem, openCart } = useCart();
 
   const notesJoined = useMemo(() => {
+    if (language === "en" && (parfum as any)?.notes_en) {
+      return (parfum as any).notes_en;
+    }
     return [
       ...(parfum?.notes_tete || []),
       ...(parfum?.notes_coeur || []),
@@ -68,9 +71,16 @@ const ParfumDetail = () => {
     ]
       .filter(Boolean)
       .join(" • ");
-  }, [parfum]);
+  }, [parfum, language]);
 
-  const translatedDescription = useAutoTranslate(parfum?.description);
+  const rawDescription = useMemo(() => {
+    if (language === "en" && (parfum as any)?.description_en) {
+      return (parfum as any).description_en;
+    }
+    return parfum?.description;
+  }, [parfum, language]);
+
+  const translatedDescription = useAutoTranslate(rawDescription);
   const translatedNotes = useAutoTranslate(notesJoined);
 
   // State des quantités initialisé pour chaque format

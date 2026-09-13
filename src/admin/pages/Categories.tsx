@@ -34,6 +34,7 @@ import {
   Square,
   CheckCircle2,
   AlertTriangle,
+  Languages,
 } from "lucide-react";
 import {
   useCategories,
@@ -113,8 +114,11 @@ const CategoriesAdmin = () => {
 
   // Form State
   const [name, setName] = useState("");
+  const [nameEn, setNameEn] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [categoryLangTab, setCategoryLangTab] = useState<"fr" | "en">("fr");
   const [images, setImages] = useState<string[]>([]);
   const [gender, setGender] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
@@ -288,8 +292,11 @@ const CategoriesAdmin = () => {
   const openAddModal = () => {
     setEditingCat(null);
     setName("");
+    setNameEn("");
     setSlug("");
     setDescription("");
+    setDescriptionEn("");
+    setCategoryLangTab("fr");
     setImages([]);
     setGender("");
     setIsActive(true);
@@ -301,8 +308,11 @@ const CategoriesAdmin = () => {
   const openEditModal = (cat: AdminCategory) => {
     setEditingCat(cat);
     setName(cat.name);
+    setNameEn(cat.name_en || "");
     setSlug(cat.slug);
     setDescription(cat.description || "");
+    setDescriptionEn(cat.description_en || "");
+    setCategoryLangTab("fr");
     const initialImages =
       cat.images && cat.images.length > 0
         ? cat.images
@@ -429,8 +439,10 @@ const CategoriesAdmin = () => {
       if (editingCat) {
         const res = await updateCategory(editingCat.id, {
           name: name.trim(),
+          name_en: nameEn.trim() || undefined,
           slug: finalSlug,
           description: description.trim(),
+          description_en: descriptionEn.trim() || undefined,
           image: primaryImage,
           icon: primaryImage,
           images: images,
@@ -447,8 +459,10 @@ const CategoriesAdmin = () => {
       } else {
         const res = await addCategory({
           name: name.trim(),
+          name_en: nameEn.trim() || undefined,
           slug: finalSlug,
           description: description.trim(),
+          description_en: descriptionEn.trim() || undefined,
           image: primaryImage,
           icon: primaryImage,
           images: images,
@@ -1091,25 +1105,115 @@ const CategoriesAdmin = () => {
           </DialogHeader>
 
           <form onSubmit={handleSave} className="space-y-4 mt-2">
-            <div>
-              <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                Nom de la catégorie *
-              </label>
-              <input
-                value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Ex: Parfums d'Exception"
-                className={`w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] ${
-                  errors.name ? "border-red-500 bg-red-50/50" : "border-[#E5DDD0] dark:border-[#2D2A26]"
-                }`}
-              />
-              {errors.name && (
-                <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  <span>{errors.name}</span>
-                </div>
-              )}
+            {/* Sélecteur d'onglets de Langue FR / EN */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26]">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                <Languages className="w-4 h-4 text-[#C9A96E]" />
+                <span>Langue des contenus</span>
+              </div>
+              <div className="inline-flex p-1 bg-white/80 dark:bg-black/40 rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                <button
+                  type="button"
+                  onClick={() => setCategoryLangTab("fr")}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                    categoryLangTab === "fr"
+                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                  }`}
+                >
+                  <span>Français (FR)</span>
+                  {name && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCategoryLangTab("en")}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                    categoryLangTab === "en"
+                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                  }`}
+                >
+                  <span>English (EN)</span>
+                  {nameEn || descriptionEn ? (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                  ) : (
+                    <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* CONTENU FR */}
+            {categoryLangTab === "fr" ? (
+              <div className="space-y-3.5 animate-in fade-in duration-200">
+                <div>
+                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                    Nom de la catégorie (FR) *
+                  </label>
+                  <input
+                    value={name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    placeholder="Ex: Parfums d'Exception"
+                    className={`w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] ${
+                      errors.name ? "border-red-500 bg-red-50/50" : "border-[#E5DDD0] dark:border-[#2D2A26]"
+                    }`}
+                  />
+                  {errors.name && (
+                    <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.name}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                    Description de la collection (FR)
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Décrivez l'univers olfactif de cette catégorie..."
+                    rows={3}
+                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* CONTENU EN */
+              <div className="space-y-3.5 animate-in fade-in duration-200">
+                <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                  Ces informations seront affichées sur la boutique lorsque la langue sélectionnée par le client est l'anglais.
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                    Category Name (EN - Optionnel)
+                  </label>
+                  <input
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.target.value)}
+                    placeholder={name ? `Laisser vide pour utiliser "${name}"` : "Ex: Exclusive Fragrances"}
+                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                    Collection Description (EN)
+                  </label>
+                  <textarea
+                    value={descriptionEn}
+                    onChange={(e) => setDescriptionEn(e.target.value)}
+                    placeholder="Describe this fragrance collection in English..."
+                    rows={3}
+                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Multi-Photos de bannières de la catégorie */}
             <div className="space-y-2.5">
@@ -1279,19 +1383,6 @@ const CategoriesAdmin = () => {
                 accept="image/png,image/jpeg,image/webp,image/jpg"
                 className="hidden"
                 onChange={handleMultipleFilesChange}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                Description de la collection
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Décrivez l'univers olfactif de cette catégorie..."
-                rows={3}
-                className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
               />
             </div>
 
