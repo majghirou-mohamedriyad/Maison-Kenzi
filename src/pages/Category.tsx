@@ -50,18 +50,11 @@ import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import { isParfumInCategory } from "@/lib/productCategories";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type FilterKey = string;
 type SortOption = "featured" | "price_asc" | "price_desc" | "newest" | "name_asc";
 type GenderOption = "all" | "Homme" | "Femme" | "Mixte";
-
-const sortOptionsList: { value: SortOption; label: string }[] = [
-  { value: "featured", label: "Recommandés" },
-  { value: "price_asc", label: "Prix croissant" },
-  { value: "price_desc", label: "Prix décroissant" },
-  { value: "newest", label: "Nouveautés" },
-  { value: "name_asc", label: "Nom (A–Z)" },
-];
 
 interface FilterOption {
   key: FilterKey;
@@ -82,31 +75,8 @@ const filterToSlug = (key: FilterKey): string => {
   return key;
 };
 
-const collectionHeroInfo = (
-  filter: FilterKey,
-  categoryName?: string,
-  categoryDesc?: string,
-  isComingSoon?: boolean
-) => {
-  const f = filter.toLowerCase();
-  if (f === "toutes" || f === "all") {
-    return {
-      title: "Toutes les Collections",
-      subtitle: "",
-      description: "Explorez l'ensemble de notre sélection : haute parfumerie, cosmétiques et créations artisanales d'exception.",
-      badge: "",
-    };
-  }
-
-  return {
-    title: categoryName || filter,
-    subtitle: "",
-    description: (categoryDesc || "").trim(),
-    badge: isComingSoon ? "À Venir" : "",
-  };
-};
-
 const Collection = () => {
+  const { t } = useLanguage();
   const { collection } = useParams();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterKey>(slugToFilter(collection));
@@ -116,6 +86,38 @@ const Collection = () => {
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [genderFilter, setGenderFilter] = useState<GenderOption>("all");
 
+  const sortOptionsList = useMemo<{ value: SortOption; label: string }[]>(() => [
+    { value: "featured", label: t.catalog.sortFeatured },
+    { value: "price_asc", label: t.catalog.sortPriceAsc },
+    { value: "price_desc", label: t.catalog.sortPriceDesc },
+    { value: "newest", label: t.catalog.sortNewest },
+    { value: "name_asc", label: t.catalog.sortNameAsc },
+  ], [t]);
+
+  const collectionHeroInfo = (
+    filterKey: FilterKey,
+    categoryName?: string,
+    categoryDesc?: string,
+    isComingSoon?: boolean
+  ) => {
+    const f = filterKey.toLowerCase();
+    if (f === "toutes" || f === "all") {
+      return {
+        title: t.catalog.allCollections,
+        subtitle: "",
+        description: t.catalog.allCollectionsDesc,
+        badge: "",
+      };
+    }
+
+    return {
+      title: categoryName || filterKey,
+      subtitle: "",
+      description: (categoryDesc || "").trim(),
+      badge: isComingSoon ? t.catalog.comingSoon : "",
+    };
+  };
+
   const adminCategories = useCategories();
   const activeAdminCategories = useMemo(
     () => adminCategories.filter((c) => c.is_active),
@@ -124,7 +126,7 @@ const Collection = () => {
 
   const filterOptions = useMemo<FilterOption[]>(() => {
     const options: FilterOption[] = [
-      { key: "Toutes", label: "Toutes les Collections", shortLabel: "Toutes", icon: Grid },
+      { key: "Toutes", label: t.catalog.allCollections, shortLabel: t.catalog.allCollections, icon: Grid },
     ];
 
     activeAdminCategories.forEach((cat) => {
@@ -358,8 +360,8 @@ const Collection = () => {
                     prevBanner();
                   }}
                   className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
-                  title="Photo précédente (Manuel)"
-                  aria-label="Photo précédente"
+                  title={t.catalog.prevPhoto}
+                  aria-label={t.catalog.prevPhoto}
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -370,8 +372,8 @@ const Collection = () => {
                     nextBanner();
                   }}
                   className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
-                  title="Photo suivante (Manuel)"
-                  aria-label="Photo suivante"
+                  title={t.catalog.nextPhoto}
+                  aria-label={t.catalog.nextPhoto}
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -387,7 +389,7 @@ const Collection = () => {
                     <BreadcrumbItem>
                       <BreadcrumbLink asChild>
                         <Link to="/" className="text-white/70 hover:text-[#C9A96E] transition-colors">
-                          Accueil
+                          {t.nav.home}
                         </Link>
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -444,8 +446,8 @@ const Collection = () => {
                           ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
                           : "w-2 bg-white/40 hover:bg-white/80"
                           }`}
-                        title={`Afficher la photo ${dotIdx + 1} (Manuel)`}
-                        aria-label={`Aller à la photo ${dotIdx + 1}`}
+                        title={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
+                        aria-label={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
                       />
                     ))}
                     <span className="text-[10px] font-medium text-white/70 ml-1">
@@ -469,7 +471,7 @@ const Collection = () => {
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
-                        Accueil
+                        {t.nav.home}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -524,7 +526,7 @@ const Collection = () => {
                 </span>
               </div>
               <div className="flex items-center gap-1 text-xs text-primary font-semibold">
-                <span>Changer</span>
+                <span>{t.catalog.change}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isMobileSelectOpen ? "rotate-180" : ""}`} />
               </div>
             </button>
@@ -554,7 +556,7 @@ const Collection = () => {
                           <span>{item.label}</span>
                           {item.isComingSoon && (
                             <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] font-medium bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full">
-                              À venir
+                              {t.catalog.comingSoon}
                             </span>
                           )}
                         </div>
@@ -598,7 +600,7 @@ const Collection = () => {
                         : "bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30"
                         }`}
                     >
-                      À venir
+                      {t.catalog.comingSoon}
                     </span>
                   )}
                   {count > 0 && (
@@ -627,7 +629,7 @@ const Collection = () => {
                     type="text"
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
-                    placeholder={`Rechercher dans ${hero.title}...`}
+                    placeholder={`${t.catalog.searchInCategory} ${hero.title}...`}
                     className="w-full pl-10 pr-9 py-2 text-xs bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 focus:border-primary rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all shadow-2xs"
                   />
                   {localSearch && (
@@ -635,7 +637,7 @@ const Collection = () => {
                       type="button"
                       onClick={() => setLocalSearch("")}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition-colors cursor-pointer"
-                      aria-label="Effacer la recherche"
+                      aria-label={t.catalog.clearSearch}
                     >
                       <X size={14} />
                     </button>
@@ -649,10 +651,10 @@ const Collection = () => {
                     <div className="inline-flex items-center p-0.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 shadow-2xs">
                       {(
                         [
-                          { key: "all", label: "Tous", icon: Users },
-                          { key: "Homme", label: "Homme", icon: Flame },
-                          { key: "Femme", label: "Femme", icon: Flower2 },
-                          { key: "Mixte", label: "Mixte", icon: Sparkles },
+                          { key: "all", label: t.catalog.genderAll, icon: Users },
+                          { key: "Homme", label: t.catalog.genderMen, icon: Flame },
+                          { key: "Femme", label: t.catalog.genderWomen, icon: Flower2 },
+                          { key: "Mixte", label: t.catalog.genderUnisex, icon: Sparkles },
                         ] as const
                       ).map((item) => {
                         const isActive = genderFilter === item.key;
@@ -688,16 +690,16 @@ const Collection = () => {
                       className={`w-2 h-2 rounded-full transition-all ${onlyInStock ? "bg-emerald-500 shadow-xs animate-pulse" : "bg-muted-foreground/30"
                         }`}
                     />
-                    <span>En stock</span>
+                    <span>{t.catalog.inStockToggle}</span>
                   </button>
 
                   {/* Menu Déroulant Tri de Prestige */}
                   <DropdownMenu>
                     <DropdownMenuTrigger className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-background/90 dark:bg-[#0C0B0A]/90 border border-border/80 hover:border-primary/50 text-foreground text-[11px] font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer shadow-2xs outline-none focus:ring-2 focus:ring-primary/20">
                       <ArrowUpDown className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span className="hidden sm:inline text-muted-foreground font-normal">Tri :</span>
+                      <span className="hidden sm:inline text-muted-foreground font-normal">{t.catalog.sort}</span>
                       <span className="font-semibold text-foreground">
-                        {sortOptionsList.find((s) => s.value === sortBy)?.label || "Recommandés"}
+                        {sortOptionsList.find((s) => s.value === sortBy)?.label || t.catalog.sortFeatured}
                       </span>
                       <ChevronDown className="w-3 h-3 text-muted-foreground" />
                     </DropdownMenuTrigger>
@@ -733,11 +735,11 @@ const Collection = () => {
                         setOnlyInStock(false);
                         setGenderFilter("all");
                       }}
-                      title="Réinitialiser tous les filtres"
+                      title={t.catalog.resetFilters}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/30 text-[11px] font-medium tracking-wider uppercase transition-all cursor-pointer shadow-2xs"
                     >
                       <RotateCcw className="w-3 h-3" />
-                      <span className="hidden sm:inline">Effacer</span>
+                      <span className="hidden sm:inline">{t.catalog.clearFilters}</span>
                     </button>
                   )}
                 </div>
@@ -750,12 +752,12 @@ const Collection = () => {
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-2">
           {error ? (
             <div className="text-center py-20 bg-card/40 border border-border rounded-3xl p-6">
-              <p className="text-sm text-destructive">Une erreur est survenue lors du chargement des parfums.</p>
+              <p className="text-sm text-destructive">{t.catalog.errorLoading}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="mt-4 text-xs uppercase tracking-widest text-primary border border-primary/40 px-5 py-2.5 rounded-full hover:bg-primary/10 cursor-pointer"
               >
-                Réessayer
+                {t.catalog.retry}
               </button>
             </div>
           ) : loading ? (
@@ -773,19 +775,19 @@ const Collection = () => {
             /* État sobre : Aucun produit dans la base */
             <div className="text-center py-24 px-4 max-w-md mx-auto">
               <p className="font-serif text-xl sm:text-2xl text-foreground font-normal mb-2">
-                Aucun produit
+                {t.catalog.noProductFound}
               </p>
               <p className="text-xs font-light text-muted-foreground leading-relaxed">
-                Aucun parfum n'est disponible pour le moment.
+                {t.catalog.noProductDesc}
               </p>
             </div>
           ) : (
             <>
               <div className="flex items-center justify-between text-xs text-muted-foreground px-1 pb-3">
-                <span>{filteredAndSorted.length} référence{filteredAndSorted.length > 1 ? "s" : ""} disponible{filteredAndSorted.length > 1 ? "s" : ""}</span>
+                <span>{filteredAndSorted.length} {filteredAndSorted.length > 1 ? t.catalog.availableReferencesPlural : t.catalog.availableReferences}</span>
                 {localSearch && (
                   <button onClick={() => setLocalSearch("")} className="text-primary hover:underline text-[11px]">
-                    Effacer la recherche
+                    {t.catalog.clearSearch}
                   </button>
                 )}
               </div>
@@ -825,7 +827,7 @@ const Collection = () => {
                         {outOfStock && (
                           <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 py-0.5 rounded-full font-bold border border-zinc-700/60 shadow-md">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            <span>Rupture</span>
+                            <span>{t.catalog.outOfStockBadge}</span>
                           </span>
                         )}
 
@@ -887,7 +889,7 @@ const Collection = () => {
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
                         <span className={`text-xs sm:text-sm font-semibold tracking-tight ${outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
                           }`}>
-                          {outOfStock ? "Rupture de stock" : pricing.priceText}
+                          {outOfStock ? t.common.outOfStock : pricing.priceText}
                         </span>
 
                         <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
@@ -912,13 +914,13 @@ const Collection = () => {
                     <div className="space-y-2 relative z-10">
                       <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#C9A96E]/10 border border-[#C9A96E]/30 text-[#C9A96E] text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em]">
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>En Cours d'Élaboration</span>
+                        <span>{t.catalog.comingSoonBadge}</span>
                       </div>
                       <h3 className="font-serif text-2xl sm:text-3xl text-foreground font-normal tracking-tight">
-                        Cette collection arrive très prochainement
+                        {t.catalog.comingSoonTitle}
                       </h3>
                       <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-lg mx-auto font-light">
-                        Nos maîtres parfumeurs préparent actuellement la sélection des flacons originaux d'exception pour l'univers <strong className="text-foreground font-medium">{currentCategoryObj.name}</strong>.
+                        {t.catalog.comingSoonDescPrefix} <strong className="text-foreground font-medium">{currentCategoryObj.name}</strong>.
                       </p>
                     </div>
 
@@ -929,14 +931,14 @@ const Collection = () => {
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wider shadow-sm hover:bg-primary/90 transition-all cursor-pointer"
                       >
                         <Sparkles className="w-4 h-4" />
-                        <span>Explorer les autres collections</span>
+                        <span>{t.catalog.exploreOtherCollections}</span>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-20 bg-card/40 border border-border rounded-3xl p-8 max-w-md mx-auto space-y-3">
                     <p className="text-sm font-medium text-foreground">
-                      Aucun parfum ne correspond à vos critères de recherche.
+                      {t.catalog.noResults}
                     </p>
                     <button
                       onClick={() => {
@@ -946,7 +948,7 @@ const Collection = () => {
                       }}
                       className="text-xs uppercase tracking-wider font-semibold text-primary border border-primary/30 px-4 py-2 rounded-xl hover:bg-primary/10 transition-colors cursor-pointer"
                     >
-                      Réinitialiser les filtres
+                      {t.catalog.resetFilters}
                     </button>
                   </div>
                 )

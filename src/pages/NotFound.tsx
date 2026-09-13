@@ -3,6 +3,7 @@
  *
  * Page d'erreur personnalisée dans l'univers Haute Parfumerie, avec navigation
  * de secours vers les collections, le catalogue et la conciergerie privée.
+ * Entièrement bilingue (FR / EN) et zéro emoji.
  */
 
 import { useLocation, Link } from "react-router-dom";
@@ -13,17 +14,17 @@ import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles,
-  Compass,
   ArrowRight,
   MessageCircle,
   Truck,
-  ShoppingBag,
-  Flame,
+  ShieldCheck,
   Home,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NotFound = () => {
+  const { t } = useLanguage();
   const location = useLocation();
   const { settings } = useAppSettings();
 
@@ -40,8 +41,8 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
       <Seo
-        title="Page Introuvable (404) | Maison Kenzi"
-        description="La création ou la page que vous recherchez n'est plus disponible ou a été déplacée. Explorez nos collections de parfums 100% authentiques au Maroc."
+        title={t.notFound.seoTitle}
+        description={t.notFound.seoDesc}
         path="/404"
       />
       <Header />
@@ -55,7 +56,7 @@ const NotFound = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold uppercase tracking-[0.25em]">
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span>Sillage Égaré · Erreur 404</span>
+            <span>{t.notFound.badge}</span>
           </div>
 
           {/* Luxury Large 404 Display */}
@@ -65,13 +66,13 @@ const NotFound = () => {
             </h1>
             <div className="absolute inset-0 flex items-center justify-center">
               <h2 className="font-serif text-2xl sm:text-4xl text-foreground font-bold max-w-lg px-2">
-                Cette fragrance semble s'être <span className="text-primary italic font-serif">évaporée</span>
+                {t.notFound.titlePrefix}<span className="text-primary italic font-serif">{t.notFound.titleHighlight}</span>
               </h2>
             </div>
           </div>
 
           <p className="text-xs sm:text-sm text-muted-foreground font-light leading-relaxed max-w-md mx-auto">
-            La page ou la création que vous recherchez a été déplacée ou n'est plus accessible. Laissez-vous guider vers nos collections de Haute Parfumerie.
+            {t.notFound.desc}
           </p>
 
           {/* Primary Action Buttons */}
@@ -82,7 +83,7 @@ const NotFound = () => {
             >
               <Link to="/">
                 <Home className="w-4 h-4" />
-                <span>Retour à l'Accueil</span>
+                <span>{t.notFound.backHome}</span>
               </Link>
             </Button>
 
@@ -93,7 +94,7 @@ const NotFound = () => {
             >
               <Link to="/collection/all">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span>Explorer le Catalogue</span>
+                <span>{t.notFound.exploreCatalog}</span>
               </Link>
             </Button>
           </div>
@@ -101,7 +102,7 @@ const NotFound = () => {
           {/* Quick Discovery Cards */}
           <div className="pt-8 border-t border-border/60 max-w-xl mx-auto">
             <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-muted-foreground mb-4">
-              Ou explorez directement nos univers
+              {t.notFound.exploreUniverses}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
@@ -111,12 +112,12 @@ const NotFound = () => {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" /> Catalogue
+                    <Sparkles className="w-3.5 h-3.5 text-primary" /> {t.notFound.catalogCard}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>
                 <p className="text-[10px] text-muted-foreground font-light mt-1">
-                  Explorer tous nos flacons 100% originaux
+                  {t.notFound.catalogCardDesc}
                 </p>
               </Link>
 
@@ -126,12 +127,12 @@ const NotFound = () => {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-primary" /> Notre Maison
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" /> {t.notFound.aboutCard}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>
                 <p className="text-[10px] text-muted-foreground font-light mt-1">
-                  Authenticité garantie & engagement
+                  {t.notFound.aboutCardDesc}
                 </p>
               </Link>
 
@@ -141,12 +142,12 @@ const NotFound = () => {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
-                    <Truck className="w-3.5 h-3.5 text-primary" /> Suivi Colis
+                    <Truck className="w-3.5 h-3.5 text-primary" /> {t.notFound.trackingCard}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>
                 <p className="text-[10px] text-muted-foreground font-light mt-1">
-                  Suivre l'acheminement en direct
+                  {t.notFound.trackingCardDesc}
                 </p>
               </Link>
             </div>
@@ -161,7 +162,7 @@ const NotFound = () => {
               className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-[#25D366] transition-colors"
             >
               <MessageCircle className="w-4 h-4 text-[#25D366]" />
-              <span>Besoin d'un conseil ? Écrivez à notre Conciergerie WhatsApp</span>
+              <span>{t.notFound.waAssistance}</span>
             </a>
           </div>
         </div>

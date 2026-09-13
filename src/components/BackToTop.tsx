@@ -10,8 +10,10 @@
 import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const BackToTop = () => {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
   const location = useLocation();
@@ -61,8 +63,8 @@ export const BackToTop = () => {
         type="button"
         onClick={scrollToTop}
         className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-card/90 dark:bg-[#151311]/90 backdrop-blur-xl border border-primary/20 hover:border-primary text-foreground hover:text-primary flex items-center justify-center shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group"
-        title={`Retourner en haut de la page (${Math.round(progress)}% défilé)`}
-        aria-label={`Retourner en haut de la page (${Math.round(progress)}% défilé)`}
+        title={`${t.backToTop.aria} (${Math.round(progress)}%)`}
+        aria-label={`${t.backToTop.aria} (${Math.round(progress)}%)`}
       >
         {/* Anneau SVG de progression circulaire */}
         <svg

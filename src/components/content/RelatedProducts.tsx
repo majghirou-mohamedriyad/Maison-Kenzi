@@ -12,6 +12,7 @@ import { formatMAD, getParfumPricingSummary } from "@/lib/sizes";
 import { Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface RelatedProductsProps {
   currentParfumId?: string;
@@ -20,6 +21,7 @@ interface RelatedProductsProps {
 }
 
 const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsProps) => {
+  const { t } = useLanguage();
   const { data: allParfums, loading } = useParfums();
 
   // Filter out current product AND out of stock / inactive products
@@ -66,10 +68,10 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
       <div className="flex items-center justify-between mb-8">
         <div>
           <p className="text-[10px] uppercase tracking-[0.25em] text-primary mb-1">
-            Recommandations
+            {t.related.tag}
           </p>
           <h2 className="font-serif text-xl sm:text-2xl text-foreground font-light">
-            Vous Aimerez Aussi
+            {t.related.title}
           </h2>
         </div>
       </div>

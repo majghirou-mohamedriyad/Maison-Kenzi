@@ -82,13 +82,13 @@ const Navigation = () => {
   // Suggestions rapides pour le panneau de recherche
   const searchCategorySuggestions = useMemo(() => {
     const baseSuggestions = [
-      { slug: "all", name: "Tous les Parfums" },
+      { slug: "all", name: t.nav.allFragrances },
     ];
     const adminSugg = activeAdminCategories
       .filter((c) => c.slug.toLowerCase() !== "all" && c.slug.toLowerCase() !== "toutes")
       .map((c) => ({ slug: c.slug, name: c.name }));
     return [...baseSuggestions, ...adminSugg].slice(0, 4);
-  }, [activeAdminCategories]);
+  }, [activeAdminCategories, t]);
 
   const randomParfumSuggestions = useMemo(() => {
     if (!isSearchOpen || allParfums.length === 0) return [];
@@ -401,7 +401,7 @@ const Navigation = () => {
               : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             aria-label={t("nav.search", "Rechercher")}
-            title="Recherche (Ctrl + K)"
+            title={t.nav.searchShortcut}
           >
             <Search size={18} strokeWidth={1.8} />
           </button>
@@ -445,7 +445,7 @@ const Navigation = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un parfum, une maison..."
+                placeholder={t.common.searchPlaceholder}
                 className="w-full bg-transparent text-xs sm:text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               {searchQuery && (
@@ -456,8 +456,8 @@ const Navigation = () => {
                     searchInputRef.current?.focus();
                   }}
                   className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted/60 transition-colors cursor-pointer"
-                  aria-label="Effacer le champ"
-                  title="Effacer"
+                  aria-label={t.nav.clearField}
+                  title={t.catalog.clearFilters}
                 >
                   <X size={15} />
                 </button>
@@ -471,7 +471,7 @@ const Navigation = () => {
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                     <Tag className="w-3 h-3 text-primary" />
-                    <span>Univers & Collections</span>
+                    <span>{t.nav.universesTitle}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {searchCategorySuggestions.map((cat) => (
@@ -495,7 +495,7 @@ const Navigation = () => {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      <span>Créations à Découvrir</span>
+                      <span>{t.nav.discoverCreations}</span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {randomParfumSuggestions.map((p) => (
@@ -547,7 +547,7 @@ const Navigation = () => {
                   ))
                 ) : (
                   <div className="py-6 text-center text-xs text-muted-foreground">
-                    Aucun parfum trouvé pour « {searchQuery} »
+                    {t.nav.noParfumFound} « {searchQuery} »
                   </div>
                 )}
               </div>
