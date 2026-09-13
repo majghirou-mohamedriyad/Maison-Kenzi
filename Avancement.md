@@ -3,16 +3,17 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Gestion Bilingue FR / EN Intégrale dans les Modales d'Administration (Parfums & Catégories) Opérationnelle — Saisie Bilingue des Notes Olfactives, Descriptions, Noms et Accroches avec Synchronisation Supabase Réactive & Zéro Emoji
+- **Statut général** : Modales d'Administration Ultra-Compactes & Adaptatives (Option A — max-h-[86vh] avec disposition ergonomique resserrée) Opérationnelles — Zéro Défilement Inutile, Affichage Parfait & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
 
-- [x] Dimensionnement Calibré `calc(100vh - 70px)` & Affichage Intégral Parfait ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
-  - [x] **Hauteur Calibrée `calc(100vh - 70px)`** : Définition stricte de la hauteur de la boîte de dialogue pour laisser une marge de sécurité de 35px en haut et 35px en bas, évitant tout chevauchement avec la barre des tâches de Windows.
-  - [x] **Boutons d'Action Doubles (En-tête & Pied de Page)** : Les boutons « Annuler » et « Sauvegarder » sont immédiatement accessibles en haut et en bas.
-  - [x] **Défilement Interne Pur** : Le corps du formulaire défile sans perturber le positionnement de la fenêtre modale.
+- [x] Optimisation Ergonomique & Modale Adaptative Ultra-Compacte — Option A ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx)) :
+  - [x] **Hauteur Adaptative Intelligente (`max-h-[86vh] h-auto`)** : Suppression de la hauteur forcée à 100% pour que la modale s'ajuste naturellement à son contenu et soit parfaitement centrée sur l'écran.
+  - [x] **Compaction des Espacements & Cartes** : Réduction harmonieuse des paddings (`p-3`), des hauteurs de champs et des marges.
+  - [x] **Disposition Horizontale des Badges & Visibilité** : Réorganisation des 3 interrupteurs (Actif en boutique, Nouveau, Best Seller) en 3 colonnes côte à côte pour économiser 80px de hauteur verticale.
+  - [x] **Double Accessibilité des Actions** : Boutons « Annuler » et « Sauvegarder » conservés en haut dans l'en-tête et en bas dans le pied de page.
 
 - [x] Section Bilingue (Français & Anglais) dans les Modales d'Administration des Parfums et des Catégories ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/data/parfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/data/parfums.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
   - [x] **Modale Parfums (`ProductModal.tsx`)** : Intégration d'un sélecteur d'onglets de langue interactif (`Français (FR)` / `English (EN)`) avec pastilles de statut d'achèvement permettant de renseigner en français et en anglais les notes olfactives, la description olfactive complète, le nom alternatif et le sous-titre/accroche du parfum.

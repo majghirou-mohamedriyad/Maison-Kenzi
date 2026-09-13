@@ -1092,24 +1092,20 @@ const CategoriesAdmin = () => {
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent
-          style={{
-            maxHeight: "calc(100vh - 70px)",
-            height: "calc(100vh - 70px)",
-          }}
-          className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[94vw] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]"
+          className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[92vw] max-h-[86vh] h-auto flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]"
         >
           {/* En-tête Fixe avec Actions Rapides */}
-          <div className="p-3.5 sm:p-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
-            <div className="flex items-center justify-between gap-3 pr-10">
+          <div className="p-3 px-4 sm:px-5 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
+            <div className="flex items-center justify-between gap-3 pr-8 sm:pr-10">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
-                  <FolderTree className="w-4 h-4" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
+                  <FolderTree className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div className="min-w-0">
-                  <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
+                  <DialogTitle className="text-xs sm:text-sm font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
                     {editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}
                   </DialogTitle>
-                  <DialogDescription className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] truncate">
+                  <DialogDescription className="text-[10px] text-[#7A726A] dark:text-[#A39B91] truncate">
                     {editingCat
                       ? "Modifiez les informations, univers olfactif et bannières."
                       : "Configurez un nouvel univers olfactif pour vos créations."}
@@ -1122,7 +1118,7 @@ const CategoriesAdmin = () => {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
                 >
                   Annuler
                 </button>
@@ -1130,7 +1126,7 @@ const CategoriesAdmin = () => {
                   type="submit"
                   form="category-form"
                   disabled={isSaving}
-                  className="px-4 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
+                  className="px-3.5 py-1 text-xs font-bold rounded-lg bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-xs shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
                 >
                   {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour" : "Sauvegarder"}
                 </button>

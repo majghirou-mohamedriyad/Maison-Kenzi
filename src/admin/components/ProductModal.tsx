@@ -474,24 +474,20 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        style={{
-          maxHeight: "calc(100vh - 70px)",
-          height: "calc(100vh - 70px)",
-        }}
-        className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl xl:max-w-6xl w-[94vw] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]"
+        className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl xl:max-w-6xl w-[92vw] max-h-[86vh] h-auto flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]"
       >
-        {/* EN-TÊTE FIXE AVEC BOUTONS D'ACTION IMMÉDIATEMENT VISIBLES */}
-        <div className="p-3.5 sm:p-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
-          <div className="flex items-center justify-between gap-3 pr-10">
+        {/* EN-TÊTE FIXE COMPACT AVEC BOUTONS D'ACTION IMMÉDIATS */}
+        <div className="p-3 px-4 sm:px-5 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
+          <div className="flex items-center justify-between gap-3 pr-8 sm:pr-10">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="min-w-0">
-                <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
+                <DialogTitle className="text-xs sm:text-sm font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
                   {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
                 </DialogTitle>
-                <DialogDescription className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] truncate">
+                <DialogDescription className="text-[10px] text-[#7A726A] dark:text-[#A39B91] truncate">
                   {initial
                     ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels."
                     : "Renseignez les détails pour ajouter une nouvelle création."}
@@ -504,7 +500,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="px-3 py-1.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 Annuler
               </button>
@@ -512,31 +508,31 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 type="submit"
                 form="product-form"
                 disabled={saving || uploading}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-md shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-bold rounded-lg bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-xs shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
               >
-                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                 <span>{initial ? "Mettre à jour" : "Sauvegarder"}</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* CORPS DÉFILANT AVEC MIN-H-0 STRICT */}
-        <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4">
+        {/* CORPS DÉFILANT ADAPTATIF ULTRA-COMPACT */}
+        <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-4 space-y-3">
           {/* Grille principale équilibrée en 2 colonnes égales (6 / 6) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
             {/* COLONNE GAUCHE (6 colonnes) : Informations Générales, Tarifs & Pyramide Olfactive */}
-            <div className="lg:col-span-6 space-y-4">
+            <div className="lg:col-span-6 space-y-3">
               {/* Carte 1 : Informations Générales & Tarifs */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
                 <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
                     Informations générales & Tarifs
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {/* Nom du parfum */}
                   <div>
                     <label className={labelCls}>Nom du parfum *</label>
@@ -547,7 +543,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Baccarat Rouge 540"
                     />
                     {errors.name && (
-                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                         <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.name}</span>
                       </div>
@@ -564,7 +560,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Maison Francis Kurkdjian"
                     />
                     {errors.maison && (
-                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                         <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.maison}</span>
                       </div>
@@ -574,7 +570,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   {/* Genre */}
                   <div className="sm:col-span-2">
                     <label className={labelCls}>Genre *</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5">
                       {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
                         <button
                           key={g}
@@ -585,7 +581,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                               set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
                             }
                           }}
-                          className={`py-1.5 text-xs font-medium rounded-lg border transition-all cursor-pointer ${
+                          className={`py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
                             f.gender === g
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                               : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
@@ -596,7 +592,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       ))}
                     </div>
                     {errors.gender && (
-                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                         <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.gender}</span>
                       </div>
@@ -605,7 +601,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                   {/* Saisons d'utilisation */}
                   <div className="sm:col-span-2">
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-0.5">
                       <label className={labelCls}>Saisons d'utilisation *</label>
                       <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
                         {currentSeasons.length === 0
@@ -621,7 +617,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             key={season}
                             type="button"
                             onClick={() => toggleSeason(season)}
-                            className={`py-1.5 px-2 text-[11px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
+                            className={`py-1 px-1.5 text-[10px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
                               isSelected
                                 ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                                 : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
@@ -633,7 +629,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       })}
                     </div>
                     {errors.seasons && (
-                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                         <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.seasons}</span>
                       </div>
@@ -641,7 +637,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
 
                   {/* Tarification & Stock */}
-                  <div className="sm:col-span-2 grid grid-cols-3 gap-2.5 pt-0.5">
+                  <div className="sm:col-span-2 grid grid-cols-3 gap-2 pt-0.5">
                     {/* Prix */}
                     <div>
                       <label className={labelCls}>Prix (€) *</label>
@@ -649,12 +645,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <input
                           type="number"
                           min={1}
-                          className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
+                          className={(errors.price ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
                           value={f.price}
                           onChange={(e) => set("price", e.target.value)}
                           placeholder="85"
                         />
-                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-[#C9A96E] pointer-events-none">
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#C9A96E] pointer-events-none">
                           €
                         </span>
                       </div>
@@ -670,12 +666,12 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <input
                           type="number"
                           min={1}
-                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
+                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
                           value={f.volume}
                           onChange={(e) => set("volume", e.target.value)}
                           placeholder="100"
                         />
-                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
                           ml
                         </span>
                       </div>
@@ -704,11 +700,11 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
 
               {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
                   <div className="flex items-center gap-1.5">
                     <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
                       Descriptions & Notes Olfactives
                     </h3>
                   </div>
@@ -718,7 +714,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <button
                       type="button"
                       onClick={() => setContentLang("fr")}
-                      className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                      className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                         contentLang === "fr"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                           : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -732,7 +728,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <button
                       type="button"
                       onClick={() => setContentLang("en")}
-                      className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                      className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                         contentLang === "en"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                           : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -750,7 +746,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                 {/* CONTENU FR */}
                 {contentLang === "fr" ? (
-                  <div className="space-y-2.5 animate-in fade-in duration-150">
+                  <div className="space-y-2 animate-in fade-in duration-150">
                     <div>
                       <label className={labelCls}>Notes olfactives (FR) *</label>
                       <input
@@ -760,7 +756,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
                       />
                       {errors.notes && (
-                        <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                        <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                           <AlertCircle className="w-3 h-3 shrink-0" />
                           <span>{errors.notes}</span>
                         </div>
@@ -770,7 +766,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <div>
                       <label className={labelCls}>Description olfactive (FR)</label>
                       <textarea
-                        className={inputCls + " min-h-[65px] resize-y"}
+                        className={inputCls + " min-h-[50px] resize-y"}
                         value={f.description}
                         onChange={(e) => set("description", e.target.value)}
                         placeholder="Notes ambrées florales et boisées d'une élégance rare..."
@@ -790,7 +786,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 ) : (
                   /* CONTENU EN */
-                  <div className="space-y-2.5 animate-in fade-in duration-150">
+                  <div className="space-y-2 animate-in fade-in duration-150">
                     <div>
                       <label className={labelCls}>Nom du parfum (EN - Optionnel)</label>
                       <input
@@ -814,7 +810,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <div>
                       <label className={labelCls}>Olfactory Description (EN)</label>
                       <textarea
-                        className={inputCls + " min-h-[65px] resize-y"}
+                        className={inputCls + " min-h-[50px] resize-y"}
                         value={f.descriptionEn}
                         onChange={(e) => set("descriptionEn", e.target.value)}
                         placeholder="Luminous and sophisticated amber floral breeze..."
@@ -837,7 +833,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             </div>
 
             {/* COLONNE DROITE (6 colonnes) : Visuels, Catégories & Visibilité */}
-            <div className="lg:col-span-6 space-y-4">
+            <div className="lg:col-span-6 space-y-3">
               {/* Carte 3 : Visuels du Produit (Multi-photos) */}
               <section
                 onDragOver={(e) => {
@@ -857,7 +853,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     handleFiles(e.dataTransfer.files);
                   }
                 }}
-                className={`relative bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border transition-all duration-200 space-y-2.5 ${
+                className={`relative bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border transition-all duration-200 space-y-2 ${
                   isDraggingFiles
                     ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30 bg-[#C9A96E]/5"
                     : "border-[#E5DDD0] dark:border-[#2D2A26]"
@@ -866,7 +862,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
                       Visuels du produit
                     </h3>
                   </div>
@@ -875,13 +871,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </span>
                 </div>
 
-                <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
-                  <strong>1ère</strong> = Couverture • <strong>2ème</strong> = Survol. Glissez pour réorganiser.
-                </div>
-
                 {/* Grille des photos */}
                 {(f.images || []).length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {(f.images || []).map((imgUrl, idx) => {
                       const isCover = idx === 0;
                       const isHover = idx === 1;
@@ -1023,7 +1015,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     type="button"
                     disabled={uploading}
                     onClick={() => fileRef.current?.click()}
-                    className={`w-full flex items-center justify-center gap-1.5 p-2 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-center gap-1.5 p-1.5 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
                       isDraggingFiles
                         ? "border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E]"
                         : "border-[#C9A96E]/40 hover:border-[#C9A96E] bg-white dark:bg-[#141312] hover:bg-[#C9A96E]/10 text-[#1A1816] dark:text-[#FAF7F2]"
@@ -1031,7 +1023,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   >
                     {uploading ? (
                       <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C9A96E]" />
+                        <Loader2 className="w-3 h-3 animate-spin text-[#C9A96E]" />
                         <span>Téléversement...</span>
                       </>
                     ) : (
@@ -1039,7 +1031,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <Plus className="w-3.5 h-3.5 text-[#C9A96E]" />
                         <span>
                           {(f.images || []).length === 0
-                            ? "Ajouter des photos (ou glissez-déposez)"
+                            ? "Ajouter des photos (ou glisser-déposer)"
                             : "Ajouter d'autres photos"}
                         </span>
                       </>
@@ -1049,9 +1041,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
 
               {/* Carte 4 : Catégories du parfum */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
+                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3 h-3 text-[#C9A96E]" />
                     <span>Catégories du parfum *</span>
                   </h3>
@@ -1089,7 +1081,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                 {/* Grille des catégories */}
                 {filteredCategories.length > 0 ? (
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[120px] overflow-y-auto pr-0.5 p-0.5 ${errors.category || errors.categories ? "ring-1 ring-red-500/50 rounded-lg" : ""}`}>
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[100px] overflow-y-auto pr-0.5 p-0.5 ${errors.category || errors.categories ? "ring-1 ring-red-500/50 rounded-lg" : ""}`}>
                     {filteredCategories.map((cat) => {
                       const isSelected = (f.categories || []).includes(cat.slug);
                       const isPrimary = (f.categories || [])[0] === cat.slug;
@@ -1098,7 +1090,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           key={cat.id || cat.slug}
                           type="button"
                           onClick={() => toggleCategory(cat.slug)}
-                          className={`p-2 text-left rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                          className={`p-1.5 text-left rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
                             isSelected
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                               : "bg-white dark:bg-[#141312] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
@@ -1123,35 +1115,35 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     })}
                   </div>
                 ) : (
-                  <div className="p-2.5 rounded-lg border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] text-center">
-                    <p className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                  <div className="p-2 rounded-lg border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] text-center">
+                    <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
                       Aucune catégorie trouvée
                     </p>
                   </div>
                 )}
 
                 {(errors.category || errors.categories) && (
-                  <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                  <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{errors.category || errors.categories}</span>
                   </div>
                 )}
               </section>
 
-              {/* Carte 5 : Visibilité & Badges */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
-                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Produit actif (visible en boutique)</span>
+              {/* Carte 5 : Visibilité & Badges — Format Horizontal 3 Colonnes Compact */}
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-1.5">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                  <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Actif en boutique</span>
                     <Switch checked={f.active} onCheckedChange={(v) => set("active", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
-                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Nouveau produit (badge "Nouveau")</span>
+                  <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Nouveau</span>
                     <Switch checked={f.isNew} onCheckedChange={(v) => set("isNew", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
-                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Best Seller (mis en vedette)</span>
+                  <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Best Seller</span>
                     <Switch checked={f.isBestseller} onCheckedChange={(v) => set("isBestseller", v)} />
                   </label>
                 </div>
@@ -1160,15 +1152,15 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           </div>
         </form>
 
-        {/* PIED DE PAGE (FOOTER) FIXE — TOUJOURS VISIBLE SANS SCROLL */}
-        <div className="p-3.5 sm:p-4 px-5 sm:px-7 bg-[#FAF7F2] dark:bg-[#1C1A18] border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0 z-10 shadow-md">
-          <div className="text-[11px] text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-2">
+        {/* PIED DE PAGE FIXE COMPACT */}
+        <div className="p-2.5 sm:p-3 px-4 sm:px-6 bg-[#FAF7F2] dark:bg-[#1C1A18] border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0 z-10 shadow-xs">
+          <div className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-1.5">
             {f.name && <span className="font-semibold text-[#1A1816] dark:text-[#FAF7F2]">{f.name}</span>}
             {f.price && <span>• {f.price} €</span>}
             {f.volume && <span>• {f.volume} ml</span>}
             {f.stock && <span>• {f.stock} en stock</span>}
             {(f.images || []).length > 0 && (
-              <span className="text-[10px] px-2 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">
                 {(f.images || []).length} photo{(f.images || []).length > 1 ? "s" : ""}
               </span>
             )}
@@ -1178,7 +1170,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
               Annuler
             </button>
@@ -1186,9 +1178,9 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               type="submit"
               form="product-form"
               disabled={saving || uploading}
-              className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-md shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-xs shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
             >
-              {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {saving && <Loader2 className="w-3 h-3 animate-spin" />}
               <span>{initial ? "Mettre à jour" : "Créer le produit"}</span>
             </button>
           </div>
