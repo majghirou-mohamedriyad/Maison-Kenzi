@@ -1091,49 +1091,51 @@ const CategoriesAdmin = () => {
 
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-4xl lg:max-w-5xl w-[96vw] max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
-          <DialogHeader className="pb-4 border-b border-[#EAE3D8] dark:border-[#24211E]">
-            <div className="flex items-center justify-between flex-wrap gap-2">
+        <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[94vw] h-[86vh] max-h-[86vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+          {/* En-tête Fixe */}
+          <div className="p-4 sm:p-5 pb-3 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 shrink-0">
+            <div className="flex items-center justify-between flex-wrap gap-2 pr-8">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center">
-                  <FolderTree className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
+                  <FolderTree className="w-4 h-4" />
                 </div>
                 <div>
-                  <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                  <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
                     {editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}
                   </DialogTitle>
-                  <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-0.5 text-left">
+                  <DialogDescription className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
                     {editingCat
-                      ? "Modifiez les informations, univers olfactif et bannières de cette catégorie."
-                      : "Configurez un nouvel univers olfactif pour organiser vos créations de niche."}
+                      ? "Modifiez les informations, univers olfactif et bannières."
+                      : "Configurez un nouvel univers olfactif pour vos créations."}
                   </DialogDescription>
                 </div>
               </div>
               {editingCat && (
-                <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                <span className="text-[11px] font-sans font-medium px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
                   {editingCat.name}
                 </span>
               )}
             </div>
-          </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSave} className="space-y-6 mt-4">
+          {/* Corps défilant du formulaire avec min-h-0 */}
+          <form id="category-form" onSubmit={handleSave} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
             {/* Grille principale en 2 colonnes */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
               {/* COLONNE GAUCHE (7 colonnes) : Informations Générales Bilingues & Statuts */}
-              <div className="lg:col-span-7 space-y-4">
-                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
+              <div className="lg:col-span-7 space-y-3.5">
+                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
                   {/* Sélecteur d'onglets de Langue FR / EN */}
-                  <div className="flex items-center justify-between p-2 rounded-xl bg-white/80 dark:bg-black/40 border border-[#E5DDD0] dark:border-[#2D2A26]">
+                  <div className="flex items-center justify-between p-1.5 rounded-xl bg-white/80 dark:bg-black/40 border border-[#E5DDD0] dark:border-[#2D2A26]">
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                      <Languages className="w-4 h-4 text-[#C9A96E]" />
+                      <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
                       <span>Langue des contenus</span>
                     </div>
-                    <div className="inline-flex p-1 bg-[#FAF7F2] dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                    <div className="inline-flex p-0.5 bg-[#FAF7F2] dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
                       <button
                         type="button"
                         onClick={() => setCategoryLangTab("fr")}
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                           categoryLangTab === "fr"
                             ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                             : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -1147,7 +1149,7 @@ const CategoriesAdmin = () => {
                       <button
                         type="button"
                         onClick={() => setCategoryLangTab("en")}
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                           categoryLangTab === "en"
                             ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                             : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -1157,7 +1159,7 @@ const CategoriesAdmin = () => {
                         {nameEn || descriptionEn ? (
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                         ) : (
-                          <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
+                          <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
                         )}
                       </button>
                     </div>
@@ -1165,9 +1167,9 @@ const CategoriesAdmin = () => {
 
                   {/* CONTENU FR */}
                   {categoryLangTab === "fr" ? (
-                    <div className="space-y-3.5 animate-in fade-in duration-200">
+                    <div className="space-y-2.5 animate-in fade-in duration-150">
                       <div>
-                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                           Nom de la catégorie (FR) *
                         </label>
                         <input
@@ -1179,35 +1181,31 @@ const CategoriesAdmin = () => {
                           }`}
                         />
                         {errors.name && (
-                          <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
-                            <AlertCircle className="w-3.5 h-3.5" />
+                          <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium">
+                            <AlertCircle className="w-3 h-3" />
                             <span>{errors.name}</span>
                           </div>
                         )}
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                           Description de la collection (FR)
                         </label>
                         <textarea
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
                           placeholder="Décrivez l'univers olfactif de cette catégorie..."
-                          rows={4}
+                          rows={3}
                           className="w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-y"
                         />
                       </div>
                     </div>
                   ) : (
                     /* CONTENU EN */
-                    <div className="space-y-3.5 animate-in fade-in duration-200">
-                      <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
-                        Ces informations seront affichées sur la boutique lorsque la langue sélectionnée par le client est l'anglais.
-                      </div>
-
+                    <div className="space-y-2.5 animate-in fade-in duration-150">
                       <div>
-                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                           Category Name (EN - Optionnel)
                         </label>
                         <input
@@ -1219,14 +1217,14 @@ const CategoriesAdmin = () => {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
                           Collection Description (EN)
                         </label>
                         <textarea
                           value={descriptionEn}
                           onChange={(e) => setDescriptionEn(e.target.value)}
                           placeholder="Describe this fragrance collection in English..."
-                          rows={4}
+                          rows={3}
                           className="w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-y"
                         />
                       </div>
@@ -1235,8 +1233,8 @@ const CategoriesAdmin = () => {
                 </div>
 
                 {/* Paramètres de statut */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer select-none">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <label className="flex items-center justify-between p-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer select-none">
                     <div>
                       <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">Catégorie active</div>
                       <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Visible sur la boutique</div>
@@ -1244,10 +1242,10 @@ const CategoriesAdmin = () => {
                     <Switch checked={isActive} onCheckedChange={setIsActive} />
                   </label>
 
-                  <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
+                  <label className="flex items-center justify-between p-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
                     <div>
-                      <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#C9A96E]" />
                         <span>À venir / Teaser</span>
                       </div>
                       <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Bientôt disponible</div>
@@ -1258,163 +1256,151 @@ const CategoriesAdmin = () => {
               </div>
 
               {/* COLONNE DROITE (5 colonnes) : Bannières & Visuels */}
-              <div className="lg:col-span-5 space-y-4">
-                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
+              <div className="lg:col-span-5 space-y-3.5">
+                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                    <label className="block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
                       Photos de bannières ({images.length})
                     </label>
                     <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
-                      1920 × 600 px ou 1200 × 800 px
+                      1920 × 600 px
                     </span>
                   </div>
 
-                  {/* Galerie des vignettes existantes avec réorganisation (Glisser-Déposer ou Flèches) */}
+                  {/* Galerie des vignettes */}
                   {images.length > 0 && (
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-[11px] text-[#7A726A] dark:text-[#A39B91]">
-                        <span>Glissez ou utilisez les flèches :</span>
-                      </div>
+                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-white dark:bg-[#141312]">
+                      {images.map((imgUrl, index) => (
+                        <div
+                          key={`${imgUrl}-${index}`}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData("text/plain", index.toString());
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const sourceIndexStr = e.dataTransfer.getData("text/plain");
+                            if (!sourceIndexStr) return;
+                            const sourceIndex = parseInt(sourceIndexStr, 10);
+                            if (isNaN(sourceIndex) || sourceIndex === index) return;
+                            setImages((prev) => {
+                              const copy = [...prev];
+                              const [movedItem] = copy.splice(sourceIndex, 1);
+                              copy.splice(index, 0, movedItem);
+                              return copy;
+                            });
+                            toast.success("Ordre des photos mis à jour");
+                          }}
+                          className="group relative aspect-[16/10] rounded-lg overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:border-[#C9A96E]/60 transition-all shadow-xs"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={`Bannière ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
 
-                      <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1.5 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-white dark:bg-[#141312]">
-                        {images.map((imgUrl, index) => (
-                          <div
-                            key={`${imgUrl}-${index}`}
-                            draggable
-                            onDragStart={(e) => {
-                              e.dataTransfer.setData("text/plain", index.toString());
-                            }}
-                            onDragOver={(e) => {
-                              e.preventDefault();
-                            }}
-                            onDrop={(e) => {
-                              e.preventDefault();
-                              const sourceIndexStr = e.dataTransfer.getData("text/plain");
-                              if (!sourceIndexStr) return;
-                              const sourceIndex = parseInt(sourceIndexStr, 10);
-                              if (isNaN(sourceIndex) || sourceIndex === index) return;
-                              setImages((prev) => {
-                                const copy = [...prev];
-                                const [movedItem] = copy.splice(sourceIndex, 1);
-                                copy.splice(index, 0, movedItem);
-                                return copy;
-                              });
-                              toast.success("Ordre des photos mis à jour");
-                            }}
-                            className="group relative aspect-[16/10] rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:border-[#C9A96E]/60 transition-all shadow-xs"
-                          >
-                            <img
-                              src={imgUrl}
-                              alt={`Bannière ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
+                          {/* Badge */}
+                          <div className="absolute top-1 left-1 z-10 pointer-events-none">
+                            {index === 0 ? (
+                              <span className="inline-flex items-center gap-0.5 text-[8px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E] text-[#121110]">
+                                <Star className="w-2 h-2 fill-current" /> Principale
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center text-[8px] font-bold px-1.5 py-0.2 rounded bg-black/70 text-white">
+                                #{index + 1}
+                              </span>
+                            )}
+                          </div>
 
-                            {/* Badge Ordre / Principale */}
-                            <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
-                              {index === 0 ? (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
-                                  <Star className="w-2.5 h-2.5 fill-current" /> Principale
-                                </span>
+                          {/* Actions au survol */}
+                          <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1 z-20">
+                            <div className="flex items-center justify-between w-full">
+                              {index !== 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetPrimaryImage(index);
+                                  }}
+                                  className="px-1.5 py-0.5 bg-white/95 text-[#1A1816] rounded hover:bg-[#C9A96E] transition-colors cursor-pointer text-[8px] font-bold flex items-center gap-0.5"
+                                >
+                                  <Star className="w-2 h-2" />
+                                  <span>Principale</span>
+                                </button>
                               ) : (
-                                <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 text-white backdrop-blur-xs">
-                                  #{index + 1}
-                                </span>
+                                <div />
                               )}
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveImage(index);
+                                }}
+                                className="p-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors cursor-pointer ml-auto"
+                              >
+                                <Trash2 className="w-2.5 h-2.5" />
+                              </button>
                             </div>
 
-                            {/* Panneau d'actions au survol */}
-                            <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
-                              {/* Ligne 1 : Définir principale & Supprimer */}
-                              <div className="flex items-center justify-between w-full">
-                                {index !== 0 ? (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleSetPrimaryImage(index);
-                                    }}
-                                    className="px-1.5 py-0.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer text-[9px] font-bold flex items-center gap-1 shadow-xs"
-                                    title="Définir comme bannière principale"
-                                  >
-                                    <Star className="w-2.5 h-2.5" />
-                                    <span>Principale</span>
-                                  </button>
-                                ) : (
-                                  <div />
-                                )}
+                            <div className="flex items-center justify-between w-full mt-auto pt-1">
+                              <button
+                                type="button"
+                                disabled={index === 0}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMoveImage(index, "left");
+                                }}
+                                className="p-0.5 rounded bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] disabled:opacity-30 cursor-pointer"
+                              >
+                                <ChevronLeft className="w-3 h-3" />
+                              </button>
 
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveImage(index);
-                                  }}
-                                  className="p-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer ml-auto shadow-xs"
-                                  title="Supprimer cette photo"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
+                              <span className="text-[9px] font-bold text-white">
+                                {index + 1} / {images.length}
+                              </span>
 
-                              {/* Ligne 2 : Flèches de changement de position (Ordre) */}
-                              <div className="flex items-center justify-between w-full mt-auto pt-1">
-                                <button
-                                  type="button"
-                                  disabled={index === 0}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMoveImage(index, "left");
-                                  }}
-                                  className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
-                                  title="Déplacer vers la gauche"
-                                >
-                                  <ChevronLeft className="w-3.5 h-3.5" />
-                                </button>
-
-                                <span className="text-[10px] font-bold text-white tracking-wider">
-                                  {index + 1} / {images.length}
-                                </span>
-
-                                <button
-                                  type="button"
-                                  disabled={index === images.length - 1}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMoveImage(index, "right");
-                                  }}
-                                  className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
-                                  title="Déplacer vers la droite"
-                                >
-                                  <ChevronRight className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                disabled={index === images.length - 1}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMoveImage(index, "right");
+                                }}
+                                className="p-0.5 rounded bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] disabled:opacity-30 cursor-pointer"
+                              >
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {/* Zone d'importation multi-fichiers */}
+                  {/* Zone d'importation */}
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-3.5 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white dark:hover:bg-[#141312] transition-all group"
+                    className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-3 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white dark:hover:bg-[#141312] transition-all group"
                   >
-                    <div className="w-9 h-9 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                    <div className="w-7 h-7 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
                       {uploading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
-                        <Upload className="w-4 h-4" />
+                        <Upload className="w-3.5 h-3.5" />
                       )}
                     </div>
                     <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
                       {uploading
                         ? `Téléversement (${uploadProgress})...`
                         : images.length === 0
-                        ? "Importer des photos de bannière"
+                        ? "Importer des bannières"
                         : "Ajouter d'autres bannières"}
                     </p>
-                    <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-0.5">
+                    <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
                       PNG, JPG, WebP max 8 Mo
                     </p>
                   </div>
@@ -1430,24 +1416,26 @@ const CategoriesAdmin = () => {
                 </div>
               </div>
             </div>
-
-            <DialogFooter className="gap-2 pt-4 border-t border-[#EAE3D8] dark:border-[#24211E]">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#332E28] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
-              >
-                {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour la catégorie" : "Créer la catégorie"}
-              </button>
-            </DialogFooter>
           </form>
+
+          {/* Pied de page fixe */}
+          <div className="p-3.5 sm:p-4 px-5 sm:px-7 bg-[#FAF7F2] dark:bg-[#1C1A18] border-t border-[#EAE3D8] dark:border-[#24211E] flex items-center justify-end gap-2 shrink-0 z-10 shadow-md">
+            <button
+              type="button"
+              onClick={() => setModalOpen(false)}
+              className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#332E28] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              form="category-form"
+              disabled={isSaving}
+              className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
+            >
+              {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour" : "Créer la catégorie"}
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
 

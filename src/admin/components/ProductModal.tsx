@@ -92,11 +92,11 @@ const emptyForm = {
 const isUuid = (s: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 
-const labelCls = "block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1.5";
+const labelCls = "block text-[11px] font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1";
 const inputCls =
-  "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A96E]/40 focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF] transition-all";
+  "w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A96E]/40 focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF] transition-all";
 const inputErrorCls =
-  "w-full px-3.5 py-2.5 text-xs sm:text-sm bg-red-50/40 dark:bg-red-950/20 border border-red-500 dark:border-red-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 text-[#1A1816] dark:text-[#FAF7F2] transition-all";
+  "w-full px-3 py-2 text-xs bg-red-50/40 dark:bg-red-950/20 border border-red-500 dark:border-red-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 text-[#1A1816] dark:text-[#FAF7F2] transition-all";
 
 const ProductModal = ({ open, onOpenChange, initial }: Props) => {
   const availableCategories = useCategories();
@@ -473,50 +473,50 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#141312] max-w-5xl lg:max-w-6xl xl:max-w-7xl w-[96vw] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+      <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl xl:max-w-6xl w-[94vw] h-[88vh] max-h-[88vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
         {/* EN-TÊTE FIXE DU DIALOGUE */}
-        <div className="p-5 sm:p-6 pb-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 shrink-0">
-          <div className="flex items-center justify-between flex-wrap gap-3 pr-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5" />
+        <div className="p-4 sm:p-5 pb-3 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 shrink-0">
+          <div className="flex items-center justify-between flex-wrap gap-2 pr-8">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                <DialogTitle className="text-sm sm:text-base font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
                   {initial ? "Modifier le parfum" : "Ajouter un nouveau parfum"}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-0.5">
+                <DialogDescription className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
                   {initial
-                    ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels de cette création."
+                    ? "Modifiez les caractéristiques, pyramide olfactive bilingue et visuels."
                     : "Renseignez les détails pour ajouter une nouvelle création de haute parfumerie."}
                 </DialogDescription>
               </div>
             </div>
 
             {initial && (
-              <span className="text-xs font-sans font-medium px-3 py-1 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+              <span className="text-[11px] font-sans font-medium px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
                 {initial.name}
               </span>
             )}
           </div>
         </div>
 
-        {/* CORPS DÉFILANT DU FORMULAIRE */}
-        <form id="product-form" onSubmit={submit} className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
+        {/* CORPS DÉFILANT AVEC MIN-H-0 STRICT */}
+        <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
           {/* Grille principale équilibrée en 2 colonnes égales (6 / 6) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
             {/* COLONNE GAUCHE (6 colonnes) : Informations Générales, Tarifs & Pyramide Olfactive */}
-            <div className="lg:col-span-6 space-y-5">
+            <div className="lg:col-span-6 space-y-4">
               {/* Carte 1 : Informations Générales & Tarifs */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
                 <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
-                  <div className="w-2 h-2 rounded-full bg-[#C9A96E]" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
                     Informations générales & Tarifs
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Nom du parfum */}
                   <div>
                     <label className={labelCls}>Nom du parfum *</label>
@@ -527,8 +527,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Baccarat Rouge 540"
                     />
                     {errors.name && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.name}</span>
                       </div>
                     )}
@@ -544,8 +544,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       placeholder="Ex: Maison Francis Kurkdjian"
                     />
                     {errors.maison && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.maison}</span>
                       </div>
                     )}
@@ -565,7 +565,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                               set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
                             }
                           }}
-                          className={`py-2.5 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
+                          className={`py-1.5 text-xs font-medium rounded-lg border transition-all cursor-pointer ${
                             f.gender === g
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                               : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
@@ -576,24 +576,24 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       ))}
                     </div>
                     {errors.gender && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.gender}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Saisons d'utilisation (Choix multiples) */}
+                  {/* Saisons d'utilisation */}
                   <div className="sm:col-span-2">
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-1">
                       <label className={labelCls}>Saisons d'utilisation *</label>
                       <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
                         {currentSeasons.length === 0
-                          ? "Aucune sélectionnée"
-                          : `${currentSeasons.length} sélectionnée${currentSeasons.length > 1 ? "s" : ""}`}
+                          ? "Aucune"
+                          : `${currentSeasons.length} choisie${currentSeasons.length > 1 ? "s" : ""}`}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-1.5">
                       {SEASON_OPTIONS.map((season) => {
                         const isSelected = isSeasonSelected(season, currentSeasons);
                         return (
@@ -601,7 +601,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             key={season}
                             type="button"
                             onClick={() => toggleSeason(season)}
-                            className={`py-2 px-3 text-xs font-medium rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
+                            className={`py-1.5 px-2 text-[11px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
                               isSelected
                                 ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
                                 : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
@@ -613,33 +613,33 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       })}
                     </div>
                     {errors.seasons && (
-                      <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
                         <span>{errors.seasons}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Tarification & Stock en 3 colonnes */}
-                  <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                    {/* Prix de vente */}
+                  {/* Tarification & Stock */}
+                  <div className="sm:col-span-2 grid grid-cols-3 gap-2.5 pt-0.5">
+                    {/* Prix */}
                     <div>
                       <label className={labelCls}>Prix (€) *</label>
                       <div className="relative">
                         <input
                           type="number"
                           min={1}
-                          className={(errors.price ? inputErrorCls : inputCls) + " pr-8 font-semibold"}
+                          className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
                           value={f.price}
                           onChange={(e) => set("price", e.target.value)}
-                          placeholder="Ex: 85"
+                          placeholder="85"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-[#C9A96E] pointer-events-none">
                           €
                         </span>
                       </div>
                       {errors.price && (
-                        <div className="text-[11px] text-red-500 mt-1">{errors.price}</div>
+                        <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
                       )}
                     </div>
 
@@ -650,33 +650,33 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                         <input
                           type="number"
                           min={1}
-                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-8 font-semibold"}
+                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
                           value={f.volume}
                           onChange={(e) => set("volume", e.target.value)}
-                          placeholder="Ex: 100"
+                          placeholder="100"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
                           ml
                         </span>
                       </div>
                       {errors.volume && (
-                        <div className="text-[11px] text-red-500 mt-1">{errors.volume}</div>
+                        <div className="text-[10px] text-red-500 mt-0.5">{errors.volume}</div>
                       )}
                     </div>
 
-                    {/* Stock disponible */}
+                    {/* Stock */}
                     <div>
-                      <label className={labelCls}>Stock (flacons) *</label>
+                      <label className={labelCls}>Stock *</label>
                       <input
                         type="number"
                         min={0}
                         className={errors.stock ? inputErrorCls : inputCls}
                         value={f.stock}
                         onChange={(e) => set("stock", e.target.value)}
-                        placeholder="Ex: 10"
+                        placeholder="10"
                       />
                       {errors.stock && (
-                        <div className="text-[11px] text-red-500 mt-1">{errors.stock}</div>
+                        <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
                       )}
                     </div>
                   </div>
@@ -684,21 +684,21 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
 
               {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
-                  <div className="flex items-center gap-2">
-                    <Languages className="w-4 h-4 text-[#C9A96E]" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                  <div className="flex items-center gap-1.5">
+                    <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
                       Descriptions & Notes Olfactives
                     </h3>
                   </div>
 
-                  {/* Onglets de sélection de langue (FR / EN) */}
-                  <div className="inline-flex p-1 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26]">
+                  {/* Onglets FR / EN */}
+                  <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
                     <button
                       type="button"
                       onClick={() => setContentLang("fr")}
-                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                         contentLang === "fr"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                           : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -712,7 +712,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     <button
                       type="button"
                       onClick={() => setContentLang("en")}
-                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-2.5 py-0.5 text-[11px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                         contentLang === "en"
                           ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
                           : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
@@ -722,47 +722,42 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       {f.notesEn ? (
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                       ) : (
-                        <span className="text-[10px] text-[#A39B91] italic">Optionnel</span>
+                        <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* CONTENU EN FRANÇAIS */}
+                {/* CONTENU FR */}
                 {contentLang === "fr" ? (
-                  <div className="space-y-3.5 animate-in fade-in duration-200">
-                    {/* Notes olfactives FR */}
+                  <div className="space-y-2.5 animate-in fade-in duration-150">
                     <div>
                       <label className={labelCls}>Notes olfactives (FR) *</label>
                       <input
                         className={errors.notes ? inputErrorCls : inputCls}
                         value={f.notes}
                         onChange={(e) => set("notes", e.target.value)}
-                        placeholder="Ex: Jasmin, Safran, Bois d'ambre, Ambre gris, Cèdre"
+                        placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
                       />
-                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 block">
-                        Indiquez les accords et notes olfactives séparés par une virgule.
-                      </span>
                       {errors.notes && (
-                        <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                          <AlertCircle className="w-3 h-3 shrink-0" />
                           <span>{errors.notes}</span>
                         </div>
                       )}
                     </div>
 
-                    {/* Description olfactive FR */}
                     <div>
                       <label className={labelCls}>Description olfactive (FR)</label>
                       <textarea
-                        className={inputCls + " min-h-[90px] resize-y"}
+                        className={inputCls + " min-h-[65px] resize-y"}
                         value={f.description}
                         onChange={(e) => set("description", e.target.value)}
                         placeholder="Notes ambrées florales et boisées d'une élégance rare..."
+                        rows={2}
                       />
                     </div>
 
-                    {/* Sous-titre / Accroche FR */}
                     <div>
                       <label className={labelCls}>Sous-titre / Accroche (FR)</label>
                       <input
@@ -774,13 +769,8 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     </div>
                   </div>
                 ) : (
-                  /* CONTENU EN ANGLAIS */
-                  <div className="space-y-3.5 animate-in fade-in duration-200">
-                    <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
-                      Ce contenu sera automatiquement affiché pour les clients anglophones lorsque la langue du site est sur English (EN).
-                    </div>
-
-                    {/* Nom en anglais (optionnel si différent) */}
+                  /* CONTENU EN */
+                  <div className="space-y-2.5 animate-in fade-in duration-150">
                     <div>
                       <label className={labelCls}>Nom du parfum (EN - Optionnel)</label>
                       <input
@@ -791,32 +781,27 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       />
                     </div>
 
-                    {/* Notes olfactives EN */}
                     <div>
                       <label className={labelCls}>Olfactory Notes (EN)</label>
                       <input
                         className={inputCls}
                         value={f.notesEn}
                         onChange={(e) => set("notesEn", e.target.value)}
-                        placeholder="Ex: Jasmine, Saffron, Amberwood, Ambergris, Cedar"
+                        placeholder="Ex: Jasmine, Saffron, Amberwood, Cedar"
                       />
-                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-1 block">
-                        Comma-separated notes in English.
-                      </span>
                     </div>
 
-                    {/* Description olfactive EN */}
                     <div>
                       <label className={labelCls}>Olfactory Description (EN)</label>
                       <textarea
-                        className={inputCls + " min-h-[90px] resize-y"}
+                        className={inputCls + " min-h-[65px] resize-y"}
                         value={f.descriptionEn}
                         onChange={(e) => set("descriptionEn", e.target.value)}
                         placeholder="Luminous and sophisticated amber floral breeze..."
+                        rows={2}
                       />
                     </div>
 
-                    {/* Sous-titre / Accroche EN */}
                     <div>
                       <label className={labelCls}>Subtitle / Tagline (EN)</label>
                       <input
@@ -832,7 +817,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
             </div>
 
             {/* COLONNE DROITE (6 colonnes) : Visuels, Catégories & Visibilité */}
-            <div className="lg:col-span-6 space-y-5">
+            <div className="lg:col-span-6 space-y-4">
               {/* Carte 3 : Visuels du Produit (Multi-photos) */}
               <section
                 onDragOver={(e) => {
@@ -852,32 +837,31 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     handleFiles(e.dataTransfer.files);
                   }
                 }}
-                className={`relative bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border transition-all duration-200 space-y-3.5 ${
+                className={`relative bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border transition-all duration-200 space-y-2.5 ${
                   isDraggingFiles
                     ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30 bg-[#C9A96E]/5"
                     : "border-[#E5DDD0] dark:border-[#2D2A26]"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-[#C9A96E]" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">
+                  <div className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#C9A96E]" />
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">
                       Visuels du produit
                     </h3>
                   </div>
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                  <span className="text-[10px] font-medium px-2 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
                     {(f.images || []).length} photo{(f.images || []).length > 1 ? "s" : ""}
                   </span>
                 </div>
 
-                {/* Consignes de dimensions */}
-                <div className="p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] text-[10px] text-[#7A726A] dark:text-[#A39B91] leading-relaxed">
-                  Recommandé : 800 × 1000 px. <strong>1ère photo</strong> = Couverture • <strong>2ème</strong> = Survol. Glissez pour réorganiser.
+                <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                  <strong>1ère</strong> = Couverture • <strong>2ème</strong> = Survol. Glissez pour réorganiser.
                 </div>
 
-                {/* Grille des photos avec Drag & Drop */}
+                {/* Grille des photos */}
                 {(f.images || []).length > 0 && (
-                  <div className="grid grid-cols-3 gap-2.5 pt-1">
+                  <div className="grid grid-cols-3 gap-2">
                     {(f.images || []).map((imgUrl, idx) => {
                       const isCover = idx === 0;
                       const isHover = idx === 1;
@@ -918,13 +902,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                             setDraggedImageIndex(null);
                             setDragOverImageIndex(null);
                           }}
-                          className={`group relative rounded-xl border overflow-hidden bg-[#0F0F0F] aspect-[4/5] flex flex-col justify-between transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
+                          className={`group relative rounded-lg border overflow-hidden bg-[#0F0F0F] aspect-[4/5] flex flex-col justify-between transition-all duration-150 cursor-grab active:cursor-grabbing select-none ${
                             isDragged
                               ? "opacity-40 scale-95 ring-2 ring-[#C9A96E]/60 border-dashed border-[#C9A96E]"
                               : isOver
-                              ? "ring-2 ring-[#C9A96E] scale-[1.03] border-[#C9A96E] shadow-lg z-10 bg-[#C9A96E]/10"
+                              ? "ring-2 ring-[#C9A96E] scale-[1.02] border-[#C9A96E] shadow-md z-10 bg-[#C9A96E]/10"
                               : isCover
-                              ? "border-[#C9A96E] ring-2 ring-[#C9A96E]/30"
+                              ? "border-[#C9A96E] ring-1 ring-[#C9A96E]/40"
                               : "border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
                           }`}
                         >
@@ -935,29 +919,29 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           />
 
                           {/* Badge de position */}
-                          <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
+                          <div className="absolute top-1 left-1 right-1 flex items-center justify-between pointer-events-none">
                             {isCover ? (
-                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#C9A96E] text-[#111827] flex items-center gap-1 shadow-md">
-                                <Star className="w-2.5 h-2.5 fill-[#111827]" /> 1 • Couv.
+                              <span className="px-1.5 py-0.2 rounded text-[8px] font-bold bg-[#C9A96E] text-[#111827] flex items-center gap-0.5 shadow-xs">
+                                <Star className="w-2 h-2 fill-[#111827]" /> 1 • Couv.
                               </span>
                             ) : isHover ? (
-                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#111827]/85 dark:bg-black/85 text-white backdrop-blur-xs shadow-md">
+                              <span className="px-1.5 py-0.2 rounded text-[8px] font-bold bg-[#111827]/85 text-white shadow-xs">
                                 2 • Survol
                               </span>
                             ) : (
-                              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-black/75 text-white backdrop-blur-xs">
+                              <span className="px-1 py-0.2 rounded text-[8px] font-medium bg-black/75 text-white">
                                 #{idx + 1}
                               </span>
                             )}
 
-                            <div className="w-4 h-4 rounded-md bg-black/60 backdrop-blur-xs flex items-center justify-center text-white/80 opacity-70 group-hover:opacity-100 transition-opacity shadow-xs">
-                              <GripVertical className="w-2.5 h-2.5" />
+                            <div className="w-3.5 h-3.5 rounded bg-black/60 flex items-center justify-center text-white/80">
+                              <GripVertical className="w-2 h-2" />
                             </div>
                           </div>
 
-                          {/* Barre d'actions */}
+                          {/* Actions */}
                           <div className="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between gap-1 z-10" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5">
                               {!isCover && (
                                 <button
                                   type="button"
@@ -1005,7 +989,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </div>
                 )}
 
-                {/* Bouton d'ajout de photos */}
+                {/* Bouton d'ajout */}
                 <div>
                   <input
                     ref={fileRef}
@@ -1019,23 +1003,23 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     type="button"
                     disabled={uploading}
                     onClick={() => fileRef.current?.click()}
-                    className={`w-full flex items-center justify-center gap-2 p-3 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-center gap-1.5 p-2 text-xs font-medium rounded-xl border border-dashed transition-all cursor-pointer ${
                       isDraggingFiles
-                        ? "border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E] scale-[1.01]"
+                        ? "border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E]"
                         : "border-[#C9A96E]/40 hover:border-[#C9A96E] bg-white dark:bg-[#141312] hover:bg-[#C9A96E]/10 text-[#1A1816] dark:text-[#FAF7F2]"
                     } disabled:opacity-50`}
                   >
                     {uploading ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin text-[#C9A96E]" />
-                        <span>Téléversement en cours...</span>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C9A96E]" />
+                        <span>Téléversement...</span>
                       </>
                     ) : (
                       <>
-                        <Plus className="w-4 h-4 text-[#C9A96E]" />
+                        <Plus className="w-3.5 h-3.5 text-[#C9A96E]" />
                         <span>
                           {(f.images || []).length === 0
-                            ? "Ajouter des photos (ou glissez-déposez ici)"
+                            ? "Ajouter des photos (ou glissez-déposez)"
                             : "Ajouter d'autres photos"}
                         </span>
                       </>
@@ -1045,13 +1029,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               </section>
 
               {/* Carte 4 : Catégories du parfum */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3.5">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
-                    <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
+                    <FolderTree className="w-3 h-3 text-[#C9A96E]" />
                     <span>Catégories du parfum *</span>
                   </h3>
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
+                  <span className="text-[10px] font-medium px-2 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
                     {selectedCategoriesCount === 0
                       ? "Sélectionner"
                       : selectedCategoriesCount === 1
@@ -1060,13 +1044,13 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                   </span>
                 </div>
 
-                {/* Champ de recherche rapide */}
+                {/* Recherche si plus de 4 catégories */}
                 {availableCategories.length > 4 && (
                   <div className="relative">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                    <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                     <input
                       type="text"
-                      className={inputCls + " pl-8 py-1.5 text-[11px]"}
+                      className={inputCls + " pl-7 py-1 text-[11px]"}
                       placeholder="Filtrer les univers..."
                       value={categorySearch}
                       onChange={(e) => setCategorySearch(e.target.value)}
@@ -1075,7 +1059,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                       <button
                         type="button"
                         onClick={() => setCategorySearch("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1A1816] dark:hover:text-white"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1A1816]"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -1085,7 +1069,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
                 {/* Grille des catégories */}
                 {filteredCategories.length > 0 ? (
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[170px] overflow-y-auto pr-0.5 p-1 rounded-xl ${errors.category || errors.categories ? "ring-1 ring-red-500/50" : ""}`}>
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[120px] overflow-y-auto pr-0.5 p-0.5 ${errors.category || errors.categories ? "ring-1 ring-red-500/50 rounded-lg" : ""}`}>
                     {filteredCategories.map((cat) => {
                       const isSelected = (f.categories || []).includes(cat.slug);
                       const isPrimary = (f.categories || [])[0] === cat.slug;
@@ -1094,26 +1078,24 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                           key={cat.id || cat.slug}
                           type="button"
                           onClick={() => toggleCategory(cat.slug)}
-                          className={`p-2.5 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                          className={`p-2 text-left rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
                             isSelected
                               ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                              : "bg-white dark:bg-[#141312] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50 hover:bg-[#FAF7F2] dark:hover:bg-white/5"
+                              : "bg-white dark:bg-[#141312] text-[#4B5563] dark:text-[#9CA3AF] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
                           }`}
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Layers className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
-                            <span className="text-xs truncate font-medium">{cat.name}</span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <Layers className={`w-3 h-3 shrink-0 ${isSelected ? "text-[#C9A96E] dark:text-[#111827]" : "text-[#9CA3AF]"}`} />
+                            <span className="text-[11px] truncate">{cat.name}</span>
                           </div>
                           {isSelected && (
                             <div className="flex items-center gap-1 shrink-0">
                               {isPrimary && (
-                                <span className="text-[9px] px-1 py-0.2 rounded bg-[#C9A96E] text-[#111827] dark:bg-black dark:text-[#C9A96E] font-bold">
+                                <span className="text-[8px] px-1 py-0.2 rounded bg-[#C9A96E] text-[#111827] dark:bg-black dark:text-[#C9A96E] font-bold">
                                   Principal
                                 </span>
                               )}
-                              <div className="w-4 h-4 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center">
-                                <Check className="w-2.5 h-2.5" />
-                              </div>
+                              <Check className="w-3 h-3" />
                             </div>
                           )}
                         </button>
@@ -1121,34 +1103,34 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
                     })}
                   </div>
                 ) : (
-                  <div className="p-3 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] text-center space-y-0.5">
-                    <p className="text-xs text-[#7A726A] dark:text-[#A39B91]">
+                  <div className="p-2.5 rounded-lg border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] text-center">
+                    <p className="text-[11px] text-[#7A726A] dark:text-[#A39B91]">
                       Aucune catégorie trouvée
                     </p>
                   </div>
                 )}
 
                 {(errors.category || errors.categories) && (
-                  <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5 font-medium animate-in fade-in">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <div className="flex items-center gap-1 text-[11px] text-red-500 mt-1 font-medium animate-in fade-in">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{errors.category || errors.categories}</span>
                   </div>
                 )}
               </section>
 
               {/* Carte 5 : Visibilité & Badges */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-5 rounded-2xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
+                <div className="space-y-1.5">
+                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
                     <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Produit actif (visible en boutique)</span>
                     <Switch checked={f.active} onCheckedChange={(v) => set("active", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
                     <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Nouveau produit (badge "Nouveau")</span>
                     <Switch checked={f.isNew} onCheckedChange={(v) => set("isNew", v)} />
                   </label>
-                  <label className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                  <label className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
                     <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2]">Best Seller (mis en vedette)</span>
                     <Switch checked={f.isBestseller} onCheckedChange={(v) => set("isBestseller", v)} />
                   </label>
@@ -1158,25 +1140,25 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
           </div>
         </form>
 
-        {/* PIED DE PAGE (FOOTER) FIXE — TOUJOURS ACCESSIBLE */}
-        <div className="p-4 sm:p-5 px-6 sm:px-8 bg-[#FAF7F2]/90 dark:bg-[#1C1A18]/90 backdrop-blur-md border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-          <div className="text-xs text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-2">
+        {/* PIED DE PAGE (FOOTER) FIXE — TOUJOURS VISIBLE SANS SCROLL */}
+        <div className="p-3.5 sm:p-4 px-5 sm:px-7 bg-[#FAF7F2] dark:bg-[#1C1A18] border-t border-[#EAE3D8] dark:border-[#24211E] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0 z-10 shadow-md">
+          <div className="text-[11px] text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-2">
             {f.name && <span className="font-semibold text-[#1A1816] dark:text-[#FAF7F2]">{f.name}</span>}
             {f.price && <span>• {f.price} €</span>}
             {f.volume && <span>• {f.volume} ml</span>}
             {f.stock && <span>• {f.stock} en stock</span>}
             {(f.images || []).length > 0 && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">
+              <span className="text-[10px] px-2 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">
                 {(f.images || []).length} photo{(f.images || []).length > 1 ? "s" : ""}
               </span>
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 shrink-0">
+          <div className="flex items-center justify-end gap-2 shrink-0">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-4 py-2.5 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              className="px-4 py-2 text-xs font-medium rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
               Annuler
             </button>
@@ -1184,10 +1166,10 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
               type="submit"
               form="product-form"
               disabled={saving || uploading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-lg shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] hover:brightness-110 shadow-md shadow-[#C9A96E]/20 disabled:opacity-60 transition-all cursor-pointer"
             >
               {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>{initial ? "Mettre à jour le produit" : "Créer le produit"}</span>
+              <span>{initial ? "Mettre à jour" : "Créer le produit"}</span>
             </button>
           </div>
         </div>
