@@ -91,89 +91,118 @@ export const PayPalPaymentSection = ({
     };
   }, [clientId]);
 
-  // Rendu des boutons PayPal & Carte Bancaire
+  const totalRef = useRef(total);
+  const isFormValidRef = useRef(isFormValid);
+  const onValidateFormRef = useRef(onValidateForm);
+  const onPaymentSuccessRef = useRef(onPaymentSuccess);
+
+  useEffect(() => {
+    totalRef.current = total;
+    isFormValidRef.current = isFormValid;
+    onValidateFormRef.current = onValidateForm;
+    onPaymentSuccessRef.current = onPaymentSuccess;
+  }, [total, isFormValid, onValidateForm, onPaymentSuccess]);
+
+  // Rendu stable et unique des boutons PayPal & Carte Bancaire
   useEffect(() => {
     if (!sdkReady || !window.paypal || !containerRef.current) return;
 
-    // Vider le conteneur avant de recréer les boutons
-    containerRef.current.innerHTML = "";
+    let isMounted = true;
+    const targetElement = containerRef.current;
+
+    // Vider le conteneur proprement
+    targetElement.innerHTML = "";
 
     try {
-      window.paypal
-        .Buttons({
-          style: {
-            layout: "vertical",
-            color: "gold",
-            shape: "rect",
-            label: "pay",
-            height: 48,
-          },
-          onClick: (data: any, actions: any) => {
-            const valid = onValidateForm();
-            if (!valid) {
-              toast.error("Veuillez d'abord remplir vos coordonnées de livraison ci-dessus.");
-              return actions.reject();
-            }
-            return actions.resolve();
-          },
-          createOrder: (data: any, actions: any) => {
-            if (!isFormValid && !onValidateForm()) {
-              toast.error("Veuillez renseigner vos coordonnées de livraison.");
-              return Promise.reject(new Error("Formulaire incomplet"));
-            }
+      const buttonsInstance = window.paypal.Buttons({
+        style: {
+          layout: "vertical",
+          color: "gold",
+          shape: "rect",
+          label: "pay",
+          height: 48,
+        },
+        onClick: (data: any, actions: any) => {
+          const valid = onValidateFormRef.current();
+          if (!valid) {
+            toast.error("Veuillez d'abord remplir vos coordonnées de livraison ci-dessus.");
+            return actions.reject();
+          }
+          return actions.resolve();
+        },
+        createOrder: (data: any, actions: any) => {
+          if (!isFormValidRef.current && !onValidateFormRef.current()) {
+            toast.error("Veuillez renseigner vos coordonnées de livraison.");
+            return Promise.reject(new Error("Formulaire incomplet"));
+          }
 
-            const formattedAmount = Number(total || 0).toFixed(2);
+          const currentTotal = totalRef.current;
+          const formattedAmount = Number(currentTotal || 0).toFixed(2);
 
-            return actions.order.create({
-              purchase_units: [
-                {
-                  description: "Commande Parfums d'Exception - Maison Kenzi",
-                  amount: {
-                    currency_code: "EUR",
-                    value: formattedAmount,
-                  },
+          return actions.order.create({
+            purchase_units: [
+              {
+                description: "Commande Parfums d'Exception - Maison Kenzi",
+                amount: {
+                  currency_code: "EUR",
+                  value: formattedAmount,
                 },
-              ],
-              application_context: {
-                shipping_preference: "NO_SHIPPING", // L'adresse est gérée dans le formulaire
               },
-            });
-          },
-          onApprove: async (data: any, actions: any) => {
-            setProcessingPayment(true);
-            try {
-              const details = await actions.order.capture();
-              const payerName =
-                details?.payer?.name?.given_name
-                  ? `${details.payer.name.given_name} ${details.payer.name.surname || ""}`.trim()
-                  : undefined;
-              const payerEmail = details?.payer?.email_address;
+            ],
+            application_context: {
+              shipping_preference: "NO_SHIPPING",
+            },
+          });
+        },
+        onApprove: async (data: any, actions: any) => {
+          setProcessingPayment(true);
+          try {
+            const details = await actions.order.capture();
+            const payerName =
+              details?.payer?.name?.given_name
+                ? `${details.payer.name.given_name} ${details.payer.name.surname || ""}`.trim()
+                : undefined;
+            const payerEmail = details?.payer?.email_address;
 
-              await onPaymentSuccess({
-                paypalOrderId: details.id || data.orderID,
-                payerName,
-                payerEmail,
-              });
-            } catch (err: any) {
-              console.error("Erreur capture PayPal:", err);
-              toast.error("Une erreur est survenue lors de la validation du paiement.");
-            } finally {
+            await onPaymentSuccessRef.current({
+              paypalOrderId: details.id || data.orderID,
+              payerName,
+              payerEmail,
+            });
+          } catch (err: any) {
+            console.error("Erreur capture PayPal:", err);
+            toast.error("Une erreur est survenue lors de la validation du paiement.");
+          } finally {
+            if (isMounted) {
               setProcessingPayment(false);
             }
-          },
-          onCancel: () => {
-            toast.info("Paiement annulé. Aucun montant n'a été débité.");
-          },
-          onError: (err: any) => {
-            console.error("Erreur PayPal:", err);
-            toast.error("Erreur lors de la communication avec le service de paiement.");
-          },
-        })
-        .render(containerRef.current);
+          }
+        },
+        onCancel: () => {
+          toast.info("Paiement annulé. Aucun montant n'a été débité.");
+        },
+        onError: (err: any) => {
+          console.error("Erreur PayPal:", err);
+          toast.error("Erreur lors de la communication avec le service de paiement.");
+        },
+      });
+
+      if (buttonsInstance.isEligible()) {
+        buttonsInstance.render(targetElement).catch((renderErr: any) => {
+          // Ignorer les erreurs d'annulation de cycle de vie React
+          if (isMounted) {
+            console.warn("Notice rendu PayPal Buttons:", renderErr);
+          }
+        });
+      }
     } catch (err) {
       console.error("Erreur initialisation PayPal Buttons:", err);
     }
-  }, [sdkReady, total, isFormValid, onValidateForm, onPaymentSuccess]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [sdkReady]);
 
   return (
     <div className="space-y-4 pt-2">
