@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Actualisation Photographique de Prestige de la Page « À Propos » (Cartes « Haute Parfumerie » & « Artisanat d'Art / Savoir-Faire Ancestral ») & Modales d'Administration Ultra-Compactes Opérationnelles
+- **Statut général** : Triptyque Photographique de Prestige de la Page « À Propos » Intégralement Sublimé (Haute Parfumerie, Artisanat d'Art & Antiquités Intemporelles) & Modales d'Administration Ultra-Compactes Opérationnelles
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Sublimation Photographique de la Carte « Objets Rares / Antiquités Intemporelles » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
+  - [x] **Visuel Trésors d'Époque** : Remplacement de l'image par une photographie haute définition d'un instrument d'horlogerie et d'orfèvrerie ancienne en laiton et bois précieux.
+  - [x] **Harmonisation Éditoriale & Nude Design** : Triptyque photographique (Parfum, Artisanat, Antiquités) 100% harmonieux et luxueux.
 
 - [x] Sublimation Photographique de la Carte « Artisanat d'Art / Savoir-Faire Ancestral » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
   - [x] **Visuel Savoir-Faire Noble** : Remplacement de l'image par une photographie haute résolution illustrant le travail méticuleux et manuel des matières nobles et de la poterie d'art.
