@@ -171,23 +171,36 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         const initialImages = getParfumImages(initial);
         const initialCategories = getParfumCategories(initial);
 
-        // Extraction intelligente des valeurs de poids et volume
-        let initWeightVal = "";
-        let initWeightUnit: "g" | "kg" = "g";
-        let initVolumeVal = initialVolume;
-        let initVolumeUnit: "ml" | "L" = "ml";
+        const isCosm =
+          (defaultCategory || "").toLowerCase().includes("cosmetique") ||
+          (initial.category || "").toLowerCase().includes("cosmetique") ||
+          initialCategories.some((c) => c.toLowerCase().includes("cosmetique"));
 
-        const labelText = (initial.imageLabel || "").toLowerCase();
-        const weightMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
-        if (weightMatch) {
-          initWeightVal = weightMatch[1];
-          initWeightUnit = weightMatch[2].toLowerCase() === "kg" ? "kg" : "g";
+        // Extraction précise des valeurs de poids et volume
+        let initWeightVal = (initial as any).weight_value || "";
+        let initWeightUnit: "g" | "kg" = (initial as any).weight_unit || "g";
+        let initVolumeVal = (initial as any).volume_value || "";
+        let initVolumeUnit: "ml" | "L" = (initial as any).volume_unit || "ml";
+
+        const labelText = ((initial.imageLabel || "") + " " + (initial.description || "")).toLowerCase();
+        
+        if (!initWeightVal) {
+          const weightMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
+          if (weightMatch) {
+            initWeightVal = weightMatch[1];
+            initWeightUnit = weightMatch[2].toLowerCase() === "kg" ? "kg" : "g";
+          }
         }
 
-        const volMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(l|ml)\b/i);
-        if (volMatch) {
-          initVolumeVal = volMatch[1];
-          initVolumeUnit = volMatch[2].toLowerCase() === "l" ? "L" : "ml";
+        if (!initVolumeVal) {
+          const volMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(l|ml)\b/i);
+          if (volMatch) {
+            initVolumeVal = volMatch[1];
+            initVolumeUnit = volMatch[2].toLowerCase() === "l" ? "L" : "ml";
+          } else if (!isCosm) {
+            // Pour les parfums classiques uniquement, le volume par défaut provient de full_bottle_volume_ml
+            initVolumeVal = initialVolume;
+          }
         }
 
         setF({
@@ -516,6 +529,10 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       full_bottle_price: numPrice,
       full_bottle_stock: numStock,
       full_bottle_limited: false,
+      weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
+      weight_unit: isCosmetic ? f.weightUnit : undefined,
+      volume_value: isCosmetic ? (f.volumeValue || undefined) : undefined,
+      volume_unit: isCosmetic ? f.volumeUnit : undefined,
     };
 
     try {

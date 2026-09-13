@@ -194,7 +194,7 @@ export const translations = {
       topNotes: "Notes de Tête",
       heartNotes: "Notes de Cœur",
       baseNotes: "Notes de Fond",
-      description: "Description & Histoire",
+      description: "Description",
       brand: "Maison",
       gender: "Genre",
       category: "Catégorie",

@@ -9,6 +9,15 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Correction de la Persistance des Photos & Réhydratation Précise Poids/Volume Cosmétiques ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts)) :
+  - [x] **Résolution du Conflit Poids Solide vs Volume Liquide** :
+    - Distinction et stockage explicites de `weight_value`, `weight_unit` (`g` / `kg`) et `volume_value`, `volume_unit` (`ml` / `L`) dans le store et le payload.
+    - Élimination de la réassignation erronée où le champ Poids solide se vidait et remplissait le champ Volume liquide lors de la réouverture de la modale.
+    - Présélection fidèle : un soin pesé en grammes reste en grammes, un soin liquide reste en millilitres/litres.
+  - [x] **Sauvegarde & Persistance Sans Faille des Photos Multi-Galerie** :
+    - Préservation systématique des photos locales dans `useProductStore` et `withDefaults` lors des synchronisations Realtime Supabase (empêchant l'écrasement par un tableau vide).
+    - Ajout d'un repli de sécurité anti-dépassement SQL dans `syncParfum.ts` pour garantir la sauvegarde sans interruption en base de données.
+
 - [x] Formulaire Spécifique « Nouveau Produit Cosmétique » ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
   - [x] **Champs Dédiés aux Soins & Cosmétiques** :
     - **Nom du produit cosmétique** & **Marque / Laboratoire**.

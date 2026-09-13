@@ -23,6 +23,10 @@ type ExtraMeta = {
   full_bottle_price?: number | null;
   full_bottle_stock?: number | null;
   full_bottle_limited?: boolean | null;
+  weight_value?: string;
+  weight_unit?: "g" | "kg";
+  volume_value?: string;
+  volume_unit?: "ml" | "L";
 };
 
 export type AdminParfum = Parfum & ExtraMeta;
@@ -32,6 +36,12 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     ? p.categories
     : p.category
     ? [p.category]
+    : [];
+
+  const rawImages = Array.isArray(p.images) && p.images.length > 0
+    ? p.images
+    : p.image_url
+    ? [p.image_url]
     : [];
 
   return {
@@ -48,11 +58,16 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     stock: p.stock ?? 20,
     sale_mode: p.sale_mode ?? "decant",
     seasons: p.seasons ?? [],
-    images: Array.isArray(p.images) ? p.images : p.image_url ? [p.image_url] : [],
+    images: rawImages,
+    image_url: rawImages[0] || p.image_url || null,
     full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
     full_bottle_price: p.full_bottle_price ?? null,
     full_bottle_stock: p.full_bottle_stock ?? 0,
     full_bottle_limited: p.full_bottle_limited ?? false,
+    weight_value: p.weight_value,
+    weight_unit: p.weight_unit || "g",
+    volume_value: p.volume_value,
+    volume_unit: p.volume_unit || "ml",
   };
 };
 
@@ -164,6 +179,11 @@ if (typeof window !== "undefined") {
               const currentLocal = getProducts();
               const mapped: AdminParfum[] = data.map((r: any) => {
                 const localMatch = currentLocal.find((lp) => lp.id === r.id);
+                const remoteImages = Array.isArray(r.images) && r.images.length > 0
+                  ? r.images
+                  : (r.image_url ? [r.image_url] : []);
+                const finalImages = remoteImages.length > 0 ? remoteImages : (localMatch?.images ?? []);
+
                 return {
                   id: r.id,
                   name: r.name,
@@ -183,8 +203,8 @@ if (typeof window !== "undefined") {
                     "10ml": Number(r.price_10ml ?? localMatch?.prices?.["10ml"] ?? 0),
                   },
                   imageLabel: r.image_label || localMatch?.imageLabel || r.id,
-                  image_url: r.image_url ?? localMatch?.image_url ?? null,
-                  images: Array.isArray(r.images) && r.images.length > 0 ? r.images : (r.image_url ? [r.image_url] : (localMatch?.images ?? [])),
+                  image_url: finalImages[0] || r.image_url || localMatch?.image_url || null,
+                  images: finalImages,
                   isNew: !!r.is_new,
                   isBestseller: !!r.is_bestseller,
                   sale_mode: r.sale_mode ?? localMatch?.sale_mode ?? "decant",
@@ -195,6 +215,10 @@ if (typeof window !== "undefined") {
                   stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
                   stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
                   active: r.is_active ?? localMatch?.active ?? true,
+                  weight_value: r.weight_value || localMatch?.weight_value,
+                  weight_unit: r.weight_unit || localMatch?.weight_unit || "g",
+                  volume_value: r.volume_value || localMatch?.volume_value,
+                  volume_unit: r.volume_unit || localMatch?.volume_unit || "ml",
                 };
               });
               setProducts(mapped);

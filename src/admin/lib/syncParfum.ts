@@ -180,10 +180,26 @@ export const upsertParfumToSupabase = async (
       image_label_en: _ile,
       ...fallbackRow
     } = row;
+    
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
-      console.error("Erreur critique Supabase parfums upsert:", err2);
-      throw err2;
+      console.warn("Supabase upsert fallback 1 échoué:", err2.message);
+      // 3. Repli de sécurité si image_label ou image_url dépassent la taille VARCHAR(255)
+      if (err2.message?.includes("too long") || err2.message?.includes("varying")) {
+        const safeFallback = {
+          ...fallbackRow,
+          image_label: typeof p.imageLabel === "string" && !p.imageLabel.startsWith("data:") ? p.imageLabel.substring(0, 250) : (p.id || "produit"),
+          image_url: typeof primaryImageUrl === "string" && !primaryImageUrl.startsWith("data:") ? primaryImageUrl.substring(0, 500) : null,
+        };
+        const { error: err3 } = await supabase.from("parfums").upsert(safeFallback as any, { onConflict: "id" });
+        if (err3) {
+          console.error("Erreur critique Supabase parfums upsert:", err3);
+          throw err3;
+        }
+      } else {
+        console.error("Erreur critique Supabase parfums upsert:", err2);
+        throw err2;
+      }
     }
   }
 };
