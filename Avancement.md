@@ -3,11 +3,20 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Formulaire Dédié « Nouveau Produit Cosmétique » (Nom, Marque, Prix, Stock, Poids g/kg, Volume ml/L, Description Soin & Sections Bilingues FR/EN) — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Épuration de la Vue & Filtres Produits Cosmétiques (Suppression Catégorie/Genres/Saisons, Conservation Recherche/Statut/Tri Exclusifs) — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Épuration du Tableau & de la Barre de Filtres des Produits Cosmétiques ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
+  - [x] **Suppression des Filtres Inutiles sur les Cosmétiques** :
+    - Retrait des menus déroulants « Tous les Genres », « Toutes les Saisons », « Toutes les Maisons », « Toutes Catégories ».
+    - Conservation exclusive de la **Barre de Recherche** (Nom de soin, marque, laboratoire), du filtre **Statut : Tous les Statuts** (En stock / Rupture) et du sélecteur **Trier par** (Nom A-Z, Nom Z-A, Marque, Prix, Stock).
+  - [x] **Suppression de la Colonne « Catégorie » dans le Tableau Cosmétique** :
+    - Masquage automatique de la colonne d'en-tête `<th>Catégorie</th>` et des cellules `<td>` de genres/saisons sur la page cosmétiques.
+    - Remplacement des mentions de flacons par un badge sobre de contenance/poids (`weight_value` et `volume_value` avec icône `Flower2`).
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react` fines, palette champagne gold `#C9A96E` et commentaires en français.
 
 - [x] Correction de la Persistance des Photos & Réhydratation Précise Poids/Volume Cosmétiques ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts)) :
   - [x] **Résolution du Conflit Poids Solide vs Volume Liquide** :

@@ -23,6 +23,7 @@ import {
   Snowflake,
   CheckSquare,
   Square,
+  Flower2,
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 import { getPrimaryImage } from "@/lib/productImages";
@@ -38,6 +39,8 @@ type Props = {
   onToggleSelect?: (id: string) => void;
   onSelectAll?: () => void;
   isAllSelected?: boolean;
+  hideCategory?: boolean;
+  isCosmetics?: boolean;
 };
 
 const fmt = (n: number) => `${n.toLocaleString("fr-FR")} €`;
@@ -53,6 +56,8 @@ const ProductTable = ({
   onToggleSelect,
   onSelectAll,
   isAllSelected = false,
+  hideCategory = false,
+  isCosmetics = false,
 }: Props) => {
   return (
     <>
@@ -142,51 +147,62 @@ const ProductTable = ({
                   </p>
                   <h3 className="font-serif text-sm font-bold text-foreground truncate mt-0.5" title={p.name}>
                     {p.name}
-                  </h3>
-
-                  {/* Badges Genre & Saisons d'utilisation */}
-                  <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-2">
-                    {p.gender && (
-                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                        {p.gender}
-                      </span>
-                    )}
-                    {Array.isArray(p.seasons) && p.seasons.map((season) => {
-                      const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                      const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
-                      return (
-                        <span
-                          key={season}
-                          className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
-                        >
-                          <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
-                          <span>{season}</span>
+                                    {/* Badges Genre & Saisons d'utilisation (uniquement pour les parfums) */}
+                  {!isCosmetics && (
+                    <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-2">
+                      {p.gender && (
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                          {p.gender}
                         </span>
-                      );
-                    })}
-                  </div>
+                      )}
+                      {Array.isArray(p.seasons) && p.seasons.map((season) => {
+                        const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                        return (
+                          <span
+                            key={season}
+                            className="inline-flex items-center gap-1 text-[9px] text-foreground/85 bg-card/90 border border-border/60 px-2 py-0.5 rounded-full font-medium"
+                          >
+                            <SeasonIconComp className="w-2.5 h-2.5 text-primary" />
+                            <span>{season}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Format Category Tag */}
                   <div className="flex items-center gap-1.5 mt-1">
-                    {isPack && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
-                        <Gift className="w-3 h-3" /> Pack & Coffret
+                    {isCosmetics ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                        <Flower2 className="w-3 h-3" />
+                        {p.weight_value ? `${p.weight_value} ${p.weight_unit || "g"}` : ""}
+                        {p.weight_value && p.volume_value ? " • " : ""}
+                        {p.volume_value ? `${p.volume_value} ${p.volume_unit || "ml"}` : (!p.weight_value ? (p.imageLabel || "Soin Cosmétique") : "")}
                       </span>
-                    )}
-                    {isDeo && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
-                        <Sparkles className="w-3 h-3" /> Déodorant Stick
-                      </span>
-                    )}
-                    {!isPack && !isDeo && isFull && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                        <Wine className="w-3 h-3" /> Flacon Scellé
-                      </span>
-                    )}
-                    {!isPack && !isDeo && !isFull && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                        <Droplet className="w-3 h-3" /> Décants 5ml / 10ml
-                      </span>
+                    ) : (
+                      <>
+                        {isPack && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
+                            <Gift className="w-3 h-3" /> Pack & Coffret
+                          </span>
+                        )}
+                        {isDeo && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                            <Sparkles className="w-3 h-3" /> Déodorant Stick
+                          </span>
+                        )}
+                        {!isPack && !isDeo && isFull && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                            <Wine className="w-3 h-3" /> Flacon Scellé
+                          </span>
+                        )}
+                        {!isPack && !isDeo && !isFull && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                            <Droplet className="w-3 h-3" /> Décants 5ml / 10ml
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -199,11 +215,10 @@ const ProductTable = ({
                       {isFull ? fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0) : fmt(p.prices["5ml"] ?? 0)}
                     </span>
                   </div>
-
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground text-[11px]">Stock Global :</span>
-                    <span className={`font-semibold text-xs ${stockTotal === 0 ? "text-red-500" : "text-foreground"}`}>
-                      {stockTotal} {isFull ? "unités" : "flacons"}
+                    <span className="text-muted-foreground text-[11px]">Stock Total :</span>
+                    <span className={`font-semibold ${stockTotal === 0 ? "text-red-500" : "text-foreground"}`}>
+                      {stockTotal} {isCosmetics ? "unités" : isFull ? "unités" : "flacons"}
                     </span>
                   </div>
                 </div>
@@ -286,20 +301,22 @@ const ProductTable = ({
                       onClick={() => onSortChange && onSortChange("maison")}
                       className="inline-flex items-center gap-1 hover:text-foreground cursor-pointer"
                     >
-                      <span>Maison</span>
+                      <span>{isCosmetics ? "Marque" : "Maison"}</span>
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-left px-4 py-3.5 font-bold">
-                    <button
-                      type="button"
-                      onClick={() => onSortChange && onSortChange("category")}
-                      className="inline-flex items-center gap-1 hover:text-foreground cursor-pointer"
-                    >
-                      <span>Catégorie</span>
-                      <ArrowUpDown className="w-3 h-3" />
-                    </button>
-                  </th>
+                  {!hideCategory && !isCosmetics && (
+                    <th className="text-left px-4 py-3.5 font-bold">
+                      <button
+                        type="button"
+                        onClick={() => onSortChange && onSortChange("category")}
+                        className="inline-flex items-center gap-1 hover:text-foreground cursor-pointer"
+                      >
+                        <span>Catégorie</span>
+                        <ArrowUpDown className="w-3 h-3" />
+                      </button>
+                    </th>
+                  )}
                   <th className="text-right px-4 py-3.5 font-bold">
                     <button
                       type="button"
@@ -363,7 +380,7 @@ const ProductTable = ({
                                 ? "bg-primary text-primary-foreground ring-1 ring-primary/40"
                                 : "bg-background border border-border/80 text-muted-foreground hover:text-foreground hover:border-primary"
                             }`}
-                            title={isSelected ? "Désélectionner" : "Sélectionner ce parfum"}
+                            title={isSelected ? "Désélectionner" : "Sélectionner ce produit"}
                           >
                             {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                           </button>
@@ -389,56 +406,69 @@ const ProductTable = ({
                           <div className="min-w-0">
                             <div className="font-serif font-bold text-sm leading-snug truncate">{p.name}</div>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              {isPack && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
-                                  <Gift className="w-2.5 h-2.5" /> Pack
-                                </span>
-                              )}
-                              {isDeo && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
-                                  <Sparkles className="w-2.5 h-2.5" /> Déodorant
-                                </span>
-                              )}
-                              {isFull && !isPack && !isDeo && (
+                              {isCosmetics ? (
                                 <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
-                                  <Wine className="w-2.5 h-2.5" /> Flacon {p.full_bottle_volume_ml ?? 100}ml
+                                  <Flower2 className="w-2.5 h-2.5" />
+                                  {p.weight_value ? `${p.weight_value} ${p.weight_unit || "g"}` : ""}
+                                  {p.weight_value && p.volume_value ? " • " : ""}
+                                  {p.volume_value ? `${p.volume_value} ${p.volume_unit || "ml"}` : (!p.weight_value ? (p.imageLabel || "Cosmétique") : "")}
                                 </span>
-                              )}
-                              {!isFull && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                  <Droplet className="w-2.5 h-2.5" /> Décants
-                                </span>
+                              ) : (
+                                <>
+                                  {isPack && (
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
+                                      <Gift className="w-2.5 h-2.5" /> Pack
+                                    </span>
+                                  )}
+                                  {isDeo && (
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                                      <Sparkles className="w-2.5 h-2.5" /> Déodorant
+                                    </span>
+                                  )}
+                                  {isFull && !isPack && !isDeo && (
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                                      <Wine className="w-2.5 h-2.5" /> Flacon {p.full_bottle_volume_ml ?? 100}ml
+                                    </span>
+                                  )}
+                                  {!isFull && (
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                      <Droplet className="w-2.5 h-2.5" /> Décants
+                                    </span>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3.5 text-muted-foreground text-xs font-semibold">{p.maison}</td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex flex-col gap-1 items-start">
-                          <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold">
-                            {p.gender}
-                          </span>
-                          {Array.isArray(p.seasons) && p.seasons.length > 0 && (
-                            <div className="flex items-center gap-1 flex-wrap">
-                              {p.seasons.map((season) => {
-                                const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                                const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
-                                return (
-                                  <span
-                                    key={season}
-                                    className="inline-flex items-center gap-0.5 text-[8.5px] px-1.5 py-0.2 rounded-md bg-muted text-foreground/80 border border-border/50"
-                                    title={`Saison : ${season}`}
-                                  >
-                                    <SeasonIconComp className="w-2 h-2 text-primary" />
-                                    <span>{season}</span>
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      </td>
+                      {!hideCategory && !isCosmetics && (
+                        <td className="px-4 py-3.5">
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/60 font-semibold">
+                              {p.gender}
+                            </span>
+                            {Array.isArray(p.seasons) && p.seasons.length > 0 && (
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {p.seasons.map((season) => {
+                                  const s = season.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                  const SeasonIconComp = s.includes("ete") ? Sun : s.includes("print") ? Leaf : s.includes("hiv") ? Snowflake : Wind;
+                                  return (
+                                    <span
+                                      key={season}
+                                      className="inline-flex items-center gap-0.5 text-[8.5px] px-1.5 py-0.2 rounded-md bg-muted text-foreground/80 border border-border/50"
+                                      title={`Saison : ${season}`}
+                                    >
+                                      <SeasonIconComp className="w-2 h-2 text-primary" />
+                                      <span>{season}</span>
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      )}                  </td>
                       <td className="px-4 py-3.5 text-right font-medium text-foreground">
                         {isFull ? (
                           <span className="font-bold tracking-tight text-primary text-sm">{fmt(p.full_bottle_price ?? p.prices["5ml"] ?? 0)}</span>

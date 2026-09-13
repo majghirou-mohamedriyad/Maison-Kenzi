@@ -173,6 +173,12 @@ const Produits = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
 
+  // Détection si la page actuelle correspond aux Produits Cosmétiques
+  const isCosmeticPage = useMemo(() => {
+    const cat = (categoryFilter || "").toLowerCase();
+    return cat.includes("cosmetique");
+  }, [categoryFilter]);
+
   // Multi-sélection des parfums
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkCategoryModalOpen, setBulkCategoryModalOpen] = useState(false);
@@ -625,141 +631,215 @@ const Produits = () => {
 
       {/* Barre de Filtres & Recherche */}
       <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-        {/* Ligne 1: Recherche & Sélecteurs (Genre, Saison, Maison, Catégorie, Statut) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Recherche */}
-          <div className="relative sm:col-span-2 md:col-span-3 lg:col-span-2">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher par nom, maison de parfum…"
-              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C827A] hover:text-[#1A1816] p-1 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* Filtre Genre */}
-          <div className="relative">
-            <select
-              value={genderFilter}
-              onChange={(e) => setGenderFilter(e.target.value)}
-              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
-            >
-              <option value="Tous">Tous les Genres</option>
-              {GENDER_FILTER_OPTIONS.filter((g) => g !== "Tous").map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtre Saison */}
-          <div className="relative">
-            <select
-              value={seasonFilter}
-              onChange={(e) => setSeasonFilter(e.target.value)}
-              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
-            >
-              <option value="Toutes">Toutes les Saisons</option>
-              {SEASON_FILTER_OPTIONS.filter((s) => s !== "Toutes").map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtre Maison */}
-          <div className="relative">
-            <select
-              value={maisonFilter}
-              onChange={(e) => setMaisonFilter(e.target.value)}
-              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
-            >
-              <option value="Toutes">Toutes les Maisons</option>
-              {uniqueMaisons.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtre Catégorie */}
-          <div className="relative">
-            <select
-              value={categoryFilter}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
-            >
-              <option value="Tous">Toutes Catégories</option>
-              {categories.map((cat) => (
-                <option key={cat.id || cat.slug} value={cat.slug}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Ligne 2: Tri, Filtre de Statut & Réinitialisation */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] text-xs">
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Statut & Disponibilité */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#8C827A] dark:text-[#9E958C] font-medium">Statut :</span>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                className="py-1 px-2.5 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
-              >
-                <option value="Tous">Tous les Statuts</option>
-                <option value="in_stock">En stock uniquement</option>
-                <option value="out_of_stock">Rupture de stock</option>
-              </select>
+        {isCosmeticPage ? (
+          /* BARRE ÉPURÉE POUR LES PRODUITS COSMÉTIQUES : Recherche + Statut + Tri */
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+            {/* Recherche de Soin */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher par nom de soin, marque, laboratoire…"
+                className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C827A] hover:text-[#1A1816] p-1 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            {/* Tri */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
-                <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
-              </span>
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className="py-1 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
-              >
-                <option value="name_asc">Nom (A → Z)</option>
-                <option value="name_desc">Nom (Z → A)</option>
-                <option value="maison_asc">Maison (A → Z)</option>
-                <option value="price_asc">Prix Vente (Croissant)</option>
-                <option value="price_desc">Prix Vente (Décroissant)</option>
-                <option value="stock_desc">Stock Total (Plus élevé)</option>
-                <option value="stock_asc">Stock Total (Plus faible)</option>
-              </select>
+            <div className="flex flex-wrap items-center gap-3 shrink-0 text-xs">
+              {/* Statut */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#8C827A] dark:text-[#9E958C] font-medium">Statut :</span>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                  className="py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
+                >
+                  <option value="Tous">Tous les Statuts</option>
+                  <option value="in_stock">En stock uniquement</option>
+                  <option value="out_of_stock">Rupture de stock</option>
+                </select>
+              </div>
+
+              {/* Tri */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
+                </span>
+                <select
+                  value={sortOption}
+                  onChange={(e) => setSortOption(e.target.value as SortOption)}
+                  className="py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
+                >
+                  <option value="name_asc">Nom (A → Z)</option>
+                  <option value="name_desc">Nom (Z → A)</option>
+                  <option value="maison_asc">Marque (A → Z)</option>
+                  <option value="price_asc">Prix Vente (Croissant)</option>
+                  <option value="price_desc">Prix Vente (Décroissant)</option>
+                  <option value="stock_desc">Stock (Plus élevé)</option>
+                  <option value="stock_asc">Stock (Plus faible)</option>
+                </select>
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer pl-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Réinitialiser</span>
+                </button>
+              )}
             </div>
           </div>
+        ) : (
+          /* BARRE COMPLETE POUR LES AUTRES UNIVERS (Parfums, etc.) */
+          <>
+            {/* Ligne 1: Recherche & Sélecteurs (Genre, Saison, Maison, Catégorie, Statut) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {/* Recherche */}
+              <div className="relative sm:col-span-2 md:col-span-3 lg:col-span-2">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Rechercher par nom, maison de parfum…"
+                  className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C827A] hover:text-[#1A1816] p-1 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
 
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-              <span>Réinitialiser les filtres</span>
-            </button>
-          )}
-        </div>
+              {/* Filtre Genre */}
+              <div className="relative">
+                <select
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value)}
+                  className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+                >
+                  <option value="Tous">Tous les Genres</option>
+                  {GENDER_FILTER_OPTIONS.filter((g) => g !== "Tous").map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtre Saison */}
+              <div className="relative">
+                <select
+                  value={seasonFilter}
+                  onChange={(e) => setSeasonFilter(e.target.value)}
+                  className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+                >
+                  <option value="Toutes">Toutes les Saisons</option>
+                  {SEASON_FILTER_OPTIONS.filter((s) => s !== "Toutes").map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtre Maison */}
+              <div className="relative">
+                <select
+                  value={maisonFilter}
+                  onChange={(e) => setMaisonFilter(e.target.value)}
+                  className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+                >
+                  <option value="Toutes">Toutes les Maisons</option>
+                  {uniqueMaisons.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtre Catégorie */}
+              <div className="relative">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="w-full py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] h-10 cursor-pointer"
+                >
+                  <option value="Tous">Toutes Catégories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id || cat.slug} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Ligne 2: Tri, Filtre de Statut & Réinitialisation */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E] text-xs">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Statut & Disponibilité */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#8C827A] dark:text-[#9E958C] font-medium">Statut :</span>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                    className="py-1 px-2.5 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
+                  >
+                    <option value="Tous">Tous les Statuts</option>
+                    <option value="in_stock">En stock uniquement</option>
+                    <option value="out_of_stock">Rupture de stock</option>
+                  </select>
+                </div>
+
+                {/* Tri */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
+                    <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
+                  </span>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value as SortOption)}
+                    className="py-1 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-lg focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer"
+                  >
+                    <option value="name_asc">Nom (A → Z)</option>
+                    <option value="name_desc">Nom (Z → A)</option>
+                    <option value="maison_asc">Maison (A → Z)</option>
+                    <option value="price_asc">Prix Vente (Croissant)</option>
+                    <option value="price_desc">Prix Vente (Décroissant)</option>
+                    <option value="stock_desc">Stock Total (Plus élevé)</option>
+                    <option value="stock_asc">Stock Total (Plus faible)</option>
+                  </select>
+                </div>
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Réinitialiser les filtres</span>
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Barre d'Actions Groupées Flottante */}
@@ -769,7 +849,7 @@ const Produits = () => {
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#C9A96E] animate-pulse" />
               <span className="font-semibold text-xs sm:text-sm tracking-wide">
-                {selectedIds.length} parfum{selectedIds.length > 1 ? "s" : ""} sélectionné{selectedIds.length > 1 ? "s" : ""}
+                {selectedIds.length} produit{selectedIds.length > 1 ? "s" : ""} sélectionné{selectedIds.length > 1 ? "s" : ""}
               </span>
             </div>
             <button
@@ -792,7 +872,7 @@ const Produits = () => {
               className="h-8 text-xs bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-[#FAF7F2] dark:text-[#1A1816] hover:bg-white/20 gap-1.5 cursor-pointer rounded-xl"
             >
               <FolderTree className="w-3.5 h-3.5 text-[#C9A96E]" />
-              <span>Changer Catégorie</span>
+              <span>Catégorie</span>
             </Button>
 
             {/* Mettre en Stock */}
@@ -860,6 +940,8 @@ const Produits = () => {
         onToggleSelect={toggleSelect}
         onSelectAll={selectAll}
         isAllSelected={isAllSelected}
+        hideCategory={isCosmeticPage}
+        isCosmetics={isCosmeticPage}
       />
 
       {/* Modale d'ajout / modification de produit contextuelle */}
