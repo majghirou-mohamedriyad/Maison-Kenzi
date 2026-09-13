@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CustomerCare = () => {
   const { settings } = useAppSettings();

@@ -5,7 +5,7 @@
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Seo from "@/components/Seo";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PrivacyPolicy = () => {
   const { language } = useLanguage();

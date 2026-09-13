@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Sparkles, Instagram } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type QA = { id: string; question: string; answer: string };
 type Msg = { id: string; from: "bot" | "user"; text: string };

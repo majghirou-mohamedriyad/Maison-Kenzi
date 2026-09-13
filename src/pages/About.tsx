@@ -27,7 +27,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
   const { settings } = useAppSettings();
