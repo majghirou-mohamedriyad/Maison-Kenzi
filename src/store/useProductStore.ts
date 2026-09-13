@@ -178,21 +178,41 @@ if (typeof window !== "undefined") {
             if (!error && Array.isArray(data)) {
               const currentLocal = getProducts();
               const mapped: AdminParfum[] = data.map((r: any) => {
-                const localMatch = currentLocal.find((lp) => lp.id === r.id);
+                const rawLabel = typeof r.image_label === "string" ? r.image_label.trim() : "";
+                const isJsonLabel = rawLabel.startsWith("[") && rawLabel.endsWith("]");
+                let extractedImagesFromLabel: string[] = [];
+                if (isJsonLabel) {
+                  try {
+                    const parsed = JSON.parse(rawLabel);
+                    if (Array.isArray(parsed)) extractedImagesFromLabel = parsed.filter(Boolean);
+                  } catch {}
+                }
+
                 const remoteImages = Array.isArray(r.images) && r.images.length > 0
                   ? r.images
-                  : (r.image_url ? [r.image_url] : []);
+                  : (extractedImagesFromLabel.length > 0
+                    ? extractedImagesFromLabel
+                    : (r.image_url ? [r.image_url] : []));
+
                 const finalImages = remoteImages.length > 0 ? remoteImages : (localMatch?.images ?? []);
+
+                const cleanImageLabel = !isJsonLabel && rawLabel
+                  ? rawLabel
+                  : (localMatch?.imageLabel && !localMatch.imageLabel.startsWith("[") ? localMatch.imageLabel : "");
 
                 return {
                   id: r.id,
                   name: r.name,
+                  name_en: r.name_en || localMatch?.name_en || "",
                   maison: r.maison,
                   gender: r.gender,
                   category: r.category ?? localMatch?.category,
                   categories: Array.isArray(r.categories) ? r.categories : (r.category ? [r.category] : []),
                   seasons: Array.isArray(r.seasons) ? r.seasons : (localMatch?.seasons ?? []),
                   description: r.description || "",
+                  description_en: r.description_en || localMatch?.description_en || "",
+                  notes_en: r.notes_en || localMatch?.notes_en || "",
+                  image_label_en: r.image_label_en || localMatch?.image_label_en || "",
                   notes: {
                     tete: r.notes_tete ?? localMatch?.notes?.tete ?? [],
                     coeur: r.notes_coeur ?? localMatch?.notes?.coeur ?? [],
@@ -202,7 +222,7 @@ if (typeof window !== "undefined") {
                     "5ml": Number(r.price_5ml ?? localMatch?.prices?.["5ml"] ?? 0),
                     "10ml": Number(r.price_10ml ?? localMatch?.prices?.["10ml"] ?? 0),
                   },
-                  imageLabel: r.image_label || localMatch?.imageLabel || r.id,
+                  imageLabel: cleanImageLabel,
                   image_url: finalImages[0] || r.image_url || localMatch?.image_url || null,
                   images: finalImages,
                   isNew: !!r.is_new,

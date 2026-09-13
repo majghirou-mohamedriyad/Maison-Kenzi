@@ -75,10 +75,18 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.parfums (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Assurer la présence des colonnes images, seasons & categories pour les bases existantes
+-- Assurer la présence des colonnes images, seasons, categories, bilingues et cosmétiques pour les bases existantes
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS categories TEXT[] DEFAULT '{}';
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS seasons TEXT[] DEFAULT '{}';
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}';
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS description_en TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS notes_en TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS image_label_en TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS weight_value TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS weight_unit TEXT DEFAULT 'g';
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_value TEXT;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_unit TEXT DEFAULT 'ml';
 
 -- Table: app_settings (Configuration de la Maison)
 CREATE TABLE IF NOT EXISTS maisonkenzi.app_settings (

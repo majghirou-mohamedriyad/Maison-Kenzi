@@ -119,7 +119,9 @@ export const upsertParfumToSupabase = async (
       : [];
 
   const primaryImageUrl = allImages[0] || imageUrl || null;
-  const imageLabelValue = allImages.length > 0 ? JSON.stringify(allImages) : p.imageLabel || p.id;
+  const cleanImageLabel = typeof p.imageLabel === "string" && !p.imageLabel.startsWith("[")
+    ? p.imageLabel.trim()
+    : "";
 
   const numPrice = Number(p.full_bottle_price ?? p.prices?.["5ml"] ?? p.prices?.["100ml"] ?? 0);
 
@@ -151,8 +153,8 @@ export const upsertParfumToSupabase = async (
     price_5ml: Number(p.prices?.["5ml"] ?? numPrice),
     price_10ml: Number(p.prices?.["10ml"] ?? numPrice),
     price_20ml: Number(p.prices?.["100ml"] ?? numPrice),
-    image_label: imageLabelValue,
-    image_label_en: p.image_label_en || null,
+    image_label: cleanImageLabel,
+    image_label_en: p.image_label_en ? p.image_label_en.trim() : null,
     image_url: primaryImageUrl,
     is_active: p.active ?? true,
     is_new: !!p.isNew,
@@ -163,42 +165,43 @@ export const upsertParfumToSupabase = async (
     full_bottle_stock: fullStock,
     full_bottle_limited: !!p.full_bottle_limited,
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
+    weight_value: p.weight_value || null,
+    weight_unit: p.weight_unit || null,
+    volume_value: p.volume_value || null,
+    volume_unit: p.volume_unit || null,
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (categories, images, seasons, bilingue incluses)
+  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques incluses)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
-    console.warn("Supabase upsert - tentative sans colonnes additionnelles:", error.message);
-    // 2. Repli de compatibilité sans les colonnes optionnelles si non encore migrées sur le VPS
-    const {
-      categories: _cat,
-      seasons: _sea,
-      images: _img,
-      name_en: _ne,
-      description_en: _de,
-      notes_en: _no,
-      image_label_en: _ile,
-      ...fallbackRow
-    } = row;
+    console.warn("Supabase upsert - tentative avec repli:", error.message);
+
+    // 2. Repli si les colonnes cosmétiques ou bilingues ne sont pas encore migrées sur PostgreSQL
+    const fallbackRow = { ...row };
+    delete fallbackRow.weight_value;
+    delete fallbackRow.weight_unit;
+    delete fallbackRow.volume_value;
+    delete fallbackRow.volume_unit;
     
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
-      console.warn("Supabase upsert fallback 1 échoué:", err2.message);
-      // 3. Repli de sécurité si image_label ou image_url dépassent la taille VARCHAR(255)
-      if (err2.message?.includes("too long") || err2.message?.includes("varying")) {
-        const safeFallback = {
-          ...fallbackRow,
-          image_label: typeof p.imageLabel === "string" && !p.imageLabel.startsWith("data:") ? p.imageLabel.substring(0, 250) : (p.id || "produit"),
-          image_url: typeof primaryImageUrl === "string" && !primaryImageUrl.startsWith("data:") ? primaryImageUrl.substring(0, 500) : null,
-        };
-        const { error: err3 } = await supabase.from("parfums").upsert(safeFallback as any, { onConflict: "id" });
-        if (err3) {
-          console.error("Erreur critique Supabase parfums upsert:", err3);
-          throw err3;
-        }
-      } else {
-        console.error("Erreur critique Supabase parfums upsert:", err2);
-        throw err2;
+      console.warn("Supabase upsert repli 2 (sans champs bilingues):", err2.message);
+      // 3. Repli de compatibilité standard sans les colonnes optionnelles
+      const {
+        categories: _cat,
+        seasons: _sea,
+        images: _img,
+        name_en: _ne,
+        description_en: _de,
+        notes_en: _no,
+        image_label_en: _ile,
+        ...fallbackRowBase
+      } = fallbackRow;
+      
+      const { error: err3 } = await supabase.from("parfums").upsert(fallbackRowBase as any, { onConflict: "id" });
+      if (err3) {
+        console.error("Erreur critique Supabase parfums upsert:", err3);
+        throw err3;
       }
     }
   }

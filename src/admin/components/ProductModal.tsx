@@ -203,9 +203,14 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           }
         }
 
+        const rawImageLabel = initial.imageLabel || "";
+        const cleanImageLabel = rawImageLabel.startsWith("[") ? "" : rawImageLabel;
+        const rawImageLabelEn = (initial as any).image_label_en || "";
+        const cleanImageLabelEn = rawImageLabelEn.startsWith("[") ? "" : rawImageLabelEn;
+
         setF({
           name: initial.name || "",
-          nameEn: (initial as any).name_en || "",
+          nameEn: (initial as any).name_en || (initial as any).nameEn || "",
           maison: initial.maison || "",
           gender: initial.gender || ("" as unknown as Gender),
           category: initialCategories[0] || (initial.category as string) || "",
@@ -219,11 +224,11 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           volumeUnit: initVolumeUnit,
           stock: initialStock,
           notes: initialNotes,
-          notesEn: (initial as any).notes_en || "",
+          notesEn: (initial as any).notes_en || (initial as any).notesEn || "",
           description: initial.description || "",
-          descriptionEn: (initial as any).description_en || "",
-          imageLabel: initial.imageLabel || "",
-          imageLabelEn: (initial as any).image_label_en || "",
+          descriptionEn: (initial as any).description_en || (initial as any).descriptionEn || "",
+          imageLabel: cleanImageLabel,
+          imageLabelEn: cleanImageLabelEn,
           imageUrl: initialImages[0] || initial.image_url || "",
           images: initialImages,
           active: initial.active ?? true,

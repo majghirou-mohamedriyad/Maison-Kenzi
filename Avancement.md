@@ -2,12 +2,22 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Correction de Syntaxe JSX (`ProductTable.tsx`) & Épuration Cosmétiques — 100% Fonctionnel & Zéro Emoji
+- **Dernière mise à jour** : 2026-09-14
+- **Statut général** : Résolution Définitive de la Persistance Bilingue, Photos Multi-Galerie & Nettoyage Sous-Titre — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Résolution de la Pollution du Sous-Titre (`image_label`) & Persistance Bilingue / Photos / Cosmétiques ([`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
+  - [x] **Élimination de la Pollution du Champ Sous-Titre** :
+    - Suppression de l'injection sauvage du JSON des images (`["http://..."]`) dans la colonne `image_label` qui écrasait le vrai sous-titre de l'utilisateur.
+    - Nettoyage automatique à l'ouverture de la modale pour garantir que le champ Sous-titre / Conseils d'application redevient parfaitement propre.
+  - [x] **Rétablissement de la Persistance Bilingue (EN)** :
+    - Intégration complète de `name_en`, `description_en`, `notes_en`, `image_label_en` dans le listener Realtime de `useProductStore.ts` pour empêcher leur effacement au rechargement de page.
+  - [x] **Persistance Robuste du Poids & Contenance du Soin** :
+    - Maintien fiable de `weight_value`, `weight_unit`, `volume_value`, `volume_unit` localement et lors des synchronisations distantes.
+  - [x] **Script SQL d'Altération Prêt pour le VPS** : Fourniture des requêtes `ALTER TABLE` pour ajouter les colonnes bilingues et cosmétiques directement dans PostgreSQL.
 
 - [x] Correction de Syntaxe JSX dans le Tableau des Produits ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
   - [x] **Rétablissement de la Balise `</h3>`** : Fermeture correcte du titre du produit dans la vue grille de cartes pour éliminer l'erreur Vite SWC (`Expected '</', got 'jsx text'`).
