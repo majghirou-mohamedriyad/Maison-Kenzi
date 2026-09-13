@@ -1091,7 +1091,7 @@ const CategoriesAdmin = () => {
 
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-white dark:bg-[#141312] max-w-4xl lg:max-w-5xl w-[94vw] h-[85vh] max-h-[85vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+        <DialogContent className="!fixed !top-3 !bottom-3 !left-3 !right-3 sm:!top-5 sm:!bottom-5 sm:!left-6 sm:!right-6 md:!left-1/2 md:!-translate-x-1/2 md:!translate-y-0 md:!w-[94vw] md:!max-w-4xl lg:!max-w-5xl !h-auto !max-h-none !flex !flex-col !p-0 !gap-0 overflow-hidden rounded-2xl shadow-2xl bg-white dark:bg-[#141312] border border-[#EAE3D8] dark:border-[#24211E] z-50">
           {/* En-tête Fixe avec Actions Rapides */}
           <div className="p-3.5 sm:p-4 border-b border-[#EAE3D8] dark:border-[#24211E] bg-[#FAF7F2] dark:bg-[#1C1A18] shrink-0">
             <div className="flex items-center justify-between gap-3 pr-10">
