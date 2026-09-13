@@ -3,11 +3,20 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Résolution Définitive de la Persistance Bilingue, Photos Multi-Galerie & Nettoyage Sous-Titre — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Obligation Alternative Poids / Volume Cosmétique Validée & UI Intuitive — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Règle d'Obligation Alternative Poids & Contenance du Soin ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
+  - [x] **Validation Alternative Obligatoire (OU logique)** : Au moins l'un des deux champs (« Poids solide / pâte » en `g`/`kg` OU « Volume liquide » en `ml`/`L`) doit être renseigné pour valider et enregistrer un produit cosmétique.
+  - [x] **Retour Visuel et Expérience Utilisateur (UI/UX)** :
+    - Ajout de l'astérisque obligatoire `*` et de la mention explicite `(Au moins un des deux requis)`.
+    - Mise en surbrillance rouge dynamique des inputs et de la carte si les deux champs sont omis lors de la soumission.
+    - Affichage d'un message d'erreur clair avec icône `AlertCircle`.
+    - Nettoyage instantané de l'erreur dès la saisie dans l'un ou l'autre champ.
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Typographie soignée, bordures douces, icônes vectorielles `lucide-react`.
 
 - [x] Résolution de la Pollution du Sous-Titre (`image_label`) & Persistance Bilingue / Photos / Cosmétiques ([`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
   - [x] **Élimination de la Pollution du Champ Sous-Titre** :

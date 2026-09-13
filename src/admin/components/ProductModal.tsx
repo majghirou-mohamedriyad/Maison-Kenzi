@@ -252,10 +252,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
   const set = (key: string, val: any) => {
     setF((prev) => ({ ...prev, [key]: val }));
-    if (errors[key]) {
+    if (errors[key] || ((key === "weightValue" || key === "volumeValue") && errors.volume)) {
       setErrors((prev) => {
         const next = { ...prev };
         delete next[key];
+        if (key === "weightValue" || key === "volumeValue") {
+          delete next.volume;
+        }
         return next;
       });
     }
@@ -437,20 +440,20 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       errs.category = "Veuillez sélectionner au moins une catégorie pour le produit";
     }
 
-    // Gestion du volume et poids pour les cosmétiques
+    // Gestion du volume et poids pour les cosmétiques (au moins un des deux requis)
     let calculatedVolumeMl = 0;
     if (isCosmetic) {
       const hasWeight = !!f.weightValue && Number(f.weightValue) > 0;
       const hasVol = !!f.volumeValue && Number(f.volumeValue) > 0;
-      if (!hasWeight && !hasVol && (!f.volume || Number(f.volume) <= 0)) {
-        errs.volume = "Veuillez renseigner le poids (g/kg) ou le volume (ml/L)";
+      if (!hasWeight && !hasVol) {
+        errs.volume = "Veuillez renseigner au moins un champ : Poids solide / pâte ou Volume liquide";
       }
       if (hasVol) {
         calculatedVolumeMl = f.volumeUnit === "L" ? Number(f.volumeValue) * 1000 : Number(f.volumeValue);
       } else if (hasWeight) {
         calculatedVolumeMl = f.weightUnit === "kg" ? Number(f.weightValue) * 1000 : Number(f.weightValue);
       } else {
-        calculatedVolumeMl = Number(f.volume) || 100;
+        calculatedVolumeMl = 100;
       }
     } else {
       const numVolume = Number(f.volume);
@@ -764,13 +767,20 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                       </div>
 
                       {/* 2 Champs de Poids & Contenance (Gramme/Kilogramme & Millilitre/Litre) */}
-                      <div className="sm:col-span-2 p-2.5 rounded-lg bg-white/70 dark:bg-[#141312]/70 border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2">
+                      <div className={`sm:col-span-2 p-2.5 rounded-lg border space-y-2 transition-all ${
+                        errors.volume 
+                          ? "bg-red-50/20 dark:bg-red-950/10 border-red-500/60 dark:border-red-500/60" 
+                          : "bg-white/70 dark:bg-[#141312]/70 border-[#E5DDD0] dark:border-[#2D2A26]"
+                      }`}>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1816] dark:text-[#FAF7F2]">
-                            Poids & Contenance du Soin
-                          </span>
-                          <span className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
-                            Selon le type de produit
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1816] dark:text-[#FAF7F2]">
+                              Poids & Contenance du Soin
+                            </span>
+                            <span className="text-[10px] font-bold text-red-500">*</span>
+                          </div>
+                          <span className={`text-[9px] font-medium ${errors.volume ? "text-red-500 font-semibold" : "text-[#C9A96E]"}`}>
+                            (Au moins un des deux requis)
                           </span>
                         </div>
 
@@ -785,7 +795,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                 type="number"
                                 min={0}
                                 step="any"
-                                className={inputCls + " flex-1 font-semibold"}
+                                className={(errors.volume && !f.weightValue && !f.volumeValue ? inputErrorCls : inputCls) + " flex-1 font-semibold"}
                                 value={f.weightValue}
                                 onChange={(e) => set("weightValue", e.target.value)}
                                 placeholder="Ex: 50"
@@ -827,7 +837,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                 type="number"
                                 min={0}
                                 step="any"
-                                className={inputCls + " flex-1 font-semibold"}
+                                className={(errors.volume && !f.weightValue && !f.volumeValue ? inputErrorCls : inputCls) + " flex-1 font-semibold"}
                                 value={f.volumeValue}
                                 onChange={(e) => set("volumeValue", e.target.value)}
                                 placeholder="Ex: 100"
@@ -861,7 +871,10 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         </div>
 
                         {errors.volume && (
-                          <div className="text-[10px] text-red-500 font-medium">{errors.volume}</div>
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 font-medium pt-0.5">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.volume}</span>
+                          </div>
                         )}
                       </div>
                     </div>
