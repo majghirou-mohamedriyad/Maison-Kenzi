@@ -988,10 +988,10 @@ const ExpressOrderForm = ({
         </div>
       </form>
 
-      {/* MODALE D'AJOUT MULTI-PARFUMS AU PANIER DIRECT */}
+      {/* MODALE D'AJOUT MULTI-PARFUMS AU PANIER DIRECT (Z-INDEX 120 AU-DESSUS DE LA NAVBAR) */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-card border border-border/90 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div>
                 <h3 className="font-serif text-base sm:text-lg font-bold text-foreground">

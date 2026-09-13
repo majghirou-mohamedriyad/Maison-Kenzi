@@ -3,11 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Triptyque Photographique de Prestige de la Page « À Propos » Intégralement Sublimé (Haute Parfumerie, Artisanat d'Art & Antiquités Intemporelles) & Modales d'Administration Ultra-Compactes Opérationnelles
+- **Statut général** : Correction du Positionnement & Priorité d'Affichage des Modales (Z-Index `z-[120]` au-dessus de la Navbar fixe) & Triptyque Photographique de Prestige Opérationnels
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Correction du Chevauchement de la Navbar sur la Modale « Ajouter un autre parfum à votre commande » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/components/ui/dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/dialog.tsx), [`src/components/ui/alert-dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/alert-dialog.tsx)) :
+  - [x] **Élévation de Priorité Z-Index (`z-[120]`)** : Augmentation du niveau d'empilement de la modale au-dessus du Header fixe (`z-[100]`) et du panier latéral (`z-[110]`), garantissant que la fenêtre n'est plus masquée par la barre de navigation.
+  - [x] **Centrage & Confort Visuel** : Ajustement du conteneur avec backdrop flouté (`backdrop-blur-md`), animations douces et marges de sécurité sur tous les appareils.
 
 - [x] Sublimation Photographique de la Carte « Objets Rares / Antiquités Intemporelles » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
   - [x] **Visuel Trésors d'Époque** : Remplacement de l'image par une photographie haute définition d'un instrument d'horlogerie et d'orfèvrerie ancienne en laiton et bois précieux.
