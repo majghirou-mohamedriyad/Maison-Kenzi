@@ -1091,323 +1091,347 @@ const CategoriesAdmin = () => {
 
       {/* Modal Ajout / Édition Catégorie */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto p-5 sm:p-6 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
-          <DialogHeader className="pb-3 border-b border-[#EAE3D8] dark:border-[#24211E]">
-            <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-2">
-              <FolderTree className="w-5 h-5 text-[#C9A96E]" />
-              <span>{editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}</span>
-            </DialogTitle>
-            <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-1 text-left">
-              {editingCat
-                ? "Modifiez les informations et l'univers olfactif de cette catégorie."
-                : "Configurez un nouvel univers olfactif pour organiser vos créations de niche."}
-            </DialogDescription>
+        <DialogContent className="bg-[#FFFFFF]/95 dark:bg-[#141312]/95 backdrop-blur-xl max-w-4xl lg:max-w-5xl w-[96vw] max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-2xl shadow-2xl border border-[#EAE3D8] dark:border-[#24211E]">
+          <DialogHeader className="pb-4 border-b border-[#EAE3D8] dark:border-[#24211E]">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-[#C9A96E]/10 border border-[#C9A96E]/20 text-[#C9A96E] flex items-center justify-center">
+                  <FolderTree className="w-5 h-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-base sm:text-lg font-serif font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                    {editingCat ? "Modifier la catégorie" : "Ajouter une nouvelle catégorie"}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-[#7A726A] dark:text-[#A39B91] mt-0.5 text-left">
+                    {editingCat
+                      ? "Modifiez les informations, univers olfactif et bannières de cette catégorie."
+                      : "Configurez un nouvel univers olfactif pour organiser vos créations de niche."}
+                  </DialogDescription>
+                </div>
+              </div>
+              {editingCat && (
+                <span className="text-xs font-sans font-normal px-2.5 py-0.5 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
+                  {editingCat.name}
+                </span>
+              )}
+            </div>
           </DialogHeader>
 
-          <form onSubmit={handleSave} className="space-y-4 mt-2">
-            {/* Sélecteur d'onglets de Langue FR / EN */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                <Languages className="w-4 h-4 text-[#C9A96E]" />
-                <span>Langue des contenus</span>
-              </div>
-              <div className="inline-flex p-1 bg-white/80 dark:bg-black/40 rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
-                <button
-                  type="button"
-                  onClick={() => setCategoryLangTab("fr")}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
-                    categoryLangTab === "fr"
-                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                  }`}
-                >
-                  <span>Français (FR)</span>
-                  {name && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCategoryLangTab("en")}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
-                    categoryLangTab === "en"
-                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                  }`}
-                >
-                  <span>English (EN)</span>
-                  {nameEn || descriptionEn ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                  ) : (
-                    <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
-                  )}
-                </button>
-              </div>
-            </div>
+          <form onSubmit={handleSave} className="space-y-6 mt-4">
+            {/* Grille principale en 2 colonnes */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* COLONNE GAUCHE (7 colonnes) : Informations Générales Bilingues & Statuts */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-4">
+                  {/* Sélecteur d'onglets de Langue FR / EN */}
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-white/80 dark:bg-black/40 border border-[#E5DDD0] dark:border-[#2D2A26]">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                      <Languages className="w-4 h-4 text-[#C9A96E]" />
+                      <span>Langue des contenus</span>
+                    </div>
+                    <div className="inline-flex p-1 bg-[#FAF7F2] dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                      <button
+                        type="button"
+                        onClick={() => setCategoryLangTab("fr")}
+                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                          categoryLangTab === "fr"
+                            ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                            : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                        }`}
+                      >
+                        <span>Français (FR)</span>
+                        {name && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCategoryLangTab("en")}
+                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                          categoryLangTab === "en"
+                            ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                            : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                        }`}
+                      >
+                        <span>English (EN)</span>
+                        {nameEn || descriptionEn ? (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                        ) : (
+                          <span className="text-[10px] text-[#9CA3AF] italic">Optionnel</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
 
-            {/* CONTENU FR */}
-            {categoryLangTab === "fr" ? (
-              <div className="space-y-3.5 animate-in fade-in duration-200">
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                    Nom de la catégorie (FR) *
-                  </label>
-                  <input
-                    value={name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="Ex: Parfums d'Exception"
-                    className={`w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] ${
-                      errors.name ? "border-red-500 bg-red-50/50" : "border-[#E5DDD0] dark:border-[#2D2A26]"
-                    }`}
-                  />
-                  {errors.name && (
-                    <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                      <span>{errors.name}</span>
+                  {/* CONTENU FR */}
+                  {categoryLangTab === "fr" ? (
+                    <div className="space-y-3.5 animate-in fade-in duration-200">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                          Nom de la catégorie (FR) *
+                        </label>
+                        <input
+                          value={name}
+                          onChange={(e) => handleNameChange(e.target.value)}
+                          placeholder="Ex: Parfums d'Exception"
+                          className={`w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] ${
+                            errors.name ? "border-red-500 bg-red-50/50" : "border-[#E5DDD0] dark:border-[#2D2A26]"
+                          }`}
+                        />
+                        {errors.name && (
+                          <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
+                            <AlertCircle className="w-3.5 h-3.5" />
+                            <span>{errors.name}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                          Description de la collection (FR)
+                        </label>
+                        <textarea
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Décrivez l'univers olfactif de cette catégorie..."
+                          rows={4}
+                          className="w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-y"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    /* CONTENU EN */
+                    <div className="space-y-3.5 animate-in fade-in duration-200">
+                      <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                        Ces informations seront affichées sur la boutique lorsque la langue sélectionnée par le client est l'anglais.
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                          Category Name (EN - Optionnel)
+                        </label>
+                        <input
+                          value={nameEn}
+                          onChange={(e) => setNameEn(e.target.value)}
+                          placeholder={name ? `Laisser vide pour utiliser "${name}"` : "Ex: Exclusive Fragrances"}
+                          className="w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
+                          Collection Description (EN)
+                        </label>
+                        <textarea
+                          value={descriptionEn}
+                          onChange={(e) => setDescriptionEn(e.target.value)}
+                          placeholder="Describe this fragrance collection in English..."
+                          rows={4}
+                          className="w-full px-3 py-2 text-xs bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-y"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                    Description de la collection (FR)
+                {/* Paramètres de statut */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer select-none">
+                    <div>
+                      <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">Catégorie active</div>
+                      <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Visible sur la boutique</div>
+                    </div>
+                    <Switch checked={isActive} onCheckedChange={setIsActive} />
                   </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Décrivez l'univers olfactif de cette catégorie..."
-                    rows={3}
-                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
-                  />
-                </div>
-              </div>
-            ) : (
-              /* CONTENU EN */
-              <div className="space-y-3.5 animate-in fade-in duration-200">
-                <div className="p-2.5 rounded-xl bg-[#C9A96E]/5 border border-[#C9A96E]/20 text-[11px] text-[#7A726A] dark:text-[#A39B91]">
-                  Ces informations seront affichées sur la boutique lorsque la langue sélectionnée par le client est l'anglais.
-                </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                    Category Name (EN - Optionnel)
-                  </label>
-                  <input
-                    value={nameEn}
-                    onChange={(e) => setNameEn(e.target.value)}
-                    placeholder={name ? `Laisser vide pour utiliser "${name}"` : "Ex: Exclusive Fragrances"}
-                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] mb-1">
-                    Collection Description (EN)
-                  </label>
-                  <textarea
-                    value={descriptionEn}
-                    onChange={(e) => setDescriptionEn(e.target.value)}
-                    placeholder="Describe this fragrance collection in English..."
-                    rows={3}
-                    className="w-full px-3 py-2 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#FAF7F2] resize-none"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Multi-Photos de bannières de la catégorie */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                  Photos de bannières ({images.length})
-                </label>
-                <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
-                  Recommandé : 1920 × 600 px ou 1200 × 800 px
-                </span>
-              </div>
-
-              {/* Galerie des vignettes existantes avec réorganisation (Glisser-Déposer ou Flèches) */}
-              {images.length > 0 && (
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-[#7A726A] dark:text-[#A39B91]">
-                    <span>Glissez les photos ou utilisez les flèches pour modifier l'ordre :</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto p-2 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-[#FAF7F2]/50 dark:bg-[#1C1A18]/50">
-                    {images.map((imgUrl, index) => (
-                      <div
-                        key={`${imgUrl}-${index}`}
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData("text/plain", index.toString());
-                        }}
-                        onDragOver={(e) => {
-                          e.preventDefault();
-                        }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const sourceIndexStr = e.dataTransfer.getData("text/plain");
-                          if (!sourceIndexStr) return;
-                          const sourceIndex = parseInt(sourceIndexStr, 10);
-                          if (isNaN(sourceIndex) || sourceIndex === index) return;
-                          setImages((prev) => {
-                            const copy = [...prev];
-                            const [movedItem] = copy.splice(sourceIndex, 1);
-                            copy.splice(index, 0, movedItem);
-                            return copy;
-                          });
-                          toast.success("Ordre des photos mis à jour");
-                        }}
-                        className="group relative aspect-[16/10] rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:border-[#C9A96E]/60 transition-all shadow-xs"
-                      >
-                        <img
-                          src={imgUrl}
-                          alt={`Bannière ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-
-                        {/* Badge Ordre / Principale */}
-                        <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
-                          {index === 0 ? (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
-                              <Star className="w-2.5 h-2.5 fill-current" /> Principale
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 text-white backdrop-blur-xs">
-                              #{index + 1}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Panneau d'actions au survol */}
-                        <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
-                          {/* Ligne 1 : Définir principale & Supprimer */}
-                          <div className="flex items-center justify-between w-full">
-                            {index !== 0 ? (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSetPrimaryImage(index);
-                                }}
-                                className="px-1.5 py-0.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer text-[9px] font-bold flex items-center gap-1 shadow-xs"
-                                title="Définir comme bannière principale"
-                              >
-                                <Star className="w-2.5 h-2.5" />
-                                <span>Principale</span>
-                              </button>
-                            ) : (
-                              <div />
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveImage(index);
-                              }}
-                              className="p-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer ml-auto shadow-xs"
-                              title="Supprimer cette photo"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-
-                          {/* Ligne 2 : Flèches de changement de position (Ordre) */}
-                          <div className="flex items-center justify-between w-full mt-auto pt-1">
-                            <button
-                              type="button"
-                              disabled={index === 0}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMoveImage(index, "left");
-                              }}
-                              className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
-                              title="Déplacer vers la gauche"
-                            >
-                              <ChevronLeft className="w-3.5 h-3.5" />
-                            </button>
-
-                            <span className="text-[10px] font-bold text-white tracking-wider">
-                              {index + 1} / {images.length}
-                            </span>
-
-                            <button
-                              type="button"
-                              disabled={index === images.length - 1}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMoveImage(index, "right");
-                              }}
-                              className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
-                              title="Déplacer vers la droite"
-                            >
-                              <ChevronRight className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
+                  <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
+                    <div>
+                      <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <span>À venir / Teaser</span>
                       </div>
-                    ))}
-                  </div>
+                      <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Bientôt disponible</div>
+                    </div>
+                    <Switch checked={isComingSoon} onCheckedChange={setIsComingSoon} />
+                  </label>
                 </div>
-              )}
-
-              {/* Zone d'importation multi-fichiers */}
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-3.5 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1C1A18]/50 transition-all group"
-              >
-                <div className="w-9 h-9 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
-                  {uploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4" />
-                  )}
-                </div>
-                <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
-                  {uploading
-                    ? `Téléversement (${uploadProgress})...`
-                    : images.length === 0
-                    ? "Cliquez pour importer une ou plusieurs photos de bannière"
-                    : "Ajouter d'autres photos de bannière"}
-                </p>
-                <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-0.5">
-                  Sélection multiple autorisée (PNG, JPG, WebP max 8 Mo)
-                </p>
               </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/png,image/jpeg,image/webp,image/jpg"
-                className="hidden"
-                onChange={handleMultipleFilesChange}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer select-none">
-                <div>
-                  <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">Catégorie active</div>
-                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Visible sur la boutique</div>
-                </div>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-              </label>
-
-              <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
-                <div>
-                  <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <span>À venir / Teaser</span>
+              {/* COLONNE DROITE (5 colonnes) : Bannières & Visuels */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-4 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                      Photos de bannières ({images.length})
+                    </label>
+                    <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                      1920 × 600 px ou 1200 × 800 px
+                    </span>
                   </div>
-                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Bientôt disponible</div>
+
+                  {/* Galerie des vignettes existantes avec réorganisation (Glisser-Déposer ou Flèches) */}
+                  {images.length > 0 && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] text-[#7A726A] dark:text-[#A39B91]">
+                        <span>Glissez ou utilisez les flèches :</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1.5 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl bg-white dark:bg-[#141312]">
+                        {images.map((imgUrl, index) => (
+                          <div
+                            key={`${imgUrl}-${index}`}
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData("text/plain", index.toString());
+                            }}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              const sourceIndexStr = e.dataTransfer.getData("text/plain");
+                              if (!sourceIndexStr) return;
+                              const sourceIndex = parseInt(sourceIndexStr, 10);
+                              if (isNaN(sourceIndex) || sourceIndex === index) return;
+                              setImages((prev) => {
+                                const copy = [...prev];
+                                const [movedItem] = copy.splice(sourceIndex, 1);
+                                copy.splice(index, 0, movedItem);
+                                return copy;
+                              });
+                              toast.success("Ordre des photos mis à jour");
+                            }}
+                            className="group relative aspect-[16/10] rounded-xl overflow-hidden border border-[#E5DDD0] dark:border-[#2D2A26] bg-black/5 flex flex-col justify-between cursor-grab active:cursor-grabbing hover:border-[#C9A96E]/60 transition-all shadow-xs"
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={`Bannière ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+
+                            {/* Badge Ordre / Principale */}
+                            <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
+                              {index === 0 ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#C9A96E] text-[#121110] shadow-xs">
+                                  <Star className="w-2.5 h-2.5 fill-current" /> Principale
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 text-white backdrop-blur-xs">
+                                  #{index + 1}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Panneau d'actions au survol */}
+                            <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
+                              {/* Ligne 1 : Définir principale & Supprimer */}
+                              <div className="flex items-center justify-between w-full">
+                                {index !== 0 ? (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSetPrimaryImage(index);
+                                    }}
+                                    className="px-1.5 py-0.5 bg-white/95 text-[#1A1816] rounded-md hover:bg-[#C9A96E] hover:text-[#121110] transition-colors cursor-pointer text-[9px] font-bold flex items-center gap-1 shadow-xs"
+                                    title="Définir comme bannière principale"
+                                  >
+                                    <Star className="w-2.5 h-2.5" />
+                                    <span>Principale</span>
+                                  </button>
+                                ) : (
+                                  <div />
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveImage(index);
+                                  }}
+                                  className="p-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer ml-auto shadow-xs"
+                                  title="Supprimer cette photo"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+
+                              {/* Ligne 2 : Flèches de changement de position (Ordre) */}
+                              <div className="flex items-center justify-between w-full mt-auto pt-1">
+                                <button
+                                  type="button"
+                                  disabled={index === 0}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMoveImage(index, "left");
+                                  }}
+                                  className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                                  title="Déplacer vers la gauche"
+                                >
+                                  <ChevronLeft className="w-3.5 h-3.5" />
+                                </button>
+
+                                <span className="text-[10px] font-bold text-white tracking-wider">
+                                  {index + 1} / {images.length}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  disabled={index === images.length - 1}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMoveImage(index, "right");
+                                  }}
+                                  className="p-1 rounded-md bg-white/90 text-[#1A1816] hover:bg-[#C9A96E] hover:text-[#121110] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                                  title="Déplacer vers la droite"
+                                >
+                                  <ChevronRight className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Zone d'importation multi-fichiers */}
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/60 rounded-xl p-3.5 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white dark:hover:bg-[#141312] transition-all group"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                      {uploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4" />
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2]">
+                      {uploading
+                        ? `Téléversement (${uploadProgress})...`
+                        : images.length === 0
+                        ? "Importer des photos de bannière"
+                        : "Ajouter d'autres bannières"}
+                    </p>
+                    <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mt-0.5">
+                      PNG, JPG, WebP max 8 Mo
+                    </p>
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/png,image/jpeg,image/webp,image/jpg"
+                    className="hidden"
+                    onChange={handleMultipleFilesChange}
+                  />
                 </div>
-                <Switch checked={isComingSoon} onCheckedChange={setIsComingSoon} />
-              </label>
+              </div>
             </div>
 
-            <DialogFooter className="gap-2 pt-3 border-t border-[#EAE3D8] dark:border-[#24211E]">
+            <DialogFooter className="gap-2 pt-4 border-t border-[#EAE3D8] dark:border-[#24211E]">
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
@@ -1420,7 +1444,7 @@ const CategoriesAdmin = () => {
                 disabled={isSaving}
                 className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#C9A96E] to-[#b39155] text-[#111827] shadow-md shadow-[#C9A96E]/20 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
               >
-                {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour" : "Créer la catégorie"}
+                {isSaving ? "Enregistrement..." : editingCat ? "Mettre à jour la catégorie" : "Créer la catégorie"}
               </button>
             </DialogFooter>
           </form>

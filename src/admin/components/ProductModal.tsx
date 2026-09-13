@@ -479,7 +479,7 @@ const ProductModal = ({ open, onOpenChange, initial }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#FFFFFF] dark:bg-[#1A1A1A] max-w-4xl lg:max-w-5xl w-[95vw] max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
+      <DialogContent className="bg-[#FFFFFF] dark:bg-[#1A1A1A] max-w-6xl xl:max-w-7xl w-[96vw] max-h-[94vh] overflow-y-auto p-6 sm:p-8 lg:p-9 rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]">
         <form onSubmit={submit} className="space-y-6">
           {/* En-tête avec Titre à gauche et Boutons d'Action à droite */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A] pr-8 sm:pr-10">
