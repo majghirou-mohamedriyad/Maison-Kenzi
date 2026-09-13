@@ -383,7 +383,7 @@ const Collection = () => {
             )}
 
             {/* Contenu de la Bannière de Catégorie */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col justify-end min-h-[280px] sm:min-h-[340px] md:min-h-[380px]">
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-32 sm:pt-36 md:pt-40 pb-12 sm:pb-16 flex flex-col justify-end min-h-[280px] sm:min-h-[340px] md:min-h-[380px]">
               <div className="space-y-3.5 max-w-3xl">
                 {/* Fil d'ariane en verre dépoli */}
                 <Breadcrumb>
@@ -462,7 +462,7 @@ const Collection = () => {
           </section>
         ) : (
           /* En-tête épuré standard lorsque la catégorie n'a pas d'image */
-          <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
+          <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-28 sm:pt-32 md:pt-36 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
             {/* Subtle Ambient Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
 

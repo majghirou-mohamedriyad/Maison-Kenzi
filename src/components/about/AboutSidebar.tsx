@@ -10,7 +10,7 @@ const aboutPages = [
 
 const AboutSidebar = () => {
   return (
-    <aside className="hidden md:block w-64 sticky top-32 h-fit px-6">
+    <aside className="hidden md:block w-64 sticky top-36 h-fit px-6 pt-28 sm:pt-32">
       <nav className="space-y-1">
         <h3 className="font-serif text-2xl text-primary mb-6 tracking-wide">À propos</h3>
         {aboutPages.map((page) => (

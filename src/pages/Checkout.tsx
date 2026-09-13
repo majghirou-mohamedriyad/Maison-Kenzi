@@ -264,7 +264,7 @@ const Checkout = () => {
       />
       <Header />
 
-      <main className="flex-1 pt-20 sm:pt-24 pb-20">
+      <main className="flex-1 pt-28 sm:pt-32 md:pt-36 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Empty cart state */}
           {items.length === 0 && !completeOrder ? (

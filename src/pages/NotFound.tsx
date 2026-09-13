@@ -47,7 +47,7 @@ const NotFound = () => {
       />
       <Header />
 
-      <main className="flex-1 flex flex-col justify-center items-center py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
+      <main className="flex-1 flex flex-col justify-center items-center pt-32 sm:pt-36 md:pt-40 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden">
         {/* Subtle Luxury Ambient Glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 sm:w-[500px] h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl pointer-events-none" />

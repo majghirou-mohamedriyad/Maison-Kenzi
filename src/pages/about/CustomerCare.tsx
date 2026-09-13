@@ -212,7 +212,7 @@ const CustomerCare = () => {
       />
       <Header />
 
-      <main className="flex-1 pt-24 sm:pt-32 pb-24">
+      <main className="flex-1 pt-28 sm:pt-36 pb-24">
         {/* =========================================================================
             1. HERO ÉDITORIAL & IMMERSIF AVEC BADGE DE DISPONIBILITÉ
            ========================================================================= */}

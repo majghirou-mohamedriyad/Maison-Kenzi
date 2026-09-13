@@ -3,15 +3,16 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Espacement Supérieur & Dégagement de la Navbar sur la Page « À Propos » Opérationnels — Tag « Maison de Haute Parfumerie & d'Art » Parfaitement Aéré & Zéro Emoji
+- **Statut général** : Dégagement & Espacement Supérieur Global Harmonisé sur l'Ensemble des Pages du Site (Catalogue, Détail Parfum, Tunnel de Commande, Pages Institutionnelles, 404, À Propos) — Zéro Chevauchement avec la Barre de Navigation & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
 
-- [x] Ajustement de l'Espacement Supérieur de la Bannière « À Propos » ([`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx)) :
-  - [x] **Dégagement & Respiration Visuelle (`pt-32 sm:pt-36 md:pt-40`)** : Augmentation du padding supérieur du bandeau pour offrir un espace aéré généreux sous la barre de navigation fixe, évitant tout contact ou chevauchement avec le tag « Maison de Haute Parfumerie & d'Art ».
-  - [x] **Conformité Minimalist Spatial Composition** : Mise en valeur de la hiérarchie éditoriale haut de gamme.
+- [x] Harmonisation Globale de l'Espacement Supérieur sous la Barre de Navigation ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`src/pages/PrivacyPolicy.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/PrivacyPolicy.tsx), [`src/pages/TermsOfService.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/TermsOfService.tsx), [`src/pages/NotFound.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/NotFound.tsx), [`src/components/about/PageHeader.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/about/PageHeader.tsx), [`src/components/about/AboutSidebar.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/about/AboutSidebar.tsx), [`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
+  - [x] **Dégagement Systématique (`pt-28 sm:pt-32 md:pt-36`)** : Application d'un padding supérieur aéré sur toutes les pages pour empêcher tout chevauchement ou frottement visuel avec la navbar flottante.
+  - [x] **Gestion des Écrans de Chargement & Erreurs** : Alignement des états de chargement (skeletons) et des pages d'erreurs pour qu'ils soient également parfaitement visibles sans être masqués par la barre de navigation.
+  - [x] **Pages Institutionnelles & Sidebar** : Ajustement harmonisé des en-têtes `PageHeader` et de la barre latérale `AboutSidebar` sur toutes les pages de la maison.
 
 - [x] Correction du Chevauchement de la Navbar sur la Modale « Ajouter un autre parfum à votre commande » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/components/ui/dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/dialog.tsx), [`src/components/ui/alert-dialog.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/alert-dialog.tsx)) :
   - [x] **Élévation de Priorité Z-Index (`z-[120]`)** : Augmentation du niveau d'empilement de la modale au-dessus du Header fixe (`z-[100]`) et du panier latéral (`z-[110]`), garantissant que la fenêtre n'est plus masquée par la barre de navigation.

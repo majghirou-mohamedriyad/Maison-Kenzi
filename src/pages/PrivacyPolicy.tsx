@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
       />
       <Header />
 
-      <main className="flex-1 pt-24 sm:pt-28 pb-16">
+      <main className="flex-1 pt-28 sm:pt-32 md:pt-36 pb-16">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <header className="mb-10 text-center space-y-2">
             <h1 className="font-serif text-3xl sm:text-4xl font-light text-foreground">

@@ -148,7 +148,7 @@ const ParfumDetail = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <main className="flex-1 pt-6 px-4 max-w-5xl mx-auto w-full">
+        <main className="flex-1 pt-28 sm:pt-36 px-4 max-w-5xl mx-auto w-full">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 animate-pulse">
             <div className="md:col-span-5 h-72 bg-muted rounded-2xl max-w-xs mx-auto w-full" />
             <div className="md:col-span-7 space-y-4">
@@ -167,7 +167,7 @@ const ParfumDetail = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
+        <main className="flex-1 flex flex-col items-center justify-center text-center px-4 pt-28 sm:pt-36 pb-16">
           <h1 className="font-serif text-xl sm:text-2xl mb-3">Parfum introuvable</h1>
           {error && <p className="text-xs text-destructive mb-6">{error}</p>}
           <Button
@@ -286,7 +286,7 @@ const ParfumDetail = () => {
       />
       <Header />
 
-      <main className="flex-1 pt-20 sm:pt-24 pb-16">
+      <main className="flex-1 pt-28 sm:pt-32 md:pt-36 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
           {/* Breadcrumb Navigation */}
           <Breadcrumb>
