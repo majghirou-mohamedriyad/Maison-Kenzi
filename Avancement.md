@@ -3,11 +3,24 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-13
-- **Statut général** : Boutons d'Ajout Contextuels (« Nouveau Produit Cosmétique », « Nouveau Produit Artisanal », « Nouveau Produit Antique », « Nouveau Parfum ») & Modales Dédiées — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Formulaire Dédié « Nouveau Produit Cosmétique » (Nom, Marque, Prix, Stock, Poids g/kg, Volume ml/L, Description Soin & Sections Bilingues FR/EN) — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Formulaire Spécifique « Nouveau Produit Cosmétique » ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
+  - [x] **Champs Dédiés aux Soins & Cosmétiques** :
+    - **Nom du produit cosmétique** & **Marque / Laboratoire**.
+    - **Prix de vente (€)** & **Stock disponible**.
+    - **2 Champs de contenance/poids indépendants** : Poids solide/pâte avec sélecteur d'unité (`g` ou `kg`) et Volume liquide avec sélecteur d'unité (`ml` ou `L`).
+    - **Descriptions & Conseils d'application bilingues** (Français FR et Anglais EN optionnel).
+  - [x] **Conservation Intégrale des Sections Transverses** :
+    - Section **Visuels du produit** (multi-photos, drag & drop, réorganisation, étoiles de couverture).
+    - Section **Catégories du produit / cosmétique** (sélection synchronisée Supabase).
+    - Section **Visibilité & Badges** (Actif en boutique, Nouveau, Best Seller).
+  - [x] **Validation Adaptative & Enregistrement Sécurisé** : Suppression des contraintes de pyramide olfactive et de saisons obligatoires pour les cosmétiques, calcul automatique de contenance et synchronisation fluide avec Supabase.
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles sobres `lucide-react` (`Flower2`, `Languages`, `ImageIcon`, `FolderTree`), palette champagne gold `#C9A96E` et commentaires en français.
 
 - [x] Boutons d'Ajout Contextuels & Modales Adaptatives par Univers ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
   - [x] **Boutons d'Ajout Dynamiques selon l'Univers Actif** :

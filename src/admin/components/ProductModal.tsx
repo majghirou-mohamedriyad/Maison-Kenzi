@@ -80,6 +80,10 @@ const emptyForm = {
   seasons: [] as string[],
   price: "",
   volume: "",
+  weightValue: "",
+  weightUnit: "g" as "g" | "kg",
+  volumeValue: "",
+  volumeUnit: "ml" as "ml" | "L",
   stock: "",
   notes: "",
   notesEn: "",
@@ -115,6 +119,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
   const [dragOverImageIndex, setDragOverImageIndex] = useState<number | null>(null);
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Détection si l'univers actif ou sélectionné est Cosmétiques
+  const isCosmetic = useMemo(() => {
+    const cat = (defaultCategory || f.category || "").toLowerCase();
+    const cats = (f.categories || []).map((c) => c.toLowerCase());
+    return cat.includes("cosmetique") || cats.some((c) => c.includes("cosmetique"));
+  }, [defaultCategory, f.category, f.categories]);
 
   // Filtrage réactif des catégories dynamiques issues de Supabase
   const filteredCategories = useMemo(() => {
@@ -160,6 +171,25 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         const initialImages = getParfumImages(initial);
         const initialCategories = getParfumCategories(initial);
 
+        // Extraction intelligente des valeurs de poids et volume
+        let initWeightVal = "";
+        let initWeightUnit: "g" | "kg" = "g";
+        let initVolumeVal = initialVolume;
+        let initVolumeUnit: "ml" | "L" = "ml";
+
+        const labelText = (initial.imageLabel || "").toLowerCase();
+        const weightMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
+        if (weightMatch) {
+          initWeightVal = weightMatch[1];
+          initWeightUnit = weightMatch[2].toLowerCase() === "kg" ? "kg" : "g";
+        }
+
+        const volMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(l|ml)\b/i);
+        if (volMatch) {
+          initVolumeVal = volMatch[1];
+          initVolumeUnit = volMatch[2].toLowerCase() === "l" ? "L" : "ml";
+        }
+
         setF({
           name: initial.name || "",
           nameEn: (initial as any).name_en || "",
@@ -170,6 +200,10 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           seasons: initialSeasons,
           price: initialPrice,
           volume: initialVolume,
+          weightValue: initWeightVal,
+          weightUnit: initWeightUnit,
+          volumeValue: initVolumeVal,
+          volumeUnit: initVolumeUnit,
           stock: initialStock,
           notes: initialNotes,
           notesEn: (initial as any).notes_en || "",
@@ -354,35 +388,58 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: Record<string, string> = {};
-    if (!f.name.trim()) errs.name = "Veuillez renseigner le nom du parfum";
-    if (!f.maison.trim()) errs.maison = "Veuillez renseigner la maison ou marque";
-    if (!f.gender) errs.gender = "Veuillez sélectionner un genre";
+    if (!f.name.trim()) {
+      errs.name = isCosmetic ? "Veuillez renseigner le nom du produit cosmétique" : "Veuillez renseigner le nom du parfum";
+    }
+    if (!f.maison.trim()) {
+      errs.maison = isCosmetic ? "Veuillez renseigner la marque ou laboratoire" : "Veuillez renseigner la maison ou marque";
+    }
 
-    const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
-    if (currentSeasons.length === 0) errs.seasons = "Veuillez sélectionner au moins une saison d'utilisation";
+    if (!isCosmetic) {
+      if (!f.gender) errs.gender = "Veuillez sélectionner un genre";
+      const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
+      if (currentSeasons.length === 0) errs.seasons = "Veuillez sélectionner au moins une saison d'utilisation";
+      if (!f.notes.trim()) {
+        errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
+      }
+    }
 
     const numPrice = Number(f.price);
-    if (!f.price || !numPrice || numPrice <= 0) errs.price = "Veuillez renseigner le prix de vente du parfum";
+    if (!f.price || !numPrice || numPrice <= 0) errs.price = "Veuillez renseigner le prix de vente";
 
     if (f.stock === "" || isNaN(Number(f.stock)) || Number(f.stock) < 0) {
       errs.stock = "Veuillez renseigner le stock disponible";
     }
 
-    if (!f.notes.trim()) {
-      errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
-    }
-
     const currentCategories = Array.isArray(f.categories) && f.categories.length > 0
       ? f.categories
-      : (f.category ? [f.category] : []);
+      : (f.category ? [f.category] : (isCosmetic ? ["cosmetiques"] : []));
 
     if (currentCategories.length === 0) {
-      errs.category = "Veuillez sélectionner au moins une catégorie pour le parfum";
+      errs.category = "Veuillez sélectionner au moins une catégorie pour le produit";
     }
 
-    const numVolume = Number(f.volume);
-    if (!f.volume || isNaN(numVolume) || numVolume <= 0) {
-      errs.volume = "Veuillez renseigner la contenance du flacon (ex: 100)";
+    // Gestion du volume et poids pour les cosmétiques
+    let calculatedVolumeMl = 0;
+    if (isCosmetic) {
+      const hasWeight = !!f.weightValue && Number(f.weightValue) > 0;
+      const hasVol = !!f.volumeValue && Number(f.volumeValue) > 0;
+      if (!hasWeight && !hasVol && (!f.volume || Number(f.volume) <= 0)) {
+        errs.volume = "Veuillez renseigner le poids (g/kg) ou le volume (ml/L)";
+      }
+      if (hasVol) {
+        calculatedVolumeMl = f.volumeUnit === "L" ? Number(f.volumeValue) * 1000 : Number(f.volumeValue);
+      } else if (hasWeight) {
+        calculatedVolumeMl = f.weightUnit === "kg" ? Number(f.weightValue) * 1000 : Number(f.weightValue);
+      } else {
+        calculatedVolumeMl = Number(f.volume) || 100;
+      }
+    } else {
+      const numVolume = Number(f.volume);
+      if (!f.volume || isNaN(numVolume) || numVolume <= 0) {
+        errs.volume = "Veuillez renseigner la contenance du flacon (ex: 100)";
+      }
+      calculatedVolumeMl = numVolume || 100;
     }
 
     const numStock = Math.max(0, Number(f.stock) || 0);
@@ -411,20 +468,31 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const primaryImageUrl = finalImages[0] || null;
 
+    const currentSeasonsList = Array.isArray(f.seasons) && f.seasons.length > 0
+      ? f.seasons
+      : (isCosmetic ? ["Toutes Saisons"] : ["Printemps", "Été"]);
+
+    const cosmeticFormatLabel = [
+      f.weightValue ? `${f.weightValue} ${f.weightUnit}` : "",
+      f.volumeValue ? `${f.volumeValue} ${f.volumeUnit}` : "",
+    ].filter(Boolean).join(" • ");
+
+    const finalImageLabel = (f.imageLabel || "").trim() || (isCosmetic ? cosmeticFormatLabel : "") || slugify(f.name) || "produit";
+
     const payload: AdminParfum = {
       id,
       name: f.name.trim(),
       name_en: (f.nameEn || "").trim() || undefined,
       maison: f.maison.trim(),
-      gender: f.gender,
+      gender: f.gender || "Mixte",
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
-      seasons: currentSeasons,
+      seasons: currentSeasonsList,
       description: (f.description || "").trim(),
       description_en: (f.descriptionEn || "").trim() || undefined,
       notes_en: (f.notesEn || "").trim() || undefined,
       notes: {
-        tete: parsedNotes,
+        tete: parsedNotes.length > 0 ? parsedNotes : (isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
         coeur: [],
         fond: [],
       },
@@ -433,8 +501,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         "10ml": numPrice,
         "100ml": numPrice,
       },
-      imageLabel: (f.imageLabel || "").trim() || slugify(f.name) || "produit",
-      image_label_en: (f.imageLabelEn || "").trim() || undefined,
+      imageLabel: finalImageLabel,
+      image_label_en: (f.imageLabelEn || "").trim() || (isCosmetic ? cosmeticFormatLabel : undefined),
       image_url: primaryImageUrl,
       images: finalImages,
       isNew: f.isNew,
@@ -444,7 +512,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       stock_5ml: numStock,
       stock_10ml: numStock,
       sale_mode: "full_bottle",
-      full_bottle_volume_ml: numVolume,
+      full_bottle_volume_ml: calculatedVolumeMl > 0 ? calculatedVolumeMl : 100,
       full_bottle_price: numPrice,
       full_bottle_stock: numStock,
       full_bottle_limited: false,
@@ -463,7 +531,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       // 2. Synchronisation avec la base de données Supabase
       try {
         await upsertParfumToSupabase(payload, primaryImageUrl, finalImages);
-        toast.success(initial ? "Produit mis à jour et synchronisé avec la base de données" : "Nouveau parfum enregistré dans la base de données");
+        toast.success(
+          initial
+            ? "Produit mis à jour et synchronisé avec succès"
+            : isCosmetic
+            ? "Nouveau produit cosmétique enregistré avec succès"
+            : "Nouveau parfum enregistré dans la base de données"
+        );
       } catch (dbErr: any) {
         console.error("Erreur synchronisation Supabase:", dbErr);
         toast.warning("Produit enregistré localement", {
@@ -576,315 +650,621 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         <form id="product-form" onSubmit={submit} className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-4 space-y-3">
           {/* Grille principale équilibrée en 2 colonnes égales (6 / 6) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
-            {/* COLONNE GAUCHE (6 colonnes) : Informations Générales, Tarifs & Pyramide Olfactive */}
+            {/* COLONNE GAUCHE (6 colonnes) */}
             <div className="lg:col-span-6 space-y-3">
-              {/* Carte 1 : Informations Générales & Tarifs */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
-                <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
-                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
-                    Informations générales & Tarifs
-                  </h3>
-                </div>
+              {isCosmetic ? (
+                /* ============================================================ */
+                /* FORMULAIRE DÉDIÉ : PRODUIT COSMÉTIQUE                        */
+                /* ============================================================ */
+                <>
+                  {/* Carte 1 : Informations Générales, Tarifs & Poids/Volume */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                        Informations du Produit Cosmétique
+                      </h3>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Nom du parfum */}
-                  <div>
-                    <label className={labelCls}>Nom du parfum *</label>
-                    <input
-                      className={errors.name ? inputErrorCls : inputCls}
-                      value={f.name}
-                      onChange={(e) => set("name", e.target.value)}
-                      placeholder="Ex: Baccarat Rouge 540"
-                    />
-                    {errors.name && (
-                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                        <AlertCircle className="w-3 h-3 shrink-0" />
-                        <span>{errors.name}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {/* Nom du produit cosmétique */}
+                      <div>
+                        <label className={labelCls}>Nom du produit cosmétique *</label>
+                        <input
+                          className={errors.name ? inputErrorCls : inputCls}
+                          value={f.name}
+                          onChange={(e) => set("name", e.target.value)}
+                          placeholder="Ex: Sérum Éclat Niacinamide & Or"
+                        />
+                        {errors.name && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.name}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Maison / Marque */}
-                  <div>
-                    <label className={labelCls}>Maison / Marque *</label>
-                    <input
-                      className={errors.maison ? inputErrorCls : inputCls}
-                      value={f.maison}
-                      onChange={(e) => set("maison", e.target.value)}
-                      placeholder="Ex: Maison Francis Kurkdjian"
-                    />
-                    {errors.maison && (
-                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                        <AlertCircle className="w-3 h-3 shrink-0" />
-                        <span>{errors.maison}</span>
+                      {/* Marque / Laboratoire */}
+                      <div>
+                        <label className={labelCls}>Marque / Laboratoire *</label>
+                        <input
+                          className={errors.maison ? inputErrorCls : inputCls}
+                          value={f.maison}
+                          onChange={(e) => set("maison", e.target.value)}
+                          placeholder="Ex: Maison Kenzi Skincare"
+                        />
+                        {errors.maison && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.maison}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Genre */}
-                  <div className="sm:col-span-2">
-                    <label className={labelCls}>Genre *</label>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
+                      {/* Tarification & Stock */}
+                      <div className="sm:col-span-2 grid grid-cols-2 gap-2.5 pt-0.5">
+                        {/* Prix */}
+                        <div>
+                          <label className={labelCls}>Prix de vente (€) *</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={1}
+                              className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
+                              value={f.price}
+                              onChange={(e) => set("price", e.target.value)}
+                              placeholder="45"
+                            />
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
+                              €
+                            </span>
+                          </div>
+                          {errors.price && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
+                          )}
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                          <label className={labelCls}>Stock disponible *</label>
+                          <input
+                            type="number"
+                            min={0}
+                            className={errors.stock ? inputErrorCls : inputCls}
+                            value={f.stock}
+                            onChange={(e) => set("stock", e.target.value)}
+                            placeholder="25"
+                          />
+                          {errors.stock && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 2 Champs de Poids & Contenance (Gramme/Kilogramme & Millilitre/Litre) */}
+                      <div className="sm:col-span-2 p-2.5 rounded-lg bg-white/70 dark:bg-[#141312]/70 border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1816] dark:text-[#FAF7F2]">
+                            Poids & Contenance du Soin
+                          </span>
+                          <span className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
+                            Selon le type de produit
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {/* Champ 1 : Poids en g ou kg */}
+                          <div>
+                            <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                              Poids solide / pâte :
+                            </label>
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="number"
+                                min={0}
+                                step="any"
+                                className={inputCls + " flex-1 font-semibold"}
+                                value={f.weightValue}
+                                onChange={(e) => set("weightValue", e.target.value)}
+                                placeholder="Ex: 50"
+                              />
+                              <div className="inline-flex p-0.5 bg-[#FAF7F2] dark:bg-[#1C1A18] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => set("weightUnit", "g")}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                                    f.weightUnit === "g"
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] shadow-xs"
+                                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816]"
+                                  }`}
+                                >
+                                  g
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => set("weightUnit", "kg")}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                                    f.weightUnit === "kg"
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] shadow-xs"
+                                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816]"
+                                  }`}
+                                >
+                                  kg
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Champ 2 : Volume liquide en ml ou L */}
+                          <div>
+                            <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                              Volume liquide :
+                            </label>
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="number"
+                                min={0}
+                                step="any"
+                                className={inputCls + " flex-1 font-semibold"}
+                                value={f.volumeValue}
+                                onChange={(e) => set("volumeValue", e.target.value)}
+                                placeholder="Ex: 100"
+                              />
+                              <div className="inline-flex p-0.5 bg-[#FAF7F2] dark:bg-[#1C1A18] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => set("volumeUnit", "ml")}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                                    f.volumeUnit === "ml"
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] shadow-xs"
+                                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816]"
+                                  }`}
+                                >
+                                  ml
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => set("volumeUnit", "L")}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                                    f.volumeUnit === "L"
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] shadow-xs"
+                                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816]"
+                                  }`}
+                                >
+                                  L
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {errors.volume && (
+                          <div className="text-[10px] text-red-500 font-medium">{errors.volume}</div>
+                        )}
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Carte 2 : Descriptions & Conseils d'Utilisation (Bilingue FR / EN) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                          Descriptions & Conseils d'Application
+                        </h3>
+                      </div>
+
+                      {/* Onglets FR / EN */}
+                      <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
                         <button
-                          key={g}
                           type="button"
-                          onClick={() => {
-                            set("gender", g);
-                            if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
-                              set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
-                            }
-                          }}
-                          className={`py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
-                            f.gender === g
-                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                              : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
+                          onClick={() => setContentLang("fr")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "fr"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                           }`}
                         >
-                          {g}
+                          <span>Français (FR)</span>
+                          {f.description && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          )}
                         </button>
-                      ))}
-                    </div>
-                    {errors.gender && (
-                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                        <AlertCircle className="w-3 h-3 shrink-0" />
-                        <span>{errors.gender}</span>
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("en")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "en"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>English (EN)</span>
+                          {f.descriptionEn ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          ) : (
+                            <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
+                          )}
+                        </button>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Saisons d'utilisation */}
-                  <div className="sm:col-span-2">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <label className={labelCls}>Saisons d'utilisation *</label>
-                      <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
-                        {currentSeasons.length === 0
-                          ? "Aucune"
-                          : `${currentSeasons.length} choisie${currentSeasons.length > 1 ? "s" : ""}`}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {SEASON_OPTIONS.map((season) => {
-                        const isSelected = isSeasonSelected(season, currentSeasons);
-                        return (
-                          <button
-                            key={season}
-                            type="button"
-                            onClick={() => toggleSeason(season)}
-                            className={`py-1 px-1.5 text-[10px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
-                              isSelected
-                                ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                                : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
-                            }`}
-                          >
-                            <span>{season}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {errors.seasons && (
-                      <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                        <AlertCircle className="w-3 h-3 shrink-0" />
-                        <span>{errors.seasons}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Tarification & Stock */}
-                  <div className="sm:col-span-2 grid grid-cols-3 gap-2 pt-0.5">
-                    {/* Prix */}
-                    <div>
-                      <label className={labelCls}>Prix (€) *</label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min={1}
-                          className={(errors.price ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
-                          value={f.price}
-                          onChange={(e) => set("price", e.target.value)}
-                          placeholder="85"
-                        />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#C9A96E] pointer-events-none">
-                          €
-                        </span>
-                      </div>
-                      {errors.price && (
-                        <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
-                      )}
                     </div>
 
-                    {/* Contenance */}
-                    <div>
-                      <label className={labelCls}>Contenance *</label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min={1}
-                          className={(errors.volume ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
-                          value={f.volume}
-                          onChange={(e) => set("volume", e.target.value)}
-                          placeholder="100"
-                        />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
-                          ml
-                        </span>
-                      </div>
-                      {errors.volume && (
-                        <div className="text-[10px] text-red-500 mt-0.5">{errors.volume}</div>
-                      )}
-                    </div>
-
-                    {/* Stock */}
-                    <div>
-                      <label className={labelCls}>Stock *</label>
-                      <input
-                        type="number"
-                        min={0}
-                        className={errors.stock ? inputErrorCls : inputCls}
-                        value={f.stock}
-                        onChange={(e) => set("stock", e.target.value)}
-                        placeholder="10"
-                      />
-                      {errors.stock && (
-                        <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}
-              <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
-                  <div className="flex items-center gap-1.5">
-                    <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
-                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
-                      Descriptions & Notes Olfactives
-                    </h3>
-                  </div>
-
-                  {/* Onglets FR / EN */}
-                  <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
-                    <button
-                      type="button"
-                      onClick={() => setContentLang("fr")}
-                      className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
-                        contentLang === "fr"
-                          ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                          : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                      }`}
-                    >
-                      <span>Français (FR)</span>
-                      {f.notes && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setContentLang("en")}
-                      className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
-                        contentLang === "en"
-                          ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
-                          : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                      }`}
-                    >
-                      <span>English (EN)</span>
-                      {f.notesEn ? (
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                      ) : (
-                        <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* CONTENU FR */}
-                {contentLang === "fr" ? (
-                  <div className="space-y-2 animate-in fade-in duration-150">
-                    <div>
-                      <label className={labelCls}>Notes olfactives (FR) *</label>
-                      <input
-                        className={errors.notes ? inputErrorCls : inputCls}
-                        value={f.notes}
-                        onChange={(e) => set("notes", e.target.value)}
-                        placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
-                      />
-                      {errors.notes && (
-                        <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                          <AlertCircle className="w-3 h-3 shrink-0" />
-                          <span>{errors.notes}</span>
+                    {/* CONTENU FR */}
+                    {contentLang === "fr" ? (
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Description du soin & bienfaits (FR)</label>
+                          <textarea
+                            className={inputCls + " min-h-[60px] resize-y"}
+                            value={f.description}
+                            onChange={(e) => set("description", e.target.value)}
+                            placeholder="Formule enrichie en actifs précieux pour hydrater, nourrir et illuminer le teint en profondeur..."
+                            rows={3}
+                          />
                         </div>
-                      )}
+
+                        <div>
+                          <label className={labelCls}>Sous-titre / Conseils d'application (FR)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabel}
+                            onChange={(e) => set("imageLabel", e.target.value)}
+                            placeholder="Ex: Appliquer matin et soir sur peau propre et sèche"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      /* CONTENU EN */
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Product Name (EN - Optionnel)</label>
+                          <input
+                            className={inputCls}
+                            value={f.nameEn}
+                            onChange={(e) => set("nameEn", e.target.value)}
+                            placeholder={f.name ? `Laisser vide pour "${f.name}"` : "Ex: Radiance Glow Serum"}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Product Description & Benefits (EN)</label>
+                          <textarea
+                            className={inputCls + " min-h-[60px] resize-y"}
+                            value={f.descriptionEn}
+                            onChange={(e) => set("descriptionEn", e.target.value)}
+                            placeholder="Luxurious skincare formula designed to nourish, hydrate, and reveal radiant skin..."
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Subtitle / Application Tips (EN)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabelEn}
+                            onChange={(e) => set("imageLabelEn", e.target.value)}
+                            placeholder="Ex: Apply morning and evening to clean, dry skin"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                </>
+              ) : (
+                /* ============================================================ */
+                /* FORMULAIRE CLASSIQUE : PARFUMS, ARTISANAT, ANTIQUES          */
+                /* ============================================================ */
+                <>
+                  {/* Carte 1 : Informations Générales & Tarifs */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                        Informations générales & Tarifs
+                      </h3>
                     </div>
 
-                    <div>
-                      <label className={labelCls}>Description olfactive (FR)</label>
-                      <textarea
-                        className={inputCls + " min-h-[50px] resize-y"}
-                        value={f.description}
-                        onChange={(e) => set("description", e.target.value)}
-                        placeholder="Notes ambrées florales et boisées d'une élégance rare..."
-                        rows={2}
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {/* Nom du produit */}
+                      <div>
+                        <label className={labelCls}>Nom du produit *</label>
+                        <input
+                          className={errors.name ? inputErrorCls : inputCls}
+                          value={f.name}
+                          onChange={(e) => set("name", e.target.value)}
+                          placeholder="Ex: Baccarat Rouge 540"
+                        />
+                        {errors.name && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.name}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Maison / Marque */}
+                      <div>
+                        <label className={labelCls}>Maison / Marque *</label>
+                        <input
+                          className={errors.maison ? inputErrorCls : inputCls}
+                          value={f.maison}
+                          onChange={(e) => set("maison", e.target.value)}
+                          placeholder="Ex: Maison Francis Kurkdjian"
+                        />
+                        {errors.maison && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.maison}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Genre */}
+                      <div className="sm:col-span-2">
+                        <label className={labelCls}>Genre *</label>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
+                            <button
+                              key={g}
+                              type="button"
+                              onClick={() => {
+                                set("gender", g);
+                                if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
+                                  set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
+                                }
+                              }}
+                              className={`py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
+                                f.gender === g
+                                  ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                                  : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
+                              }`}
+                            >
+                              {g}
+                            </button>
+                          ))}
+                        </div>
+                        {errors.gender && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.gender}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Saisons d'utilisation */}
+                      <div className="sm:col-span-2">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <label className={labelCls}>Saisons d'utilisation *</label>
+                          <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                            {currentSeasons.length === 0
+                              ? "Aucune"
+                              : `${currentSeasons.length} choisie${currentSeasons.length > 1 ? "s" : ""}`}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-1.5">
+                          {SEASON_OPTIONS.map((season) => {
+                            const isSelected = isSeasonSelected(season, currentSeasons);
+                            return (
+                              <button
+                                key={season}
+                                type="button"
+                                onClick={() => toggleSeason(season)}
+                                className={`py-1 px-1.5 text-[10px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
+                                  isSelected
+                                    ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                                    : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
+                                }`}
+                              >
+                                <span>{season}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        {errors.seasons && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.seasons}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tarification & Stock */}
+                      <div className="sm:col-span-2 grid grid-cols-3 gap-2 pt-0.5">
+                        {/* Prix */}
+                        <div>
+                          <label className={labelCls}>Prix (€) *</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={1}
+                              className={(errors.price ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
+                              value={f.price}
+                              onChange={(e) => set("price", e.target.value)}
+                              placeholder="85"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#C9A96E] pointer-events-none">
+                              €
+                            </span>
+                          </div>
+                          {errors.price && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
+                          )}
+                        </div>
+
+                        {/* Contenance */}
+                        <div>
+                          <label className={labelCls}>Contenance *</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={1}
+                              className={(errors.volume ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
+                              value={f.volume}
+                              onChange={(e) => set("volume", e.target.value)}
+                              placeholder="100"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                              ml
+                            </span>
+                          </div>
+                          {errors.volume && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.volume}</div>
+                          )}
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                          <label className={labelCls}>Stock *</label>
+                          <input
+                            type="number"
+                            min={0}
+                            className={errors.stock ? inputErrorCls : inputCls}
+                            value={f.stock}
+                            onChange={(e) => set("stock", e.target.value)}
+                            placeholder="10"
+                          />
+                          {errors.stock && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                          Descriptions & Notes Olfactives
+                        </h3>
+                      </div>
+
+                      {/* Onglets FR / EN */}
+                      <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("fr")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "fr"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>Français (FR)</span>
+                          {f.notes && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("en")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "en"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>English (EN)</span>
+                          {f.notesEn ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          ) : (
+                            <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
+                          )}
+                        </button>
+                      </div>
                     </div>
 
-                    <div>
-                      <label className={labelCls}>Sous-titre / Accroche (FR)</label>
-                      <input
-                        className={inputCls}
-                        value={f.imageLabel}
-                        onChange={(e) => set("imageLabel", e.target.value)}
-                        placeholder="Ex: Extrait de Parfum — Flacon de Prestige"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  /* CONTENU EN */
-                  <div className="space-y-2 animate-in fade-in duration-150">
-                    <div>
-                      <label className={labelCls}>Nom du parfum (EN - Optionnel)</label>
-                      <input
-                        className={inputCls}
-                        value={f.nameEn}
-                        onChange={(e) => set("nameEn", e.target.value)}
-                        placeholder={f.name ? `Laisser vide pour utiliser "${f.name}"` : "Ex: Baccarat Rouge 540"}
-                      />
-                    </div>
+                    {/* CONTENU FR */}
+                    {contentLang === "fr" ? (
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Notes olfactives (FR) *</label>
+                          <input
+                            className={errors.notes ? inputErrorCls : inputCls}
+                            value={f.notes}
+                            onChange={(e) => set("notes", e.target.value)}
+                            placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
+                          />
+                          {errors.notes && (
+                            <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                              <AlertCircle className="w-3 h-3 shrink-0" />
+                              <span>{errors.notes}</span>
+                            </div>
+                          )}
+                        </div>
 
-                    <div>
-                      <label className={labelCls}>Olfactory Notes (EN)</label>
-                      <input
-                        className={inputCls}
-                        value={f.notesEn}
-                        onChange={(e) => set("notesEn", e.target.value)}
-                        placeholder="Ex: Jasmine, Saffron, Amberwood, Cedar"
-                      />
-                    </div>
+                        <div>
+                          <label className={labelCls}>Description olfactive (FR)</label>
+                          <textarea
+                            className={inputCls + " min-h-[50px] resize-y"}
+                            value={f.description}
+                            onChange={(e) => set("description", e.target.value)}
+                            placeholder="Notes ambrées florales et boisées d'une élégance rare..."
+                            rows={2}
+                          />
+                        </div>
 
-                    <div>
-                      <label className={labelCls}>Olfactory Description (EN)</label>
-                      <textarea
-                        className={inputCls + " min-h-[50px] resize-y"}
-                        value={f.descriptionEn}
-                        onChange={(e) => set("descriptionEn", e.target.value)}
-                        placeholder="Luminous and sophisticated amber floral breeze..."
-                        rows={2}
-                      />
-                    </div>
+                        <div>
+                          <label className={labelCls}>Sous-titre / Accroche (FR)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabel}
+                            onChange={(e) => set("imageLabel", e.target.value)}
+                            placeholder="Ex: Extrait de Parfum — Flacon de Prestige"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      /* CONTENU EN */
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Nom du produit (EN - Optionnel)</label>
+                          <input
+                            className={inputCls}
+                            value={f.nameEn}
+                            onChange={(e) => set("nameEn", e.target.value)}
+                            placeholder={f.name ? `Laisser vide pour utiliser "${f.name}"` : "Ex: Baccarat Rouge 540"}
+                          />
+                        </div>
 
-                    <div>
-                      <label className={labelCls}>Subtitle / Tagline (EN)</label>
-                      <input
-                        className={inputCls}
-                        value={f.imageLabelEn}
-                        onChange={(e) => set("imageLabelEn", e.target.value)}
-                        placeholder="Ex: Extrait de Parfum — Prestige Bottle"
-                      />
-                    </div>
-                  </div>
-                )}
-              </section>
+                        <div>
+                          <label className={labelCls}>Olfactory Notes (EN)</label>
+                          <input
+                            className={inputCls}
+                            value={f.notesEn}
+                            onChange={(e) => set("notesEn", e.target.value)}
+                            placeholder="Ex: Jasmine, Saffron, Amberwood, Cedar"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Olfactory Description (EN)</label>
+                          <textarea
+                            className={inputCls + " min-h-[50px] resize-y"}
+                            value={f.descriptionEn}
+                            onChange={(e) => set("descriptionEn", e.target.value)}
+                            placeholder="Luminous and sophisticated amber floral breeze..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Subtitle / Tagline (EN)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabelEn}
+                            onChange={(e) => set("imageLabelEn", e.target.value)}
+                            placeholder="Ex: Extrait de Parfum — Prestige Bottle"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                </>
+              )}
             </div>
 
             {/* COLONNE DROITE (6 colonnes) : Visuels, Catégories & Visibilité */}
@@ -1100,7 +1480,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                 <div className="flex items-center justify-between">
                   <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E] flex items-center gap-1.5">
                     <FolderTree className="w-3 h-3 text-[#C9A96E]" />
-                    <span>Catégories du parfum *</span>
+                    <span>{isCosmetic ? "Catégories du cosmétique *" : "Catégories du produit *"}</span>
                   </h3>
                   <span className="text-[10px] font-medium px-2 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E] border border-[#C9A96E]/20">
                     {selectedCategoriesCount === 0
