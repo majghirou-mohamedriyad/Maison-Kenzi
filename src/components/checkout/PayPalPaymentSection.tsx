@@ -1,13 +1,16 @@
 /**
- * Composant de paiement en ligne sécurisé PayPal & Carte Bancaire
- * Intégration officielle du SDK JavaScript PayPal pour Maison Kenzi
- * Permet le règlement direct par Carte Bancaire (Visa, Mastercard, Amex) ou via compte PayPal.
+ * Composant de paiement & validation de commande pour Maison Kenzi
+ * Permet la validation directe de commande ou le paiement en ligne sécurisé (PayPal / Carte Bancaire)
  */
 
 import { useEffect, useRef, useState } from "react";
-import { CreditCard, ShieldCheck, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { CreditCard, ShieldCheck, Lock, AlertCircle, Loader2, CheckCircle2, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { formatMAD } from "@/lib/sizes";
+import { Button } from "@/components/ui/button";
+
+// Bascule d'activation du paiement en ligne PayPal (Désactivé temporairement à la demande)
+const PAYPAL_ENABLED = false;
 
 interface PayPalPaymentSectionProps {
   total: number;
@@ -34,7 +37,7 @@ export const PayPalPaymentSection = ({
 }: PayPalPaymentSectionProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [sdkReady, setSdkReady] = useState(false);
-  const [sdkLoading, setSdkLoading] = useState(true);
+  const [sdkLoading, setSdkLoading] = useState(PAYPAL_ENABLED);
   const [sdkError, setSdkError] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
 
@@ -42,8 +45,34 @@ export const PayPalPaymentSection = ({
     import.meta.env.VITE_PAYPAL_CLIENT_ID ||
     "BAAJmrSD6Qv0uH4Zm24aUEyDPU1apBzOXcMK6javFsxW3yG75ucVp7JQ2grgYv2wYSxJf8D4UMc_TrwGIA";
 
-  // Chargement dynamique du script PayPal SDK
+  // Validation et confirmation directe de commande (quand PayPal est désactivé)
+  const handleDirectOrder = async () => {
+    const valid = onValidateForm();
+    if (!valid) {
+      toast.error("Veuillez d'abord renseigner vos coordonnées de livraison ci-dessus.");
+      return;
+    }
+
+    setProcessingPayment(true);
+    try {
+      await onPaymentSuccess({
+        paypalOrderId: `DIRECT_ORDER_${Date.now()}`,
+      });
+    } catch (err) {
+      console.error("Erreur enregistrement commande directe:", err);
+      toast.error("Une erreur est survenue lors de l'enregistrement de votre commande.");
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  // Chargement dynamique du script PayPal SDK uniquement si activé
   useEffect(() => {
+    if (!PAYPAL_ENABLED) {
+      setSdkLoading(false);
+      return;
+    }
+
     if (!clientId) {
       setSdkError("Identifiant client PayPal non configuré.");
       setSdkLoading(false);
@@ -64,7 +93,7 @@ export const PayPalPaymentSection = ({
         onScriptLoaded();
         return;
       } else {
-        existingScript.remove(); // Supprimer l'ancien script en cas d'échec antérieur
+        existingScript.remove();
       }
     }
 
@@ -80,7 +109,7 @@ export const PayPalPaymentSection = ({
     };
 
     script.onerror = () => {
-      setSdkError("Impossible de charger le module de paiement sécurisé PayPal. Vérifiez vos identifiants ou votre connexion.");
+      setSdkError("Impossible de charger le module de paiement sécurisé PayPal.");
       setSdkLoading(false);
     };
 
@@ -103,14 +132,12 @@ export const PayPalPaymentSection = ({
     onPaymentSuccessRef.current = onPaymentSuccess;
   }, [total, isFormValid, onValidateForm, onPaymentSuccess]);
 
-  // Rendu stable et unique des boutons PayPal & Carte Bancaire
+  // Rendu des boutons PayPal uniquement si le SDK est activé
   useEffect(() => {
-    if (!sdkReady || !window.paypal || !containerRef.current) return;
+    if (!PAYPAL_ENABLED || !sdkReady || !window.paypal || !containerRef.current) return;
 
     let isMounted = true;
     const targetElement = containerRef.current;
-
-    // Vider le conteneur proprement
     targetElement.innerHTML = "";
 
     const isFormRejectedRef = { current: false };
@@ -185,12 +212,10 @@ export const PayPalPaymentSection = ({
         },
         onError: (err: any) => {
           console.error("Détail callback PayPal onError:", err);
-          // Si l'erreur provient du formulaire incomplet intercepté par onClick
           if (isFormRejectedRef.current) {
             isFormRejectedRef.current = false;
             return;
           }
-          // Si l'utilisateur a simplement fermé la fenêtre
           const errStr = String(err || "");
           if (errStr.includes("detected popup close") || errStr.includes("popup_closed") || errStr.includes("window closed")) {
             return;
@@ -201,7 +226,6 @@ export const PayPalPaymentSection = ({
 
       if (buttonsInstance.isEligible()) {
         buttonsInstance.render(targetElement).catch((renderErr: any) => {
-          // Ignorer les erreurs d'annulation de cycle de vie React
           if (isMounted) {
             console.warn("Notice rendu PayPal Buttons:", renderErr);
           }
@@ -218,79 +242,130 @@ export const PayPalPaymentSection = ({
 
   return (
     <div className="space-y-4 pt-2">
-      {/* En-tête sécurisé */}
-      <div className="bg-background/90 border border-primary/25 rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-foreground font-semibold text-xs sm:text-sm">
-            <CreditCard className="w-4 h-4 text-primary" />
-            <span>Paiement Sécurisé en Ligne</span>
-          </div>
-          <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-            <Lock className="w-3.5 h-3.5" />
-            <span>SSL 256-bit</span>
-          </div>
-        </div>
-
-        <p className="text-[11px] text-muted-foreground font-light leading-relaxed">
-          Réglez directement par <strong className="text-foreground font-medium">Carte Bancaire</strong> (Visa, Mastercard) ou avec votre compte <strong className="text-foreground font-medium">PayPal</strong>.
-        </p>
-      </div>
-
-      {/* Zone de chargement / boutons */}
-      <div className="min-h-[140px] flex flex-col justify-center relative">
-        {sdkLoading && (
-          <div className="py-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            <span className="text-xs">Chargement sécurisé du module de paiement…</span>
-          </div>
-        )}
-
-        {sdkError && (
-          <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs space-y-2">
-            <div className="flex items-center gap-2 font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{sdkError}</span>
+      {/* Mode PayPal Désactivé : Bouton de validation directe */}
+      {!PAYPAL_ENABLED ? (
+        <div className="space-y-3">
+          <div className="bg-background/95 border border-primary/25 rounded-2xl p-4 space-y-2.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-foreground font-semibold text-xs sm:text-sm">
+                <Truck className="w-4 h-4 text-primary" />
+                <span>Validation & Expédition Sécurisée</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50">
+                Paiement à la livraison
+              </span>
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              Veuillez vérifier votre connexion internet ou réessayer ultérieurement.
+
+            <p className="text-[11px] text-muted-foreground font-light leading-relaxed">
+              Votre commande sera immédiatement préparée et expédiée avec suivi en temps réel. Règlement à la réception du colis.
             </p>
           </div>
-        )}
 
-        {processingPayment && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center gap-3 z-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-xs font-semibold text-foreground">
-              Validation du paiement en cours…
+          <Button
+            type="button"
+            onClick={handleDirectOrder}
+            disabled={processingPayment}
+            className="w-full h-13 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 font-serif font-bold text-sm tracking-wide shadow-md transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
+          >
+            {processingPayment ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Enregistrement de la commande…</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Confirmer ma Commande — {formatMAD(total)}</span>
+              </>
+            )}
+          </Button>
+
+          {/* Badges de réassurance */}
+          <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span>Flacons 100% Originaux & Garantis</span>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+              <Lock className="w-3 h-3 text-primary" />
+              <span>Commande vérifiée & sécurisée</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Mode PayPal Activé */
+        <>
+          <div className="bg-background/90 border border-primary/25 rounded-2xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-foreground font-semibold text-xs sm:text-sm">
+                <CreditCard className="w-4 h-4 text-primary" />
+                <span>Paiement Sécurisé en Ligne</span>
+              </div>
+              <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <Lock className="w-3.5 h-3.5" />
+                <span>SSL 256-bit</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground font-light leading-relaxed">
+              Réglez directement par <strong className="text-foreground font-medium">Carte Bancaire</strong> (Visa, Mastercard) ou avec votre compte <strong className="text-foreground font-medium">PayPal</strong>.
             </p>
           </div>
-        )}
 
-        {/* Conteneur DOM où le SDK PayPal injecte les boutons */}
-        <div
-          ref={containerRef}
-          className={`space-y-2 transition-opacity duration-300 ${
-            sdkLoading || sdkError ? "hidden" : "block"
-          }`}
-        />
-      </div>
+          <div className="min-h-[140px] flex flex-col justify-center relative">
+            {sdkLoading && (
+              <div className="py-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <span className="text-xs">Chargement sécurisé du module de paiement…</span>
+              </div>
+            )}
 
-      {/* Badges de réassurance de paiement */}
-      <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span>Protection des acheteurs garantie</span>
-        </div>
-        <div className="flex items-center gap-2 uppercase tracking-wider font-mono text-[9px]">
-          <span>CB</span>
-          <span>•</span>
-          <span>Visa</span>
-          <span>•</span>
-          <span>Mastercard</span>
-          <span>•</span>
-          <span>PayPal</span>
-        </div>
-      </div>
+            {sdkError && (
+              <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs space-y-2">
+                <div className="flex items-center gap-2 font-medium">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{sdkError}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Veuillez vérifier votre connexion internet ou réessayer ultérieurement.
+                </p>
+              </div>
+            )}
+
+            {processingPayment && (
+              <div className="absolute inset-0 bg-background/80 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center gap-3 z-20">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-xs font-semibold text-foreground">
+                  Validation du paiement en cours…
+                </p>
+              </div>
+            )}
+
+            <div
+              ref={containerRef}
+              className={`space-y-2 transition-opacity duration-300 ${
+                sdkLoading || sdkError ? "hidden" : "block"
+              }`}
+            />
+          </div>
+
+          <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span>Protection des acheteurs garantie</span>
+            </div>
+            <div className="flex items-center gap-2 uppercase tracking-wider font-mono text-[9px]">
+              <span>CB</span>
+              <span>•</span>
+              <span>Visa</span>
+              <span>•</span>
+              <span>Mastercard</span>
+              <span>•</span>
+              <span>PayPal</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
