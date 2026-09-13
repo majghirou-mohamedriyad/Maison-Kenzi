@@ -1,12 +1,11 @@
-import { Instagram, MessageCircle, Phone, Sparkles } from "lucide-react";
-import { useAppSettings } from "@/hooks/useAppSettings";
+/**
+ * Page Site en Maintenance — Maison Kenzi
+ * Affiche l'écran d'attente lors de la maintenance technique avec accès direct
+ * aux canaux officiels de contact (WhatsApp & Instagram).
+ */
 
-const cleanDisplayPhone = (p?: string) => {
-  if (!p || p.includes("6 63") || p.includes("663848099") || p.includes("600000000")) {
-    return "+212 752-850156";
-  }
-  return p;
-};
+import { Instagram, MessageCircle, Sparkles } from "lucide-react";
+import { useAppSettings } from "@/hooks/useAppSettings";
 
 const cleanWhatsAppNumber = (p?: string) => {
   if (!p || p.includes("663848099") || p.includes("600000000")) {
@@ -19,9 +18,9 @@ const cleanWhatsAppNumber = (p?: string) => {
 const Maintenance = () => {
   const { settings } = useAppSettings();
 
-  const displayPhone = cleanDisplayPhone(settings.store_phone);
   const waPhone = cleanWhatsAppNumber(settings.whatsapp_phone || settings.store_phone);
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite me renseigner.")}`;
+  const instaUrl = settings.instagram_url || "https://instagram.com/maisonkenzi";
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col items-center justify-between p-6 bg-background text-foreground select-none relative">
@@ -64,41 +63,33 @@ const Maintenance = () => {
           </p>
         </div>
 
-        {/* Refined Luxury Contact Pills */}
+        {/* Refined Luxury Contact Pills (WhatsApp & Instagram uniquement) */}
         <div className="pt-4 border-t border-border/70 space-y-3">
           <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground block">
             Contact & Assistance
           </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {/* WhatsApp */}
             <a
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border/80 hover:border-primary/40 text-foreground text-xs font-semibold transition-all duration-200 cursor-pointer group shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border/80 hover:border-primary/40 text-foreground text-xs font-semibold transition-all duration-200 cursor-pointer group shadow-xs"
             >
               <MessageCircle className="w-4 h-4 text-[#25D366] group-hover:scale-110 transition-transform" />
               <span>WhatsApp</span>
             </a>
 
-            {settings.instagram_url && (
-              <a
-                href={settings.instagram_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border/80 hover:border-primary/40 text-foreground text-xs font-semibold transition-all duration-200 cursor-pointer group shadow-xs"
-              >
-                <Instagram className="w-4 h-4 text-[#E1306C] group-hover:scale-110 transition-transform" />
-                <span>Instagram</span>
-              </a>
-            )}
-
+            {/* Instagram */}
             <a
-              href={`tel:${displayPhone.replace(/\s+/g, "")}`}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border/80 hover:border-primary/40 text-foreground text-xs font-semibold transition-all duration-200 cursor-pointer group shadow-xs"
+              href={instaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border/80 hover:border-primary/40 text-foreground text-xs font-semibold transition-all duration-200 cursor-pointer group shadow-xs"
             >
-              <Phone className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
-              <span className="truncate">{displayPhone}</span>
+              <Instagram className="w-4 h-4 text-[#E1306C] group-hover:scale-110 transition-transform" />
+              <span>Instagram</span>
             </a>
           </div>
         </div>

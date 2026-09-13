@@ -13,6 +13,11 @@
   - [x] **Suppression Complète des Sessions de Fallback** : Élimination de tout basculement ou test vers d'autres sessions (`default`, découverte multi-sessions `/api/sessions`, etc.).
   - [x] **Routage 100% Dédié** : Tous les messages de notifications clients et alertes de Maison Kenzi transitent exclusivement et de manière strictement étanche par la session dédiée configurée (`e8fe5adf-cd3b-4470-8cf7-6a85504430ff`).
 
+- [x] Épuration des Canaux de Contact sur la Page Maintenance ([`src/pages/Maintenance.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Maintenance.tsx)) :
+  - [x] **Suppression du Tag Téléphone** : Retrait du bouton d'appel direct pour un rendu plus épuré et centré sur le digital.
+  - [x] **Conservation Exclusive WhatsApp & Instagram** : Affichage d'une grille symétrique à 2 colonnes avec les boutons de contact officiels WhatsApp (`#25D366`) et Instagram (`#E1306C`).
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Micro-animations douces, flou d'arrière-plan de prestige (`backdrop-blur-2xl`) et icônes `lucide-react`.
+
 - [x] Sélection Multiple & Actions Groupées dans la Gestion des Commandes ([`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx), [`src/hooks/useAdminOrders.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useAdminOrders.ts)) :
   - [x] **Sélection Individuelle & « Tout Sélectionner »** : Cases à cocher interactives sur chaque ligne/carte avec bouton maître d'en-tête (états coché, semi-coché et décoché), sélection au clic sur la ligne avec mise en surbrillance.
   - [x] **Barre d'Actions Groupées Flottante** : Apparition instantanée d'une barre de contrôle en bas d'écran avec compteur dynamique de sélection (`X commandes sélectionnées`) et bouton de désélection rapide.
