@@ -324,7 +324,8 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                       </div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
 
               {/* Bloc Inférieur de Commande & Récapitulatif */}

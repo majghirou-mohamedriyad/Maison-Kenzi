@@ -734,7 +734,8 @@ const Checkout = () => {
                           {formatMAD(item.price * item.quantity)}
                         </span>
                       </div>
-                    ))}
+                    );
+                  })}
                   </div>
 
                   {/* Pricing details */}
