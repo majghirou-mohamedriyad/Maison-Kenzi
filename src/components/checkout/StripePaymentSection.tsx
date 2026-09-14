@@ -7,8 +7,8 @@
  * Zéro Emoji — Icônes vectorielles lucide-react exclusivement.
  */
 
-import { useState, useEffect, useRef } from "react";
-import { CreditCard, Lock, ShieldCheck, AlertCircle, Loader2, Info } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { CreditCard, Lock, ShieldCheck, AlertCircle, Loader2, Info, RefreshCw } from "lucide-react";
 import { formatMAD } from "@/lib/sizes";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -44,6 +44,7 @@ export const StripePaymentSection = ({
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const paymentElementContainerRef = useRef<HTMLDivElement>(null);
   const stripeInstanceRef = useRef<any>(null);
@@ -56,28 +57,89 @@ export const StripePaymentSection = ({
 
   const isTestMode = publishableKey.startsWith("pk_test_");
 
-  // 1. Chargement dynamique du script officiel Stripe.js v3
+  // Fonction de réessai manuel en cas d'échec de chargement
+  const handleRetry = useCallback(() => {
+    setErrorMsg(null);
+    setLoadingIntent(false);
+    // Nettoyer l'ancien script s'il est en échec
+    const oldScript = document.getElementById("stripe-v3-js");
+    if (oldScript && !window.Stripe) {
+      oldScript.remove();
+    }
+    setReloadTrigger((prev) => prev + 1);
+  }, []);
+
+  // 1. Chargement dynamique résilient du script officiel Stripe.js v3
   useEffect(() => {
-    if (window.Stripe) {
+    let interval: any = null;
+    let isCancelled = false;
+
+    // Vérifier si Stripe est déjà injecté globalement
+    if (typeof window !== "undefined" && window.Stripe) {
       setStripeLoaded(true);
+      setErrorMsg(null);
       return;
     }
+
+    const checkGlobalStripe = () => {
+      if (typeof window !== "undefined" && window.Stripe) {
+        if (!isCancelled) {
+          setStripeLoaded(true);
+          setErrorMsg(null);
+        }
+        if (interval) clearInterval(interval);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkGlobalStripe()) return;
 
     const scriptId = "stripe-v3-js";
-    const existing = document.getElementById(scriptId);
-    if (existing) {
-      existing.addEventListener("load", () => setStripeLoaded(true));
-      return;
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://js.stripe.com/v3/";
+      script.async = true;
+      document.head.appendChild(script);
     }
 
-    const script = document.createElement("script");
-    script.id = scriptId;
-    script.src = "https://js.stripe.com/v3/";
-    script.async = true;
-    script.onload = () => setStripeLoaded(true);
-    script.onerror = () => setErrorMsg("Impossible de charger la passerelle de paiement sécurisée Stripe.");
-    document.body.appendChild(script);
-  }, []);
+    const onLoad = () => {
+      if (!isCancelled && window.Stripe) {
+        setStripeLoaded(true);
+        setErrorMsg(null);
+      }
+    };
+
+    const onError = () => {
+      if (!isCancelled && !window.Stripe) {
+        setErrorMsg("Impossible de charger la passerelle de paiement sécurisée Stripe. Veuillez rafraîchir la page (Ctrl+F5) ou vérifier si une extension bloque les scripts.");
+      }
+    };
+
+    script.addEventListener("load", onLoad);
+    script.addEventListener("error", onError);
+
+    // Surveillance active pendant 5 secondes (au cas où l'événement load s'est déclenché avant l'écouteur)
+    let checks = 0;
+    interval = setInterval(() => {
+      checks++;
+      if (checkGlobalStripe() || checks > 25) {
+        clearInterval(interval);
+      }
+    }, 200);
+
+    return () => {
+      isCancelled = true;
+      if (interval) clearInterval(interval);
+      if (script) {
+        script.removeEventListener("load", onLoad);
+        script.removeEventListener("error", onError);
+      }
+    };
+  }, [reloadTrigger]);
 
   // 2. Initialisation de l'intention de paiement et montage de Stripe Elements
   useEffect(() => {
@@ -299,12 +361,22 @@ export const StripePaymentSection = ({
         )}
 
         {errorMsg && (
-          <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs space-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>Erreur d'initialisation</span>
             </div>
-            <p className="text-[11px] font-light">{errorMsg}</p>
+            <p className="text-[11px] font-light leading-relaxed">{errorMsg}</p>
+            <div className="pt-1 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-destructive text-destructive-foreground text-[11px] font-medium hover:bg-destructive/90 transition-colors cursor-pointer"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Réessayer le chargement</span>
+              </button>
+            </div>
           </div>
         )}
 

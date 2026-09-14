@@ -9,6 +9,15 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Résolution de l'Erreur d'Initialisation Stripe & Sécurisation CSP ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
+  - [x] **Mise à niveau de la Content-Security-Policy (CSP)** :
+    - Autorisation explicite des domaines officiels Stripe (`js.stripe.com`, `*.stripe.com`, `*.stripe.network`, `hooks.stripe.com`, `api.stripe.com`) dans les directives `script-src`, `frame-src`, `connect-src` et `img-src` pour lever le blocage par le navigateur.
+    - Intégration directe du script officiel `<script id="stripe-v3-js" src="https://js.stripe.com/v3/" async></script>` dans le `<head>` de `index.html` pour un préchargement instantané.
+  - [x] **Résilience & Réessai dans StripePaymentSection** :
+    - Détection dynamique et surveillance active de `window.Stripe` pendant le chargement.
+    - Ajout d'un bouton de réessai interactif avec icône `RefreshCw` en cas de problème réseau ou d'extension tierce.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre champagne gold.
+
 - [x] Correction du Callback Stripe dans le Formulaire Express ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] Résolution de l'erreur `ReferenceError: handleStripePaymentSuccess is not defined` en renommant la fonction de gestion du paiement en ligne dans le composant de commande express.
   - [x] Validation TypeScript 100% sans erreur (`npx tsc --noEmit`).
