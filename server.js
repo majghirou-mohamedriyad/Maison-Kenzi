@@ -139,7 +139,12 @@ const server = http.createServer((req, res) => {
     return proxyToPort(SUPABASE_TARGET_PORT, "/api/supabase", req, res);
   }
 
-  // 2. Proxy vers OpenWA (Port 2785)
+  // 2. Proxy direct vers Supabase Storage (Port 8000)
+  if (pathname.startsWith("/storage")) {
+    return proxyToPort(SUPABASE_TARGET_PORT, "", req, res);
+  }
+
+  // 3. Proxy vers OpenWA (Port 2785)
   if (pathname.startsWith("/api/openwa")) {
     return proxyToPort(OPENWA_TARGET_PORT, "/api/openwa", req, res);
   }

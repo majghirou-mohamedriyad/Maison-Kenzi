@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Résolution et Normalisation Universelle des Photos Produits ([`src/lib/productImages.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productImages.ts), [`src/components/ui/ProductImage.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/ProductImage.tsx), [`server.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/server.js)) :
+  - [x] **Compatibilité Étendue des Formats d'URLs** : Prise en charge des chemins relatifs Supabase (`/storage/...`), des ports `8000` et `2785`, et sécurisation automatique contre le blocage Mixed Content (HTTP -> HTTPS).
+  - [x] **Repli Gracieux sur Erreur (`onError`)** : Bascule automatique et instantanée vers le composant `Placeholder` Maison Kenzi en cas d'image inaccessible ou 404, éliminant les icônes de photos brisées du navigateur.
+  - [x] **Passerelle Supabase Storage Directe** : Prise en charge du préfixe `/storage` dans `server.js` redirigeant vers le stockage d'images Supabase.
+
 - [x] Passerelle Proxy Supabase & OpenWA pour Déploiement en Production ([`server.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/server.js)) :
   - [x] **Routage Transparent Supabase (Port 8000)** : Redirection de `/api/supabase/*` vers l'instance locale `http://127.0.0.1:8000` avec transmission des en-têtes et données JSON.
   - [x] **Pont WebSocket Realtime** : Prise en charge des sockets `upgrade` dans `server.js` pour la souscription en direct aux changements de catalogue et commandes Supabase.

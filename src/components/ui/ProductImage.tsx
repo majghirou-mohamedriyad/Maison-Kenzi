@@ -5,6 +5,7 @@
  * vers la deuxième photo du produit lorsque le curseur survole la carte.
  */
 
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Placeholder from "./Placeholder";
 
@@ -29,8 +30,19 @@ const ProductImage = ({
   aspect = "aspect-[4/5]",
   fitMode = "cover",
 }: ProductImageProps) => {
-  const primary = src || (Array.isArray(images) && images.length > 0 ? images[0] : null);
-  const secondary = secondarySrc || (Array.isArray(images) && images.length > 1 ? images[1] : null);
+  const [primaryError, setPrimaryError] = useState(false);
+  const [secondaryError, setSecondaryError] = useState(false);
+
+  useEffect(() => {
+    setPrimaryError(false);
+    setSecondaryError(false);
+  }, [src, secondarySrc, images]);
+
+  const rawPrimary = src || (Array.isArray(images) && images.length > 0 ? images[0] : null);
+  const rawSecondary = secondarySrc || (Array.isArray(images) && images.length > 1 ? images[1] : null);
+
+  const primary = primaryError ? null : rawPrimary;
+  const secondary = secondaryError ? null : rawSecondary;
 
   if (!primary) {
     return <Placeholder label={label} className={className} aspect={aspect} />;
@@ -51,6 +63,7 @@ const ProductImage = ({
         src={primary}
         alt={alt}
         loading="lazy"
+        onError={() => setPrimaryError(true)}
         className={cn(
           "w-full h-full transition-all duration-700 ease-out group-hover:scale-105 group-hover/img:scale-105 animate-fade-in",
           objectFitClass,
@@ -64,6 +77,7 @@ const ProductImage = ({
           src={secondary}
           alt={`${alt} — vue alternative`}
           loading="lazy"
+          onError={() => setSecondaryError(true)}
           className={cn(
             "absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 group-hover/img:opacity-100 transition-all duration-700 ease-out scale-95 group-hover:scale-105 group-hover/img:scale-105 pointer-events-none",
             objectFitClass

@@ -11,16 +11,41 @@
  */
 export const normalizeImageUrl = (url?: string | null): string => {
   if (!url || typeof url !== "string") return "/placeholder.svg";
-  const trimmed = url.trim();
+  let trimmed = url.trim();
   if (!trimmed) return "/placeholder.svg";
 
-  // Si l'application tourne en HTTPS (sur Vercel ou domaine de production) et que l'URL d'image pointe vers le VPS en HTTP
-  if (typeof window !== "undefined" && window.location.protocol === "https:") {
-    if (trimmed.startsWith("http://185.197.249.4:8000")) {
-      return trimmed.replace("http://185.197.249.4:8000", `${window.location.origin}/api/supabase`);
+  // Conserver les data:image directement
+  if (trimmed.startsWith("data:image")) return trimmed;
+
+  if (typeof window !== "undefined") {
+    const origin = window.location.origin;
+    const isHttps = window.location.protocol === "https:";
+
+    // Si l'URL est relative vers Supabase Storage (ex: /storage/v1/object/public/...)
+    if (trimmed.startsWith("/storage/")) {
+      return `${origin}/api/supabase${trimmed}`;
     }
-    if (trimmed.startsWith("http://185.197.249.4:2785")) {
-      return trimmed.replace("http://185.197.249.4:2785", `${window.location.origin}/api/openwa`);
+
+    // Si l'URL pointe vers Supabase (Port 8000 sur IP ou localhost)
+    if (trimmed.includes(":8000/")) {
+      trimmed = trimmed.replace(/^https?:\/\/[^/]+:8000/, `${origin}/api/supabase`);
+    }
+
+    // Si l'URL pointe vers OpenWA / WAHA (Port 2785 sur IP ou localhost)
+    if (trimmed.includes(":2785/")) {
+      trimmed = trimmed.replace(/^https?:\/\/[^/]+:2785/, `${origin}/api/openwa`);
+    }
+
+    // Si l'URL référence explicitement l'IP du VPS
+    if (trimmed.startsWith("http://185.197.249.4:8000")) {
+      trimmed = trimmed.replace("http://185.197.249.4:8000", `${origin}/api/supabase`);
+    } else if (trimmed.startsWith("http://185.197.249.4:2785")) {
+      trimmed = trimmed.replace("http://185.197.249.4:2785", `${origin}/api/openwa`);
+    }
+
+    // En environnement HTTPS, sécuriser les URLs maison-kenzi en HTTPS (anti-mixed content)
+    if (isHttps && trimmed.startsWith("http://maison-kenzi.com")) {
+      trimmed = trimmed.replace("http://maison-kenzi.com", "https://maison-kenzi.com");
     }
   }
 
