@@ -3,11 +3,17 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Réactivation du Module de Paiement Sécurisé PayPal Checkout & Carte Bancaire — 100% Déployé & Zéro Emoji
+- **Statut général** : Déploiement en Production Réussi sur VPS & Nom de Domaine Officiel https://maison-kenzi.com (HTTPS / SSL Let's Encrypt, PM2, Nginx)
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Déploiement en Production sur VPS & Configuration du Domaine Officiel `maison-kenzi.com` :
+  - [x] **Liaison DNS Hostinger** : Configuration de l'enregistrement A (`@` -> `185.197.249.4`) et CNAME (`www` -> `maison-kenzi.com`) avec TTL rapide (300s).
+  - [x] **Isolation et Zéro Conflit de Ports** : Attribution et démarrage du port dédié `3005` via PM2 (`PORT=3005 pm2 start server.js --name "maison-kenzi"`), préservant intégralement les conteneurs Docker existants (`3001`, `3003`, `5678`, `8000`).
+  - [x] **Reverse Proxy Nginx** : Configuration et activation du virtual host Nginx redirigeant le trafic de `maison-kenzi.com` vers le port local `3005`.
+  - [x] **Sécurisation HTTPS Officielle (Certbot / Let's Encrypt)** : Génération et déploiement réussis du certificat SSL pour `maison-kenzi.com` et `www.maison-kenzi.com` avec renouvellement automatique planifié.
 
 - [x] Préparation du Serveur de Production Autonome Node.js pour Déploiement VPS ([`server.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/server.js), [`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json)) :
   - [x] **Serveur HTTP Haute Performance sans Dépendance Externe** :
