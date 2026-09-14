@@ -40,7 +40,7 @@ import { useCategories } from "@/store/useCategoryStore";
 import { isParfumInCategory } from "@/lib/productCategories";
 
 const Navigation = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,16 +80,19 @@ const Navigation = () => {
     setIsCollectionsHovered(false);
   }, [location.pathname]);
 
-  // Suggestions rapides pour le panneau de recherche
+  // Suggestions rapides pour le panneau de recherche bilingues
   const searchCategorySuggestions = useMemo(() => {
     const baseSuggestions = [
       { slug: "all", name: t.nav.allFragrances },
     ];
     const adminSugg = activeAdminCategories
       .filter((c) => c.slug.toLowerCase() !== "all" && c.slug.toLowerCase() !== "toutes")
-      .map((c) => ({ slug: c.slug, name: c.name }));
+      .map((c) => ({
+        slug: c.slug,
+        name: language === "en" && c.name_en ? c.name_en : c.name,
+      }));
     return [...baseSuggestions, ...adminSugg].slice(0, 4);
-  }, [activeAdminCategories, t]);
+  }, [activeAdminCategories, t, language]);
 
   const randomParfumSuggestions = useMemo(() => {
     if (!isSearchOpen || allParfums.length === 0) return [];
@@ -162,7 +165,10 @@ const Navigation = () => {
 
   const waRaw = settings.whatsapp_phone || "212652535301";
   const waNumber = waRaw.replace(/[^0-9]/g, "");
-  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, j'aurais besoin d'un conseil.")}`;
+  const defaultWaMsg = language === "en"
+    ? "Hello Maison Kenzi, I would like some advice."
+    : "Bonjour Maison Kenzi, j'aurais besoin d'un conseil.";
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(t("nav.whatsappHelpMessage", defaultWaMsg))}`;
 
   const isCollectionsActive = location.pathname.startsWith("/collection") && location.pathname !== "/collection/all";
 
@@ -254,7 +260,7 @@ const Navigation = () => {
                 >
                   <div className="px-3 py-1.5 border-b border-border/60 mb-1 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
-                      {t("nav.collections", "Univers & Collections")}
+                      {t("nav.universesTitle", "Univers & Collections")}
                     </span>
                     <Link
                       to="/collection/all"
@@ -297,6 +303,8 @@ const Navigation = () => {
                       else if (s.includes("pack")) Icon = Crown;
 
                       const isCurrent = location.pathname === `/collection/${cat.slug}`;
+                      const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
+                      const catDesc = language === "en" && cat.description_en ? cat.description_en : (cat.description || (language === "en" ? "Exclusive collection" : "Collection exclusive"));
 
                       return (
                         <Link
@@ -315,16 +323,16 @@ const Navigation = () => {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5">
                               <span className="text-xs font-semibold group-hover:text-primary transition-colors truncate">
-                                {cat.name}
+                                {catName}
                               </span>
                               {cat.is_coming_soon && !allParfums.some((p) => isParfumInCategory(p, cat.slug)) && (
                                 <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full font-medium">
-                                  {t.catalog?.comingSoon || "À venir"}
+                                  {t.catalog?.comingSoon || (language === "en" ? "Coming Soon" : "À venir")}
                                 </span>
                               )}
                             </div>
                             <span className="text-[10px] text-muted-foreground truncate block font-light">
-                              {cat.description || "Collection exclusive"}
+                              {catDesc}
                             </span>
                           </div>
                           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
@@ -601,6 +609,8 @@ const Navigation = () => {
                     else if (s.includes("pack")) Icon = Crown;
 
                     const isCurrent = location.pathname === `/collection/${cat.slug}`;
+                    const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
+                    const catDesc = language === "en" && cat.description_en ? cat.description_en : (cat.description || (language === "en" ? "Collection" : "Collection"));
 
                     return (
                       <Link
@@ -621,9 +631,9 @@ const Navigation = () => {
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="min-w-0">
-                          <span className="text-xs font-semibold block truncate">{cat.name}</span>
+                          <span className="text-xs font-semibold block truncate">{catName}</span>
                           <span className={`text-[10px] truncate block ${isCurrent ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                            {cat.description || "Collection"}
+                            {catDesc}
                           </span>
                         </div>
                       </Link>

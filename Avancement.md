@@ -3,11 +3,21 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Traduction Intégrale Bilingue (FR/EN) du Footer & Internationalisation des Catégories — 100% Déployé & Zéro Emoji
+- **Statut général** : Traduction Intégrale Bilingue (FR/EN) du Menu Collections dans la Barre de Navigation — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Traduction Intégrale Bilingue (FR / EN) du Menu « Collections » dans la Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
+  - [x] **Traduction Dynamique des Catégories & Descriptions (Desktop & Mobile)** :
+    - Remplacement de l'affichage figé en français `{cat.name}` et `{cat.description}` par un basculement bilingue conditionnel `{language === "en" && cat.name_en ? cat.name_en : cat.name}` et `{language === "en" && cat.description_en ? cat.description_en : ...}`.
+    - Synchronisation des suggestions de catégories dans la barre de recherche rapide (Spotlight Search).
+  - [x] **Internationalisation des Textes & Badges du Menu Déroulant** :
+    - Titre du panneau déroulant : `{t("nav.universesTitle", "Univers & Collections")}` affichant *"Universes & Collections"* en anglais.
+    - Badge « À venir » : `{t.catalog?.comingSoon || (language === "en" ? "Coming Soon" : "À venir")}`.
+    - Message pré-rempli WhatsApp : *"Hello Maison Kenzi, I would like some advice."* en anglais.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
 - [x] Traduction Intégrale Bilingue (FR / EN) du Pied de Page (Footer) ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Alignement et Harmonisation des Clés de Traduction (`translations.ts`)** :

@@ -71,6 +71,10 @@ export const translations = {
       noParfumFound: "Aucun parfum trouvé pour",
       searchShortcut: "Recherche (Ctrl + K)",
       clearField: "Effacer le champ",
+      search: "Rechercher",
+      cart: "Panier",
+      exclusiveCollection: "Collection exclusive",
+      whatsappHelpMessage: "Bonjour Maison Kenzi, j'aurais besoin d'un conseil.",
     },
     statusBar: {
       usp1: "Haute Parfumerie de Niche — Sélection d'Exception au Maroc & en Europe",
@@ -477,6 +481,10 @@ export const translations = {
       noParfumFound: "No perfume found for",
       searchShortcut: "Search (Ctrl + K)",
       clearField: "Clear field",
+      search: "Search",
+      cart: "Shopping Bag",
+      exclusiveCollection: "Exclusive Collection",
+      whatsappHelpMessage: "Hello Maison Kenzi, I would like some advice.",
     },
     statusBar: {
       usp1: "Niche Haute Parfumerie — Exclusive Selection in Morocco & Europe",
