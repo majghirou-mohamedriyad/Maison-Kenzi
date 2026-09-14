@@ -124,3 +124,123 @@ export const isParfumProduct = (p?: {
 
   return true;
 };
+
+export type ProductGroupKey = "parfums" | "cosmetiques" | "artisanat" | "antiques" | "autres";
+
+/**
+ * Détermine l'ordre de priorité strict pour l'affichage de la collection complète (/collection/all) :
+ * 1. Parfums en premier
+ * 2. Produits Cosmétiques en second
+ * 3. Produits Artisanaux en troisième
+ * 4. Antiques & Pièces Rares en quatrième
+ * 5. Autres créations en dernier
+ */
+export const getProductCategoryOrder = (p?: {
+  category?: string | null;
+  categories?: string[] | null;
+  category_slugs?: string[] | null;
+  id?: string;
+  weight_value?: string | null;
+  volume_value?: string | null;
+  gender?: string | null;
+  notes?: any;
+}): number => {
+  if (!p) return 99;
+  const cats = getParfumCategories(p).map((c) => c.toLowerCase().trim());
+  const catStr = (p.category || "").toLowerCase().trim();
+  const allCats = [...cats, catStr].join(" ");
+
+  // 4. Antiques (Antiquités & Pièces Rares)
+  if (allCats.includes("antique") || allCats.includes("antiquit")) {
+    return 4;
+  }
+
+  // 3. Produits Artisanaux
+  if (
+    allCats.includes("artisanal") ||
+    allCats.includes("artisanat") ||
+    allCats.includes("artisanaux")
+  ) {
+    return 3;
+  }
+
+  // 2. Produits Cosmétiques & Soins
+  if (
+    allCats.includes("cosmetique") ||
+    allCats.includes("soin") ||
+    allCats.includes("deodorant") ||
+    ((p.weight_value || p.volume_value) && !isParfumProduct(p))
+  ) {
+    return 2;
+  }
+
+  // 1. Parfums (Parfums de Niche, Décants, Flacons)
+  if (
+    isParfumProduct(p) ||
+    allCats.includes("parfum") ||
+    Boolean(p.gender)
+  ) {
+    return 1;
+  }
+
+  return 5;
+};
+
+/**
+ * Retourne la clé de groupe principale d'un produit
+ */
+export const getProductGroupKey = (p?: {
+  category?: string | null;
+  categories?: string[] | null;
+  category_slugs?: string[] | null;
+  id?: string;
+  weight_value?: string | null;
+  volume_value?: string | null;
+  gender?: string | null;
+  notes?: any;
+}): ProductGroupKey => {
+  const order = getProductCategoryOrder(p);
+  switch (order) {
+    case 1:
+      return "parfums";
+    case 2:
+      return "cosmetiques";
+    case 3:
+      return "artisanat";
+    case 4:
+      return "antiques";
+    default:
+      return "autres";
+  }
+};
+
+/**
+ * Retourne le libellé éditorial bilingue pour chaque groupe de produits
+ */
+export const getProductGroupLabel = (groupKey: ProductGroupKey, language: string = "fr"): string => {
+  switch (groupKey) {
+    case "parfums":
+      return language === "en" ? "Fragrances & Perfumes" : "Parfums d'Exception";
+    case "cosmetiques":
+      return language === "en" ? "Cosmetics & Skincare" : "Produits Cosmétiques";
+    case "artisanat":
+      return language === "en" ? "Handcrafted Creations" : "Produits Artisanaux";
+    case "antiques":
+      return language === "en" ? "Rare Antiques & Treasures" : "Antiques & Pièces Rares";
+    default:
+      return language === "en" ? "Other Creations" : "Autres Créations";
+  }
+};
+
+/**
+ * Ordonne les slugs de catégories pour l'affichage des onglets/filtres
+ */
+export const getCategorySlugOrder = (slug: string): number => {
+  const s = slug.toLowerCase().trim();
+  if (s === "toutes" || s === "all") return 0;
+  if (s.includes("parfum") || s === "homme" || s === "femme" || s === "mixte") return 1;
+  if (s.includes("cosmetique") || s.includes("soin") || s.includes("deodorant")) return 2;
+  if (s.includes("artisanal") || s.includes("artisanat") || s.includes("artisanaux")) return 3;
+  if (s.includes("antique") || s.includes("antiquit")) return 4;
+  return 5;
+};

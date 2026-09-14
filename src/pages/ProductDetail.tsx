@@ -266,8 +266,8 @@ const ParfumDetail = () => {
         }
         const label = parts.length > 0
           ? parts.join(" • ")
-          : (parfum?.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : "Format Soin");
-        const sub = parfum?.category === "deodorants-stick" ? "Stick Corporel" : "Format Soin Original";
+          : (parfum?.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : (language === "en" ? "Standard Format" : "Format Standard"));
+        const sub = parfum?.category === "deodorants-stick" ? "Stick Corporel" : "";
         return { label, sub };
       }
       return {
@@ -750,9 +750,11 @@ const ParfumDetail = () => {
                             <span className={`text-sm sm:text-base font-semibold ${isFormatOutOfStock ? "text-muted-foreground line-through" : "text-foreground"}`}>
                               {formatLabel}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
-                              {formatSub}
-                            </span>
+                            {formatSub ? (
+                              <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
+                                {formatSub}
+                              </span>
+                            ) : null}
                             {isFormatOutOfStock && (
                               <span className="text-[9px] font-bold text-destructive uppercase tracking-wider bg-destructive/10 px-2 py-0.5 rounded-full border border-destructive/20 shrink-0">
                                 Épuisé

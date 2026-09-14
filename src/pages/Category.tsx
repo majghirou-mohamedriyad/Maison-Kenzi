@@ -27,6 +27,8 @@ import {
   ShieldCheck,
   Package,
   Grid,
+  Palette,
+  Landmark,
   ChevronDown,
   Check,
   ArrowUpDown,
@@ -62,7 +64,15 @@ import {
 
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
-import { isParfumInCategory, isParfumProduct } from "@/lib/productCategories";
+import {
+  isParfumInCategory,
+  isParfumProduct,
+  getProductCategoryOrder,
+  getProductGroupKey,
+  getProductGroupLabel,
+  getCategorySlugOrder,
+  type ProductGroupKey,
+} from "@/lib/productCategories";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -156,15 +166,24 @@ const Collection = () => {
       { key: "Toutes", label: t.catalog.allCollections, shortLabel: t.catalog.allCollections, icon: Grid },
     ];
 
-    activeAdminCategories.forEach((cat) => {
+    // Tri ordonné des univers : Parfums -> Cosmétiques -> Artisanat -> Antiques
+    const sortedCategories = [...activeAdminCategories].sort((a, b) => {
+      const orderA = getCategorySlugOrder(a.slug);
+      const orderB = getCategorySlugOrder(b.slug);
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.order_index ?? 0) - (b.order_index ?? 0);
+    });
+
+    sortedCategories.forEach((cat) => {
       const s = cat.slug.toLowerCase();
       if (s !== "homme" && s !== "femme" && s !== "all" && s !== "toutes") {
         let icon = Grid;
         if (s.includes("deodorant")) icon = ShieldCheck;
         else if (s.includes("pack")) icon = Crown;
         else if (s.includes("cosmetique")) icon = Flower2;
-        else if (s.includes("artisanal") || s.includes("livre")) icon = Package;
-        else if (s.includes("antique")) icon = Crown;
+        else if (s.includes("artisanal") || s.includes("artisanat") || s.includes("livre")) icon = Palette;
+        else if (s.includes("antique") || s.includes("antiquit")) icon = Landmark;
+        else if (s.includes("parfum")) icon = Sparkles;
 
         const displayName = (language === "en" && cat.name_en) ? cat.name_en : cat.name;
         const productCount = counts[cat.slug] || 0;
@@ -259,6 +278,14 @@ const Collection = () => {
 
     // Sorting
     list = [...list].sort((a, b) => {
+      // Pour la collection complète (/collection/all) :
+      // Ordre strict : 1. Parfums, 2. Cosmétiques, 3. Artisanat, 4. Antiques, 5. Autres
+      if (filter === "Toutes") {
+        const orderA = getProductCategoryOrder(a);
+        const orderB = getProductCategoryOrder(b);
+        if (orderA !== orderB) return orderA - orderB;
+      }
+
       const priceA = a.sale_mode === "full_bottle" ? (a.full_bottle_price ?? 0) : a.price_5ml;
       const priceB = b.sale_mode === "full_bottle" ? (b.full_bottle_price ?? 0) : b.price_5ml;
 
@@ -271,6 +298,41 @@ const Collection = () => {
 
     return list;
   }, [filter, parfums, activeAdminCategories, genderFilter, onlyInStock, localSearch, sortBy, language]);
+
+  // Regroupement par univers pour la vue complète (/collection/all)
+  const groupedSections = useMemo(() => {
+    // Si l'utilisateur a sélectionné une catégorie spécifique, pas de découpage en sous-sections
+    if (filter !== "Toutes") {
+      return [{ key: "all" as ProductGroupKey, label: "", icon: Grid, products: filteredAndSorted }];
+    }
+
+    // Ordre strict des univers d'exception Maison Kenzi
+    const groupDefinitions: { key: ProductGroupKey; icon: any }[] = [
+      { key: "parfums", icon: Sparkles },
+      { key: "cosmetiques", icon: Flower2 },
+      { key: "artisanat", icon: Palette },
+      { key: "antiques", icon: Landmark },
+      { key: "autres", icon: Package },
+    ];
+
+    const result = groupDefinitions
+      .map(({ key, icon }) => {
+        const groupProducts = filteredAndSorted.filter((p) => getProductGroupKey(p) === key);
+        return {
+          key,
+          label: getProductGroupLabel(key, language),
+          icon,
+          products: groupProducts,
+        };
+      })
+      .filter((g) => g.products.length > 0);
+
+    if (result.length === 0 && filteredAndSorted.length > 0) {
+      return [{ key: "all" as ProductGroupKey, label: "", icon: Grid, products: filteredAndSorted }];
+    }
+
+    return result;
+  }, [filter, filteredAndSorted, language]);
 
   const currentOption = filterOptions.find((o) => o.key.toLowerCase() === filter.toLowerCase()) || filterOptions[0];
   const CurrentIcon = currentOption.icon;
@@ -771,132 +833,164 @@ const Collection = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-                {filteredAndSorted.map((p) => {
-                  const isFull = p.sale_mode === "full_bottle";
-                  const fullStock = p.full_bottle_stock ?? 0;
-                  const outOfStock =
-                    p.is_active === false ||
-                    p.stock_status === "rupture" ||
-                    (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
-
-                  const pricing = getParfumPricingSummary(p);
-                  const pName = getProductName(p, language);
-                  const pDesc = getProductDescription(p, language);
-                  const pSubtitle = getProductSubtitle(p, language);
-
-                  return (
-                    <Link
-                      key={p.id}
-                      to={getParfumUrl(p)}
-                      state={{ fromCategory: filter }}
-                      className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${outOfStock ? "opacity-75" : ""
-                        }`}
-                    >
-                      {/* Product Visual Container */}
-                      <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5] w-full">
-                        <ProductImage
-                          src={p.image_url}
-                          images={p.images}
-                          alt={pName}
-                          label={pSubtitle || p.image_label}
-                          aspect="aspect-[4/5]"
-                          fitMode="cover"
-                          className={`w-full h-full transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
-                            }`}
-                        />
-
-                        {/* Status Badges - Rupture badge only */}
-                        {outOfStock && (
-                          <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 py-0.5 rounded-full font-bold border border-zinc-700/60 shadow-md">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            <span>{t.catalog.outOfStockBadge}</span>
-                          </span>
-                        )}
-
-                        {/* Light Sweep Shimmer Effect */}
-                        {!outOfStock && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-                        )}
+              <div className="space-y-12 sm:space-y-16">
+                {groupedSections.map((section, sectionIdx) => (
+                  <div
+                    key={section.key}
+                    className={
+                      sectionIdx > 0
+                        ? "pt-8 sm:pt-12 border-t border-border/50"
+                        : ""
+                    }
+                  >
+                    {/* En-tête de section prestigieux pour /collection/all */}
+                    {filter === "Toutes" && groupedSections.length > 1 && (
+                      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                            <section.icon className="w-4 h-4 text-primary" strokeWidth={1.75} />
+                          </div>
+                          <div>
+                            <h2 className="font-serif text-base sm:text-lg font-medium text-foreground tracking-tight">
+                              {section.label}
+                            </h2>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-light">
+                              {section.products.length} {section.products.length > 1 ? (language === "en" ? "creations" : "créations") : (language === "en" ? "creation" : "création")}
+                            </p>
+                          </div>
+                        </div>
                       </div>
+                    )}
 
-                      {/* Maison & Name */}
-                      <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
-                        {p.maison}
-                      </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                      {section.products.map((p) => {
+                        const isFull = p.sale_mode === "full_bottle";
+                        const fullStock = p.full_bottle_stock ?? 0;
+                        const outOfStock =
+                          p.is_active === false ||
+                          p.stock_status === "rupture" ||
+                          (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
 
-                      {/* Titre et Bouton Panier sur la même ligne */}
-                      <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
-                        <h3 className={`font-serif text-sm sm:text-base font-medium truncate transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                          }`}>
-                          {pName}
-                        </h3>
-                        {!outOfStock && (
-                          <QuickAddToCartButton
-                            parfum={p}
-                            size="sm"
-                          />
-                        )}
-                      </div>
+                        const pricing = getParfumPricingSummary(p);
+                        const pName = getProductName(p, language);
+                        const pDesc = getProductDescription(p, language);
+                        const pSubtitle = getProductSubtitle(p, language);
 
-                      {/* Extrait de Description */}
-                      {pDesc && (
-                        <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
-                          {pDesc}
-                        </p>
-                      )}
+                        return (
+                          <Link
+                            key={p.id}
+                            to={getParfumUrl(p)}
+                            state={{ fromCategory: filter }}
+                            className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${outOfStock ? "opacity-75" : ""
+                              }`}
+                          >
+                            {/* Product Visual Container */}
+                            <div className="relative mb-2.5 sm:mb-3 overflow-hidden rounded-xl bg-muted/40 aspect-[4/5] w-full">
+                              <ProductImage
+                                src={p.image_url}
+                                images={p.images}
+                                alt={pName}
+                                label={pSubtitle || p.image_label}
+                                aspect="aspect-[4/5]"
+                                fitMode="cover"
+                                className={`w-full h-full transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
+                                  }`}
+                              />
 
-                      {/* Étiquettes Genre & Saisons d'utilisation — Réservées exclusivement aux parfums */}
-                      {isParfumProduct(p) ? (
-                        <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
-                          {p.gender && (
-                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                              {getProductGender(p.gender, language)}
-                            </span>
-                          )}
-                          {getParfumSeasons(p).map((season) => {
-                            const meta = getSeasonMeta(season, language);
-                            const SeasonIconComp = meta.icon;
-                            return (
-                              <span
-                                key={season}
-                                className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
-                              >
-                                <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
-                                <span>{meta.label}</span>
+                              {/* Status Badges - Rupture badge only */}
+                              {outOfStock && (
+                                <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest bg-zinc-900/90 dark:bg-zinc-800/90 text-zinc-200 backdrop-blur-md px-2.5 py-0.5 rounded-full font-bold border border-zinc-700/60 shadow-md">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                  <span>{t.catalog.outOfStockBadge}</span>
+                                </span>
+                              )}
+
+                              {/* Light Sweep Shimmer Effect */}
+                              {!outOfStock && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+                              )}
+                            </div>
+
+                            {/* Maison & Name */}
+                            <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground truncate transition-colors duration-300 group-hover:text-primary">
+                              {p.maison}
+                            </p>
+
+                            {/* Titre et Bouton Panier sur la même ligne */}
+                            <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
+                              <h3 className={`font-serif text-sm sm:text-base font-medium truncate transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                                }`}>
+                                {pName}
+                              </h3>
+                              {!outOfStock && (
+                                <QuickAddToCartButton
+                                  parfum={p}
+                                  size="sm"
+                                />
+                              )}
+                            </div>
+
+                            {/* Extrait de Description */}
+                            {pDesc && (
+                              <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
+                                {pDesc}
+                              </p>
+                            )}
+
+                            {/* Étiquettes Genre & Saisons d'utilisation — Réservées exclusivement aux parfums */}
+                            {isParfumProduct(p) ? (
+                              <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                                {p.gender && (
+                                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                                    {getProductGender(p.gender, language)}
+                                  </span>
+                                )}
+                                {getParfumSeasons(p).map((season) => {
+                                  const meta = getSeasonMeta(season, language);
+                                  const SeasonIconComp = meta.icon;
+                                  return (
+                                    <span
+                                      key={season}
+                                      className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
+                                    >
+                                      <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
+                                      <span>{meta.label}</span>
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            ) : (p.weight_value || p.volume_value) ? (
+                              <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                                {p.weight_value && (
+                                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                                    {p.weight_value} {p.weight_unit || "g"}
+                                  </span>
+                                )}
+                                {p.volume_value && (
+                                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                                    {p.volume_value} {p.volume_unit || "ml"}
+                                  </span>
+                                )}
+                              </div>
+                            ) : null}
+
+                            {/* Prix et Contenance en ML */}
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
+                              <span className={`text-xs sm:text-sm font-semibold tracking-tight ${outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
+                                }`}>
+                                {outOfStock ? t.common.outOfStock : pricing.priceText}
                               </span>
-                            );
-                          })}
-                        </div>
-                      ) : (p.weight_value || p.volume_value) ? (
-                        <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
-                          {p.weight_value && (
-                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                              {p.weight_value} {p.weight_unit || "g"}
-                            </span>
-                          )}
-                          {p.volume_value && (
-                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                              {p.volume_value} {p.volume_unit || "ml"}
-                            </span>
-                          )}
-                        </div>
-                      ) : null}
 
-                      {/* Prix et Contenance en ML */}
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
-                        <span className={`text-xs sm:text-sm font-semibold tracking-tight ${outOfStock ? "text-muted-foreground line-through opacity-70" : "text-foreground"
-                          }`}>
-                          {outOfStock ? t.common.outOfStock : pricing.priceText}
-                        </span>
-
-                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
-                          {pricing.volumeText}
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
+                              <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                                {pricing.volumeText}
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {filteredAndSorted.length === 0 && (

@@ -85,3 +85,6 @@ coverage/
 .lovable/
 .gemini/
 skills-lock.json
+
+# Guides privés VPS
+vps-guide.txt
