@@ -3,11 +3,20 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Unification Calibrée de la Section Photo des Catégories (Catalogue & Accueil) — 100% Déployé & Zéro Emoji
+- **Statut général** : Harmonisation Typographique & État Grisé Dynamique des Liens du Footer — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Harmonisation Typographique & État Grisé Dynamique des Liens du Footer ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
+  - [x] **Désactivation & État Grisé Dynamique selon l'URL Active (`useLocation`)** :
+    - Détection intelligente de la page en cours de visite via `isLinkActive(path)` (avec normalisation des chemins et gestion des alias tels que `/categories` et `/collection/all`).
+    - Lorsque le visiteur se trouve sur une page donnée, son lien dans le footer se grise visuellement (`text-muted-foreground/40 pointer-events-none cursor-default select-none`) avec transmission de l'attribut d'accessibilité `aria-current="page"`.
+    - L'icône associée (ex: camion de suivi, étincelles d'à-propos, etc.) s'atténue également en accord avec le texte grisé.
+  - [x] **Suppression du Gras Permanent & Harmonisation de la Typographie** :
+    - Élimination des classes statiques `font-medium text-foreground` sur « Tous les Parfums (Catalogue) » et « Suivre ma Commande » au profit de la typographie fine uniforme `font-light` partagée par l'ensemble des liens du footer.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
 - [x] Unification de la Taille de la Section Photo des Catégories ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx)) :
   - [x] **Hauteur Calibrée et Uniforme du Hero de Catégorie ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx))** :

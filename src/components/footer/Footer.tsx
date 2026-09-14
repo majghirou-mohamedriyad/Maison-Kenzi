@@ -8,7 +8,7 @@
  */
 
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
@@ -27,12 +27,24 @@ const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 
 const Footer = () => {
   const { t, language } = useLanguage();
+  const location = useLocation();
   const { settings } = useAppSettings();
   const categories = useCategories();
   const activeCategories = useMemo(
     () => categories.filter((c) => c.is_active),
     [categories]
   );
+
+  // Vérifie si le lien correspond à la page actuellement visitée pour le griser
+  const isLinkActive = (path: string) => {
+    const normalize = (p: string) => (p.endsWith("/") && p.length > 1 ? p.slice(0, -1) : p).toLowerCase();
+    const current = normalize(location.pathname);
+    const target = normalize(path);
+    if (target === "/collection/all") {
+      return current === "/collection/all" || current === "/categories";
+    }
+    return current === target;
+  };
 
   const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
@@ -78,11 +90,16 @@ const Footer = () => {
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
               {t("footer.collections", "Collections")}
             </h4>
-            <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
+            <ul className="space-y-2.5 text-xs font-light">
               <li>
                 <Link
                   to="/collection/all"
-                  className="hover:text-primary transition-colors font-medium text-foreground"
+                  aria-current={isLinkActive("/collection/all") ? "page" : undefined}
+                  className={`transition-colors font-light ${
+                    isLinkActive("/collection/all")
+                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                  }`}
                 >
                   {t("footer.allPerfumes", "Tous les Parfums (Catalogue)")}
                 </Link>
@@ -97,11 +114,18 @@ const Footer = () => {
                 )
                 .map((cat) => {
                   const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
+                  const catPath = `/collection/${cat.slug}`;
+                  const isActive = isLinkActive(catPath);
                   return (
                     <li key={cat.id}>
                       <Link
-                        to={`/collection/${cat.slug}`}
-                        className="hover:text-primary transition-colors"
+                        to={catPath}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`transition-colors font-light ${
+                          isActive
+                            ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                            : "text-muted-foreground hover:text-primary cursor-pointer"
+                        }`}
                       >
                         {catName}
                       </Link>
@@ -116,22 +140,46 @@ const Footer = () => {
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
               {t("footer.information", "Informations")}
             </h4>
-            <ul className="space-y-2.5 text-xs font-light text-muted-foreground">
+            <ul className="space-y-2.5 text-xs font-light">
               <li>
-                <Link to="/about" className="hover:text-primary transition-colors flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <Link
+                  to="/about"
+                  aria-current={isLinkActive("/about") ? "page" : undefined}
+                  className={`transition-colors flex items-center gap-1.5 font-light ${
+                    isLinkActive("/about")
+                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                  }`}
+                >
+                  <Sparkles className={`w-3.5 h-3.5 ${isLinkActive("/about") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.aboutUs", "À Propos de Maison Kenzi")}</span>
                 </Link>
               </li>
               <li>
-                <Link to="/suivi-commande" className="hover:text-primary transition-colors flex items-center gap-1.5 font-medium text-foreground">
-                  <Truck className="w-3.5 h-3.5 text-primary" />
+                <Link
+                  to="/suivi-commande"
+                  aria-current={isLinkActive("/suivi-commande") ? "page" : undefined}
+                  className={`transition-colors flex items-center gap-1.5 font-light ${
+                    isLinkActive("/suivi-commande")
+                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                  }`}
+                >
+                  <Truck className={`w-3.5 h-3.5 ${isLinkActive("/suivi-commande") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.trackOrder", "Suivre ma Commande")}</span>
                 </Link>
               </li>
               <li>
-                <Link to="/about/service-client" className="hover:text-primary transition-colors flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                <Link
+                  to="/about/service-client"
+                  aria-current={isLinkActive("/about/service-client") ? "page" : undefined}
+                  className={`transition-colors flex items-center gap-1.5 font-light ${
+                    isLinkActive("/about/service-client")
+                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                  }`}
+                >
+                  <MessageSquare className={`w-3.5 h-3.5 ${isLinkActive("/about/service-client") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.customerService", "Service Client & Contact")}</span>
                 </Link>
               </li>
@@ -185,11 +233,27 @@ const Footer = () => {
         <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
           <p>© {new Date().getFullYear()} Maison Kenzi. {t("footer.allRightsReserved", "Tous droits réservés.")}</p>
           <div className="flex items-center gap-4 text-[11px]">
-            <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+            <Link
+              to="/privacy-policy"
+              aria-current={isLinkActive("/privacy-policy") ? "page" : undefined}
+              className={`transition-colors font-light ${
+                isLinkActive("/privacy-policy")
+                  ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                  : "text-muted-foreground hover:text-primary cursor-pointer"
+              }`}
+            >
               {t("footer.privacyPolicy", "Politique de Confidentialité")}
             </Link>
             <span>•</span>
-            <Link to="/terms-of-service" className="hover:text-primary transition-colors">
+            <Link
+              to="/terms-of-service"
+              aria-current={isLinkActive("/terms-of-service") ? "page" : undefined}
+              className={`transition-colors font-light ${
+                isLinkActive("/terms-of-service")
+                  ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                  : "text-muted-foreground hover:text-primary cursor-pointer"
+              }`}
+            >
               {t("footer.termsOfService", "Conditions Générales de Vente")}
             </Link>
           </div>
