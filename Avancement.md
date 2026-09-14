@@ -9,6 +9,16 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Suppression Intégrale de PayPal & Désactivation du Paiement en Ligne ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env)) :
+  - [x] **Suppression des Scripts et Dépendances PayPal** :
+    - Élimination complète du chargeur dynamique du SDK PayPal, des boutons de paiement et de toute référence d'API.
+    - Suppression de la variable `VITE_PAYPAL_CLIENT_ID` dans le fichier `.env`.
+  - [x] **Mise en Indisponibilité Élégante du Paiement en Ligne** :
+    - Remplacement du bloc de règlement par un message d'information sobre et soigné indiquant la suspension temporaire du paiement en ligne.
+    - Bouton de paiement rendu formellement inactif (`disabled={true}`, curseur bloqué, opacité réduite) avec le libellé « Paiement Indisponible — [Montant] ».
+    - Invitation à contacter la conciergerie WhatsApp pour toute commande ou question.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
+
 - [x] Basculement en Mode Production Réel (Live) pour PayPal Checkout & Carte Bancaire ([`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env), [`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
   - [x] **Intégration du Client ID Live Officiel (Production)** :
     - Remplacement de la clé Sandbox par le Client ID Live marchand fourni (`BAAo-btXGZ...`) dans le fichier d'environnement `.env` et dans le composant.

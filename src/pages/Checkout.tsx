@@ -784,7 +784,7 @@ const Checkout = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Lock className="w-4 h-4 text-primary shrink-0" />
-                      <span>Paiement sécurisé par internet (Chiffrement SSL)</span>
+                      <span>Plateforme certifiée Maison Kenzi (Chiffrement SSL)</span>
                     </div>
                     <div className="flex items-center gap-2 text-[10.5px] text-[#A37B34] dark:text-[#C9A96E] pt-1.5 border-t border-border/40 font-medium">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
