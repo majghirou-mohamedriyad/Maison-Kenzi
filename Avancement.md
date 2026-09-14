@@ -3,11 +3,22 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Fil d'Ariane Dynamique avec Catégorie Parente dans la Fiche Produit — 100% Déployé & Zéro Emoji
+- **Statut général** : Réactivation du Module de Paiement Sécurisé PayPal Checkout & Carte Bancaire — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Réactivation du Module de Paiement Sécurisé PayPal Checkout & Carte Bancaire ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Intégration Active du SDK Officiel PayPal Checkout** :
+    - Remplacement du bloc de maintenance désactivé par le chargeur dynamique officiel du SDK PayPal avec boutons intelligents (*Smart Payment Buttons* pour compte PayPal et Carte Bancaire Visa/Mastercard).
+    - Validation préalable obligatoire des informations client (nom, téléphone, adresse) avant déclenchement de la fenêtre de règlement (`actions.reject()` / `actions.resolve()`).
+  - [x] **Conversion Transparent & Sécurisée MAD -> EUR** :
+    - Prise en charge du taux de change Dirham Marocain vers Euro pour pallier l'absence de prise en charge native du MAD par PayPal.
+    - Affichage clair et transparent du montant en MAD et de son équivalent en EUR pour l'acheteur.
+  - [x] **Enregistrement et Synchronisation de la Commande Payée** :
+    - Capture du paiement (`actions.order.capture()`), association de l'identifiant de transaction `paypalOrderId` et enregistrement immédiat avec le statut `"paye"` dans Supabase `orders`.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
 - [x] Fil d'Ariane Dynamique avec Catégorie Parente dans la Page Produit ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
   - [x] **Remplacement du « Catalogue » Figé par la Catégorie Parente Réelle** :
