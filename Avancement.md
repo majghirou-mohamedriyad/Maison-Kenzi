@@ -9,6 +9,14 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Préparation du Serveur de Production Autonome Node.js pour Déploiement VPS ([`server.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/server.js), [`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json)) :
+  - [x] **Serveur HTTP Haute Performance sans Dépendance Externe** :
+    - Création de `server.js` servant les fichiers optimisés de `dist/` avec en-têtes de cache immuables pour les assets (`/assets/`).
+    - Support natif du routage SPA (Single Page Application) avec repli transparent sur `index.html`.
+    - Prise en charge directe des points d'API backend (`/api/create-payment-intent`, `/api/whatsapp`, `/api/deepl`).
+    - Ajout du script de démarrage `npm start` dans `package.json`.
+  - [x] **Conformité & Zéro Emoji** : Architecture robuste prête pour PM2 et Nginx reverse proxy sur VPS.
+
 - [x] URLs Conviviales & Slugs SEO pour les Fiches Produits ([`src/lib/productUrl.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productUrl.ts), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
   - [x] **Création du Module de Gestion des Slugs (`src/lib/productUrl.ts`)** :
     - Nettoyage et formatage automatisé des titres (`slugify`).
