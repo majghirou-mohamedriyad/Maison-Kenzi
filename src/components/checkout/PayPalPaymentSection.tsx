@@ -46,7 +46,7 @@ export const PayPalPaymentSection = ({
 
   const clientId =
     import.meta.env.VITE_PAYPAL_CLIENT_ID ||
-    "AQw6B6dxX9jW-ZCuHLHSpMmEVnBMSRqevH09FqQURUurFoBQSmOXMoJlwJfeBE-ylFQyq-FOzJ7Eo6vZ";
+    "BAAo-btXGZWFgPutB7J0PbTFvtY7kmMR5jNmHT0LrE6Sl_wD-LBEC8WVQmp2_pvyfFk5PSq4qgQSOjk2_c";
 
   const rawEur = Math.round((Number(total || 0) / MAD_TO_EUR_RATE) * 100) / 100;
   // Montant minimum de 0.01 € requis par PayPal (les transactions à 0.00 € sont rejetées par l'API)

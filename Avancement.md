@@ -9,6 +9,14 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Basculement en Mode Production Réel (Live) pour PayPal Checkout & Carte Bancaire ([`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env), [`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
+  - [x] **Intégration du Client ID Live Officiel (Production)** :
+    - Remplacement de la clé Sandbox par le Client ID Live marchand fourni (`BAAo-btXGZ...`) dans le fichier d'environnement `.env` et dans le composant.
+  - [x] **Activation des Règlements Bancaires Réels** :
+    - Le SDK officiel PayPal charge désormais les flux bancaires de production (Visa, Mastercard, comptes PayPal réels).
+    - Encaissement immédiat et virement direct sur le compte bancaire / solde professionnel PayPal de Maison Kenzi.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
+
 - [x] Résolution de l'Enregistrement des Commandes dans Supabase & Gestion Admin ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
   - [x] **Correction de la Contrainte ENUM `order_status` dans Supabase** :
     - Remplacement du statut invalide `"paye"` par le statut canonique `"en_attente"` reconnu par l'énumération PostgreSQL `maisonkenzi.order_status` ('en_attente', 'confirmee', 'livree', 'annulee').
