@@ -83,3 +83,44 @@ export const isParfumInCategory = (
 
   return false;
 };
+
+/**
+ * Vérifie formellement si un produit est un parfum (et non un cosmétique, déodorant, artisanat, pack, etc.)
+ * Seuls les parfums possèdent les attributs de genre (mixte, homme, femme) et de saisons d'utilisation.
+ */
+export const isParfumProduct = (p?: {
+  category?: string | null;
+  categories?: string[] | null;
+  category_slugs?: string[] | null;
+  id?: string;
+  weight_value?: string | null;
+  volume_value?: string | null;
+}): boolean => {
+  if (!p) return false;
+  const cats = getParfumCategories(p).map((c) => c.toLowerCase().trim());
+  
+  // Tout produit rattaché explicitement à un univers non-parfum
+  const isOther = cats.some((c) =>
+    c.includes("cosmetique") ||
+    c.includes("soin") ||
+    c.includes("deodorant") ||
+    c.includes("artisanal") ||
+    c.includes("artisanat") ||
+    c.includes("artisanaux") ||
+    c.includes("antique") ||
+    c.includes("antiquite") ||
+    c.includes("antiquités") ||
+    c.includes("pack") ||
+    c.includes("livre")
+  );
+  if (isOther) return false;
+
+  // Si le produit possède des attributs de poids ou volume cosmétiques
+  if (p.weight_value || p.volume_value) {
+    if (cats.length === 0 || cats.some((c) => c.includes("cosmetique") || c.includes("soin"))) {
+      return false;
+    }
+  }
+
+  return true;
+};

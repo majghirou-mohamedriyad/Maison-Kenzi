@@ -3,11 +3,28 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Gestion Dynamique du Statut « À venir / Coming soon » Déployée (Disponibilité Automatique si Produits Présents) — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Restriction Stricte des Tags Genre (Mixte/Homme/Femme) & Saisons (Toutes Saisons/Hiver/Été...) Exclusivement à la Catégorie Parfum — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Restriction Exclusive des Tags de Genre (Mixte, Homme, Femme) et de Saisons (Toutes Saisons, Hiver, Été...) aux Produits Parfums ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts), [`src/lib/seasonsStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/seasonsStore.ts), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts)) :
+  - [x] **Règle Métier & Détection Centralisée (`isParfumProduct`)** :
+    - Mise en place et utilisation de la fonction de discernement `isParfumProduct(p)` : vérifie formellement si le produit appartient à l'univers de la haute parfumerie.
+    - Exclut systématiquement tous les autres univers : cosmétiques, soins, déodorants-stick, packs, livres, artisanat, antiquités, ainsi que tout produit avec attributs de contenance soin (`weight_value`, `volume_value`).
+  - [x] **Épuration des Fiches et Cartes Produits (Côté Visiteur & Catalogue)** :
+    - **Fiche Produit ([`ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx))** : Masquage total des saisons et de la pyramide olfactive pour les non-parfums ; affichage des attributs de soins (poids/volume) et des conseils d'application avec titre adapté ; restriction des badges de genre (Mixte/Homme/Femme) et de saisons exclusivement aux parfums.
+    - **Catalogue ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx))** : Remplacement des badges de genre et de saisons par les badges de poids/volume pour les soins et cosmétiques.
+    - **Carrousels & Recommandations ([`ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx))** : Affichage conditionnel strict des tags de genre et de saisons réservé aux créations de parfumerie.
+  - [x] **Sécurisation du Store Persistant & de la Base de Données ([`seasonsStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/seasonsStore.ts), [`syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts))** :
+    - `getParfumSeasons(p)` retourne systématiquement un tableau vide `[]` pour les non-parfums, empêchant toute injection par défaut de « Toutes Saisons » ou « Printemps, Été ».
+    - Nettoyage automatique du registre de saisons `persistParfumSeasons` pour les produits non-parfums.
+  - [x] **Interface Administrateur Épurée ([`ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx))** :
+    - Masquage des champs « Genre » et « Saisons d'utilisation » ainsi que des « Notes olfactives » dans la modale d'ajout/édition pour les cosmétiques.
+    - Purge des valeurs résiduelles de saisons lors de la soumission (`seasons: []`).
+    - Restriction du filtre de genre dans l'espace admin aux seuls parfums.
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E` et commentaires en français.
 
 - [x] Désactivation Dynamique du Tag « À Venir / Coming Soon » pour les Collections Ayant des Produits ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
   - [x] **Règle Métier de Disponibilité Automatique** :

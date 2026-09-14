@@ -46,7 +46,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons } from "@/lib/seasonsStore";
-import { isParfumInCategory, getParfumCategories } from "@/lib/productCategories";
+import { isParfumInCategory, getParfumCategories, isParfumProduct } from "@/lib/productCategories";
 import {
   Dialog,
   DialogContent,
@@ -266,8 +266,9 @@ const Produits = () => {
 
     // 1. Filtrage
     const result = products.filter((p) => {
-      // Filtre Genre
+      // Filtre Genre (réservé exclusivement aux parfums)
       if (genderFilter !== "Tous") {
+        if (!isParfumProduct(p)) return false;
         const pGender = (p.gender || "").toLowerCase().trim();
         if (pGender !== genderFilter.toLowerCase().trim()) return false;
       }

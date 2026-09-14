@@ -53,7 +53,7 @@ import {
 
 import { useCategories } from "@/store/useCategoryStore";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
-import { isParfumInCategory } from "@/lib/productCategories";
+import { isParfumInCategory, isParfumProduct } from "@/lib/productCategories";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -881,27 +881,42 @@ const Collection = () => {
                         </p>
                       )}
 
-                      {/* Étiquettes Genre & Saisons d'utilisation */}
-                      <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
-                        {p.gender && (
-                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                            {p.gender}
-                          </span>
-                        )}
-                        {getParfumSeasons(p).map((season) => {
-                          const meta = getSeasonMeta(season);
-                          const SeasonIconComp = meta.icon;
-                          return (
-                            <span
-                              key={season}
-                              className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
-                            >
-                              <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
-                              <span>{meta.label}</span>
+                      {/* Étiquettes Genre & Saisons d'utilisation — Réservées exclusivement aux parfums */}
+                      {isParfumProduct(p) ? (
+                        <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                          {p.gender && (
+                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                              {p.gender}
                             </span>
-                          );
-                        })}
-                      </div>
+                          )}
+                          {getParfumSeasons(p).map((season) => {
+                            const meta = getSeasonMeta(season);
+                            const SeasonIconComp = meta.icon;
+                            return (
+                              <span
+                                key={season}
+                                className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium"
+                              >
+                                <SeasonIconComp className="w-2.5 h-2.5 text-primary" strokeWidth={1.75} />
+                                <span>{meta.label}</span>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      ) : (p.weight_value || p.volume_value) ? (
+                        <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
+                          {p.weight_value && (
+                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                              {p.weight_value} {p.weight_unit || "g"}
+                            </span>
+                          )}
+                          {p.volume_value && (
+                            <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
+                              {p.volume_value} {p.volume_unit || "ml"}
+                            </span>
+                          )}
+                        </div>
+                      ) : null}
 
                       {/* Prix et Contenance en ML */}
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">

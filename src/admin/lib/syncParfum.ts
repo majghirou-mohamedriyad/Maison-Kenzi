@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { AdminParfum } from "@/store/useProductStore";
 import { persistParfumSeasons } from "@/lib/seasonsStore";
+import { isParfumProduct } from "@/lib/productCategories";
 
 const STORAGE_BUCKET = "product-images";
 const BUCKETS_TO_TRY = ["product-images", "parfums", "products", "images"];
@@ -103,11 +104,18 @@ export const upsertParfumToSupabase = async (
     p.category === "deodorants-stick";
   const fullStock = Number(p.full_bottle_stock ?? p.stock ?? 0);
   const decantStock = Number(p.stock_5ml ?? 0) + Number(p.stock_10ml ?? 0);
-  const currentSeasons =
-    Array.isArray(p.seasons) && p.seasons.length > 0 ? p.seasons : ["Printemps", "Été"];
+  const isParfum = isParfumProduct(p as any);
+  const currentSeasons = isParfum
+    ? (Array.isArray(p.seasons) && p.seasons.length > 0 ? p.seasons : ["Printemps", "Été"])
+    : [];
   
-  persistParfumSeasons(p.id, currentSeasons);
-  persistParfumSeasons(p.name, currentSeasons);
+  if (isParfum) {
+    persistParfumSeasons(p.id, currentSeasons);
+    persistParfumSeasons(p.name, currentSeasons);
+  } else {
+    persistParfumSeasons(p.id, []);
+    persistParfumSeasons(p.name, []);
+  }
 
   const allImages =
     Array.isArray(images) && images.length > 0

@@ -58,6 +58,7 @@ import {
   getProductSubtitle,
   getProductNotes,
 } from "@/lib/productLocalization";
+import { isParfumProduct } from "@/lib/productCategories";
 
 const ParfumDetail = () => {
   const { language, t } = useLanguage();
@@ -70,6 +71,7 @@ const ParfumDetail = () => {
   const displayDescription = useMemo(() => getProductDescription(parfum, language), [parfum, language]);
   const displaySubtitle = useMemo(() => getProductSubtitle(parfum, language), [parfum, language]);
   const displayNotes = useMemo(() => getProductNotes(parfum, language), [parfum, language]);
+  const isParfum = useMemo(() => isParfumProduct(parfum), [parfum]);
 
   const translatedDescription = useAutoTranslate(displayDescription);
   const translatedNotes = useAutoTranslate(displayNotes);
@@ -462,54 +464,79 @@ const ParfumDetail = () => {
                 </div>
               </div>
 
-              {/* Product Olfactory & Seasonal Profile Card */}
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-card/40 border border-border/70 space-y-3 text-xs">
-                {/* Saisons d'utilisation */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" /> Saisons
-                  </span>
-                  <div className="flex flex-wrap gap-1.5 pt-0.5">
-                    {getParfumSeasons(parfum).map((season) => {
-                      const meta = getSeasonMeta(season);
-                      const IconComp = meta.icon;
-                      return (
-                        <span
-                          key={season}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground"
-                        >
-                          <IconComp className="w-3 h-3 text-primary" strokeWidth={1.75} />
-                          <span>{meta.label}</span>
-                        </span>
-                      );
-                    })}
-                  </div>
+              {/* Product Olfactory & Seasonal Profile Card / Conseils d'application */}
+              {(isParfum || translatedDescription || parfum.weight_value || parfum.volume_value) && (
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-card/40 border border-border/70 space-y-3 text-xs">
+                  {/* Saisons d'utilisation réservées aux Parfums */}
+                  {isParfum && (
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" /> Saisons
+                      </span>
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                        {getParfumSeasons(parfum).map((season) => {
+                          const meta = getSeasonMeta(season);
+                          const IconComp = meta.icon;
+                          return (
+                            <span
+                              key={season}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground"
+                            >
+                              <IconComp className="w-3 h-3 text-primary" strokeWidth={1.75} />
+                              <span>{meta.label}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Notes olfactives réservées aux Parfums */}
+                  {isParfum && translatedNotes && (
+                    <div className="space-y-1.5 pt-1 border-t border-border/50">
+                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+                        <Sparkle className="w-3.5 h-3.5" /> {t.product.notes}
+                      </span>
+                      <p className="text-muted-foreground leading-relaxed text-[11px]">
+                        {translatedNotes}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Caractéristiques de Soin / Cosmétique */}
+                  {!isParfum && (parfum.weight_value || parfum.volume_value) && (
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> Contenance & Poids
+                      </span>
+                      <div className="flex flex-wrap gap-2 pt-0.5">
+                        {parfum.weight_value && (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground">
+                            Poids : {parfum.weight_value} {parfum.weight_unit || "g"}
+                          </span>
+                        )}
+                        {parfum.volume_value && (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-xl bg-background/80 border border-border text-[11px] font-medium text-foreground">
+                            Volume : {parfum.volume_value} {parfum.volume_unit || "ml"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Description / Conseils d'application */}
+                  {translatedDescription && (
+                    <div className={`space-y-1 ${isParfum || parfum.weight_value || parfum.volume_value ? "pt-1 border-t border-border/50" : ""}`}>
+                      <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
+                        {isParfum ? t.product.description : "Description & Conseils d'application"}
+                      </span>
+                      <p className="text-muted-foreground leading-relaxed text-[11px] whitespace-pre-wrap">
+                        {translatedDescription}
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                {/* Notes olfactives */}
-                {translatedNotes && (
-                  <div className="space-y-1.5 pt-1 border-t border-border/50">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                      <Sparkle className="w-3.5 h-3.5" /> {t.product.notes}
-                    </span>
-                    <p className="text-muted-foreground leading-relaxed text-[11px]">
-                      {translatedNotes}
-                    </p>
-                  </div>
-                )}
-
-                {/* Description olfactive */}
-                {translatedDescription && (
-                  <div className="space-y-1 pt-1 border-t border-border/50">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-primary">
-                      {t.product.description}
-                    </span>
-                    <p className="text-muted-foreground leading-relaxed text-[11px] whitespace-pre-wrap">
-                      {translatedDescription}
-                    </p>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
             {/* RIGHT COLUMN: Product Information & Order Actions */}
@@ -531,7 +558,8 @@ const ParfumDetail = () => {
                 )}
 
                 <div className="flex items-center flex-wrap gap-1.5 pt-1">
-                  {parfum.gender && (
+                  {/* Genre réservé exclusivement aux parfums */}
+                  {isParfum && parfum.gender && (
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
                       {parfum.gender}
                     </span>
@@ -543,14 +571,27 @@ const ParfumDetail = () => {
                     </span>
                   )}
 
-                  {parfum.full_bottle_volume_ml && (
+                  {/* Volume Flacon pour Parfums */}
+                  {isParfum && parfum.full_bottle_volume_ml && (
                     <span className="text-[10px] tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
                       {parfum.full_bottle_volume_ml} ml
                     </span>
                   )}
 
-                  {/* Tags Saisons d'utilisation harmonisés */}
-                  {getParfumSeasons(parfum).map((season) => {
+                  {/* Poids & Volume pour Soins / Cosmétiques */}
+                  {!isParfum && parfum.weight_value && (
+                    <span className="text-[10px] tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
+                      {parfum.weight_value} {parfum.weight_unit || "g"}
+                    </span>
+                  )}
+                  {!isParfum && parfum.volume_value && (
+                    <span className="text-[10px] tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
+                      {parfum.volume_value} {parfum.volume_unit || "ml"}
+                    </span>
+                  )}
+
+                  {/* Tags Saisons d'utilisation réservés exclusivement aux Parfums */}
+                  {isParfum && getParfumSeasons(parfum).map((season) => {
                     const meta = getSeasonMeta(season);
                     const IconComp = meta.icon;
                     return (

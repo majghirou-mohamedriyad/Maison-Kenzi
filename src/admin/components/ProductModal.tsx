@@ -489,9 +489,11 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const primaryImageUrl = finalImages[0] || null;
 
-    const currentSeasonsList = Array.isArray(f.seasons) && f.seasons.length > 0
-      ? f.seasons
-      : (isCosmetic ? ["Toutes Saisons"] : ["Printemps", "Été"]);
+    const currentSeasonsList = isCosmetic
+      ? []
+      : (Array.isArray(f.seasons) && f.seasons.length > 0
+        ? f.seasons
+        : ["Printemps", "Été"]);
 
     const cosmeticFormatLabel = [
       f.weightValue ? `${f.weightValue} ${f.weightUnit}` : "",
@@ -511,7 +513,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       name: f.name.trim(),
       name_en: f.nameEn ? f.nameEn.trim() : undefined,
       maison: f.maison.trim(),
-      gender: f.gender || "Mixte",
+      gender: isCosmetic ? undefined : (f.gender || "Mixte"),
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
       seasons: currentSeasonsList,
@@ -1043,74 +1045,79 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         )}
                       </div>
 
-                      {/* Genre */}
-                      <div className="sm:col-span-2">
-                        <label className={labelCls}>Genre *</label>
-                        <div className="grid grid-cols-3 gap-1.5">
-                          {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
-                            <button
-                              key={g}
-                              type="button"
-                              onClick={() => {
-                                set("gender", g);
-                                if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
-                                  set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
-                                }
-                              }}
-                              className={`py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
-                                f.gender === g
-                                  ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                                  : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
-                              }`}
-                            >
-                              {g}
-                            </button>
-                          ))}
-                        </div>
-                        {errors.gender && (
-                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                            <AlertCircle className="w-3 h-3 shrink-0" />
-                            <span>{errors.gender}</span>
+                      {/* Genre & Saisons réservés exclusivement aux Parfums */}
+                      {!isCosmetic && (
+                        <>
+                          {/* Genre */}
+                          <div className="sm:col-span-2">
+                            <label className={labelCls}>Genre *</label>
+                            <div className="grid grid-cols-3 gap-1.5">
+                              {(["Homme", "Femme", "Mixte"] as Gender[]).map((g) => (
+                                <button
+                                  key={g}
+                                  type="button"
+                                  onClick={() => {
+                                    set("gender", g);
+                                    if (!f.category || f.category === "homme" || f.category === "femme" || f.category === "mixte") {
+                                      set("category", g === "Homme" ? "homme" : g === "Femme" ? "femme" : "mixte");
+                                    }
+                                  }}
+                                  className={`py-1 text-[11px] font-medium rounded-lg border transition-all cursor-pointer ${
+                                    f.gender === g
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                                      : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
+                                  }`}
+                                >
+                                  {g}
+                                </button>
+                              ))}
+                            </div>
+                            {errors.gender && (
+                              <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                <span>{errors.gender}</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      {/* Saisons d'utilisation */}
-                      <div className="sm:col-span-2">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <label className={labelCls}>Saisons d'utilisation *</label>
-                          <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
-                            {currentSeasons.length === 0
-                              ? "Aucune"
-                              : `${currentSeasons.length} choisie${currentSeasons.length > 1 ? "s" : ""}`}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1.5">
-                          {SEASON_OPTIONS.map((season) => {
-                            const isSelected = isSeasonSelected(season, currentSeasons);
-                            return (
-                              <button
-                                key={season}
-                                type="button"
-                                onClick={() => toggleSeason(season)}
-                                className={`py-1 px-1.5 text-[10px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
-                                  isSelected
-                                    ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
-                                    : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
-                                }`}
-                              >
-                                <span>{season}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                        {errors.seasons && (
-                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                            <AlertCircle className="w-3 h-3 shrink-0" />
-                            <span>{errors.seasons}</span>
+                          {/* Saisons d'utilisation */}
+                          <div className="sm:col-span-2">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <label className={labelCls}>Saisons d'utilisation *</label>
+                              <span className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                                {currentSeasons.length === 0
+                                  ? "Aucune"
+                                  : `${currentSeasons.length} choisie${currentSeasons.length > 1 ? "s" : ""}`}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-4 gap-1.5">
+                              {SEASON_OPTIONS.map((season) => {
+                                const isSelected = isSeasonSelected(season, currentSeasons);
+                                return (
+                                  <button
+                                    key={season}
+                                    type="button"
+                                    onClick={() => toggleSeason(season)}
+                                    className={`py-1 px-1.5 text-[10px] font-medium rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
+                                      isSelected
+                                        ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] border-[#111827] dark:border-[#C9A96E] font-semibold shadow-xs"
+                                        : "bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] border-[#E5DDD0] dark:border-[#2D2A26] hover:border-[#C9A96E]/50"
+                                    }`}
+                                  >
+                                    <span>{season}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {errors.seasons && (
+                              <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                <span>{errors.seasons}</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </>
+                      )}
 
                       {/* Tarification & Stock */}
                       <div className="sm:col-span-2 grid grid-cols-3 gap-2 pt-0.5">
@@ -1223,29 +1230,33 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                     {/* CONTENU FR */}
                     {contentLang === "fr" ? (
                       <div className="space-y-2 animate-in fade-in duration-150">
-                        <div>
-                          <label className={labelCls}>Notes olfactives (FR) *</label>
-                          <input
-                            className={errors.notes ? inputErrorCls : inputCls}
-                            value={f.notes}
-                            onChange={(e) => set("notes", e.target.value)}
-                            placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
-                          />
-                          {errors.notes && (
-                            <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
-                              <AlertCircle className="w-3 h-3 shrink-0" />
-                              <span>{errors.notes}</span>
-                            </div>
-                          )}
-                        </div>
+                        {!isCosmetic && (
+                          <div>
+                            <label className={labelCls}>Notes olfactives (FR) *</label>
+                            <input
+                              className={errors.notes ? inputErrorCls : inputCls}
+                              value={f.notes}
+                              onChange={(e) => set("notes", e.target.value)}
+                              placeholder="Ex: Jasmin, Safran, Bois d'ambre, Cèdre"
+                            />
+                            {errors.notes && (
+                              <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                <span>{errors.notes}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <div>
-                          <label className={labelCls}>Description olfactive (FR)</label>
+                          <label className={labelCls}>
+                            {isCosmetic ? "Description & Conseils d'application (FR)" : "Description olfactive (FR)"}
+                          </label>
                           <textarea
                             className={inputCls + " min-h-[60px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.description}
                             onChange={(e) => set("description", e.target.value)}
-                            placeholder="Notes ambrées florales et boisées d'une élégance rare..."
+                            placeholder={isCosmetic ? "Conseils d'application, bienfaits et texture..." : "Notes ambrées florales et boisées d'une élégance rare..."}
                             rows={2}
                           />
                         </div>
@@ -1274,23 +1285,27 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                           />
                         </div>
 
-                        <div>
-                          <label className={labelCls}>Olfactory Notes (EN)</label>
-                          <input
-                            className={inputCls}
-                            value={f.notesEn}
-                            onChange={(e) => set("notesEn", e.target.value)}
-                            placeholder="Ex: Jasmine, Saffron, Amberwood, Cedar"
-                          />
-                        </div>
+                        {!isCosmetic && (
+                          <div>
+                            <label className={labelCls}>Olfactory Notes (EN)</label>
+                            <input
+                              className={inputCls}
+                              value={f.notesEn}
+                              onChange={(e) => set("notesEn", e.target.value)}
+                              placeholder="Ex: Jasmine, Saffron, Amberwood, Cedar"
+                            />
+                          </div>
+                        )}
 
                         <div>
-                          <label className={labelCls}>Olfactory Description (EN)</label>
+                          <label className={labelCls}>
+                            {isCosmetic ? "Description & Application Tips (EN)" : "Olfactory Description (EN)"}
+                          </label>
                           <textarea
                             className={inputCls + " min-h-[60px] resize-y whitespace-pre-wrap font-sans"}
                             value={f.descriptionEn}
                             onChange={(e) => set("descriptionEn", e.target.value)}
-                            placeholder="Luminous and sophisticated amber floral breeze..."
+                            placeholder={isCosmetic ? "Application tips, benefits and key ingredients..." : "Luminous and sophisticated amber floral breeze..."}
                             rows={2}
                           />
                         </div>

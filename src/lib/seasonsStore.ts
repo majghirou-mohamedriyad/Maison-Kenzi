@@ -6,6 +6,7 @@
  */
 
 import { Sun, Leaf, Wind, Snowflake, Sparkles, LucideIcon } from "lucide-react";
+import { isParfumProduct } from "@/lib/productCategories";
 
 const SEASONS_STORAGE_KEY = "maisonkenzi_parfum_seasons_map";
 
@@ -45,22 +46,36 @@ const setStorageMap = (map: Record<string, string[]>) => {
  * Enregistre les saisons associées à un parfum dans le store persistant
  */
 export const persistParfumSeasons = (idOrName: string, seasons: string[]) => {
-  if (!idOrName || !Array.isArray(seasons) || seasons.length === 0) return;
+  if (!idOrName) return;
   const map = getStorageMap();
-  map[idOrName.toLowerCase().trim()] = seasons;
+  if (!Array.isArray(seasons) || seasons.length === 0) {
+    delete map[idOrName.toLowerCase().trim()];
+  } else {
+    map[idOrName.toLowerCase().trim()] = seasons;
+  }
   setStorageMap(map);
 };
 
 /**
  * Récupère les saisons d'un parfum avec garantie de restitution
+ * Les non-parfums (cosmétiques, déodorants, soins, packs) ne retournent AUCUNE saison d'utilisation.
  */
 export const getParfumSeasons = (p?: {
   id?: string;
   name?: string;
   seasons?: string[] | string | null;
   gender?: string;
+  category?: string | null;
+  categories?: string[] | null;
+  weight_value?: string | null;
+  volume_value?: string | null;
 }): string[] => {
   if (!p) return ["Printemps", "Été"];
+
+  // Règle stricte : Seuls les produits de la catégorie parfum possèdent des saisons
+  if (!isParfumProduct(p as any)) {
+    return [];
+  }
 
   // 1. Si tableau valide non vide
   if (Array.isArray(p.seasons) && p.seasons.length > 0) {
