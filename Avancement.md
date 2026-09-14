@@ -3,11 +3,24 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Traduction Intégrale Bilingue (FR/EN) du Menu Collections dans la Barre de Navigation — 100% Déployé & Zéro Emoji
+- **Statut général** : Unification Calibrée de la Section Photo des Catégories (Catalogue & Accueil) — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Unification de la Taille de la Section Photo des Catégories ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx)) :
+  - [x] **Hauteur Calibrée et Uniforme du Hero de Catégorie ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx))** :
+    - Remplacement de la hauteur dynamique non contrainte par une hauteur responsive fixe et calibrée : `h-[360px] sm:h-[400px] md:h-[450px] lg:h-[480px]`.
+    - Harmonisation complète du contenu intérieur : conteneur `h-full flex flex-col justify-end pb-8 sm:pb-10 md:pb-12` avec dégradés protecteurs multicouches et troncature élégante des textes (`line-clamp-2 sm:line-clamp-3`).
+    - Aucune variation ou saut de mise en page (*layout shift*) lors du passage d'une collection à une autre.
+  - [x] **Garantie d'Image de Bannière Prestigieuse pour Toutes les Collections** :
+    - Mise en place d'une bannière de repli de prestige systématique (`/mk-banner.png`) pour toutes les catégories sans image dédiée ou pour la vue générale `/collection/all`.
+    - Suppression du bloc de secours textuel disparate pour offrir une expérience visuelle immersive et homogène sur 100% des catégories.
+  - [x] **Harmonisation des Cartes de Catégories sur la Page d'Accueil ([`FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx))** :
+    - Formatage uniforme de toutes les cartes d'univers olfactifs avec un ratio d'aspect strict `aspect-[3/4]`, couverture totale `object-cover w-full h-full` et repli automatique sur `/mk-banner.png`.
+    - Voile de dégradé feutré identique pour un contraste et une lisibilité parfaits.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
 - [x] Traduction Intégrale Bilingue (FR / EN) du Menu « Collections » dans la Navigation ([`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
   - [x] **Traduction Dynamique des Catégories & Descriptions (Desktop & Mobile)** :

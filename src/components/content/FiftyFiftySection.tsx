@@ -35,23 +35,15 @@ const Card = ({
     to={href}
     className="group relative overflow-hidden rounded-2xl border border-border/70 hover:border-primary/50 transition-all duration-700 shadow-nude aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card"
   >
-    {/* Image de fond de catégorie si configurée */}
-    {image && (
-      <img
-        src={image}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
-    )}
-
-    {/* Voile de fond feutré */}
-    <div
-      className={`absolute inset-0 z-1 transition-opacity duration-500 ${
-        image
-          ? "bg-gradient-to-t from-black/85 via-black/40 to-black/20 group-hover:opacity-90"
-          : "bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:opacity-90"
-      }`}
+    {/* Image de fond de catégorie (taille et ratio 3:4 unifiés) */}
+    <img
+      src={image || "/mk-banner.png"}
+      alt={title}
+      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
     />
+
+    {/* Voile de fond feutré uniforme */}
+    <div className="absolute inset-0 z-1 transition-opacity duration-500 bg-gradient-to-t from-black/85 via-black/40 to-black/20 group-hover:opacity-90" />
 
     {/* Badge supérieur */}
     <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
@@ -126,7 +118,7 @@ const FiftyFiftySection = () => {
               text={displayDesc}
               href={`/collection/${cat.slug}`}
               tag={displayName}
-              image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : undefined)}
+              image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : "/mk-banner.png")}
               isComingSoon={effectiveComingSoon}
               discoverText={effectiveComingSoon ? t.univers.discover : t.common.explore}
               comingSoonText={t.univers.comingSoon}

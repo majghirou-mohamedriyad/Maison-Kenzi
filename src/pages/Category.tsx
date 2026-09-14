@@ -1,3 +1,10 @@
+/**
+ * Page Catalogue & Collections — Maison Kenzi
+ *
+ * Affiche le catalogue de créations olfactives et soins d'exception avec un bandeau hero
+ * à hauteur unifiée et calibrée pour toutes les collections, filtres dynamiques, tri et pagination.
+ */
+
 import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/header/Header";
@@ -277,7 +284,9 @@ const Collection = () => {
       return currentCategoryObj.images.filter(Boolean);
     }
     const single = currentCategoryObj?.image || currentCategoryObj?.icon;
-    return single ? [single] : [];
+    if (single) return [single];
+    // Bannière de repli prestigieuse Maison Kenzi pour unifier toutes les collections
+    return ["/mk-banner.png"];
   }, [currentCategoryObj]);
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
@@ -333,192 +342,145 @@ const Collection = () => {
       <Header />
 
       <main className="flex-1 pb-16">
-        {/* Luxury Category Hero Banner (Automatique 5s + Manuel au choix) */}
-        {categoryBanners.length > 0 ? (
-          <section
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            className="relative w-full overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20 group/hero select-none"
-          >
-            {/* Images de fond en carrousel avec transition douce (cross-fade) */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-              {categoryBanners.map((imgUrl, idx) => (
-                <div
-                  key={`${imgUrl}-${idx}`}
-                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${idx === currentBannerIndex
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-105 pointer-events-none"
-                    }`}
-                >
-                  <img
-                    src={imgUrl}
-                    alt={`${hero.title} — Bannière ${idx + 1}`}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
-              ))}
-
-              {/* Voiles de dégradé pour préserver l'éclat de la photo tout en assurant une lisibilité parfaite */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/15" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
-            </div>
-
-            {/* Contrôles fléchés manuels de navigation (si > 1 photo) */}
-            {categoryBanners.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevBanner();
-                  }}
-                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
-                  title={t.catalog.prevPhoto}
-                  aria-label={t.catalog.prevPhoto}
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextBanner();
-                  }}
-                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
-                  title={t.catalog.nextPhoto}
-                  aria-label={t.catalog.nextPhoto}
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-            )}
-
-            {/* Contenu de la Bannière de Catégorie */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-32 sm:pt-36 md:pt-40 pb-12 sm:pb-16 flex flex-col justify-end min-h-[280px] sm:min-h-[340px] md:min-h-[380px]">
-              <div className="space-y-3.5 max-w-3xl">
-                {/* Fil d'ariane en verre dépoli */}
-                <Breadcrumb>
-                  <BreadcrumbList className="text-[10px] sm:text-xs">
-                    <BreadcrumbItem>
-                      <BreadcrumbLink asChild>
-                        <Link to="/" className="text-white/70 hover:text-[#C9A96E] transition-colors">
-                          {t.nav.home}
-                        </Link>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator className="text-white/40" />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage className="text-[#C9A96E] font-medium">
-                        {hero.title}
-                      </BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-
-                {/* Badges d'univers & sous-titre */}
-                <div className="flex items-center gap-2 flex-wrap pt-1">
-                  {hero.badge && (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A96E]/20 border border-[#C9A96E]/40 text-[#C9A96E] text-[10px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-md shadow-xs">
-                      <Sparkles className="w-3 h-3 text-[#C9A96E]" />
-                      <span>{hero.badge}</span>
-                    </div>
-                  )}
-                  {hero.subtitle && (
-                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/75 font-medium px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
-                      {hero.subtitle}
-                    </span>
-                  )}
-                </div>
-
-                {/* Titre éditorial de la Collection */}
-                <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-white font-normal tracking-tight drop-shadow-md leading-[1.1]">
-                  {hero.title}
-                </h1>
-
-                {/* Description de l'univers olfactif */}
-                {hero.description && (
-                  <p className="text-xs sm:text-sm md:text-base text-white/85 leading-relaxed font-light max-w-2xl pt-1 drop-shadow-xs">
-                    {hero.description}
-                  </p>
-                )}
+        {/* Luxury Category Hero Banner — Hauteur Unifiée & Calibrée pour Toutes les Collections */}
+        <section
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="relative w-full h-[360px] sm:h-[400px] md:h-[450px] lg:h-[480px] overflow-hidden bg-[#0C0B0A] border-b border-[#C9A96E]/20 group/hero select-none"
+        >
+          {/* Images de fond en carrousel avec transition douce (cross-fade) */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            {categoryBanners.map((imgUrl, idx) => (
+              <div
+                key={`${imgUrl}-${idx}`}
+                className={`absolute inset-0 transition-all duration-1000 ease-in-out ${idx === currentBannerIndex
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-105 pointer-events-none"
+                  }`}
+              >
+                <img
+                  src={imgUrl}
+                  alt={`${hero.title} — Bannière ${idx + 1}`}
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
+            ))}
 
-              {/* Contrôles de navigation manuels (Puces + Compteur interactif) */}
-              {categoryBanners.length > 1 && (
-                <div className="flex items-center gap-3 pt-6">
-                  <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                    {categoryBanners.map((_, dotIdx) => (
-                      <button
-                        key={`dot-${dotIdx}`}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCurrentBannerIndex(dotIdx);
-                        }}
-                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${dotIdx === currentBannerIndex
-                          ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
-                          : "w-2 bg-white/40 hover:bg-white/80"
-                          }`}
-                        title={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
-                        aria-label={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
-                      />
-                    ))}
-                    <span className="text-[10px] font-medium text-white/70 ml-1">
-                      {currentBannerIndex + 1} / {categoryBanners.length}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        ) : (
-          /* En-tête épuré standard lorsque la catégorie n'a pas d'image */
-          <section className="relative w-full border-b border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background pt-28 sm:pt-32 md:pt-36 pb-8 sm:pb-12 px-4 sm:px-6 overflow-hidden">
-            {/* Subtle Ambient Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+            {/* Voiles de dégradé pour préserver l'éclat de la photo tout en assurant une lisibilité parfaite */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent" />
+          </div>
 
-            <div className="max-w-7xl mx-auto relative z-10 space-y-4">
-              {/* Breadcrumb */}
+          {/* Contrôles fléchés manuels de navigation (si > 1 photo) */}
+          {categoryBanners.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevBanner();
+                }}
+                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
+                title={t.catalog.prevPhoto}
+                aria-label={t.catalog.prevPhoto}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextBanner();
+                }}
+                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-[#C9A96E] text-white hover:text-[#121110] border border-white/20 hover:border-[#C9A96E] backdrop-blur-md flex items-center justify-center transition-all opacity-70 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105 cursor-pointer shadow-lg active:scale-95"
+                title={t.catalog.nextPhoto}
+                aria-label={t.catalog.nextPhoto}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
+
+          {/* Contenu de la Bannière de Catégorie avec Hauteur Calibrée */}
+          <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 h-full flex flex-col justify-end pb-8 sm:pb-10 md:pb-12">
+            <div className="space-y-3 max-w-3xl">
+              {/* Fil d'ariane en verre dépoli */}
               <Breadcrumb>
                 <BreadcrumbList className="text-[10px] sm:text-xs">
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+                      <Link to="/" className="text-white/70 hover:text-[#C9A96E] transition-colors">
                         {t.nav.home}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
-                  <BreadcrumbSeparator />
+                  <BreadcrumbSeparator className="text-white/40" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="text-foreground font-medium">
+                    <BreadcrumbPage className="text-[#C9A96E] font-medium">
                       {hero.title}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
 
-              {/* Header Content */}
-              <div className="max-w-3xl space-y-2">
+              {/* Badges d'univers & sous-titre */}
+              <div className="flex items-center gap-2 flex-wrap pt-0.5">
                 {hero.badge && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
-                    <Sparkles className="w-3 h-3" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A96E]/20 border border-[#C9A96E]/40 text-[#C9A96E] text-[10px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-md shadow-xs">
+                    <Sparkles className="w-3 h-3 text-[#C9A96E]" />
                     <span>{hero.badge}</span>
                   </div>
                 )}
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-foreground font-bold tracking-tight">
-                  {hero.title}
-                </h1>
-                {hero.description && (
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light pt-1">
-                    {hero.description}
-                  </p>
+                {hero.subtitle && (
+                  <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/75 font-medium px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
+                    {hero.subtitle}
+                  </span>
                 )}
               </div>
+
+              {/* Titre éditorial de la Collection */}
+              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-normal tracking-tight drop-shadow-md leading-[1.1]">
+                {hero.title}
+              </h1>
+
+              {/* Description de l'univers olfactif */}
+              {hero.description && (
+                <p className="text-xs sm:text-sm md:text-base text-white/85 leading-relaxed font-light max-w-2xl line-clamp-2 sm:line-clamp-3 drop-shadow-xs">
+                  {hero.description}
+                </p>
+              )}
             </div>
-          </section>
-        )}
+
+            {/* Contrôles de navigation manuels (Puces + Compteur interactif) */}
+            {categoryBanners.length > 1 && (
+              <div className="flex items-center gap-3 pt-4">
+                <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                  {categoryBanners.map((_, dotIdx) => (
+                    <button
+                      key={`dot-${dotIdx}`}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentBannerIndex(dotIdx);
+                      }}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${dotIdx === currentBannerIndex
+                        ? "w-7 bg-[#C9A96E] shadow-sm shadow-[#C9A96E]/50"
+                        : "w-2 bg-white/40 hover:bg-white/80"
+                        }`}
+                      title={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
+                      aria-label={`${t.catalog.prevPhoto} ${dotIdx + 1}`}
+                    />
+                  ))}
+                  <span className="text-[10px] font-medium text-white/70 ml-1">
+                    {currentBannerIndex + 1} / {categoryBanners.length}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Collection Selector & Filter Navigation */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6 mb-4 sm:mb-6">
