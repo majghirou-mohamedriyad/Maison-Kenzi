@@ -9,6 +9,17 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Autorisation du Prix 0 € / 0 MAD dans l'Administration & Compatibilité Test Paiement ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
+  - [x] **Levée de la Restriction de Prix Minimal dans le Formulaire Admin** :
+    - Mise à jour de la validation du formulaire produit (`ProductModal.tsx`) pour autoriser le prix `0` (remplacement de la condition bloquante `!numPrice || numPrice <= 0` par `f.price === "" || isNaN(numPrice) || numPrice < 0`).
+    - Mise à niveau des champs d'entrée HTML de prix avec `min={0}` et `step="any"` sur les interfaces desktop et mobile.
+  - [x] **Prise en Charge Robuste du Prix 0 dans la Synchronisation Supabase & Store** :
+    - Correction de la condition d'assignation dans `syncParfum.ts` (`full_bottle_price: p.full_bottle_price != null ? Number(p.full_bottle_price) : numPrice`) pour éviter qu'une valeur `0` ne soit considérée comme falsy et écrasée par une valeur par défaut.
+  - [x] **Gestion Symbolique Minimale pour l'API PayPal Checkout** :
+    - Adaptation du calcul `totalEur` dans `PayPalPaymentSection.tsx` avec un seuil plancher de `0.01 €` (1 centime) lors de tests avec panier à 0 MAD/€, empêchant ainsi l'API PayPal de rejeter la commande (`AMOUNT_CANNOT_BE_ZERO`).
+    - Mention informative claire pour l'utilisateur en cas de commande test à 0 DH : `(test symbolique PayPal : 0.01 €)`.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre champagne gold.
+
 - [x] Réactivation du Module de Paiement Sécurisé PayPal Checkout & Carte Bancaire ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Configuration de la Clé API Officielle (Client ID)** :
     - Intégration de la clé client Sandbox fournie par l'utilisateur (`AQw6B6dx...`) dans `.env` et dans le composant avec prise en charge dynamique.

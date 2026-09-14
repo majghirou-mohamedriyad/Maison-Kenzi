@@ -169,7 +169,7 @@ export const upsertParfumToSupabase = async (
     is_bestseller: !!p.isBestseller,
     sale_mode: p.sale_mode ?? "full_bottle",
     full_bottle_volume_ml: p.full_bottle_volume_ml ? Number(p.full_bottle_volume_ml) : null,
-    full_bottle_price: p.full_bottle_price ? Number(p.full_bottle_price) : numPrice,
+    full_bottle_price: p.full_bottle_price != null ? Number(p.full_bottle_price) : numPrice,
     full_bottle_stock: fullStock,
     full_bottle_limited: !!p.full_bottle_limited,
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",

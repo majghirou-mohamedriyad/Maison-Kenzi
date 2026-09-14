@@ -427,7 +427,9 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
     }
 
     const numPrice = Number(f.price);
-    if (!f.price || !numPrice || numPrice <= 0) errs.price = "Veuillez renseigner le prix de vente";
+    if (f.price === "" || isNaN(numPrice) || numPrice < 0) {
+      errs.price = "Veuillez renseigner un prix de vente valide (0 ou supérieur)";
+    }
 
     if (f.stock === "" || isNaN(Number(f.stock)) || Number(f.stock) < 0) {
       errs.stock = "Veuillez renseigner le stock disponible";
@@ -743,11 +745,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                           <div className="relative">
                             <input
                               type="number"
-                              min={1}
+                              min={0}
+                              step="any"
                               className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
                               value={f.price}
                               onChange={(e) => set("price", e.target.value)}
-                              placeholder="45"
+                              placeholder="0"
                             />
                             <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
                               €
@@ -1139,11 +1142,12 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                           <div className="relative">
                             <input
                               type="number"
-                              min={1}
+                              min={0}
+                              step="any"
                               className={(errors.price ? inputErrorCls : inputCls) + " pr-5 font-semibold"}
                               value={f.price}
                               onChange={(e) => set("price", e.target.value)}
-                              placeholder="85"
+                              placeholder="0"
                             />
                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#C9A96E] pointer-events-none">
                               €

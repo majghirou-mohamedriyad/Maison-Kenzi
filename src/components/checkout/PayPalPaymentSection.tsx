@@ -48,7 +48,9 @@ export const PayPalPaymentSection = ({
     import.meta.env.VITE_PAYPAL_CLIENT_ID ||
     "AQw6B6dxX9jW-ZCuHLHSpMmEVnBMSRqevH09FqQURUurFoBQSmOXMoJlwJfeBE-ylFQyq-FOzJ7Eo6vZ";
 
-  const totalEur = Math.max(1, Math.round((Number(total || 0) / MAD_TO_EUR_RATE) * 100) / 100).toFixed(2);
+  const rawEur = Math.round((Number(total || 0) / MAD_TO_EUR_RATE) * 100) / 100;
+  // Montant minimum de 0.01 € requis par PayPal (les transactions à 0.00 € sont rejetées par l'API)
+  const totalEur = Math.max(0.01, rawEur).toFixed(2);
 
   // Chargement dynamique du script PayPal SDK officiel
   useEffect(() => {
@@ -240,7 +242,7 @@ export const PayPalPaymentSection = ({
           <div className="text-right">
             <span className="font-semibold text-foreground">{formatMAD(total)}</span>
             <span className="text-[10px] text-muted-foreground ml-1.5 font-light">
-              (soit env. {totalEur} €)
+              {Number(total || 0) <= 0 ? "(test symbolique PayPal : 0.01 €)" : `(soit env. ${totalEur} €)`}
             </span>
           </div>
         </div>
