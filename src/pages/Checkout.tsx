@@ -693,7 +693,7 @@ const Checkout = () => {
                             {itemName}
                           </h3>
                           <span className="inline-block text-[10px] text-muted-foreground bg-secondary/80 px-1.5 py-0.2 rounded border border-border/50 mt-0.5">
-                            {SIZE_META[item.size]?.label || item.size}
+                            {item.sizeLabel || SIZE_META[item.size]?.label || item.size}
                           </span>
 
                           {/* Stepper */}

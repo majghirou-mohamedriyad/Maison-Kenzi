@@ -3,11 +3,23 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Restriction Stricte des Tags Genre (Mixte/Homme/Femme) & Saisons (Toutes Saisons/Hiver/Été...) Exclusivement à la Catégorie Parfum — 100% Déployé & Zéro Emoji
+- **Statut général** : Correction de l'Affichage des Formats Souhaités & Support Complet des Unités de Poids (`mg`, `g`, `kg`) — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Correction de l'Affichage du Format Souhaité & Support des Unités de Poids (`mg`, `g`, `kg`) ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/lib/sizes.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/sizes.ts), [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx), [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts)) :
+  - [x] **Résolution du « ml » Forcé dans « Format Souhaité »** :
+    - Élimination du template rigide `${parfum.full_bottle_volume_ml} ml` qui écrasait systématiquement l'unité de poids choisie par l'administrateur.
+    - Implémentation du résolveur intelligent `getProductFormatInfo` dans `ProductDetail.tsx` : affiche fidèlement `${weight_value} ${weight_unit}` (ex: `50 mg`, `100 g`, `1 kg`) ou `${volume_value} ${volume_unit}` pour les cosmétiques et soins.
+  - [x] **Support Officiel de l'Unité Milligramme (`mg`)** :
+    - Ajout du bouton `mg` dans le sélecteur d'unités de la modale d'ajout/édition cosmétique (`ProductModal.tsx`).
+    - Intégration du type `mg` dans `database.ts`, `useProductStore.ts` et dans les calculs de volume équivalent.
+  - [x] **Harmonisation Panier, Commande Express & Tunnel de Commande** :
+    - Ajout de `sizeLabel` dans `CartItem` pour afficher fidèlement les unités de soin choisies dans le tiroir panier ([`ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx)) et sur la page de paiement ([`Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)).
+    - Synchronisation dynamique dans la bannière de commande express ([`ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) et mise à jour de `getParfumPricingSummary` pour les cartes de produits.
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E` et commentaires en français.
 
 - [x] Restriction Exclusive des Tags de Genre (Mixte, Homme, Femme) et de Saisons (Toutes Saisons, Hiver, Été...) aux Produits Parfums ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts), [`src/lib/seasonsStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/seasonsStore.ts), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts)) :
   - [x] **Règle Métier & Détection Centralisée (`isParfumProduct`)** :

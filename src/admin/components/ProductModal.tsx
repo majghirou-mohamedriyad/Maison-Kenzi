@@ -81,7 +81,7 @@ const emptyForm = {
   price: "",
   volume: "",
   weightValue: "",
-  weightUnit: "g" as "g" | "kg",
+  weightUnit: "g" as "mg" | "g" | "kg",
   volumeValue: "",
   volumeUnit: "ml" as "ml" | "L",
   stock: "",
@@ -178,17 +178,18 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
         // Extraction précise des valeurs de poids et volume
         let initWeightVal = (initial as any).weight_value || "";
-        let initWeightUnit: "g" | "kg" = (initial as any).weight_unit || "g";
+        let initWeightUnit: "mg" | "g" | "kg" = (initial as any).weight_unit || "g";
         let initVolumeVal = (initial as any).volume_value || "";
         let initVolumeUnit: "ml" | "L" = (initial as any).volume_unit || "ml";
 
         const labelText = ((initial.imageLabel || "") + " " + (initial.description || "")).toLowerCase();
         
         if (!initWeightVal) {
-          const weightMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
+          const weightMatch = labelText.match(/(\d+(?:\.\d+)?)\s*(kg|g|mg)\b/i);
           if (weightMatch) {
             initWeightVal = weightMatch[1];
-            initWeightUnit = weightMatch[2].toLowerCase() === "kg" ? "kg" : "g";
+            const u = weightMatch[2].toLowerCase();
+            initWeightUnit = u === "kg" ? "kg" : u === "mg" ? "mg" : "g";
           }
         }
 
@@ -451,7 +452,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       if (hasVol) {
         calculatedVolumeMl = f.volumeUnit === "L" ? Number(f.volumeValue) * 1000 : Number(f.volumeValue);
       } else if (hasWeight) {
-        calculatedVolumeMl = f.weightUnit === "kg" ? Number(f.weightValue) * 1000 : Number(f.weightValue);
+        calculatedVolumeMl = f.weightUnit === "kg" ? Number(f.weightValue) * 1000 : f.weightUnit === "mg" ? Math.max(1, Math.round(Number(f.weightValue) / 1000)) : Number(f.weightValue);
       } else {
         calculatedVolumeMl = 100;
       }
@@ -809,6 +810,17 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                 placeholder="Ex: 50"
                               />
                               <div className="inline-flex p-0.5 bg-[#FAF7F2] dark:bg-[#1C1A18] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => set("weightUnit", "mg")}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                                    f.weightUnit === "mg"
+                                      ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] shadow-xs"
+                                      : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816]"
+                                  }`}
+                                >
+                                  mg
+                                </button>
                                 <button
                                   type="button"
                                   onClick={() => set("weightUnit", "g")}

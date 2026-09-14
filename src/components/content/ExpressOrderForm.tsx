@@ -225,7 +225,12 @@ const ExpressOrderForm = ({
       sizeLabel = "5 ml";
     } else if (selectedAddSize === "full") {
       unitPrice = selectedAddParfum.full_bottle_price || selectedAddParfum.price_10ml * 4 || 400;
-      sizeLabel = selectedAddParfum.full_bottle_volume_ml ? `${selectedAddParfum.full_bottle_volume_ml} ml` : "Flacon complet";
+      const parts: string[] = [];
+      if (selectedAddParfum.weight_value) parts.push(`${selectedAddParfum.weight_value} ${selectedAddParfum.weight_unit || "g"}`);
+      if (selectedAddParfum.volume_value) parts.push(`${selectedAddParfum.volume_value} ${selectedAddParfum.volume_unit || "ml"}`);
+      sizeLabel = parts.length > 0
+        ? parts.join(" • ")
+        : (selectedAddParfum.full_bottle_volume_ml ? `${selectedAddParfum.full_bottle_volume_ml} ml` : "Flacon complet");
     }
 
     const newItem: ExtraOrderItem = {
@@ -1099,7 +1104,15 @@ const ExpressOrderForm = ({
                               : "bg-background border-border hover:border-primary/40 text-foreground"
                           }`}
                         >
-                          <span className="text-[11px] block">Flacon complet</span>
+                          <span className="text-[11px] block">
+                            {selectedAddParfum.weight_value
+                              ? `${selectedAddParfum.weight_value} ${selectedAddParfum.weight_unit || "g"}`
+                              : selectedAddParfum.volume_value
+                              ? `${selectedAddParfum.volume_value} ${selectedAddParfum.volume_unit || "ml"}`
+                              : selectedAddParfum.full_bottle_volume_ml
+                              ? `${selectedAddParfum.full_bottle_volume_ml} ml`
+                              : "Flacon complet"}
+                          </span>
                           <span className="text-xs font-semibold">{formatMAD(selectedAddParfum.full_bottle_price)}</span>
                         </button>
                       )}

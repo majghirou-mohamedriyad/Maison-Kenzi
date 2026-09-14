@@ -43,7 +43,7 @@ export type Parfum = {
   stock_5ml?: number;
   stock_10ml?: number;
   weight_value?: string;
-  weight_unit?: "g" | "kg";
+  weight_unit?: "mg" | "g" | "kg" | string;
   volume_value?: string;
   volume_unit?: "ml" | "L";
   created_at: string;

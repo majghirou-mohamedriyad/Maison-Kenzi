@@ -191,20 +191,43 @@ const ParfumDetail = () => {
     parfum.stock_status === "rupture" ||
     (isFullBottle && fullStock <= 0);
 
+  const getProductFormatInfo = (s: Size) => {
+    if (s === "full") {
+      if (!isParfum) {
+        const parts: string[] = [];
+        if (parfum?.weight_value) {
+          parts.push(`${parfum.weight_value} ${parfum.weight_unit || "g"}`);
+        }
+        if (parfum?.volume_value) {
+          parts.push(`${parfum.volume_value} ${parfum.volume_unit || "ml"}`);
+        }
+        const label = parts.length > 0
+          ? parts.join(" • ")
+          : (parfum?.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : "Format Soin");
+        const sub = parfum?.category === "deodorants-stick" ? "Stick Corporel" : "Format Soin Original";
+        return { label, sub };
+      }
+      return {
+        label: parfum?.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : "Flacon Complet",
+        sub: parfum?.category === "deodorants-stick" ? "Stick Corporel" : "Flacon Scellé Original",
+      };
+    }
+    return {
+      label: SIZE_META[s]?.label ?? s,
+      sub: SIZE_META[s]?.sub ?? "Décantation",
+    };
+  };
+
   // Selected items with quantity > 0
   const selectedItems: OrderSelectionItem[] = availableSizes
     .filter((s) => (quantities[s] ?? 0) > 0)
     .map((s) => {
       const qty = quantities[s] ?? 0;
       const unitPrice = priceFor(parfum, s);
+      const fmt = getProductFormatInfo(s);
       return {
         size: s,
-        sizeLabel:
-          s === "full"
-            ? parfum.full_bottle_volume_ml
-              ? `${parfum.full_bottle_volume_ml} ml`
-              : "Flacon Complet"
-            : SIZE_META[s]?.label ?? s,
+        sizeLabel: fmt.label,
         quantity: qty,
         unitPrice,
         subtotal: unitPrice * qty,
@@ -229,11 +252,14 @@ const ParfumDetail = () => {
       addItem({
         id: parfum.id,
         name: displayName || parfum.name,
+        name_en: parfum.name_en,
         maison: parfum.maison,
         size: item.size as Size,
+        sizeLabel: item.sizeLabel,
         quantity: item.quantity,
         price: item.unitPrice,
         imageLabel: displaySubtitle || parfum.image_label,
+        imageLabel_en: parfum.image_label_en,
         imageUrl: parfum.image_url,
       });
     });
@@ -611,25 +637,18 @@ const ParfumDetail = () => {
               <div className="space-y-2 pt-1">
                 <div className="flex justify-between items-center flex-wrap gap-1">
                   <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
-                    <Droplets className="w-3.5 h-3.5 text-primary shrink-0" /> {t.product.sizeSelect}
+                    {isParfum ? (
+                      <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                    )}
+                    <span>{t.product.sizeSelect}</span>
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                   {availableSizes.map((s) => {
-                    const formatLabel =
-                      s === "full"
-                        ? parfum.full_bottle_volume_ml
-                          ? `${parfum.full_bottle_volume_ml} ml`
-                          : "Flacon Complet"
-                        : SIZE_META[s]?.label ?? s;
-
-                    const formatSub =
-                      s === "full"
-                        ? parfum.category === "deodorants-stick"
-                          ? "Stick Corporel"
-                          : "Flacon Scellé Original"
-                        : SIZE_META[s]?.sub ?? "Décantation";
+                    const { label: formatLabel, sub: formatSub } = getProductFormatInfo(s);
 
                     const formatStock =
                       s === "full"

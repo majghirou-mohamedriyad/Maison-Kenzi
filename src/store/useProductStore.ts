@@ -24,7 +24,7 @@ type ExtraMeta = {
   full_bottle_stock?: number | null;
   full_bottle_limited?: boolean | null;
   weight_value?: string;
-  weight_unit?: "g" | "kg";
+  weight_unit?: "mg" | "g" | "kg" | string;
   volume_value?: string;
   volume_unit?: "ml" | "L";
 };

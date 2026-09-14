@@ -14,6 +14,7 @@ export interface CartItem {
   name_en?: string;
   maison: string;
   size: Size;
+  sizeLabel?: string;
   quantity: number;
   price: number;       // unit price in MAD for this size
   imageLabel: string;

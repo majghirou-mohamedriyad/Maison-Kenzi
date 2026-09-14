@@ -47,18 +47,6 @@ export const PayPalPaymentSection = ({
         <Lock className="w-4 h-4" />
         <span>Paiement Indisponible — {formatMAD(total)}</span>
       </Button>
-
-      {/* Badges de Réassurance */}
-      <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span>Flacons 100% Originaux & Scellés d'Origine</span>
-        </div>
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <Lock className="w-3 h-3 text-primary" />
-          <span>Plateforme sécurisée Maison Kenzi</span>
-        </div>
-      </div>
     </div>
   );
 };

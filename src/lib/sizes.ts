@@ -44,14 +44,28 @@ export const getParfumPricingSummary = (parfum: {
   price_10ml?: number | null;
   full_bottle_price?: number | null;
   full_bottle_volume_ml?: number | null;
+  weight_value?: string | null;
+  weight_unit?: string | null;
+  volume_value?: string | null;
+  volume_unit?: string | null;
 }): ParfumPricingSummary => {
   const isFull = parfum.sale_mode === "full_bottle";
   if (isFull) {
-    const vol = parfum.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : "100 ml";
     const price = Number(parfum.full_bottle_price ?? 0);
+    const parts: string[] = [];
+    if (parfum.weight_value) {
+      parts.push(`${parfum.weight_value} ${parfum.weight_unit || "g"}`);
+    }
+    if (parfum.volume_value) {
+      parts.push(`${parfum.volume_value} ${parfum.volume_unit || "ml"}`);
+    }
+    const volumeText = parts.length > 0
+      ? parts.join(" · ")
+      : (parfum.full_bottle_volume_ml ? `Flacon · ${parfum.full_bottle_volume_ml} ml` : "100 ml");
+
     return {
       priceText: formatMAD(price),
-      volumeText: `Flacon · ${vol}`,
+      volumeText,
       startingPrice: price,
     };
   }

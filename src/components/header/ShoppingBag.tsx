@@ -277,8 +277,8 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                         {/* Format & Prix Unitaire */}
                         <div className="flex items-center gap-1.5 mt-1">
                           <span className="inline-block text-[9.5px] font-semibold text-foreground/80 bg-secondary/90 px-2 py-0.5 rounded-md border border-border/70">
-                            {SIZE_META[item.size]?.label || item.size}
-                            {SIZE_META[item.size]?.sub ? ` · ${SIZE_META[item.size].sub}` : ""}
+                            {item.sizeLabel || SIZE_META[item.size]?.label || item.size}
+                            {!item.sizeLabel && SIZE_META[item.size]?.sub ? ` · ${SIZE_META[item.size].sub}` : ""}
                           </span>
                           <span className="text-[10px] text-muted-foreground font-medium">
                             ({formatMAD(item.price)} / u)
