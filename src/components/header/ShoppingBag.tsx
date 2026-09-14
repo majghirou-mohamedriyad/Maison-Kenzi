@@ -39,7 +39,7 @@ interface ShoppingBagProps {
 }
 
 const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
@@ -228,7 +228,11 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
             /* Liste des Articles dans le Panier */
             <>
               <div className="flex-1 overflow-y-auto space-y-3 pr-1.5 divide-y divide-border/40">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const currentName = (language === "en" && item.name_en) ? item.name_en : item.name;
+                  const currentLabel = (language === "en" && item.imageLabel_en) ? item.imageLabel_en : (item.imageLabel || item.name);
+
+                  return (
                   <div
                     key={`${item.id}-${item.size}`}
                     className="pt-3.5 first:pt-0 flex gap-3 group animate-in fade-in duration-200"
@@ -238,14 +242,14 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                       {item.imageUrl ? (
                         <img
                           src={item.imageUrl}
-                          alt={item.name}
+                          alt={currentName}
                           className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-secondary/50 rounded-lg p-1 text-center">
                           <span className="text-[9px] font-serif text-primary/80 line-clamp-2">
-                            {item.imageLabel || item.name}
+                            {currentLabel}
                           </span>
                         </div>
                       )}
@@ -260,7 +264,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                               {item.maison}
                             </p>
                             <h4 className="text-xs sm:text-sm font-serif font-bold text-foreground truncate leading-tight">
-                              {item.name}
+                              {currentName}
                             </h4>
                           </div>
 

@@ -13,6 +13,11 @@ import { Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  getProductName,
+  getProductDescription,
+  getProductSubtitle,
+} from "@/lib/productLocalization";
 
 interface RelatedProductsProps {
   currentParfumId?: string;
@@ -21,7 +26,7 @@ interface RelatedProductsProps {
 }
 
 const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsProps) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { data: allParfums, loading } = useParfums();
 
   // Filter out current product AND out of stock / inactive products
@@ -90,6 +95,9 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {related.map((p) => {
             const pricing = getParfumPricingSummary(p);
+            const pName = getProductName(p, language);
+            const pDesc = getProductDescription(p, language);
+            const pSubtitle = getProductSubtitle(p, language);
 
             return (
               <Link
@@ -102,8 +110,8 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
-                    alt={p.name}
-                    label={p.image_label}
+                    alt={pName}
+                    label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
                     fitMode="cover"
                     className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
@@ -116,7 +124,7 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                 {/* Titre et Bouton Panier sur la même ligne */}
                 <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[30px]">
                   <h3 className="font-serif text-xs sm:text-sm font-medium truncate text-foreground flex-1">
-                    {p.name}
+                    {pName}
                   </h3>
                   <QuickAddToCartButton
                     parfum={p}
@@ -125,9 +133,9 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                 </div>
 
                 {/* Extrait de Description */}
-                {p.description && (
+                {pDesc && (
                   <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
-                    {p.description}
+                    {pDesc}
                   </p>
                 )}
 

@@ -11,11 +11,13 @@ import type { Size } from "@/types/database";
 export interface CartItem {
   id: string;          // parfum id (uuid)
   name: string;
+  name_en?: string;
   maison: string;
   size: Size;
   quantity: number;
   price: number;       // unit price in MAD for this size
   imageLabel: string;
+  imageLabel_en?: string;
   imageUrl?: string | null;
 }
 

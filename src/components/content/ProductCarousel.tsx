@@ -13,9 +13,14 @@ import { Sparkles, Sun, Leaf, Wind, Snowflake } from "lucide-react";
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  getProductName,
+  getProductDescription,
+  getProductSubtitle,
+} from "@/lib/productLocalization";
 
 const ProductCarousel = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { data: allParfums, loading } = useParfums();
   const featured = allParfums.filter((p) => p.is_bestseller).slice(0, 4);
   const displayItems = featured.length > 0 ? featured : allParfums.slice(0, 4);
@@ -67,6 +72,9 @@ const ProductCarousel = () => {
               (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
 
             const pricing = getParfumPricingSummary(p);
+            const pName = getProductName(p, language);
+            const pDesc = getProductDescription(p, language);
+            const pSubtitle = getProductSubtitle(p, language);
 
             return (
               <Link
@@ -81,8 +89,8 @@ const ProductCarousel = () => {
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
-                    alt={p.name}
-                    label={p.image_label}
+                    alt={pName}
+                    label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
                     fitMode="cover"
                     className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
@@ -106,7 +114,7 @@ const ProductCarousel = () => {
                 <div className="flex items-center justify-between gap-1.5 mt-0.5 min-h-[32px]">
                   <h3 className={`font-serif text-sm sm:text-base truncate font-medium transition-colors duration-300 flex-1 ${outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                     }`}>
-                    {p.name}
+                    {pName}
                   </h3>
                   {!outOfStock && (
                     <QuickAddToCartButton
@@ -117,9 +125,9 @@ const ProductCarousel = () => {
                 </div>
 
                 {/* Extrait de Description */}
-                {p.description && (
+                {pDesc && (
                   <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
-                    {p.description}
+                    {pDesc}
                   </p>
                 )}
 

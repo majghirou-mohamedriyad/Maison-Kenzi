@@ -20,6 +20,12 @@ import {
   SeasonKey,
 } from "@/lib/season";
 import QuickAddToCartButton from "@/components/ui/QuickAddToCartButton";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  getProductName,
+  getProductDescription,
+  getProductSubtitle,
+} from "@/lib/productLocalization";
 
 const seasonIconMap = {
   Sun,
@@ -29,6 +35,7 @@ const seasonIconMap = {
 };
 
 const SeasonalSection = () => {
+  const { language } = useLanguage();
   const [settings, setSettings] = useState(getSavedSeasonalSettings());
   const { data: allProducts, loading } = useParfums();
 
@@ -125,6 +132,9 @@ const SeasonalSection = () => {
               p.stock_status === "rupture" ||
               (isFull && typeof p.full_bottle_stock === "number" && fullStock <= 0);
             const pricing = getParfumPricingSummary(p);
+            const pName = getProductName(p, language);
+            const pDesc = getProductDescription(p, language);
+            const pSubtitle = getProductSubtitle(p, language);
 
             return (
               <Link
@@ -139,8 +149,8 @@ const SeasonalSection = () => {
                   <ProductImage
                     src={p.image_url}
                     images={p.images}
-                    alt={p.name}
-                    label={p.image_label}
+                    alt={pName}
+                    label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
                     fitMode="cover"
                     className={`w-full h-full transition-all duration-700 ease-out ${
@@ -178,7 +188,7 @@ const SeasonalSection = () => {
                   <h3 className={`font-serif text-sm sm:text-lg truncate font-medium transition-colors duration-300 flex-1 ${
                     outOfStock ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
                   }`}>
-                    {p.name}
+                    {pName}
                   </h3>
                   {!outOfStock && (
                     <QuickAddToCartButton
@@ -189,9 +199,9 @@ const SeasonalSection = () => {
                 </div>
 
                 {/* Extrait de Description */}
-                {p.description && (
+                {pDesc && (
                   <p className="text-[11px] sm:text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed mt-1 font-light">
-                    {p.description}
+                    {pDesc}
                   </p>
                 )}
 

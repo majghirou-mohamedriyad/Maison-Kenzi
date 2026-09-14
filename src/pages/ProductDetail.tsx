@@ -52,6 +52,12 @@ import {
 import { getParfumSeasons, getSeasonMeta } from "@/lib/seasonsStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAutoTranslate } from "@/hooks/useAutoTranslate";
+import {
+  getProductName,
+  getProductDescription,
+  getProductSubtitle,
+  getProductNotes,
+} from "@/lib/productLocalization";
 
 const ParfumDetail = () => {
   const { language, t } = useLanguage();
@@ -60,28 +66,13 @@ const ParfumDetail = () => {
   const { data: parfum, loading, error } = useParfum(parfumId);
   const { addItem, openCart } = useCart();
 
-  const notesJoined = useMemo(() => {
-    if (language === "en" && (parfum as any)?.notes_en) {
-      return (parfum as any).notes_en;
-    }
-    return [
-      ...(parfum?.notes_tete || []),
-      ...(parfum?.notes_coeur || []),
-      ...(parfum?.notes_fond || []),
-    ]
-      .filter(Boolean)
-      .join(" • ");
-  }, [parfum, language]);
+  const displayName = useMemo(() => getProductName(parfum, language), [parfum, language]);
+  const displayDescription = useMemo(() => getProductDescription(parfum, language), [parfum, language]);
+  const displaySubtitle = useMemo(() => getProductSubtitle(parfum, language), [parfum, language]);
+  const displayNotes = useMemo(() => getProductNotes(parfum, language), [parfum, language]);
 
-  const rawDescription = useMemo(() => {
-    if (language === "en" && (parfum as any)?.description_en) {
-      return (parfum as any).description_en;
-    }
-    return parfum?.description;
-  }, [parfum, language]);
-
-  const translatedDescription = useAutoTranslate(rawDescription);
-  const translatedNotes = useAutoTranslate(notesJoined);
+  const translatedDescription = useAutoTranslate(displayDescription);
+  const translatedNotes = useAutoTranslate(displayNotes);
 
   // State des quantités initialisé pour chaque format
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -235,35 +226,35 @@ const ParfumDetail = () => {
     selectedItems.forEach((item) => {
       addItem({
         id: parfum.id,
-        name: parfum.name,
+        name: displayName || parfum.name,
         maison: parfum.maison,
         size: item.size as Size,
         quantity: item.quantity,
         price: item.unitPrice,
-        imageLabel: parfum.image_label,
+        imageLabel: displaySubtitle || parfum.image_label,
         imageUrl: parfum.image_url,
       });
     });
 
     const summary = selectedItems.map((i) => `${i.sizeLabel} × ${i.quantity}`).join(", ");
     toast.success("Ajouté au panier", {
-      description: `${parfum.name} (${summary})`,
+      description: `${displayName || parfum.name} (${summary})`,
     });
     openCart();
   };
 
-  const seoTitle = `${parfum.name} — ${parfum.maison} | Maison Kenzi`.slice(0, 70);
+  const seoTitle = `${displayName || parfum.name} — ${parfum.maison} | Maison Kenzi`.slice(0, 70);
   const seoDescription = (
-    parfum.description?.trim() ||
-    `Produit authentique ${parfum.maison} ${parfum.name}, disponible chez Maison Kenzi au Maroc.`
+    displayDescription?.trim() ||
+    `Produit authentique ${parfum.maison} ${displayName || parfum.name}, disponible chez Maison Kenzi au Maroc.`
   ).slice(0, 160);
   const canonical = `/parfum/${parfum.id}`;
   const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: parfum.name,
+    name: displayName || parfum.name,
     brand: { "@type": "Brand", name: parfum.maison },
-    description: parfum.description || undefined,
+    description: displayDescription || undefined,
     image: parfum.image_url || undefined,
     offers: {
       "@type": "Offer",
@@ -312,7 +303,7 @@ const ParfumDetail = () => {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage className="text-foreground font-medium truncate max-w-[150px] sm:max-w-xs">
-                  {parfum.name}
+                  {displayName}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -530,8 +521,14 @@ const ParfumDetail = () => {
                 </span>
 
                 <h1 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground font-semibold leading-tight">
-                  {parfum.name}
+                  {displayName}
                 </h1>
+
+                {displaySubtitle && (
+                  <p className="text-xs sm:text-sm text-primary/90 font-serif italic whitespace-pre-wrap pt-0.5">
+                    {displaySubtitle}
+                  </p>
+                )}
 
                 <div className="flex items-center flex-wrap gap-1.5 pt-1">
                   {parfum.gender && (

@@ -9,8 +9,10 @@
 import React, { useState } from "react";
 import { ShoppingBag, Check, Plus } from "lucide-react";
 import { useCart } from "@/store/cart";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Parfum, Size } from "@/types/database";
 import { formatMAD, priceFor } from "@/lib/sizes";
+import { getProductName, getProductSubtitle } from "@/lib/productLocalization";
 import { toast } from "sonner";
 
 interface QuickAddToCartButtonProps {
@@ -24,6 +26,7 @@ export const QuickAddToCartButton = ({
   className = "",
   size = "sm",
 }: QuickAddToCartButtonProps) => {
+  const { language, t } = useLanguage();
   const { addItem } = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
@@ -35,6 +38,9 @@ export const QuickAddToCartButton = ({
     (isFull && typeof parfum.full_bottle_stock === "number" && fullStock <= 0);
 
   if (outOfStock) return null;
+
+  const currentDisplayName = getProductName(parfum, language);
+  const currentSubtitle = getProductSubtitle(parfum, language);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -69,26 +75,28 @@ export const QuickAddToCartButton = ({
     }
 
     if (chosenPrice <= 0) {
-      toast.error("Format actuellement indisponible");
+      toast.error(language === "en" ? "Format currently unavailable" : "Format actuellement indisponible");
       return;
     }
 
     addItem({
       id: parfum.id,
       name: parfum.name,
+      name_en: parfum.name_en,
       maison: parfum.maison,
       size: chosenSize,
       quantity: 1,
       price: chosenPrice,
       imageLabel: parfum.image_label,
+      imageLabel_en: parfum.image_label_en,
       imageUrl: parfum.image_url,
     });
 
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1400);
 
-    toast.success("Ajouté au panier", {
-      description: `${parfum.name} · ${sizeLabel} (${formatMAD(chosenPrice)})`,
+    toast.success(language === "en" ? "Added to bag" : "Ajouté au panier", {
+      description: `${currentDisplayName} · ${sizeLabel} (${formatMAD(chosenPrice)})`,
     });
   };
 

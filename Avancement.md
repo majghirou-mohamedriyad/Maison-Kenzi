@@ -3,11 +3,23 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Formatage Fixe des Tableaux Admin & Troncature des Titres Déployé — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Affichage Dynamique Bilingue (FR/EN) des Produits Intégré dans Toute l'Application — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Affichage Dynamique Bilingue (FR / EN) des Informations Produits ([`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/components/ui/QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx), [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)) :
+  - [x] **Rétablissement de la Transmission des Champs Traduits** :
+    - Correction des fonctions `mapRowToParfum` et `mapLocalToParfum` dans `useParfums.ts` qui omettaient `name_en`, `description_en`, `notes_en`, `image_label_en`, `weight_value` et `volume_value`.
+  - [x] **Création d'un Module Centralisé de Localisation Produit** :
+    - `getProductName(product, lang)`, `getProductDescription(product, lang)`, `getProductSubtitle(product, lang)`, `getProductNotes(product, lang)` avec repli automatique vers la version par défaut en français si le champ anglais est vide.
+  - [x] **Intégration Complète Côté Client & Visiteur** :
+    - **Fiche Produit ([`ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx))** : Titre `h1`, fil d'Ariane, sous-titre / conseils d'application, description complète, pyramide des notes olfactives et métadonnées SEO synchronisés avec la langue choisie.
+    - **Catalogue ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx))** : Cartes produits, recherche textuelle (sur noms FR et EN), et tri alphabétique prenant en compte la langue active.
+    - **Sections d'Accueil & Suggestions ([`ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx))** : Affichage localisé des titres, descriptions et visuels.
+    - **Tunnel d'Achat & Panier ([`QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx), [`ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx))** : Conservation des noms et labels bilingues dans le panier avec bascule instantanée selon la langue sélectionnée.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, aucun emoji dans l'interface ou le code.
 
 - [x] Formatage Fixe des Tableaux Admin & Troncature des Titres de Produits ([`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
   - [x] **Stabilisation Visuelle du Tableau (`table-fixed`)** :

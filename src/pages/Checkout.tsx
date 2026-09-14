@@ -45,7 +45,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { PayPalPaymentSection } from "@/components/checkout/PayPalPaymentSection";
 
 const Checkout = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
@@ -661,7 +661,10 @@ const Checkout = () => {
 
                   {/* Cart items listing */}
                   <div className="space-y-3 max-h-[340px] overflow-y-auto pr-1 divide-y divide-border/40">
-                    {items.map((item) => (
+                    {items.map((item) => {
+                      const itemName = (language === "en" && item.name_en) ? item.name_en : item.name;
+                      const itemLabel = (language === "en" && item.imageLabel_en) ? item.imageLabel_en : (item.imageLabel || item.name);
+                      return (
                       <div
                         key={`${item.id}-${item.size}`}
                         className="pt-3 first:pt-0 flex items-center gap-3"
@@ -671,12 +674,12 @@ const Checkout = () => {
                           {item.imageUrl ? (
                             <img
                               src={item.imageUrl}
-                              alt={item.name}
+                              alt={itemName}
                               className="w-full h-full object-cover"
                             />
                           ) : (
                             <span className="text-[8px] font-serif text-primary/80 text-center px-1 break-all">
-                              {item.imageLabel}
+                              {itemLabel}
                             </span>
                           )}
                         </div>
@@ -687,7 +690,7 @@ const Checkout = () => {
                             {item.maison}
                           </p>
                           <h3 className="text-xs font-serif font-bold text-foreground truncate">
-                            {item.name}
+                            {itemName}
                           </h3>
                           <span className="inline-block text-[10px] text-muted-foreground bg-secondary/80 px-1.5 py-0.2 rounded border border-border/50 mt-0.5">
                             {SIZE_META[item.size]?.label || item.size}

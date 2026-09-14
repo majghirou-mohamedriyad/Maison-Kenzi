@@ -42,6 +42,10 @@ export type Parfum = {
   full_bottle_limited?: boolean | null;
   stock_5ml?: number;
   stock_10ml?: number;
+  weight_value?: string;
+  weight_unit?: "g" | "kg";
+  volume_value?: string;
+  volume_unit?: "ml" | "L";
   created_at: string;
   updated_at: string;
 };
