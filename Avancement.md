@@ -9,6 +9,10 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Correction du Callback Stripe dans le Formulaire Express ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] Résolution de l'erreur `ReferenceError: handleStripePaymentSuccess is not defined` en renommant la fonction de gestion du paiement en ligne dans le composant de commande express.
+  - [x] Validation TypeScript 100% sans erreur (`npx tsc --noEmit`).
+
 - [x] Intégration Officielle de Stripe (Cartes Bancaires, Apple Pay & Google Pay) en Mode Test ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx), [`api/create-payment-intent.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/create-payment-intent.js), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env)) :
   - [x] **Configuration Sécurisée des Clés API Stripe** :
     - Intégration de la clé publique (`pk_test_...`) et de la clé secrète (`sk_test_...`) fournies par l'utilisateur dans `.env` et `.env.example`.

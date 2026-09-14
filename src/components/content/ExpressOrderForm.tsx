@@ -307,8 +307,8 @@ const ExpressOrderForm = ({
       return true;
     };
 
-    const handlePayPalPaymentSuccess = async (details: {
-      paypalOrderId: string;
+    const handleStripePaymentSuccess = async (details: {
+      paymentIntentId?: string;
       payerName?: string;
       payerEmail?: string;
     }) => {
