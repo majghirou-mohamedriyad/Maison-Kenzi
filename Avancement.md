@@ -9,6 +9,20 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] URLs Conviviales & Slugs SEO pour les Fiches Produits ([`src/lib/productUrl.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productUrl.ts), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx)) :
+  - [x] **Création du Module de Gestion des Slugs (`src/lib/productUrl.ts`)** :
+    - Nettoyage et formatage automatisé des titres (`slugify`).
+    - Génération de slugs lisibles au format `nom-parfum-maison` avec détection et résolution des collisions éventuelles.
+    - Fonction de résolution universelle (`findParfumByIdOrSlug`) supportant à la fois les UUIDs et les slugs textuels.
+  - [x] **Mise à Jour du Hook `useParfum`** :
+    - Recherche fluide et instantanée d'un produit indifféremment par son UUID Supabase ou son slug lisible.
+  - [x] **Redirection et Synchronisation Fluide dans `ProductDetail.tsx`** :
+    - Remplacement sans rechargement de l'URL dans la barre du navigateur (`window.history.replaceState`) si l'utilisateur accède à la page via un ancien lien UUID.
+    - Alignement de la balise canonique SEO `<link rel="canonical">` avec le slug.
+  - [x] **Mise à Jour de Tous les Liens Internes** :
+    - Catalogue, carrousels, sections saisonnières, recherche spotlight et administration pointent désormais vers l'URL slugifiée.
+  - [x] **Conformité Luxury Nude & Zéro Emoji** : Typographie soignée, zéro emoji, icônes `lucide-react`.
+
 - [x] Résolution de l'Erreur d'Initialisation Stripe & Sécurisation CSP ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
   - [x] **Mise à niveau de la Content-Security-Policy (CSP)** :
     - Autorisation explicite des domaines officiels Stripe (`js.stripe.com`, `*.stripe.com`, `*.stripe.network`, `hooks.stripe.com`, `api.stripe.com`) dans les directives `script-src`, `frame-src`, `connect-src` et `img-src` pour lever le blocage par le navigateur.

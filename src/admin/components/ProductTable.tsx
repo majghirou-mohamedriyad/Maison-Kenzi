@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 import { getPrimaryImage } from "@/lib/productImages";
+import { getParfumUrl } from "@/lib/productUrl";
 
 type Props = {
   products: AdminParfum[];
@@ -228,7 +229,7 @@ const ProductTable = ({
                 {/* Actions Buttons */}
                 <div className="flex items-center justify-end gap-1.5 pt-1">
                   <a
-                    href={`/parfum/${p.id}`}
+                    href={getParfumUrl(p)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"
@@ -510,7 +511,7 @@ const ProductTable = ({
                       <td className="w-28 px-3.5 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           <a
-                            href={`/parfum/${p.id}`}
+                            href={getParfumUrl(p)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"

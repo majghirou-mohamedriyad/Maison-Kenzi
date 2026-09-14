@@ -38,6 +38,7 @@ import { formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
 import { isParfumInCategory } from "@/lib/productCategories";
+import { getParfumUrl } from "@/lib/productUrl";
 
 const Navigation = () => {
   const { t, language } = useLanguage();
@@ -160,7 +161,8 @@ const Navigation = () => {
     setIsSearchOpen(false);
     setIsMobileMenuOpen(false);
     setSearchQuery("");
-    navigate(`/parfum/${id}`);
+    const matched = allParfums.find((p) => p.id === id);
+    navigate(matched ? getParfumUrl(matched) : `/parfum/${id}`);
   };
 
   const waRaw = settings.whatsapp_phone || "212652535301";

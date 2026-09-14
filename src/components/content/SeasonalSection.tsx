@@ -26,6 +26,7 @@ import {
   getProductDescription,
   getProductSubtitle,
 } from "@/lib/productLocalization";
+import { getParfumUrl } from "@/lib/productUrl";
 import { isParfumProduct } from "@/lib/productCategories";
 
 const seasonIconMap = {
@@ -140,7 +141,7 @@ const SeasonalSection = () => {
             return (
               <Link
                 key={p.id}
-                to={`/parfum/${p.id}`}
+                to={getParfumUrl(p)}
                 className={`group block relative rounded-2xl p-2.5 sm:p-3 transition-all duration-500 hover:bg-card/40 ${
                   outOfStock ? "opacity-75" : ""
                 }`}

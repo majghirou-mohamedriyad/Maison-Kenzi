@@ -19,6 +19,7 @@ import {
   getProductDescription,
   getProductSubtitle,
 } from "@/lib/productLocalization";
+import { getParfumUrl } from "@/lib/productUrl";
 
 const ProductCarousel = () => {
   const { language, t } = useLanguage();
@@ -80,7 +81,7 @@ const ProductCarousel = () => {
             return (
               <Link
                 key={p.id}
-                to={`/parfum/${p.id}`}
+                to={getParfumUrl(p)}
                 className={`block group relative transition-all duration-500 hover:-translate-y-1 ${outOfStock ? "opacity-75" : ""
                   }`}
                 style={{ animationDelay: `${idx * 150}ms` }}

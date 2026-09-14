@@ -19,6 +19,7 @@ import {
   getProductSubtitle,
 } from "@/lib/productLocalization";
 import { isParfumProduct } from "@/lib/productCategories";
+import { getParfumUrl } from "@/lib/productUrl";
 
 interface RelatedProductsProps {
   currentParfumId?: string;
@@ -103,7 +104,7 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
             return (
               <Link
                 key={p.id}
-                to={`/parfum/${p.id}`}
+                to={getParfumUrl(p)}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="group block rounded-2xl p-2 sm:p-3 transition-all hover:bg-card/40 relative text-left"
               >

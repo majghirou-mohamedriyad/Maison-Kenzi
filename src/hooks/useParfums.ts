@@ -5,6 +5,7 @@ import { useProducts, getProducts, setProducts, type AdminParfum } from "@/store
 import { getParfumSeasons } from "@/lib/seasonsStore";
 import { getParfumImages } from "@/lib/productImages";
 import { getParfumCategories, isParfumInCategory } from "@/lib/productCategories";
+import { findParfumByIdOrSlug } from "@/lib/productUrl";
 
 export type ParfumFilter = {
   gender?: Gender;
@@ -247,7 +248,7 @@ export const useParfums = (filter?: ParfumFilter) => {
   return { data, loading, error, refetch: refreshProductsFromSupabase };
 };
 
-export const useParfum = (id?: string) => {
+export const useParfum = (idOrSlug?: string) => {
   const products = useProducts();
 
   useEffect(() => {
@@ -257,10 +258,10 @@ export const useParfum = (id?: string) => {
   }, [products.length]);
 
   const data = useMemo(() => {
-    if (!id) return null;
-    const match = products.find((p) => p.id === id);
+    if (!idOrSlug) return null;
+    const match = findParfumByIdOrSlug(products, idOrSlug);
     return match ? mapLocalToParfum(match) : null;
-  }, [products, id]);
+  }, [products, idOrSlug]);
 
   return { data, loading: false, error: null, refetch: refreshProductsFromSupabase };
 };

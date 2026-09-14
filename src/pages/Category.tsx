@@ -18,6 +18,7 @@ import {
   getProductDescription,
   getProductSubtitle,
 } from "@/lib/productLocalization";
+import { getParfumUrl } from "@/lib/productUrl";
 import {
   Sparkles,
   Flame,
@@ -786,7 +787,7 @@ const Collection = () => {
                   return (
                     <Link
                       key={p.id}
-                      to={`/parfum/${p.id}`}
+                      to={getParfumUrl(p)}
                       state={{ fromCategory: filter }}
                       className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${outOfStock ? "opacity-75" : ""
                         }`}

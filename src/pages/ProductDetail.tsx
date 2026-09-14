@@ -60,6 +60,7 @@ import {
 } from "@/lib/productLocalization";
 import { isParfumProduct, isParfumInCategory } from "@/lib/productCategories";
 import { useCategories } from "@/store/useCategoryStore";
+import { getParfumSlug, getParfumUrl } from "@/lib/productUrl";
 
 const ParfumDetail = () => {
   const { language, t } = useLanguage();
@@ -69,6 +70,16 @@ const ParfumDetail = () => {
   const categories = useCategories();
   const { data: parfum, loading, error } = useParfum(parfumId);
   const { addItem, openCart } = useCart();
+
+  // Mise à jour élégante de l'adresse URL dans le navigateur vers le slug SEO canonique
+  useEffect(() => {
+    if (!parfum) return;
+    const canonicalSlug = getParfumSlug(parfum);
+    // Si l'utilisateur est arrivé via un UUID ou une ancienne variante, on remplace l'URL sans recharger la page
+    if (parfumId && parfumId !== canonicalSlug && (parfumId === parfum.id || parfumId.length > 20)) {
+      window.history.replaceState(null, "", getParfumUrl(parfum));
+    }
+  }, [parfum, parfumId]);
 
   // Détermination intelligente de la catégorie parente pour le fil d'Ariane
   const parentCategory = useMemo(() => {
@@ -327,7 +338,7 @@ const ParfumDetail = () => {
     displayDescription?.trim() ||
     `Produit authentique ${parfum.maison} ${displayName || parfum.name}, disponible chez Maison Kenzi au Maroc.`
   ).slice(0, 160);
-  const canonical = `/parfum/${parfum.id}`;
+  const canonical = getParfumUrl(parfum);
   const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
