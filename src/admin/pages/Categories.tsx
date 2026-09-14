@@ -131,12 +131,15 @@ const CategoriesAdmin = () => {
 
   // Product counts per category slug or gender
   const categoryStats = useMemo(() => {
-    const counts: Record<string, number> = {};
+    const stats: Record<string, number> = {};
     categories.forEach((cat) => {
-      counts[cat.slug] = products.filter((p) => isParfumInCategory(p, cat.slug)).length;
+      stats[cat.slug] = products.filter((p) => isParfumInCategory(p, cat.slug)).length;
     });
-    return counts;
+    return stats;
   }, [categories, products]);
+
+  // Alias pratique pour compatibilité
+  const counts = categoryStats;
 
   const handleSortHeader = (field: "name" | "products" | "status") => {
     if (field === "name") {
@@ -227,7 +230,7 @@ const CategoriesAdmin = () => {
       let count = 0;
       for (const id of selectedCatIds) {
         const catObj = categories.find((c) => (c.id || c.slug) === id);
-        const pCount = catObj ? (counts[catObj.slug] || 0) : 0;
+        const pCount = catObj ? (categoryStats[catObj.slug] || 0) : 0;
         await updateCategory(id, {
           is_active: active,
           ...(active && pCount > 0 ? { is_coming_soon: false } : {}),
@@ -327,7 +330,7 @@ const CategoriesAdmin = () => {
     setImages(initialImages);
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
-    const catProductsCount = counts[cat.slug] || 0;
+    const catProductsCount = categoryStats[cat.slug] || 0;
     // Si la catégorie a déjà des produits, elle est disponible (pas "À venir")
     setIsComingSoon(catProductsCount > 0 ? false : Boolean(cat.is_coming_soon));
     setErrors({});
@@ -440,11 +443,11 @@ const CategoriesAdmin = () => {
     }
 
     setIsSaving(true);
-    const primaryImage = images.length > 0 ? images[0] : undefined;
-    const catProductsCount = editingCat ? (counts[editingCat.slug] || 0) : (counts[finalSlug] || 0);
-    const effectiveComingSoon = catProductsCount > 0 ? false : isComingSoon;
-
     try {
+      const primaryImage = images.length > 0 ? images[0] : undefined;
+      const catProductsCount = editingCat ? (categoryStats[editingCat.slug] || 0) : (categoryStats[finalSlug] || 0);
+      const effectiveComingSoon = catProductsCount > 0 ? false : isComingSoon;
+
       if (editingCat) {
         const res = await updateCategory(editingCat.id, {
           name: name.trim(),
@@ -464,6 +467,7 @@ const CategoriesAdmin = () => {
           toast.error("Erreur lors de la mise à jour dans la base de données");
         } else {
           toast.success("Catégorie mise à jour avec succès");
+          setModalOpen(false);
         }
       } else {
         const res = await addCategory({
@@ -485,10 +489,11 @@ const CategoriesAdmin = () => {
           toast.error("Erreur lors de l'enregistrement dans la base de données");
         } else {
           toast.success("Nouvelle catégorie créée avec succès");
+          setModalOpen(false);
         }
       }
-      setModalOpen(false);
-    } catch {
+    } catch (err) {
+      console.error("Erreur inattendue lors de la sauvegarde de la catégorie :", err);
       toast.error("Une erreur inattendue est survenue");
     } finally {
       setIsSaving(false);
@@ -1268,7 +1273,7 @@ const CategoriesAdmin = () => {
                   </label>
 
                   {(() => {
-                    const editCatCount = editingCat ? (counts[editingCat.slug] || 0) : 0;
+                    const editCatCount = editingCat ? (categoryStats[editingCat.slug] || 0) : 0;
                     return (
                       <label className={`flex items-center justify-between p-2.5 rounded-xl border select-none ${
                         editCatCount > 0

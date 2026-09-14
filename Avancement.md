@@ -3,11 +3,24 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Correction de l'Affichage des Formats Souhaités & Support Complet des Unités de Poids (`mg`, `g`, `kg`) — 100% Déployé & Zéro Emoji
+- **Statut général** : Correction de la Création et Modification des Catégories (Résolution de ReferenceError counts & Persistance Supabase Résiliente) — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Correction de la Création et Modification des Catégories ([`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) :
+  - [x] **Élimination de l'Erreur Critique `ReferenceError: counts is not defined`** :
+    - Remplacement des 4 occurrences orphelines de `counts` par `categoryStats` dans `openEditModal`, `handleSave`, `handleBulkActiveToggle` et le sélecteur du switch « À venir / Teaser » dans l'interface de gestion des catégories.
+    - Ajout d'un alias de sécurité `const counts = categoryStats;` pour prémunir tout appel futur.
+    - Encapsulation intégrale de la méthode `handleSave` dans un bloc `try...catch...finally` pour garantir que l'état `isSaving` se réinitialise toujours (`false`), débloquant le bouton de soumission « Créer la catégorie » / « Mettre à jour ».
+    - Fermeture automatique et réactive de la modale (`setModalOpen(false)`) dès confirmation du succès.
+  - [x] **Renforcement de la Persistance dans le Store & Supabase ([`useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts))** :
+    - Génération systématique d'identifiants uniques conformes au standard UUID v4 pour prévenir toute erreur de type PostgreSQL.
+    - Support officiel de la colonne `gender` dans le payload de synchronisation.
+    - Stratégie d'upsert et d'update résiliente avec repli progressif : en cas de colonne absente sur la base de données distante (`name_en`, `description_en`, `is_coming_soon`, `gender`, `sort_order`), un repli transparent est exécuté sans échec visible pour l'utilisateur.
+    - Gestion robuste de `deleteCategory` ciblant à la fois l'`id` et le `slug`.
+  - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre `#C9A96E`.
 
 - [x] Correction de l'Affichage du Format Souhaité & Support des Unités de Poids (`mg`, `g`, `kg`) ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/lib/sizes.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/sizes.ts), [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx), [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts)) :
   - [x] **Résolution du « ml » Forcé dans « Format Souhaité »** :
