@@ -1,7 +1,7 @@
 # 🌿 Maison Kenzi | Parfums & Déodorants Premium
 
 <p align="center">
-  <img src="public/logo.svg" alt="Maison Kenzi Logo" width="120" />
+  <img src="public\mk-logo-light-removebg.png" alt="Maison Kenzi Logo" width="120" />
 </p>
 
 <p align="center">
