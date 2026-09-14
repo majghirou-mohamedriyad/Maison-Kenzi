@@ -46,7 +46,7 @@ export const PayPalPaymentSection = ({
 
   const clientId =
     import.meta.env.VITE_PAYPAL_CLIENT_ID ||
-    "BAAJmrSD6Qv0uH4Zm24aUEyDPU1apBzOXcMK6javFsxW3yG75ucVp7JQ2grgYv2wYSxJf8D4UMc_TrwGIA";
+    "AQw6B6dxX9jW-ZCuHLHSpMmEVnBMSRqevH09FqQURUurFoBQSmOXMoJlwJfeBE-ylFQyq-FOzJ7Eo6vZ";
 
   const totalEur = Math.max(1, Math.round((Number(total || 0) / MAD_TO_EUR_RATE) * 100) / 100).toFixed(2);
 
@@ -148,7 +148,6 @@ export const PayPalPaymentSection = ({
             .create({
               purchase_units: [
                 {
-                  description: "Commande Haute Parfumerie & Soins — Maison Kenzi",
                   amount: {
                     currency_code: "EUR",
                     value: amountToCharge,

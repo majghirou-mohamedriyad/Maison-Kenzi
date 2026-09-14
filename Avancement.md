@@ -10,6 +10,8 @@
 ## Historique des Tâches Réalisées
 
 - [x] Réactivation du Module de Paiement Sécurisé PayPal Checkout & Carte Bancaire ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Configuration de la Clé API Officielle (Client ID)** :
+    - Intégration de la clé client Sandbox fournie par l'utilisateur (`AQw6B6dx...`) dans `.env` et dans le composant avec prise en charge dynamique.
   - [x] **Intégration Active du SDK Officiel PayPal Checkout** :
     - Remplacement du bloc de maintenance désactivé par le chargeur dynamique officiel du SDK PayPal avec boutons intelligents (*Smart Payment Buttons* pour compte PayPal et Carte Bancaire Visa/Mastercard).
     - Validation préalable obligatoire des informations client (nom, téléphone, adresse) avant déclenchement de la fenêtre de règlement (`actions.reject()` / `actions.resolve()`).
