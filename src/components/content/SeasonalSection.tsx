@@ -155,9 +155,9 @@ const SeasonalSection = () => {
                     alt={pName}
                     label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
-                    fitMode="cover"
+                    fitMode="contain"
                     className={`w-full h-full transition-all duration-700 ease-out ${
-                      outOfStock ? "grayscale opacity-50 contrast-75" : "group-hover:scale-105"
+                      outOfStock ? "grayscale opacity-50 contrast-75" : ""
                     }`}
                   />
 

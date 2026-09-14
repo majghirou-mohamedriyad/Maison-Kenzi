@@ -53,7 +53,7 @@ const ProductImage = ({
   return (
     <div
       className={cn(
-        "group/img relative w-full overflow-hidden flex items-center justify-center transition-all bg-card/10",
+        "group/img relative w-full overflow-hidden flex items-center justify-center transition-all bg-card/10 p-2 sm:p-2.5",
         aspect,
         className
       )}
@@ -65,7 +65,7 @@ const ProductImage = ({
         loading="lazy"
         onError={() => setPrimaryError(true)}
         className={cn(
-          "w-full h-full transition-all duration-700 ease-out group-hover:scale-105 group-hover/img:scale-105 animate-fade-in",
+          "w-full h-full transition-all duration-700 ease-out scale-[0.92] group-hover:scale-[0.98] group-hover/img:scale-[0.98] animate-fade-in",
           objectFitClass,
           secondary ? "transition-opacity duration-700 group-hover:opacity-0" : ""
         )}
@@ -79,7 +79,7 @@ const ProductImage = ({
           loading="lazy"
           onError={() => setSecondaryError(true)}
           className={cn(
-            "absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 group-hover/img:opacity-100 transition-all duration-700 ease-out scale-95 group-hover:scale-105 group-hover/img:scale-105 pointer-events-none",
+            "absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 group-hover/img:opacity-100 transition-all duration-700 ease-out scale-[0.88] group-hover:scale-[0.98] group-hover/img:scale-[0.98] pointer-events-none p-2 sm:p-2.5",
             objectFitClass
           )}
         />

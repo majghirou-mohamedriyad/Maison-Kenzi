@@ -430,8 +430,8 @@ const ParfumDetail = () => {
                         alt={parfum.name}
                         label={parfum.image_label}
                         aspect="aspect-[4/5]"
-                        fitMode="cover"
-                        className={`max-h-[280px] sm:max-h-[380px] md:max-h-[440px] w-full mx-auto transition-all duration-500 ${
+                        fitMode="contain"
+                        className={`max-h-[300px] sm:max-h-[400px] md:max-h-[460px] w-full mx-auto transition-all duration-500 ${
                           outOfStock ? "grayscale opacity-60 contrast-75" : ""
                         }`}
                       />

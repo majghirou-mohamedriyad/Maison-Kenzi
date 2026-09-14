@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Optimisation du Cadrage & Zoom Sans Rognage des Photos Produits ([`src/components/ui/ProductImage.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/ProductImage.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx)) :
+  - [x] **Marges de Sécurité & Échelle Équilibrée** : Intégration d'un espacement intérieur doux (`p-2 sm:p-2.5`) et d'une échelle de repos légèrement réduite (`scale-[0.92]`) dans `ProductImage.tsx`, offrant une respiration visuelle naturelle aux flacons et créations.
+  - [x] **Zoom Doux Sans Dépassement** : Remplacement de la sur-échelle agressive par un micro-zoom élégant (`scale-[0.98]`), garantissant que 100% de la photo reste visible sans coupure ni rognage des bouchons ou étiquettes au survol.
+  - [x] **Mode `object-contain` Universel** : Passage en ajustement intégral sur les fiches produits, le catalogue et les carrousels, éliminant tout recadrage forcé des visuels flacons et coffrets.
+  - [x] **Conformité & Zéro Emoji** : Micro-interactions fluides, design luxury nude soigné.
+
 - [x] Guide de Déploiement VPS & Nettoyage Fiche Produit ([`vps-guide.txt`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vps-guide.txt), [`.gitignore`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.gitignore), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)) :
   - [x] **Création du Fichier `vps-guide.txt`** : Référentiel complet des commandes terminal pour le déploiement rapide en 1 ligne (`git pull`, `npm run build`, `pm2 restart maison-kenzi`), la supervision PM2, la gestion de Nginx et SSL Certbot.
   - [x] **Protection Git** : Fichier `vps-guide.txt` ignoré du versionnage via `.gitignore` pour un usage local/privé exclusif.

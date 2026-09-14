@@ -95,8 +95,8 @@ const ProductCarousel = () => {
                     alt={pName}
                     label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
-                    fitMode="cover"
-                    className={`h-full w-full object-cover object-center transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50" : "group-hover:scale-[1.04]"
+                    fitMode="contain"
+                    className={`h-full w-full object-contain object-center transition-all duration-700 ease-out ${outOfStock ? "grayscale opacity-50" : ""
                       }`}
                   />
 

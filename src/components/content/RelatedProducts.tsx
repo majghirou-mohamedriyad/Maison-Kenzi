@@ -116,8 +116,8 @@ const RelatedProducts = ({ currentParfumId, maison, gender }: RelatedProductsPro
                     alt={pName}
                     label={pSubtitle || p.image_label}
                     aspect="aspect-[4/5]"
-                    fitMode="cover"
-                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                    fitMode="contain"
+                    className="w-full h-full object-contain transition-all duration-300"
                   />
                 </div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
