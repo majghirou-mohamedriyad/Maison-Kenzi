@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Passerelle Proxy Supabase & OpenWA pour Déploiement en Production ([`server.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/server.js)) :
+  - [x] **Routage Transparent Supabase (Port 8000)** : Redirection de `/api/supabase/*` vers l'instance locale `http://127.0.0.1:8000` avec transmission des en-têtes et données JSON.
+  - [x] **Pont WebSocket Realtime** : Prise en charge des sockets `upgrade` dans `server.js` pour la souscription en direct aux changements de catalogue et commandes Supabase.
+  - [x] **Routage Médias OpenWA (Port 2785)** : Prise en charge de `/api/openwa/*` pour le chargement instantané des photos de flacons et parfums stockées sur la VPS.
+
 - [x] Déploiement en Production sur VPS & Configuration du Domaine Officiel `maison-kenzi.com` :
   - [x] **Liaison DNS Hostinger** : Configuration de l'enregistrement A (`@` -> `185.197.249.4`) et CNAME (`www` -> `maison-kenzi.com`) avec TTL rapide (300s).
   - [x] **Isolation et Zéro Conflit de Ports** : Attribution et démarrage du port dédié `3005` via PM2 (`PORT=3005 pm2 start server.js --name "maison-kenzi"`), préservant intégralement les conteneurs Docker existants (`3001`, `3003`, `5678`, `8000`).
