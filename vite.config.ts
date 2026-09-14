@@ -3,6 +3,51 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+const stripeDevApiPlugin = () => ({
+  name: "stripe-dev-api",
+  configureServer(server: any) {
+    server.middlewares.use(async (req: any, res: any, next: any) => {
+      if (req.url && req.url.startsWith("/api/create-payment-intent") && req.method === "POST") {
+        let body = "";
+        req.on("data", (chunk: any) => {
+          body += chunk;
+        });
+        req.on("end", async () => {
+          try {
+            const parsed = body ? JSON.parse(body) : {};
+            const { default: handler } = await import("./api/create-payment-intent.js");
+            const mockRes = {
+              statusCode: 200,
+              setHeader(k: string, v: string) {
+                res.setHeader(k, v);
+              },
+              status(code: number) {
+                res.statusCode = code;
+                return this;
+              },
+              json(data: any) {
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify(data));
+              },
+              end() {
+                res.end();
+              },
+            };
+            req.body = parsed;
+            await handler(req, mockRes);
+          } catch (e: any) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: e?.message || "Internal server error" }));
+          }
+        });
+        return;
+      }
+      next();
+    });
+  },
+});
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -23,6 +68,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    stripeDevApiPlugin(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {

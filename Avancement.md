@@ -9,6 +9,19 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Intégration Officielle de Stripe (Cartes Bancaires, Apple Pay & Google Pay) en Mode Test ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx), [`api/create-payment-intent.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/create-payment-intent.js), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env)) :
+  - [x] **Configuration Sécurisée des Clés API Stripe** :
+    - Intégration de la clé publique (`pk_test_...`) et de la clé secrète (`sk_test_...`) fournies par l'utilisateur dans `.env` et `.env.example`.
+  - [x] **Route Serverless Sécurisée de Création d'Intention (`PaymentIntent`)** :
+    - Création du point de terminaison [`api/create-payment-intent.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/create-payment-intent.js) pour générer le `clientSecret` sans exposer la clé secrète côté client.
+    - Ajout d'un middleware de développement dans [`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts) pour exécuter l'API localement lors des tests avec `npm run dev`.
+  - [x] **Composant Stripe Elements sur-mesure (Luxury Nude)** :
+    - Création de [`StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx) avec chargement dynamique officiel de Stripe.js v3 et thème épuré sur mesure (`#C9A96E`).
+    - Prise en charge native de la saisie de carte bancaire (Visa, Mastercard, AMEX), d'Apple Pay et de Google Pay sans redirection.
+    - Affichage d'un encart d'aide en mode test avec les coordonnées de la carte de test (`4242 4242 4242 4242`).
+    - Enregistrement immédiat de la commande payée dans Supabase avec statut `"en_attente"` et notes, puis déclenchement de la notification WhatsApp.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
+
 - [x] Harmonisation Typographique du Bouton de Paiement Indisponible & Prix ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
   - [x] **Unification avec la Police Globale du Site (`Manrope` / sans-serif)** :
     - Remplacement de la classe `font-serif` (Playfair Display) par la police sans-serif standard `font-sans` partagée par l'ensemble des boutons et composants d'action du site.

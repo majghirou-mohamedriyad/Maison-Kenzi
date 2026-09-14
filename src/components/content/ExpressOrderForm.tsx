@@ -48,7 +48,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { getPrimaryImage } from "@/lib/productImages";
 import type { Parfum } from "@/types/database";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PayPalPaymentSection } from "@/components/checkout/PayPalPaymentSection";
+import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 
 export interface OrderSelectionItem {
   size: string;
@@ -337,10 +337,9 @@ const ExpressOrderForm = ({
 
       if (allItemsToOrder.length === 0) {
         toast.error("Veuillez sélectionner au moins un format ou parfum pour commander");
+        setIsSubmitting(false);
         return;
       }
-
-      setIsSubmitting(true);
 
       const randomSuffix = Math.floor(100000 + Math.random() * 900000);
       const orderNumber = `MK-${randomSuffix}`;
@@ -362,7 +361,7 @@ const ExpressOrderForm = ({
             customer_address: fullAddressText,
             total_amount: cumulativeTotalPrice,
             status: "en_attente",
-            notes: "Commande express validée en ligne",
+            notes: `Commande express validée en ligne (Stripe — Réf: ${details.paymentIntentId || "Payé"})`,
             items: allItemsToOrder,
           },
         ]);
@@ -984,13 +983,15 @@ const ExpressOrderForm = ({
             </Button>
           )}
 
-          {/* SECTION DE PAIEMENT EN LIGNE SÉCURISÉ PAYPAL & CARTE BANCAIRE */}
+          {/* SECTION DE PAIEMENT EN LIGNE SÉCURISÉ STRIPE (CARTE & APPLE PAY) */}
           <div className="pt-2">
-            <PayPalPaymentSection
+            <StripePaymentSection
               total={cumulativeTotalPrice}
+              customerName={fullName.trim()}
+              customerEmail={phone.trim() ? undefined : "client@maisonkenzi.ma"}
               isFormValid={isFormValid}
               onValidateForm={validateFormBeforePayPal}
-              onPaymentSuccess={handlePayPalPaymentSuccess}
+              onPaymentSuccess={handleStripePaymentSuccess}
             />
           </div>
 

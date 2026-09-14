@@ -42,7 +42,7 @@ import { useRef, useEffect, useMemo } from "react";
 import { useCountries } from "@/hooks/useCountries";
 import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/destinations";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PayPalPaymentSection } from "@/components/checkout/PayPalPaymentSection";
+import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 
 const Checkout = () => {
   const { t, language } = useLanguage();
@@ -151,8 +151,8 @@ const Checkout = () => {
     return true;
   };
 
-  const handlePayPalPaymentSuccess = async (details: {
-    paypalOrderId: string;
+  const handleStripePaymentSuccess = async (details: {
+    paymentIntentId: string;
     payerName?: string;
     payerEmail?: string;
   }) => {
@@ -171,7 +171,7 @@ const Checkout = () => {
       customer_address: fullAddressText,
       total_amount: total,
       status: "en_attente" as const, // Statut officiel reconnu dans l'enum maisonkenzi.order_status
-      notes: `Paiement en ligne validé (PayPal / Carte - Réf: ${details.paypalOrderId})${
+      notes: `Paiement en ligne validé (Stripe Carte / Apple Pay — Réf: ${details.paymentIntentId})${
         notes.trim() ? `\nNote client: ${notes.trim()}` : ""
       }`,
       items: items.map((item) => ({
@@ -398,9 +398,9 @@ const Checkout = () => {
                         Renseignez vos coordonnées pour l'expédition de votre colis.
                       </p>
                     </div>
-                    <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-500/20">
-                      <Lock className="w-3 h-3" />
-                      <span>Paiement en Ligne Suspendu</span>
+                    <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">
+                      <CreditCard className="w-3 h-3" />
+                      <span>Paiement Sécurisé Carte & Apple Pay</span>
                     </div>
                   </div>
 
@@ -646,13 +646,15 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* Section de Paiement Sécurisé en Ligne PayPal & Carte Bancaire */}
+                  {/* Section de Paiement Sécurisé en Ligne Stripe (Cartes & Apple Pay) */}
                   <div className="pt-2">
-                    <PayPalPaymentSection
+                    <StripePaymentSection
                       total={total}
+                      customerName={fullName.trim()}
+                      customerEmail={phone.trim() ? undefined : "client@maisonkenzi.ma"}
                       isFormValid={isFormValid}
                       onValidateForm={validateFormBeforePayment}
-                      onPaymentSuccess={handlePayPalPaymentSuccess}
+                      onPaymentSuccess={handleStripePaymentSuccess}
                     />
                   </div>
                 </div>
