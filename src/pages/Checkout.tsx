@@ -170,12 +170,20 @@ const Checkout = () => {
       customer_phone: phone.trim(),
       customer_address: fullAddressText,
       total_amount: total,
-      status: "paye" as const, // Paiement confirmé en ligne par Carte Bancaire / PayPal
+      status: "en_attente" as const, // Statut officiel reconnu dans l'enum maisonkenzi.order_status
+      notes: `Paiement en ligne validé (PayPal / Carte - Réf: ${details.paypalOrderId})${
+        notes.trim() ? `\nNote client: ${notes.trim()}` : ""
+      }`,
       items: items.map((item) => ({
+        parfum_id: item.id,
+        parfum_name: item.name,
         name: `${item.maison} — ${item.name}`,
+        maison: item.maison,
         size: SIZE_META[item.size]?.label || item.size,
         quantity: item.quantity,
+        unit_price: item.price,
         price: item.price,
+        subtotal: item.price * item.quantity,
       })),
     };
 
@@ -183,6 +191,9 @@ const Checkout = () => {
       const { error: dbError } = await supabase.from("orders").insert([orderPayload]);
       if (dbError) {
         console.error("Erreur enregistrement commande Supabase:", dbError);
+        toast.error("Erreur d'enregistrement de la commande", {
+          description: dbError.message,
+        });
       }
 
       // Enregistrement et mise à jour automatique dans la base clients

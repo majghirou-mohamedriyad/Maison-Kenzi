@@ -361,13 +361,17 @@ const ExpressOrderForm = ({
             customer_phone: phone.trim(),
             customer_address: fullAddressText,
             total_amount: cumulativeTotalPrice,
-            status: "paye", // Statut payé en ligne par Carte Bancaire / PayPal
+            status: "en_attente",
+            notes: "Commande express validée en ligne",
             items: allItemsToOrder,
           },
         ]);
 
         if (dbError) {
           console.error("Erreur enregistrement commande Supabase:", dbError);
+          toast.error("Erreur d'enregistrement de la commande", {
+            description: dbError.message,
+          });
         }
 
         // Enregistrement et mise à jour automatique dans la base clients

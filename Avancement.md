@@ -9,6 +9,17 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Résolution de l'Enregistrement des Commandes dans Supabase & Gestion Admin ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/pages/Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx)) :
+  - [x] **Correction de la Contrainte ENUM `order_status` dans Supabase** :
+    - Remplacement du statut invalide `"paye"` par le statut canonique `"en_attente"` reconnu par l'énumération PostgreSQL `maisonkenzi.order_status` ('en_attente', 'confirmee', 'livree', 'annulee').
+    - Élimination de l'erreur SQL silencieuse qui empêchait l'insertion physique de la ligne dans la table `orders`.
+  - [x] **Enrichissement des Métadonnées & Référence de Paiement** :
+    - Stockage de la référence de transaction (ex: ID PayPal, méthode de paiement) et des notes du client directement dans le champ `notes` de la commande.
+    - Structuration complète et typée de chaque article du panier dans le champ `items` (`parfum_id`, `parfum_name`, `maison`, `size`, `quantity`, `unit_price`, `subtotal`).
+  - [x] **Affichage des Notes de Paiement dans l'Espace Admin** :
+    - Ajout d'un encart dédié « Notes & Paiement » dans la modale de consultation de commande de [`Commandes.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Commandes.tsx).
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre champagne gold.
+
 - [x] Autorisation du Prix 0 € / 0 MAD dans l'Administration & Compatibilité Test Paiement ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
   - [x] **Levée de la Restriction de Prix Minimal dans le Formulaire Admin** :
     - Mise à jour de la validation du formulaire produit (`ProductModal.tsx`) pour autoriser le prix `0` (remplacement de la condition bloquante `!numPrice || numPrice <= 0` par `f.price === "" || isNaN(numPrice) || numPrice < 0`).

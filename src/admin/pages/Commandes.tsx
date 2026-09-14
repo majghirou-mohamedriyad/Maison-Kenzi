@@ -932,6 +932,13 @@ const Commandes = () => {
                       </span>
                     </div>
                   )}
+
+                  {viewingOrder.notes && (
+                    <div className="sm:col-span-2 bg-muted/40 p-2.5 rounded-lg border border-border/60">
+                      <span className="text-muted-foreground block text-[10px] font-semibold uppercase">Notes & Paiement</span>
+                      <span className="text-foreground text-xs whitespace-pre-line mt-0.5 block">{viewingOrder.notes}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
