@@ -1,4 +1,4 @@
-# NexPoint / Maison-Kenzi — Suivi d'Avancement du Projet
+# Maison-Kenzi — Suivi d'Avancement du Projet
 
 ## État d'Avancement Global
 
