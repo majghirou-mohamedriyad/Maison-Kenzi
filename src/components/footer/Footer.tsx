@@ -1,3 +1,12 @@
+/**
+ * Composant Pied de Page (Footer) — Maison Kenzi
+ *
+ * Présente l'identité de prestige de la maison, l'accès dynamique aux collections
+ * olfactives bilingues, les liens d'assistance client, les coordonnées directes
+ * (WhatsApp, Instagram) et les mentions légales.
+ * Conforme au Luxury Nude Design System et à la règle stricte zéro emoji.
+ */
+
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-react";
@@ -17,7 +26,7 @@ const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 );
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { settings } = useAppSettings();
   const categories = useCategories();
   const activeCategories = useMemo(
@@ -27,7 +36,10 @@ const Footer = () => {
 
   const rawPhone = settings.whatsapp_phone || settings.store_phone || "212652535301";
   const waNumber = rawPhone.replace(/[^0-9]/g, "") || "212652535301";
-  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.")}`;
+  const defaultWaMsg = language === "en"
+    ? "Hello Maison Kenzi, I would like more information about your fragrances."
+    : "Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.";
+  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(t("footer.whatsappMessage", defaultWaMsg))}`;
   const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
 
   return (
@@ -40,7 +52,7 @@ const Footer = () => {
               to="/"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="inline-block transition-transform hover:scale-105 cursor-pointer"
-              aria-label="Maison Kenzi - Accueil"
+              aria-label={t("footer.homeAria", "Maison Kenzi - Accueil")}
             >
               <img
                 src="/mk-logo-light-removebg.png"
@@ -61,7 +73,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Col 2: Collections Links (Catégories Dynamiques) */}
+          {/* Col 2: Collections Links (Catégories Dynamiques Bilingues) */}
           <div>
             <h4 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
               {t("footer.collections", "Collections")}
@@ -83,16 +95,19 @@ const Footer = () => {
                     c.slug.toLowerCase() !== "all" &&
                     c.slug.toLowerCase() !== "toutes"
                 )
-                .map((cat) => (
-                  <li key={cat.id}>
-                    <Link
-                      to={`/collection/${cat.slug}`}
-                      className="hover:text-primary transition-colors"
-                    >
-                      {cat.name}
-                    </Link>
-                  </li>
-                ))}
+                .map((cat) => {
+                  const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
+                  return (
+                    <li key={cat.id}>
+                      <Link
+                        to={`/collection/${cat.slug}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {catName}
+                      </Link>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
 
@@ -166,9 +181,18 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom copyright bar */}
+        {/* Bottom copyright & legal bar */}
         <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs font-light text-muted-foreground">
           <p>© {new Date().getFullYear()} Maison Kenzi. {t("footer.allRightsReserved", "Tous droits réservés.")}</p>
+          <div className="flex items-center gap-4 text-[11px]">
+            <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+              {t("footer.privacyPolicy", "Politique de Confidentialité")}
+            </Link>
+            <span>•</span>
+            <Link to="/terms-of-service" className="hover:text-primary transition-colors">
+              {t("footer.termsOfService", "Conditions Générales de Vente")}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

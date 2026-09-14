@@ -3,11 +3,23 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Correction de la Création et Modification des Catégories (Résolution de ReferenceError counts & Persistance Supabase Résiliente) — 100% Déployé & Zéro Emoji
+- **Statut général** : Traduction Intégrale Bilingue (FR/EN) du Footer & Internationalisation des Catégories — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Traduction Intégrale Bilingue (FR / EN) du Pied de Page (Footer) ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Alignement et Harmonisation des Clés de Traduction (`translations.ts`)** :
+    - Rétablissement et synchronisation de toutes les clés de traduction du footer pour l'anglais et le français (`brandSubtitle`, `brandDescription`, `collections`, `allPerfumes`, `information`, `aboutUs`, `trackOrder`, `customerService`, `deliveryNotice`, `securePayment`, `contactUs`, `whatsappDirect`, `officialInstagram`, `allRightsReserved`, `privacyPolicy`, `termsOfService`, `whatsappMessage`).
+    - Conservation des clés préexistantes comme alias pour une rétrocompatibilité absolue.
+  - [x] **Traduction Dynamique des Catégories & du Message WhatsApp** :
+    - Remplacement de l'affichage statique `{cat.name}` par un affichage bilingue conditionnel `{language === "en" && cat.name_en ? cat.name_en : cat.name}`.
+    - Internationalisation du message d'accueil prérempli pour WhatsApp (`Hello Maison Kenzi, I would like more information about your fragrances.`).
+  - [x] **Enrichissement de la Barre Légale Inférieure & Intégration des Routes** :
+    - Ajout des liens cliquables discrets vers la Politique de Confidentialité et les Conditions Générales de Vente.
+    - Déclaration formelle des routes correspondantes (`/privacy-policy` et `/terms-of-service`) dans `App.tsx`.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : En-tête descriptif en français, icônes vectorielles `lucide-react`, palette champagne gold.
 
 - [x] Correction de la Création et Modification des Catégories ([`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts)) :
   - [x] **Élimination de l'Erreur Critique `ReferenceError: counts is not defined`** :

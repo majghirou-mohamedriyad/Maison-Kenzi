@@ -27,6 +27,8 @@ import NotFound from "./pages/NotFound";
 import OrderTracking from "./pages/OrderTracking";
 import ServiceClient from "./pages/about/CustomerCare";
 import About from "./pages/About";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import AdminLogin from "./admin/AdminLogin";
 import AdminGuard from "./admin/AdminGuard";
 import AdminLayout from "./admin/AdminLayout";
@@ -61,6 +63,10 @@ const App = () => (
                 <Route path="/contact" element={<ServiceClient />} />
                 <Route path="/suivi-commande" element={<OrderTracking />} />
                 <Route path="/tracking" element={<OrderTracking />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/conditions-generales" element={<TermsOfService />} />
 
                 {/* Admin */}
                 <Route path="/admin/login" element={<AdminLogin />} />
