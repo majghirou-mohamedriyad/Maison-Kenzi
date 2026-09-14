@@ -1,12 +1,12 @@
 /**
- * Page Détail Parfum — Maison Kenzi
+ * Page Fiche Détail Produit — Maison Kenzi
  *
- * Présentation immersive haute parfumerie d'un parfum avec affichage de la pyramide
- * olfactive, des saisons d'utilisation idéales, de la contenance et du formulaire de commande express.
+ * Présentation immersive haute parfumerie et soins cosmétiques avec fil d'Ariane dynamique
+ * contextuel, pyramide olfactive, contenances et formulaire de commande express.
  */
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import ProductImage from "@/components/ui/ProductImage";
@@ -58,14 +58,65 @@ import {
   getProductSubtitle,
   getProductNotes,
 } from "@/lib/productLocalization";
-import { isParfumProduct } from "@/lib/productCategories";
+import { isParfumProduct, isParfumInCategory } from "@/lib/productCategories";
+import { useCategories } from "@/store/useCategoryStore";
 
 const ParfumDetail = () => {
   const { language, t } = useLanguage();
   const { parfumId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const categories = useCategories();
   const { data: parfum, loading, error } = useParfum(parfumId);
   const { addItem, openCart } = useCart();
+
+  // Détermination intelligente de la catégorie parente pour le fil d'Ariane
+  const parentCategory = useMemo(() => {
+    if (!parfum) return null;
+
+    // 1. Si l'utilisateur arrive depuis une collection spécifique (state react-router)
+    const fromSlug = (location.state as { fromCategory?: string } | null)?.fromCategory;
+    if (fromSlug && fromSlug !== "all" && fromSlug !== "toutes") {
+      const foundFromState = categories.find(
+        (c) => c.slug.toLowerCase() === fromSlug.toLowerCase()
+      );
+      if (foundFromState && isParfumInCategory(parfum, foundFromState.slug)) {
+        return foundFromState;
+      }
+    }
+
+    // 2. Recherche parmi les catégories actives associées à ce produit
+    const activeCats = categories.filter(
+      (c) => c.is_active && c.slug.toLowerCase() !== "all" && c.slug.toLowerCase() !== "toutes"
+    );
+
+    // Priorité aux catégories spécifiques (ex: cosmétiques, artisanat, orientaux...)
+    const matched = activeCats.find((c) => isParfumInCategory(parfum, c.slug));
+    if (matched) return matched;
+
+    // Si le produit a une catégorie définie directement dans son enregistrement
+    const rawCategories = (parfum.categories || (parfum.category ? [parfum.category] : [])).map((s) =>
+      s.toLowerCase().trim()
+    );
+    const directMatch = activeCats.find((c) => rawCategories.includes(c.slug.toLowerCase()));
+    if (directMatch) return directMatch;
+
+    return null;
+  }, [parfum, categories, location.state]);
+
+  const breadcrumbCategoryName = useMemo(() => {
+    if (parentCategory) {
+      return (language === "en" && parentCategory.name_en) ? parentCategory.name_en : parentCategory.name;
+    }
+    return t.nav?.catalog || (language === "en" ? "Catalog" : "Catalogue");
+  }, [parentCategory, language, t]);
+
+  const breadcrumbCategoryLink = useMemo(() => {
+    if (parentCategory) {
+      return `/collection/${parentCategory.slug}`;
+    }
+    return "/collection/all";
+  }, [parentCategory]);
 
   const displayName = useMemo(() => getProductName(parfum, language), [parfum, language]);
   const displayDescription = useMemo(() => getProductDescription(parfum, language), [parfum, language]);
@@ -312,8 +363,8 @@ const ParfumDetail = () => {
             <BreadcrumbList className="text-[10px] sm:text-xs">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/" className="text-muted-foreground hover:text-primary">
-                    Accueil
+                  <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+                    {t.nav?.home || (language === "en" ? "Home" : "Accueil")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -321,10 +372,10 @@ const ParfumDetail = () => {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link
-                    to="/collection/all"
-                    className="text-muted-foreground hover:text-primary"
+                    to={breadcrumbCategoryLink}
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    Catalogue
+                    {breadcrumbCategoryName}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>

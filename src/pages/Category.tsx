@@ -787,6 +787,7 @@ const Collection = () => {
                     <Link
                       key={p.id}
                       to={`/parfum/${p.id}`}
+                      state={{ fromCategory: filter }}
                       className={`block group relative transition-all duration-500 hover:-translate-y-1 text-left ${outOfStock ? "opacity-75" : ""
                         }`}
                     >

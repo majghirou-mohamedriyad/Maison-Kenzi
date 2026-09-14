@@ -3,11 +3,22 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Harmonisation Typographique & État Grisé Dynamique des Liens du Footer — 100% Déployé & Zéro Emoji
+- **Statut général** : Fil d'Ariane Dynamique avec Catégorie Parente dans la Fiche Produit — 100% Déployé & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Fil d'Ariane Dynamique avec Catégorie Parente dans la Page Produit ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx)) :
+  - [x] **Remplacement du « Catalogue » Figé par la Catégorie Parente Réelle** :
+    - Remplacement de l'étape générique statique `Accueil -> Catalogue -> [Produit]` par la catégorie d'origine exacte : ex. `Accueil -> Produits Cosmétiques -> Bio-Collagen Deep Overnight Hydrogel Mask`.
+    - Détection intelligente de la catégorie parente via `location.state?.fromCategory` lors de la navigation depuis une collection, complétée par un résolveur automatique via `useCategories()` et `isParfumInCategory(parfum, cat.slug)`.
+  - [x] **Redirection et Internationalisation Bilingue du Fil d'Ariane** :
+    - Le lien intermédiaire redirige fidèlement vers la collection d'origine (`/collection/${category.slug}`).
+    - Affichage localisé dynamique du nom de la catégorie (`name_en` / `name`) et du premier niveau (`Accueil` / `Home` via `t.nav.home`).
+  - [x] **Transmission de Contexte depuis le Catalogue ([`Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx))** :
+    - Ajout de `state={{ fromCategory: filter }}` sur les cartes produits pour préserver le parcours utilisateur lors de la consultation.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
 - [x] Harmonisation Typographique & État Grisé Dynamique des Liens du Footer ([`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
   - [x] **Désactivation & État Grisé Dynamique selon l'URL Active (`useLocation`)** :
