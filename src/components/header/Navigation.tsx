@@ -37,6 +37,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
+import { isParfumInCategory } from "@/lib/productCategories";
 
 const Navigation = () => {
   const { t } = useLanguage();
@@ -316,9 +317,9 @@ const Navigation = () => {
                               <span className="text-xs font-semibold group-hover:text-primary transition-colors truncate">
                                 {cat.name}
                               </span>
-                              {cat.is_coming_soon && (
+                              {cat.is_coming_soon && !allParfums.some((p) => isParfumInCategory(p, cat.slug)) && (
                                 <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full font-medium">
-                                  À venir
+                                  {t.catalog?.comingSoon || "À venir"}
                                 </span>
                               )}
                             </div>

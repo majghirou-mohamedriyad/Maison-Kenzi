@@ -226,7 +226,12 @@ const CategoriesAdmin = () => {
     try {
       let count = 0;
       for (const id of selectedCatIds) {
-        await updateCategory(id, { is_active: active });
+        const catObj = categories.find((c) => (c.id || c.slug) === id);
+        const pCount = catObj ? (counts[catObj.slug] || 0) : 0;
+        await updateCategory(id, {
+          is_active: active,
+          ...(active && pCount > 0 ? { is_coming_soon: false } : {}),
+        });
         count++;
       }
       toast.success(active ? "Catégories activées" : "Catégories masquées", {
@@ -322,7 +327,9 @@ const CategoriesAdmin = () => {
     setImages(initialImages);
     setGender(cat.gender || "");
     setIsActive(cat.is_active);
-    setIsComingSoon(Boolean(cat.is_coming_soon));
+    const catProductsCount = counts[cat.slug] || 0;
+    // Si la catégorie a déjà des produits, elle est disponible (pas "À venir")
+    setIsComingSoon(catProductsCount > 0 ? false : Boolean(cat.is_coming_soon));
     setErrors({});
     setModalOpen(true);
   };
@@ -434,6 +441,8 @@ const CategoriesAdmin = () => {
 
     setIsSaving(true);
     const primaryImage = images.length > 0 ? images[0] : undefined;
+    const catProductsCount = editingCat ? (counts[editingCat.slug] || 0) : (counts[finalSlug] || 0);
+    const effectiveComingSoon = catProductsCount > 0 ? false : isComingSoon;
 
     try {
       if (editingCat) {
@@ -448,7 +457,7 @@ const CategoriesAdmin = () => {
           images: images,
           gender: gender || undefined,
           is_active: isActive,
-          is_coming_soon: isComingSoon,
+          is_coming_soon: effectiveComingSoon,
         });
 
         if (res.error) {
@@ -468,7 +477,7 @@ const CategoriesAdmin = () => {
           images: images,
           gender: gender || undefined,
           is_active: isActive,
-          is_coming_soon: isComingSoon,
+          is_coming_soon: effectiveComingSoon,
           order_index: categories.length + 1,
         });
 
@@ -751,7 +760,7 @@ const CategoriesAdmin = () => {
                         {cat.is_active ? "Actif" : "Masqué"}
                       </span>
 
-                      {cat.is_coming_soon && (
+                      {cat.is_coming_soon && count === 0 && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md bg-[#C9A96E]/90 text-[#121110] border border-[#C9A96E]/40">
                           <Clock className="w-2.5 h-2.5" /> À venir
                         </span>
@@ -1016,7 +1025,7 @@ const CategoriesAdmin = () => {
                             />
                             {cat.is_active ? "Actif" : "Masqué"}
                           </span>
-                          {cat.is_coming_soon && (
+                          {cat.is_coming_soon && count === 0 && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30">
                               <Clock className="w-2.5 h-2.5" /> À venir
                             </span>
@@ -1258,16 +1267,31 @@ const CategoriesAdmin = () => {
                     <Switch checked={isActive} onCheckedChange={setIsActive} />
                   </label>
 
-                  <label className="flex items-center justify-between p-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer select-none">
-                    <div>
-                      <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#C9A96E]" />
-                        <span>À venir / Teaser</span>
-                      </div>
-                      <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">Bientôt disponible</div>
-                    </div>
-                    <Switch checked={isComingSoon} onCheckedChange={setIsComingSoon} />
-                  </label>
+                  {(() => {
+                    const editCatCount = editingCat ? (counts[editingCat.slug] || 0) : 0;
+                    return (
+                      <label className={`flex items-center justify-between p-2.5 rounded-xl border select-none ${
+                        editCatCount > 0
+                          ? "bg-muted/40 border-border/50 opacity-70 cursor-not-allowed"
+                          : "bg-[#FAF7F2] dark:bg-[#1C1A18] border-[#C9A96E]/30 bg-[#C9A96E]/5 cursor-pointer"
+                      }`}>
+                        <div>
+                          <div className="text-xs font-semibold text-[#1A1816] dark:text-[#FAF7F2] flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-[#C9A96E]" />
+                            <span>À venir / Teaser</span>
+                          </div>
+                          <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                            {editCatCount > 0 ? `Contient ${editCatCount} produit(s) (automatiquement disponible)` : "Bientôt disponible"}
+                          </div>
+                        </div>
+                        <Switch
+                          checked={editCatCount > 0 ? false : isComingSoon}
+                          disabled={editCatCount > 0}
+                          onCheckedChange={setIsComingSoon}
+                        />
+                      </label>
+                    );
+                  })()}
                 </div>
               </div>
 

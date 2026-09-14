@@ -129,6 +129,19 @@ const Collection = () => {
     [adminCategories]
   );
 
+  const { data: parfums, loading, error } = useParfums();
+
+  // Calcul du nombre de produits réels par catégorie/collection
+  const counts = useMemo(() => {
+    const map: Record<string, number> = {
+      Toutes: parfums.length,
+    };
+    activeAdminCategories.forEach((cat) => {
+      map[cat.slug] = parfums.filter((p) => isParfumInCategory(p, cat.slug)).length;
+    });
+    return map;
+  }, [parfums, activeAdminCategories]);
+
   const filterOptions = useMemo<FilterOption[]>(() => {
     const options: FilterOption[] = [
       { key: "Toutes", label: t.catalog.allCollections, shortLabel: t.catalog.allCollections, icon: Grid },
@@ -145,6 +158,9 @@ const Collection = () => {
         else if (s.includes("antique")) icon = Crown;
 
         const displayName = (language === "en" && cat.name_en) ? cat.name_en : cat.name;
+        const productCount = counts[cat.slug] || 0;
+        // Une collection contenant déjà des produits n'est jamais considérée "À venir"
+        const isComingSoon = Boolean(cat.is_coming_soon) && productCount === 0;
 
         options.push({
           key: cat.slug,
@@ -152,15 +168,13 @@ const Collection = () => {
           shortLabel: displayName,
           icon,
           isGold: s.includes("pack"),
-          isComingSoon: Boolean(cat.is_coming_soon),
+          isComingSoon,
         });
       }
     });
 
     return options;
-  }, [activeAdminCategories, language, t]);
-
-  const { data: parfums, loading, error } = useParfums();
+  }, [activeAdminCategories, counts, language, t]);
 
   const isParfumCategory = filter.toLowerCase() === "parfums" || filter.toLowerCase() === "parfum";
 
@@ -181,11 +195,15 @@ const Collection = () => {
     [activeAdminCategories, filter]
   );
 
+  const currentCategoryCount = counts[currentCategoryObj?.slug || ""] || 0;
+  // Si la collection active contient des produits, masquer le tag "À venir"
+  const isCurrentCategoryComingSoon = Boolean(currentCategoryObj?.is_coming_soon) && currentCategoryCount === 0;
+
   const hero = collectionHeroInfo(
     filter,
     (language === "en" && currentCategoryObj?.name_en) ? currentCategoryObj.name_en : currentCategoryObj?.name,
     (language === "en" && currentCategoryObj?.description_en) ? currentCategoryObj.description_en : currentCategoryObj?.description,
-    Boolean(currentCategoryObj?.is_coming_soon)
+    isCurrentCategoryComingSoon
   );
 
   // Filter and sort products
@@ -244,17 +262,6 @@ const Collection = () => {
 
     return list;
   }, [filter, parfums, activeAdminCategories, genderFilter, onlyInStock, localSearch, sortBy, language]);
-
-  // Compute counts for each filter
-  const counts = useMemo(() => {
-    const map: Record<string, number> = {
-      Toutes: parfums.length,
-    };
-    activeAdminCategories.forEach((cat) => {
-      map[cat.slug] = parfums.filter((p) => isParfumInCategory(p, cat.slug)).length;
-    });
-    return map;
-  }, [parfums, activeAdminCategories]);
 
   const currentOption = filterOptions.find((o) => o.key.toLowerCase() === filter.toLowerCase()) || filterOptions[0];
   const CurrentIcon = currentOption.icon;
@@ -913,7 +920,7 @@ const Collection = () => {
               </div>
 
               {filteredAndSorted.length === 0 && (
-                currentCategoryObj?.is_coming_soon ? (
+                isCurrentCategoryComingSoon ? (
                   <div className="relative overflow-hidden rounded-3xl border border-[#C9A96E]/30 bg-gradient-to-b from-card/90 via-card/50 to-card/90 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-xl space-y-6 my-8">
                     {/* Halo d'ambiance */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#C9A96E]/10 blur-2xl rounded-full pointer-events-none" />

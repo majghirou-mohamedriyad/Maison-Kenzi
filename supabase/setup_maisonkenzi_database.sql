@@ -88,6 +88,12 @@ ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS weight_unit TEXT DEFAUL
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_value TEXT;
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_unit TEXT DEFAULT 'ml';
 
+-- Assurer la présence des colonnes étendues pour les catégories
+ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS is_coming_soon BOOLEAN DEFAULT false;
+ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS description_en TEXT;
+ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS gender TEXT;
+
 -- Table: app_settings (Configuration de la Maison)
 CREATE TABLE IF NOT EXISTS maisonkenzi.app_settings (
     id BOOLEAN PRIMARY KEY DEFAULT true,

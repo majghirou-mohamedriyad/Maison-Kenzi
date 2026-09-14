@@ -3,11 +3,21 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-14
-- **Statut général** : Affichage Dynamique Bilingue (FR/EN) des Produits Intégré dans Toute l'Application — 100% Fonctionnel & Zéro Emoji
+- **Statut général** : Gestion Dynamique du Statut « À venir / Coming soon » Déployée (Disponibilité Automatique si Produits Présents) — 100% Fonctionnel & Zéro Emoji
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Désactivation Dynamique du Tag « À Venir / Coming Soon » pour les Collections Ayant des Produits ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
+  - [x] **Règle Métier de Disponibilité Automatique** :
+    - Dès qu'une collection contient un ou plusieurs produits (`productCount > 0`), le badge « À venir / Coming soon » est automatiquement masqué et désactivé, tant dans les onglets de filtres, le bandeau d'en-tête (hero) et l'état vide que dans le menu de navigation et la section d'accueil.
+  - [x] **Expérience Administrateur Cohérente & Sécurisée** :
+    - Dans la modale de modification des catégories, si la collection contient déjà des produits, le commutateur « À venir / Teaser » est désactivé avec un indicateur clair (`Contient X produit(s) (automatiquement disponible)`).
+    - Lors de l'enregistrement ou de l'activation groupée, `is_coming_soon` est automatiquement réinitialisé à `false` si des produits lui sont rattachés.
+  - [x] **Persistance SQL Supabase Complète** :
+    - Ajout des colonnes `is_coming_soon`, `name_en`, `description_en` et `gender` dans le script SQL de structure de `maisonkenzi.categories`.
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre `#C9A96E`.
 
 - [x] Affichage Dynamique Bilingue (FR / EN) des Informations Produits ([`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/components/ui/QuickAddToCartButton.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/QuickAddToCartButton.tsx), [`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)) :
   - [x] **Rétablissement de la Transmission des Champs Traduits** :

@@ -8,6 +8,8 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Clock } from "lucide-react";
 import { useCategories } from "@/store/useCategoryStore";
+import { useParfums } from "@/hooks/useParfums";
+import { isParfumInCategory } from "@/lib/productCategories";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Card = ({
@@ -84,8 +86,9 @@ const Card = ({
 );
 
 const FiftyFiftySection = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const categories = useCategories();
+  const { data: allParfums } = useParfums();
   const activeCategories = categories.filter((c) => c.is_active);
 
   // Si aucune catégorie n'est créée en base, masquer proprement la section
@@ -110,19 +113,26 @@ const FiftyFiftySection = () => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {activeCategories.map((cat) => (
-          <Card
-            key={cat.id}
-            title={cat.name}
-            text={cat.description}
-            href={`/collection/${cat.slug}`}
-            tag={cat.name}
-            image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : undefined)}
-            isComingSoon={cat.is_coming_soon}
-            discoverText={cat.is_coming_soon ? t.univers.discover : t.common.explore}
-            comingSoonText={t.univers.comingSoon}
-          />
-        ))}
+        {activeCategories.map((cat) => {
+          const hasProducts = allParfums.some((p) => isParfumInCategory(p, cat.slug));
+          const effectiveComingSoon = Boolean(cat.is_coming_soon) && !hasProducts;
+          const displayName = (language === "en" && cat.name_en) ? cat.name_en : cat.name;
+          const displayDesc = (language === "en" && cat.description_en) ? cat.description_en : cat.description;
+
+          return (
+            <Card
+              key={cat.id}
+              title={displayName}
+              text={displayDesc}
+              href={`/collection/${cat.slug}`}
+              tag={displayName}
+              image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : undefined)}
+              isComingSoon={effectiveComingSoon}
+              discoverText={effectiveComingSoon ? t.univers.discover : t.common.explore}
+              comingSoonText={t.univers.comingSoon}
+            />
+          );
+        })}
       </div>
     </section>
   );
