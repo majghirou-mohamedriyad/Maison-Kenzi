@@ -39,10 +39,12 @@ export const PayPalPaymentSection = ({
       <Button
         type="button"
         disabled={true}
-        className="w-full h-12 sm:h-13 rounded-2xl bg-muted text-muted-foreground cursor-not-allowed opacity-60 font-serif font-bold text-sm tracking-wide shadow-none flex items-center justify-center gap-2.5 select-none"
+        className="w-full h-12 sm:h-13 rounded-2xl bg-muted/90 text-muted-foreground cursor-not-allowed opacity-75 font-sans font-medium text-xs sm:text-sm tracking-normal shadow-none flex items-center justify-center gap-2 select-none border border-border/60"
       >
-        <Lock className="w-4 h-4" />
-        <span>Paiement Indisponible — {formatMAD(total)}</span>
+        <Lock className="w-4 h-4 text-muted-foreground/80 shrink-0" />
+        <span className="font-medium">Paiement Indisponible</span>
+        <span className="text-muted-foreground/40">•</span>
+        <span className="font-bold text-foreground/80 tracking-tight">{formatMAD(total)}</span>
       </Button>
 
       {/* Badges de Réassurance */}

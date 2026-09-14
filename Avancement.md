@@ -9,6 +9,12 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Harmonisation Typographique du Bouton de Paiement Indisponible & Prix ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx)) :
+  - [x] **Unification avec la Police Globale du Site (`Manrope` / sans-serif)** :
+    - Remplacement de la classe `font-serif` (Playfair Display) par la police sans-serif standard `font-sans` partagée par l'ensemble des boutons et composants d'action du site.
+    - Formatage soigné du texte « Paiement Indisponible » et du montant associé avec une hiérarchie visuelle équilibrée (`font-medium` pour le statut, séparateur discret, et `font-bold` pour le prix formaté).
+  - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette sobre champagne gold.
+
 - [x] Suppression Intégrale de PayPal & Désactivation du Paiement en Ligne ([`src/components/checkout/PayPalPaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/PayPalPaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`.env`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.env)) :
   - [x] **Suppression des Scripts et Dépendances PayPal** :
     - Élimination complète du chargeur dynamique du SDK PayPal, des boutons de paiement et de toute référence d'API.
