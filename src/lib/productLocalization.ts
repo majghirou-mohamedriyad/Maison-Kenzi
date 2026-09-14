@@ -77,3 +77,49 @@ export const getProductNotes = (p: AnyProduct, language: string): string => {
     ...((p as any)?.notes_fond || []),
   ].filter(Boolean).join(" • ");
 };
+
+/**
+ * Traduit le genre d'un parfum selon la langue active (FR / EN)
+ */
+export const getProductGender = (gender?: string | null, language: string = "fr"): string => {
+  if (!gender || typeof gender !== "string") return "";
+  const g = gender.toLowerCase().trim();
+
+  if (language === "en") {
+    if (g === "homme" || g === "men" || g === "man") return "Men";
+    if (g === "femme" || g === "women" || g === "woman") return "Women";
+    if (g === "mixte" || g === "unisexe" || g === "unisex") return "Unisex";
+    return gender;
+  }
+
+  // Français par défaut
+  if (g === "homme" || g === "men" || g === "man") return "Homme";
+  if (g === "femme" || g === "women" || g === "woman") return "Femme";
+  if (g === "mixte" || g === "unisexe" || g === "unisex") return "Mixte";
+  return gender;
+};
+
+/**
+ * Traduit le nom d'une saison selon la langue active (FR / EN)
+ */
+export const getSeasonLabel = (seasonName?: string | null, language: string = "fr"): string => {
+  if (!seasonName || typeof seasonName !== "string") return "";
+  const norm = seasonName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+  if (language === "en") {
+    if (norm.includes("print")) return "Spring";
+    if (norm.includes("ete")) return "Summer";
+    if (norm.includes("auto")) return "Autumn";
+    if (norm.includes("hiv")) return "Winter";
+    if (norm.includes("toute") || norm.includes("all")) return "All Seasons";
+    return seasonName;
+  }
+
+  // Français par défaut
+  if (norm.includes("print")) return "Printemps";
+  if (norm.includes("ete")) return "Été";
+  if (norm.includes("auto")) return "Automne";
+  if (norm.includes("hiv")) return "Hiver";
+  if (norm.includes("toute") || norm.includes("all")) return "Toutes Saisons";
+  return seasonName;
+};

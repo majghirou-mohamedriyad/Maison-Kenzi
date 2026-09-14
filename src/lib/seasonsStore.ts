@@ -120,14 +120,28 @@ export const getParfumSeasons = (p?: {
 };
 
 /**
- * Récupère la métadonnée et l'icône d'une saison
+ * Récupère la métadonnée et l'icône d'une saison selon la langue active
  */
-export const getSeasonMeta = (seasonName: string): SeasonMeta => {
+export const getSeasonMeta = (seasonName: string, language: string = "fr"): SeasonMeta => {
   const norm = (seasonName || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-  if (norm.includes("print")) return SEASON_REGISTRY.printemps;
-  if (norm.includes("ete")) return SEASON_REGISTRY.ete;
-  if (norm.includes("auto")) return SEASON_REGISTRY.automne;
-  if (norm.includes("hiv")) return SEASON_REGISTRY.hiver;
+  const isEn = language === "en";
+
+  if (norm.includes("print")) {
+    return { key: "printemps", label: isEn ? "Spring" : "Printemps", icon: Leaf };
+  }
+  if (norm.includes("ete")) {
+    return { key: "ete", label: isEn ? "Summer" : "Été", icon: Sun };
+  }
+  if (norm.includes("auto")) {
+    return { key: "automne", label: isEn ? "Autumn" : "Automne", icon: Wind };
+  }
+  if (norm.includes("hiv")) {
+    return { key: "hiver", label: isEn ? "Winter" : "Hiver", icon: Snowflake };
+  }
+  if (norm.includes("toute") || norm.includes("all")) {
+    return { key: "toutes saisons", label: isEn ? "All Seasons" : "Toutes Saisons", icon: Sparkles };
+  }
+
   return {
     key: norm,
     label: seasonName,

@@ -57,6 +57,7 @@ import {
   getProductDescription,
   getProductSubtitle,
   getProductNotes,
+  getProductGender,
 } from "@/lib/productLocalization";
 import { isParfumProduct, isParfumInCategory } from "@/lib/productCategories";
 import { useCategories } from "@/store/useCategoryStore";
@@ -559,11 +560,11 @@ const ParfumDetail = () => {
                   {isParfum && (
                     <div className="space-y-1.5">
                       <span className="text-[10px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" /> Saisons
+                        <Calendar className="w-3.5 h-3.5" /> {language === "en" ? "Seasons" : "Saisons"}
                       </span>
                       <div className="flex flex-wrap gap-1.5 pt-0.5">
                         {getParfumSeasons(parfum).map((season) => {
-                          const meta = getSeasonMeta(season);
+                          const meta = getSeasonMeta(season, language);
                           const IconComp = meta.icon;
                           return (
                             <span
@@ -649,13 +650,13 @@ const ParfumDetail = () => {
                   {/* Genre réservé exclusivement aux parfums */}
                   {isParfum && parfum.gender && (
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full border border-border/60 font-medium">
-                      {parfum.gender}
+                      {getProductGender(parfum.gender, language)}
                     </span>
                   )}
 
                   {parfum.is_new && (
                     <span className="text-[10px] uppercase tracking-wider text-primary-foreground bg-primary px-2.5 py-0.5 rounded-full font-medium shadow-xs animate-badge-glow">
-                      Nouveau
+                      {language === "en" ? "New" : "Nouveau"}
                     </span>
                   )}
 
@@ -680,7 +681,7 @@ const ParfumDetail = () => {
 
                   {/* Tags Saisons d'utilisation réservés exclusivement aux Parfums */}
                   {isParfum && getParfumSeasons(parfum).map((season) => {
-                    const meta = getSeasonMeta(season);
+                    const meta = getSeasonMeta(season, language);
                     const IconComp = meta.icon;
                     return (
                       <span

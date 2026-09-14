@@ -39,6 +39,7 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
 import { isParfumInCategory } from "@/lib/productCategories";
 import { getParfumUrl } from "@/lib/productUrl";
+import { getProductGender, getProductName } from "@/lib/productLocalization";
 
 const Navigation = () => {
   const { t, language } = useLanguage();
@@ -543,10 +544,10 @@ const Navigation = () => {
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium truncate">
-                          {product.maison} · {product.gender}
+                          {product.maison} · {getProductGender(product.gender, language)}
                         </p>
                         <h4 className="font-serif text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                          {product.name}
+                          {getProductName(product, language)}
                         </h4>
                       </div>
                       <div className="text-right shrink-0">

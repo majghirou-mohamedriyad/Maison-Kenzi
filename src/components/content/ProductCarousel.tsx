@@ -18,6 +18,7 @@ import {
   getProductName,
   getProductDescription,
   getProductSubtitle,
+  getProductGender,
 } from "@/lib/productLocalization";
 import { getParfumUrl } from "@/lib/productUrl";
 
@@ -138,11 +139,11 @@ const ProductCarousel = () => {
                   <div className="flex items-center flex-wrap gap-1 mt-1.5 mb-1">
                     {p.gender && (
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary/90 border border-border/50 px-2 py-0.5 rounded-full font-medium">
-                        {p.gender}
+                        {getProductGender(p.gender, language)}
                       </span>
                     )}
                     {getParfumSeasons(p).map((season) => {
-                      const meta = getSeasonMeta(season);
+                      const meta = getSeasonMeta(season, language);
                       const SeasonIconComp = meta.icon;
                       return (
                         <span

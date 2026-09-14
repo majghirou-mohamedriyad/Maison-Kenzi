@@ -48,6 +48,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { getPrimaryImage } from "@/lib/productImages";
 import type { Parfum } from "@/types/database";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getProductGender, getProductName } from "@/lib/productLocalization";
 import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 
 export interface OrderSelectionItem {
@@ -95,7 +96,7 @@ const ExpressOrderForm = ({
   onAddToCart,
   outOfStock = false,
 }: ExpressOrderFormProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { settings } = useAppSettings();
   const { data: parfums = [] } = useParfums();
@@ -1055,10 +1056,10 @@ const ExpressOrderForm = ({
                         {selectedAddParfum.maison}
                       </span>
                       <h4 className="font-serif font-bold text-sm text-foreground truncate">
-                        {selectedAddParfum.name}
+                        {getProductName(selectedAddParfum, language)}
                       </h4>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {selectedAddParfum.category || selectedAddParfum.gender}
+                        {selectedAddParfum.category || getProductGender(selectedAddParfum.gender, language)}
                       </p>
                     </div>
                   </div>
@@ -1066,7 +1067,7 @@ const ExpressOrderForm = ({
                   {/* Choix du format */}
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-semibold text-foreground uppercase tracking-wider block">
-                      Format souhaité :
+                      {language === "en" ? "Desired format :" : "Format souhaité :"}
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {selectedAddParfum.price_5ml > 0 && (
@@ -1189,20 +1190,20 @@ const ExpressOrderForm = ({
                             {parfumItem.maison}
                           </span>
                           <h5 className="font-serif font-bold text-xs text-foreground truncate group-hover:text-primary transition-colors">
-                            {parfumItem.name}
+                            {getProductName(parfumItem, language)}
                           </h5>
                           <span className="text-[10px] text-muted-foreground">
-                            {parfumItem.gender}
+                            {getProductGender(parfumItem.gender, language)}
                           </span>
                         </div>
                       </div>
 
                       <div className="text-right shrink-0 pl-2">
                         <span className="text-xs font-bold text-primary block">
-                          À partir de {formatMAD(parfumItem.price_5ml || parfumItem.price_10ml)}
+                          {language === "en" ? "From " : "À partir de "}{formatMAD(parfumItem.price_5ml || parfumItem.price_10ml)}
                         </span>
                         <span className="text-[10px] text-muted-foreground underline group-hover:text-foreground">
-                          Sélectionner
+                          {language === "en" ? "Select" : "Sélectionner"}
                         </span>
                       </div>
                     </button>
