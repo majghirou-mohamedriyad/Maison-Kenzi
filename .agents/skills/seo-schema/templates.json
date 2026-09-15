@@ -1,0 +1,252 @@
+{
+  "templates": [
+    {
+      "type": "VideoObject",
+      "description": "Video content pages with thumbnails, duration, and playback URLs. Enables video rich results in Google Search.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "[Video Title]",
+        "description": "[Video Description]",
+        "thumbnailUrl": "[Thumbnail Image URL]",
+        "uploadDate": "[YYYY-MM-DD]",
+        "duration": "[ISO 8601 Duration, e.g. PT1H30M]",
+        "contentUrl": "[Direct Video File URL]",
+        "embedUrl": "[Embed Player URL]",
+        "publisher": {
+          "@type": "Organization",
+          "name": "[Publisher Name]",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "[Logo URL]"
+          }
+        }
+      }
+    },
+    {
+      "type": "BroadcastEvent",
+      "description": "Live streaming content for LIVE badge in Google Search results. Requires VideoObject and isLiveBroadcast flag.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "[Live Stream Title]",
+        "description": "[Live Stream Description]",
+        "thumbnailUrl": "[Thumbnail Image URL]",
+        "uploadDate": "[YYYY-MM-DD]",
+        "contentUrl": "[Stream URL]",
+        "embedUrl": "[Embed Player URL]",
+        "publication": {
+          "@type": "BroadcastEvent",
+          "isLiveBroadcast": true,
+          "startDate": "[YYYY-MM-DDTHH:MM:SSZ]",
+          "endDate": "[YYYY-MM-DDTHH:MM:SSZ]"
+        }
+      }
+    },
+    {
+      "type": "Clip",
+      "description": "Key moments or chapters within a video. Enables key moments rich results with timestamp links.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "[Video Title]",
+        "description": "[Video Description]",
+        "thumbnailUrl": "[Thumbnail Image URL]",
+        "uploadDate": "[YYYY-MM-DD]",
+        "contentUrl": "[Direct Video File URL]",
+        "hasPart": [
+          {
+            "@type": "Clip",
+            "name": "[Clip Title]",
+            "startOffset": 0,
+            "endOffset": 120,
+            "url": "[Video URL with timestamp, e.g. ?t=0]"
+          },
+          {
+            "@type": "Clip",
+            "name": "[Next Clip Title]",
+            "startOffset": 120,
+            "endOffset": 300,
+            "url": "[Video URL with timestamp, e.g. ?t=120]"
+          }
+        ]
+      }
+    },
+    {
+      "type": "SeekToAction",
+      "description": "Enable seek functionality in video rich results. Allows users to jump to specific timestamps from search.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "[Video Title]",
+        "description": "[Video Description]",
+        "thumbnailUrl": "[Thumbnail Image URL]",
+        "uploadDate": "[YYYY-MM-DD]",
+        "contentUrl": "[Direct Video File URL]",
+        "potentialAction": {
+          "@type": "SeekToAction",
+          "target": "[Video URL]?t={seek_to_second_number}",
+          "startOffset-input": "required name=seek_to_second_number"
+        }
+      }
+    },
+    {
+      "type": "ProductGroup",
+      "description": "E-commerce product variants grouped by attributes like size, color. Enables variant-aware rich results with variesBy and hasVariant properties.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "ProductGroup",
+        "name": "[Product Name]",
+        "description": "[Product group description]",
+        "productGroupID": "[product-group-id]",
+        "variesBy": ["https://schema.org/size"],
+        "hasVariant": [
+          {
+            "@type": "Product",
+            "name": "[Nom du Parfum - 100ml]",
+            "image": "[Image URL]",
+            "sku": "[SKU-100ML]",
+            "size": "100ml",
+            "offers": {
+              "@type": "Offer",
+              "price": "450",
+              "priceCurrency": "MAD",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Product",
+            "name": "[Nom du Parfum - Décant 10ml]",
+            "image": "[Image URL]",
+            "sku": "[SKU-10ML]",
+            "size": "10ml",
+            "offers": {
+              "@type": "Offer",
+              "price": "80",
+              "priceCurrency": "MAD",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "ProfilePage",
+      "description": "Author, creator, or team member profile pages. Enhances E-E-A-T signals with mainEntity Person markup and sameAs links.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "mainEntity": {
+          "@type": "Person",
+          "name": "[Author Name]",
+          "url": "[Profile URL]",
+          "description": "[Author bio and expertise summary]",
+          "sameAs": [
+            "[Instagram URL]",
+            "[LinkedIn URL]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "OfferShippingDetails",
+      "description": "Shipping and delivery information for e-commerce products. Includes shipping rate, handling time, and transit time.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "[Product Name]",
+        "offers": {
+          "@type": "Offer",
+          "price": "[Price]",
+          "priceCurrency": "MAD",
+          "shippingDetails": {
+            "@type": "OfferShippingDetails",
+            "shippingRate": {
+              "@type": "MonetaryAmount",
+              "value": "0",
+              "currency": "MAD"
+            },
+            "deliveryTime": {
+              "@type": "ShippingDeliveryTime",
+              "handlingTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 0,
+                "maxValue": 1,
+                "unitCode": "DAY"
+              },
+              "transitTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 1,
+                "maxValue": 2,
+                "unitCode": "DAY"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Product (Full E-commerce)",
+      "description": "Complete e-commerce product page with pricing, availability, reviews, brand, and offers. Enables product rich results in Google Search.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "[Product Name]",
+        "description": "[Product Description]",
+        "image": "[Product Image URL]",
+        "sku": "[SKU]",
+        "category": "Haute Parfumerie",
+        "brand": {
+          "@type": "Brand",
+          "name": "Maison Kenzi"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "[Price]",
+          "priceCurrency": "MAD",
+          "availability": "https://schema.org/InStock",
+          "url": "[Product Page URL]",
+          "validFrom": "[YYYY-MM-DDTHH:MM:SS+TZ]",
+          "priceValidUntil": "[YYYY-MM-DD]",
+          "hasMerchantReturnPolicy": {
+            "@type": "MerchantReturnPolicy",
+            "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+            "merchantReturnDays": 14
+          },
+          "shippingDetails": {
+            "@type": "OfferShippingDetails",
+            "shippingRate": {
+              "@type": "MonetaryAmount",
+              "value": "0",
+              "currency": "MAD"
+            }
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "24"
+        }
+      }
+    },
+    {
+      "type": "ItemList",
+      "description": "Hub/pillar pages listing related content items. Used for collection landing pages and top fragrance rankings.",
+      "template": {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "[Collection Title]",
+        "description": "[Collection Description]",
+        "numberOfItems": "[Count]",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "[Product Page URL]",
+            "name": "[Product Title]"
+          }
+        ]
+      }
+    }
+  ]
+}

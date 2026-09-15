@@ -9,10 +9,14 @@
 
 ## Historique des Tâches Réalisées
 
-- [x] Intégration du Skill d'Expertise SEO & Audit Technique ([`.agents/skills/seo-audit/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-audit/SKILL.md)) :
-  - [x] **Création du Skill d'Audit SEO (`seo-audit`)** : Intégration de la méthodologie d'audit en 6 étapes (technique, sémantique, E-E-A-T, Core Web Vitals, JSON-LD, SEO international, moteurs IA GEO/AEO).
-  - [x] **Pondération & Matrice de Priorisation** : Grille d'évaluation officielle sur 100 points et classification par sévérité (Critique, Élevé, Moyen, Faible) avec génération de plans d'action par phases.
-  - [x] **Checklist E-Commerce & Haute Parfumerie** : Directives strictes pour les balises `Product` Schema.org en MAD, sitemaps absolus, méta Open Graph et respect rigoureux de la règle zéro emoji.
+- [x] Intégration de la Suite Complète de Skills SEO & Référencement E-Commerce ([`.agents/skills/`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/)) :
+  - [x] **`seo-audit`** ([`.agents/skills/seo-audit/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-audit/SKILL.md)) : Méthodologie d'audit globale en 6 étapes, scoring sur 100 points, matrice de criticité (Critique, Élevé, Moyen, Faible) et structuration des rapports.
+  - [x] **`seo-schema` & `templates.json`** ([`.agents/skills/seo-schema/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-schema/SKILL.md)) : Modèles et validation des données structurées JSON-LD (`Product`, `Offer`, `BreadcrumbList`, `Organization`, `Brand`, `ProductGroup` pour les formats/décants) avec bibliothèque de templates.
+  - [x] **`seo-ecommerce`** ([`.agents/skills/seo-ecommerce/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-ecommerce/SKILL.md)) : Directives pour fiches produits de haute parfumerie (pyramide olfactive, attributs `alt` riches, prix en MAD, gestion des stocks, réassurance client).
+  - [x] **`seo-technical`** ([`.agents/skills/seo-technical/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-technical/SKILL.md)) : Indexabilité, conformité robots.txt, balises canoniques, balises `hreflang` bilingues (FR/EN) et Core Web Vitals (LCP, INP, CLS).
+  - [x] **`seo-geo`** ([`.agents/skills/seo-geo/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-geo/SKILL.md)) : Optimisation pour moteurs de recherche conversationnels et IA (Google AI Overviews, Perplexity, ChatGPT Search) et spécification `/llms.txt`.
+  - [x] **`seo-sitemap`** ([`.agents/skills/seo-sitemap/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-sitemap/SKILL.md)) : Architecture sitemap XML absolue, validation W3C `lastmod`, suppression des balises dépréciées (`priority`, `changefreq`).
+  - [x] **Conformité & Zéro Emoji** : Ensemble des guides et gabarits rédigés selon les standards de qualité stricts de Maison Kenzi.
 
 - [x] Traduction Bilingue Dynamique & Ordonnancement du Menu Déroulant Collections ([`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
   - [x] **Dictionnaire Éditorial Bilingue & Repli Intelligent (`getCategoryName`, `getCategoryDescription`)** : Création de résolveurs bilingues autonomes garantissant la traduction automatique en anglais de tous les univers (Parfums, Cosmétiques, Créations Artisanales, Pièces Rares & Antiques, Déodorants, Coffrets Découverte, etc.) même si la base de données ne contient pas de champs `name_en` ou `description_en`.
