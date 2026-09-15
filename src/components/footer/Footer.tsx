@@ -13,6 +13,8 @@ import { MessageSquare, Sparkles, Instagram, ShieldCheck, Truck } from "lucide-r
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getCategoryName } from "@/lib/productLocalization";
+import { getCategorySlugOrder } from "@/lib/productCategories";
 
 const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
@@ -52,7 +54,7 @@ const Footer = () => {
     ? "Hello Maison Kenzi, I would like more information about your fragrances."
     : "Bonjour Maison Kenzi, je souhaite avoir des informations sur vos parfums.";
   const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(t("footer.whatsappMessage", defaultWaMsg))}`;
-  const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzi";
+  const instagramUrl = settings.instagram_url || "https://www.instagram.com/maisonkenzii?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==";
 
   return (
     <footer className="w-full bg-card/70 border-t border-border text-foreground pt-12 md:pt-16 pb-8 px-4 sm:px-6 mt-20 md:mt-32">
@@ -95,11 +97,10 @@ const Footer = () => {
                 <Link
                   to="/collection/all"
                   aria-current={isLinkActive("/collection/all") ? "page" : undefined}
-                  className={`transition-colors font-light ${
-                    isLinkActive("/collection/all")
+                  className={`transition-colors font-light ${isLinkActive("/collection/all")
                       ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                       : "text-muted-foreground hover:text-primary cursor-pointer"
-                  }`}
+                    }`}
                 >
                   {t("footer.allPerfumes", "Tous les Parfums (Catalogue)")}
                 </Link>
@@ -112,8 +113,9 @@ const Footer = () => {
                     c.slug.toLowerCase() !== "all" &&
                     c.slug.toLowerCase() !== "toutes"
                 )
+                .sort((a, b) => getCategorySlugOrder(a.slug) - getCategorySlugOrder(b.slug))
                 .map((cat) => {
-                  const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
+                  const catName = getCategoryName(cat, language);
                   const catPath = `/collection/${cat.slug}`;
                   const isActive = isLinkActive(catPath);
                   return (
@@ -121,11 +123,10 @@ const Footer = () => {
                       <Link
                         to={catPath}
                         aria-current={isActive ? "page" : undefined}
-                        className={`transition-colors font-light ${
-                          isActive
+                        className={`transition-colors font-light ${isActive
                             ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                             : "text-muted-foreground hover:text-primary cursor-pointer"
-                        }`}
+                          }`}
                       >
                         {catName}
                       </Link>
@@ -145,11 +146,10 @@ const Footer = () => {
                 <Link
                   to="/about"
                   aria-current={isLinkActive("/about") ? "page" : undefined}
-                  className={`transition-colors flex items-center gap-1.5 font-light ${
-                    isLinkActive("/about")
+                  className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/about")
                       ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                       : "text-muted-foreground hover:text-primary cursor-pointer"
-                  }`}
+                    }`}
                 >
                   <Sparkles className={`w-3.5 h-3.5 ${isLinkActive("/about") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.aboutUs", "À Propos de Maison Kenzi")}</span>
@@ -159,11 +159,10 @@ const Footer = () => {
                 <Link
                   to="/suivi-commande"
                   aria-current={isLinkActive("/suivi-commande") ? "page" : undefined}
-                  className={`transition-colors flex items-center gap-1.5 font-light ${
-                    isLinkActive("/suivi-commande")
+                  className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/suivi-commande")
                       ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                       : "text-muted-foreground hover:text-primary cursor-pointer"
-                  }`}
+                    }`}
                 >
                   <Truck className={`w-3.5 h-3.5 ${isLinkActive("/suivi-commande") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.trackOrder", "Suivre ma Commande")}</span>
@@ -173,11 +172,10 @@ const Footer = () => {
                 <Link
                   to="/about/service-client"
                   aria-current={isLinkActive("/about/service-client") ? "page" : undefined}
-                  className={`transition-colors flex items-center gap-1.5 font-light ${
-                    isLinkActive("/about/service-client")
+                  className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/about/service-client")
                       ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                       : "text-muted-foreground hover:text-primary cursor-pointer"
-                  }`}
+                    }`}
                 >
                   <MessageSquare className={`w-3.5 h-3.5 ${isLinkActive("/about/service-client") ? "text-muted-foreground/40" : "text-primary"}`} />
                   <span>{t("footer.customerService", "Service Client & Contact")}</span>
@@ -222,7 +220,7 @@ const Footer = () => {
                 <Instagram className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                 <div className="min-w-0">
                   <p className="font-semibold text-xs text-primary">{t("footer.officialInstagram", "Instagram Officiel")}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">@maisonkenzi</p>
+                  <p className="text-[11px] text-muted-foreground truncate">@maisonkenzii</p>
                 </div>
               </a>
             </div>
@@ -236,11 +234,10 @@ const Footer = () => {
             <Link
               to="/privacy-policy"
               aria-current={isLinkActive("/privacy-policy") ? "page" : undefined}
-              className={`transition-colors font-light ${
-                isLinkActive("/privacy-policy")
+              className={`transition-colors font-light ${isLinkActive("/privacy-policy")
                   ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                   : "text-muted-foreground hover:text-primary cursor-pointer"
-              }`}
+                }`}
             >
               {t("footer.privacyPolicy", "Politique de Confidentialité")}
             </Link>
@@ -248,11 +245,10 @@ const Footer = () => {
             <Link
               to="/terms-of-service"
               aria-current={isLinkActive("/terms-of-service") ? "page" : undefined}
-              className={`transition-colors font-light ${
-                isLinkActive("/terms-of-service")
+              className={`transition-colors font-light ${isLinkActive("/terms-of-service")
                   ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
                   : "text-muted-foreground hover:text-primary cursor-pointer"
-              }`}
+                }`}
             >
               {t("footer.termsOfService", "Conditions Générales de Vente")}
             </Link>

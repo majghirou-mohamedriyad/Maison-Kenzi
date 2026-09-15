@@ -521,7 +521,7 @@ export const translations = {
       tag: "Haute Parfumerie",
       title: "Our Olfactory Universes",
       subtitle: "Explore exceptional creations crafted to elevate every moment and reveal your signature sillage.",
-      comingSoon: "Coming Soon",
+      comingSoon: "Soon",
       discover: "Explore Universe",
     },
     bestsellers: {
@@ -738,7 +738,7 @@ export const translations = {
       change: "Change",
       allCollections: "All Collections",
       allCollectionsDesc: "Explore our entire selection: haute parfumerie, cosmetics, and exceptional handcrafted creations.",
-      comingSoon: "Coming Soon",
+      comingSoon: "Soon",
       comingSoonBadge: "In Preparation",
       comingSoonTitle: "This collection is arriving very soon",
       comingSoonDescPrefix: "Our master perfumers are currently curating exceptional original sealed bottles for",

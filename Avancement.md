@@ -2,12 +2,18 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-14
+- **Dernière mise à jour** : 2026-09-15
 - **Statut général** : Déploiement en Production Réussi sur VPS & Nom de Domaine Officiel https://maison-kenzi.com (HTTPS / SSL Let's Encrypt, PM2, Nginx)
 
 ---
 
 ## Historique des Tâches Réalisées
+
+- [x] Traduction Bilingue Dynamique & Ordonnancement du Menu Déroulant Collections ([`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
+  - [x] **Dictionnaire Éditorial Bilingue & Repli Intelligent (`getCategoryName`, `getCategoryDescription`)** : Création de résolveurs bilingues autonomes garantissant la traduction automatique en anglais de tous les univers (Parfums, Cosmétiques, Créations Artisanales, Pièces Rares & Antiques, Déodorants, Coffrets Découverte, etc.) même si la base de données ne contient pas de champs `name_en` ou `description_en`.
+  - [x] **Ordonnancement Séquentiel Harmonisé** : Application du tri séquentiel dans le menu déroulant desktop, le menu mobile et le pied de page (1. Parfums $\rightarrow$ 2. Cosmétiques $\rightarrow$ 3. Créations Artisanales $\rightarrow$ 4. Antiques & Raretés).
+  - [x] **Icônes Vectorielles `lucide-react` Appropriées** : Remplacement des icônes génériques par des icônes dédiées à chaque univers olfactif et artisanal (`Sparkles`, `Flower2`, `Palette`, `Landmark`, `Shield`, `Crown`, `Flame`).
+  - [x] **Conformité & Zéro Emoji** : Interface luxueuse épurée, conformité stricte aux directives du projet.
 
 - [x] Optimisation du Cadrage & Zoom Sans Rognage des Photos Produits ([`src/components/ui/ProductImage.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ui/ProductImage.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx)) :
   - [x] **Marges de Sécurité & Échelle Équilibrée** : Intégration d'un espacement intérieur doux (`p-2 sm:p-2.5`) et d'une échelle de repos légèrement réduite (`scale-[0.92]`) dans `ProductImage.tsx`, offrant une respiration visuelle naturelle aux flacons et créations.
@@ -196,7 +202,7 @@
     - Synchronisation des suggestions de catégories dans la barre de recherche rapide (Spotlight Search).
   - [x] **Internationalisation des Textes & Badges du Menu Déroulant** :
     - Titre du panneau déroulant : `{t("nav.universesTitle", "Univers & Collections")}` affichant *"Universes & Collections"* en anglais.
-    - Badge « À venir » : `{t.catalog?.comingSoon || (language === "en" ? "Coming Soon" : "À venir")}`.
+    - Badge « À venir » : `{t.catalog?.comingSoon || (language === "en" ? "Soon" : "À venir")}`.
     - Message pré-rempli WhatsApp : *"Hello Maison Kenzi, I would like some advice."* en anglais.
   - [x] **Conformité Luxury Nude Design System & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E`.
 
@@ -254,9 +260,9 @@
     - Restriction du filtre de genre dans l'espace admin aux seuls parfums.
   - [x] **Conformité Luxury Nude Design & Zéro Emoji** : Icônes vectorielles `lucide-react`, palette champagne gold `#C9A96E` et commentaires en français.
 
-- [x] Désactivation Dynamique du Tag « À Venir / Coming Soon » pour les Collections Ayant des Produits ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
+- [x] Désactivation Dynamique du Tag « À Venir / Soon » pour les Collections Ayant des Produits ([`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/content/FiftyFiftySection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/FiftyFiftySection.tsx), [`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
   - [x] **Règle Métier de Disponibilité Automatique** :
-    - Dès qu'une collection contient un ou plusieurs produits (`productCount > 0`), le badge « À venir / Coming soon » est automatiquement masqué et désactivé, tant dans les onglets de filtres, le bandeau d'en-tête (hero) et l'état vide que dans le menu de navigation et la section d'accueil.
+    - Dès qu'une collection contient un ou plusieurs produits (`productCount > 0`), le badge « À venir / soon » est automatiquement masqué et désactivé, tant dans les onglets de filtres, le bandeau d'en-tête (hero) et l'état vide que dans le menu de navigation et la section d'accueil.
   - [x] **Expérience Administrateur Cohérente & Sécurisée** :
     - Dans la modale de modification des catégories, si la collection contient déjà des produits, le commutateur « À venir / Teaser » est désactivé avec un indicateur clair (`Contient X produit(s) (automatiquement disponible)`).
     - Lors de l'enregistrement ou de l'activation groupée, `is_coming_soon` est automatiquement réinitialisé à `false` si des produits lui sont rattachés.

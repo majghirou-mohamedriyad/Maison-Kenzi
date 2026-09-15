@@ -7,6 +7,7 @@
 
 import type { Parfum } from "@/types/database";
 import type { AdminParfum } from "@/store/useProductStore";
+export { getCategorySlugOrder } from "@/lib/productCategories";
 
 type AnyProduct = Partial<Parfum> | Partial<AdminParfum> | null | undefined;
 
@@ -122,4 +123,107 @@ export const getSeasonLabel = (seasonName?: string | null, language: string = "f
   if (norm.includes("hiv")) return "Hiver";
   if (norm.includes("toute") || norm.includes("all")) return "Toutes Saisons";
   return seasonName;
+};
+
+/**
+ * Traduit le nom d'une catégorie selon la langue active (FR / EN)
+ * Priorité :
+ * 1. name_en si language === "en" et renseigné
+ * 2. Dictionnaire bilingue des univers et familles olfactives Maison Kenzi
+ * 3. Nom brut existant
+ */
+export const getCategoryName = (
+  cat?: { name?: string; name_en?: string; nameEn?: string; slug?: string } | null,
+  language: string = "fr"
+): string => {
+  if (!cat) return "";
+  const rawName = cat.name || "";
+  const nameEn = cat.name_en || (cat as any)?.nameEn;
+
+  if (language === "en") {
+    if (typeof nameEn === "string" && nameEn.trim().length > 0) {
+      return nameEn.trim();
+    }
+
+    const s = (cat.slug || "").toLowerCase().trim();
+    const n = rawName.toLowerCase().trim();
+
+    // 1. Grands univers Maison Kenzi
+    if (s === "parfums" || s === "parfum" || n === "parfums" || n === "parfum") return "Fragrances & Perfumes";
+    if (s.includes("cosmetique") || n.includes("cosmétique") || n.includes("cosmetique")) return "Cosmetics & Skincare";
+    if (s.includes("artisanal") || s.includes("artisanat") || s.includes("artisanaux") || n.includes("artisanal") || n.includes("artisanat")) return "Handcrafted Creations";
+    if (s.includes("antique") || s.includes("antiquit") || n.includes("antique") || n.includes("antiquité")) return "Rare Antiques & Treasures";
+    if (s.includes("deodorant") || n.includes("déodorant") || n.includes("deodorant")) return "Deodorant Sticks";
+    if (s.includes("pack") || n.includes("pack")) return "Discovery Packs";
+    if (s === "homme" || n === "homme") return "Men";
+    if (s === "femme" || n === "femme") return "Women";
+    if (s === "mixte" || s === "unisexe" || n === "mixte" || n === "unisexe") return "Unisex";
+
+    // 2. Familles olfactives classiques
+    if (s.includes("orient") || n.includes("orient")) return "Oriental";
+    if (s.includes("flor") || n.includes("flor")) return "Floral";
+    if (s.includes("bois") || n.includes("bois")) return "Woody";
+    if (s.includes("ambr") || n.includes("ambr")) return "Amber";
+    if (s.includes("gourmand") || n.includes("gourmand")) return "Gourmand";
+    if (s.includes("frais") || n.includes("fresh")) return "Fresh";
+    if (s.includes("epic") || n.includes("épic") || n.includes("spic")) return "Spicy";
+    if (s.includes("aquat") || n.includes("marin")) return "Aquatic";
+    if (s.includes("cuir") || n.includes("leather")) return "Leather";
+    if (s.includes("agrum") || n.includes("citrus")) return "Citrus";
+
+    return rawName;
+  }
+
+  return rawName;
+};
+
+/**
+ * Traduit la description d'une catégorie selon la langue active (FR / EN)
+ * Priorité :
+ * 1. description_en si language === "en" et renseignée
+ * 2. Dictionnaire bilingue des descriptions éditoriales Maison Kenzi
+ * 3. Description brute existante
+ */
+export const getCategoryDescription = (
+  cat?: { description?: string; description_en?: string; descriptionEn?: string; slug?: string; name?: string } | null,
+  language: string = "fr"
+): string => {
+  if (!cat) return "";
+  const rawDesc = cat.description || "";
+  const descEn = cat.description_en || (cat as any)?.descriptionEn;
+
+  if (language === "en") {
+    if (typeof descEn === "string" && descEn.trim().length > 0) {
+      return descEn.trim();
+    }
+
+    const s = (cat.slug || "").toLowerCase().trim();
+    const n = (cat.name || "").toLowerCase().trim();
+
+    if (s === "parfums" || s === "parfum" || n === "parfums" || n === "parfum") {
+      return "Signature creations & niche fragrance catalog";
+    }
+    if (s.includes("cosmetique") || n.includes("cosmétique") || n.includes("cosmetique")) {
+      return "Exceptional skincare & luxury cosmetics";
+    }
+    if (s.includes("artisanal") || s.includes("artisanat") || s.includes("artisanaux") || n.includes("artisanal") || n.includes("artisanat")) {
+      return "Handcrafted artisan pieces & fine heritage";
+    }
+    if (s.includes("antique") || s.includes("antiquit") || n.includes("antique") || n.includes("antiquité")) {
+      return "Collector items, vintage treasures & antiques";
+    }
+    if (s.includes("deodorant") || n.includes("déodorant") || n.includes("deodorant")) {
+      return "Long-lasting freshness & luxury body care";
+    }
+    if (s.includes("pack") || n.includes("pack")) {
+      return "Exclusive sets & curated discovery gifts";
+    }
+    if (s === "homme" || n === "homme") return "Exclusive masculine fragrances";
+    if (s === "femme" || n === "femme") return "Enchanting feminine fragrances";
+    if (s === "mixte" || s === "unisexe" || n === "mixte" || n === "unisexe") return "Unisex accords & bespoke creations";
+
+    return "Exclusive collection";
+  }
+
+  return rawDesc || "Collection exclusive";
 };

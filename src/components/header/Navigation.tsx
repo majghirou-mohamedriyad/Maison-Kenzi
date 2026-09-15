@@ -27,6 +27,8 @@ import {
   Headset,
   Tag,
   Grid,
+  Palette,
+  Landmark,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
@@ -37,9 +39,14 @@ import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useCategories } from "@/store/useCategoryStore";
-import { isParfumInCategory } from "@/lib/productCategories";
+import { isParfumInCategory, getCategorySlugOrder } from "@/lib/productCategories";
 import { getParfumUrl } from "@/lib/productUrl";
-import { getProductGender, getProductName } from "@/lib/productLocalization";
+import {
+  getProductGender,
+  getProductName,
+  getCategoryName,
+  getCategoryDescription,
+} from "@/lib/productLocalization";
 
 const Navigation = () => {
   const { t, language } = useLanguage();
@@ -57,6 +64,14 @@ const Navigation = () => {
     () => adminCategories.filter((c) => c.is_active),
     [adminCategories]
   );
+  const sortedCategories = useMemo(() => {
+    return [...activeAdminCategories].sort((a, b) => {
+      const orderA = getCategorySlugOrder(a.slug);
+      const orderB = getCategorySlugOrder(b.slug);
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.order_index ?? 0) - (b.order_index ?? 0);
+    });
+  }, [activeAdminCategories]);
   const navigate = useNavigate();
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +106,7 @@ const Navigation = () => {
       .filter((c) => c.slug.toLowerCase() !== "all" && c.slug.toLowerCase() !== "toutes")
       .map((c) => ({
         slug: c.slug,
-        name: language === "en" && c.name_en ? c.name_en : c.name,
+        name: getCategoryName(c, language),
       }));
     return [...baseSuggestions, ...adminSugg].slice(0, 4);
   }, [activeAdminCategories, t, language]);
@@ -296,18 +311,22 @@ const Navigation = () => {
                   </Link>
 
                   {/* Liste des Catégories / Univers dynamiques disponibles */}
-                  {activeAdminCategories.length > 0 ? (
-                    activeAdminCategories.map((cat) => {
+                  {sortedCategories.length > 0 ? (
+                    sortedCategories.map((cat) => {
                       const s = cat.slug.toLowerCase();
                       let Icon = Tag;
                       if (s === "homme") Icon = Flame;
                       else if (s === "femme") Icon = Flower2;
                       else if (s.includes("deodorant")) Icon = Shield;
                       else if (s.includes("pack")) Icon = Crown;
+                      else if (s.includes("cosmetique")) Icon = Flower2;
+                      else if (s.includes("artisanal") || s.includes("artisanat")) Icon = Palette;
+                      else if (s.includes("antique") || s.includes("antiquit")) Icon = Landmark;
+                      else if (s.includes("parfum")) Icon = Sparkles;
 
                       const isCurrent = location.pathname === `/collection/${cat.slug}`;
-                      const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
-                      const catDesc = language === "en" && cat.description_en ? cat.description_en : (cat.description || (language === "en" ? "Exclusive collection" : "Collection exclusive"));
+                      const catName = getCategoryName(cat, language);
+                      const catDesc = getCategoryDescription(cat, language);
 
                       return (
                         <Link
@@ -330,7 +349,7 @@ const Navigation = () => {
                               </span>
                               {cat.is_coming_soon && !allParfums.some((p) => isParfumInCategory(p, cat.slug)) && (
                                 <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full font-medium">
-                                  {t.catalog?.comingSoon || (language === "en" ? "Coming Soon" : "À venir")}
+                                  {language === "en" ? "Soon" : "À venir"}
                                 </span>
                               )}
                             </div>
@@ -599,21 +618,26 @@ const Navigation = () => {
             </Link>
 
             {/* 2. Liste des Collections */}
-            {activeAdminCategories.length > 0 && (
+            {sortedCategories.length > 0 && (
               <div className="space-y-1.5 pt-1">
                 <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground px-1">
                   {t("nav.collections", "Nos Collections")}
                 </span>
                 <div className="grid grid-cols-2 gap-2">
-                  {activeAdminCategories.map((cat) => {
+                  {sortedCategories.map((cat) => {
                     const s = cat.slug.toLowerCase();
                     let Icon = Tag;
-                    if (s.includes("deodorant")) Icon = Shield;
+                    if (s.includes("parfum") || s.includes("fragrance")) Icon = Sparkles;
+                    else if (s.includes("cosmetique") || s.includes("beaute") || s.includes("soin")) Icon = Flower2;
+                    else if (s.includes("artisan") || s.includes("bougie")) Icon = Palette;
+                    else if (s.includes("antique") || s.includes("tresor")) Icon = Landmark;
+                    else if (s.includes("deodorant")) Icon = Shield;
                     else if (s.includes("pack")) Icon = Crown;
+                    else if (s.includes("oriental") || s.includes("ambre")) Icon = Flame;
 
                     const isCurrent = location.pathname === `/collection/${cat.slug}`;
-                    const catName = language === "en" && cat.name_en ? cat.name_en : cat.name;
-                    const catDesc = language === "en" && cat.description_en ? cat.description_en : (cat.description || (language === "en" ? "Collection" : "Collection"));
+                    const catName = getCategoryName(cat, language);
+                    const catDesc = getCategoryDescription(cat, language);
 
                     return (
                       <Link

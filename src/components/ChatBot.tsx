@@ -273,7 +273,7 @@ const ChatBot = () => {
                     {isEn ? "Official Instagram" : "Instagram Officiel"}
                   </div>
                   <div className="text-[11px] text-muted-foreground truncate">
-                    @maisonkenzi
+                    @maisonkenzii
                   </div>
                 </div>
               </a>
