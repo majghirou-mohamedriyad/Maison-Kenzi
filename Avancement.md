@@ -9,6 +9,11 @@
 
 ## Historique des Tâches Réalisées
 
+- [x] Intégration du Skill d'Expertise SEO & Audit Technique ([`.agents/skills/seo-audit/SKILL.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.agents/skills/seo-audit/SKILL.md)) :
+  - [x] **Création du Skill d'Audit SEO (`seo-audit`)** : Intégration de la méthodologie d'audit en 6 étapes (technique, sémantique, E-E-A-T, Core Web Vitals, JSON-LD, SEO international, moteurs IA GEO/AEO).
+  - [x] **Pondération & Matrice de Priorisation** : Grille d'évaluation officielle sur 100 points et classification par sévérité (Critique, Élevé, Moyen, Faible) avec génération de plans d'action par phases.
+  - [x] **Checklist E-Commerce & Haute Parfumerie** : Directives strictes pour les balises `Product` Schema.org en MAD, sitemaps absolus, méta Open Graph et respect rigoureux de la règle zéro emoji.
+
 - [x] Traduction Bilingue Dynamique & Ordonnancement du Menu Déroulant Collections ([`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/components/footer/Footer.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/footer/Footer.tsx)) :
   - [x] **Dictionnaire Éditorial Bilingue & Repli Intelligent (`getCategoryName`, `getCategoryDescription`)** : Création de résolveurs bilingues autonomes garantissant la traduction automatique en anglais de tous les univers (Parfums, Cosmétiques, Créations Artisanales, Pièces Rares & Antiques, Déodorants, Coffrets Découverte, etc.) même si la base de données ne contient pas de champs `name_en` ou `description_en`.
   - [x] **Ordonnancement Séquentiel Harmonisé** : Application du tri séquentiel dans le menu déroulant desktop, le menu mobile et le pied de page (1. Parfums $\rightarrow$ 2. Cosmétiques $\rightarrow$ 3. Créations Artisanales $\rightarrow$ 4. Antiques & Raretés).
