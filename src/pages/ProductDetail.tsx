@@ -334,27 +334,71 @@ const ParfumDetail = () => {
     openCart();
   };
 
-  const seoTitle = `${displayName || parfum.name} — ${parfum.maison} | Maison Kenzi`.slice(0, 70);
+  const seoTitle = `${displayName || parfum.name} — ${parfum.maison || "Maison Kenzi"} | Haute Parfumerie`.slice(0, 70);
   const seoDescription = (
     displayDescription?.trim() ||
-    `Produit authentique ${parfum.maison} ${displayName || parfum.name}, disponible chez Maison Kenzi au Maroc.`
+    `Produit authentique ${parfum.maison || "Maison Kenzi"} ${displayName || parfum.name}, disponible chez Maison Kenzi au Maroc.`
   ).slice(0, 160);
   const canonical = getParfumUrl(parfum);
+  const primaryImg = images[0] || parfum.image_url;
+  const primaryImageUrl = primaryImg
+    ? (primaryImg.startsWith("http") ? primaryImg : `https://maison-kenzi.com${primaryImg.startsWith("/") ? primaryImg : `/${primaryImg}`}`)
+    : "https://maison-kenzi.com/mk-logo.png";
+
   const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": `https://maison-kenzi.com${canonical}#product`,
     name: displayName || parfum.name,
-    brand: { "@type": "Brand", name: parfum.maison },
-    description: displayDescription || undefined,
-    image: parfum.image_url || undefined,
+    brand: {
+      "@type": "Brand",
+      name: parfum.maison || "Maison Kenzi",
+    },
+    description: displayDescription || seoDescription,
+    image: primaryImageUrl,
+    sku: `MK-${parfum.id.slice(0, 8)}`,
+    category: "Haute Parfumerie",
     offers: {
       "@type": "Offer",
-      priceCurrency: "EUR",
+      "@id": `https://maison-kenzi.com${canonical}#offer`,
+      url: `https://maison-kenzi.com${canonical}`,
+      priceCurrency: "MAD",
       price: priceFor(parfum, isFullBottle ? "full" : "10ml"),
+      priceValidUntil: "2026-12-31",
+      itemCondition: "https://schema.org/NewCondition",
       availability: parfum.is_active
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
+      seller: {
+        "@type": "Organization",
+        name: "Maison Kenzi",
+      },
     },
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": language === "en" ? "Home" : "Accueil",
+        "item": "https://maison-kenzi.com/",
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": categoryLabel || (language === "en" ? "Catalog" : "Catalogue"),
+        "item": `https://maison-kenzi.com/collection/${parfum.category || "all"}`,
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": displayName || parfum.name,
+        "item": `https://maison-kenzi.com${canonical}`,
+      },
+    ],
   };
 
   return (
@@ -363,8 +407,9 @@ const ParfumDetail = () => {
         title={seoTitle}
         description={seoDescription}
         path={canonical}
+        image={primaryImageUrl}
         ogType="product"
-        jsonLd={productLd}
+        jsonLd={[productLd, breadcrumbLd]}
       />
       <Header />
 

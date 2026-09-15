@@ -3,3 +3,5 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /checkout
+
+Sitemap: https://maison-kenzi.com/sitemap.xml
