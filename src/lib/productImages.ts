@@ -21,31 +21,40 @@ export const normalizeImageUrl = (url?: string | null): string => {
     const origin = window.location.origin;
     const isHttps = window.location.protocol === "https:";
 
-    // Si l'URL est relative vers Supabase Storage (ex: /storage/v1/object/public/...)
+    // 1. Si l'URL est relative vers Supabase Storage (ex: /storage/v1/object/public/...)
     if (trimmed.startsWith("/storage/")) {
       return `${origin}/api/supabase${trimmed}`;
     }
 
-    // Si l'URL pointe vers Supabase (Port 8000 sur IP ou localhost)
+    // 2. Si l'URL pointe vers Supabase Port 8000 (IP, localhost ou nom de domaine)
     if (trimmed.includes(":8000/")) {
       trimmed = trimmed.replace(/^https?:\/\/[^/]+:8000/, `${origin}/api/supabase`);
     }
 
-    // Si l'URL pointe vers OpenWA / WAHA (Port 2785 sur IP ou localhost)
+    // 3. Si l'URL pointe vers OpenWA Port 2785
     if (trimmed.includes(":2785/")) {
       trimmed = trimmed.replace(/^https?:\/\/[^/]+:2785/, `${origin}/api/openwa`);
     }
 
-    // Si l'URL référence explicitement l'IP du VPS
-    if (trimmed.startsWith("http://185.197.249.4:8000")) {
-      trimmed = trimmed.replace("http://185.197.249.4:8000", `${origin}/api/supabase`);
-    } else if (trimmed.startsWith("http://185.197.249.4:2785")) {
-      trimmed = trimmed.replace("http://185.197.249.4:2785", `${origin}/api/openwa`);
+    // 4. Si l'URL pointe vers l'IP brute du VPS (185.197.249.4)
+    if (trimmed.includes("185.197.249.4")) {
+      if (trimmed.includes(":8000")) {
+        trimmed = trimmed.replace(/^https?:\/\/185\.197\.249\.4:8000/, `${origin}/api/supabase`);
+      } else if (trimmed.includes(":2785")) {
+        trimmed = trimmed.replace(/^https?:\/\/185\.197\.249\.4:2785/, `${origin}/api/openwa`);
+      } else {
+        trimmed = trimmed.replace(/^https?:\/\/185\.197\.249\.4/, origin);
+      }
     }
 
-    // En environnement HTTPS, sécuriser les URLs maison-kenzi en HTTPS (anti-mixed content)
-    if (isHttps && trimmed.startsWith("http://maison-kenzi.com")) {
-      trimmed = trimmed.replace("http://maison-kenzi.com", "https://maison-kenzi.com");
+    // 5. Si l'URL pointe vers localhost ou 127.0.0.1 alors qu'on est sur le domaine public HTTPS
+    if (isHttps && (trimmed.includes("localhost") || trimmed.includes("127.0.0.1"))) {
+      trimmed = trimmed.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, origin);
+    }
+
+    // 6. En environnement HTTPS, sécuriser toutes les URLs HTTP restantes (anti-mixed content)
+    if (isHttps && trimmed.startsWith("http://")) {
+      trimmed = trimmed.replace(/^http:\/\//, "https://");
     }
   }
 
