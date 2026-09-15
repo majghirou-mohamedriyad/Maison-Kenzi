@@ -10,7 +10,6 @@ export type ProductTier = {
   quantity: number;
   price: number;
   label?: string;
-  badge?: string;
 };
 
 export type Parfum = {

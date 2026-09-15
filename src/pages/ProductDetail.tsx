@@ -845,10 +845,10 @@ const ParfumDetail = () => {
                               : "border-border/80 bg-card/40 hover:border-primary/40 hover:bg-card/70"
                           }`}
                         >
-                          {/* Badge promotionnel */}
-                          {tier.badge && (
-                            <span className="absolute -top-2.5 right-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full shadow-xs">
-                              {tier.badge}
+                          {/* Badge d'économie automatique si réduction */}
+                          {savings > 0 && (
+                            <span className="absolute -top-2.5 right-3 text-[9px] font-bold uppercase tracking-wider bg-emerald-700 text-white px-2 py-0.5 rounded-full shadow-xs">
+                              -{Math.round((savings / regularTotal) * 100)}%
                             </span>
                           )}
 

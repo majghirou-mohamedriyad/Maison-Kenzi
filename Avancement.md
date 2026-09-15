@@ -8,10 +8,10 @@
 ---
 
 - [x] Paliers Multiples & Tarification Dégressive par Lot du Même Produit (Multi-Packs) ([`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/data/parfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/data/parfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx)) :
-  - [x] **Architecture des Paliers Multiples (`ProductTier`)** : Définition du type `ProductTier` avec quantité d'articles identiques reçus (`quantity`), prix global du lot en MAD (`price`), libellé optionnel (`label`, ex: « Lot de 3 ») et badge promotionnel optionnel (`badge`, ex: « Plus Populaire », « -25% »).
-  - [x] **Gestion Administrateur & Synchronisation Supabase (`ProductModal.tsx`, `syncParfum.ts`, `useProductStore.ts`)** :
-    - Ajout d'une section dédiée de gestion des offres groupées par lot avec switch d'activation, ajout dynamique de paliers avec calcul instantané du prix unitaire équivalent et de l'économie client par rapport au prix unitaire de base.
-    - Synchronisation automatique avec la base de données Supabase et le store local réactif multi-onglets (avec repli de compatibilité transparent).
+  - [x] **Architecture Épurée des Paliers Multiples (`ProductTier`)** : Définition du type `ProductTier` avec quantité d'articles identiques reçus (`quantity`), prix global du lot en MAD (`price`), libellé optionnel (`label`, ex: « Lot de 3 ») et calcul automatique de réduction/économie sans champ manuel superflu.
+  - [x] **Gestion Administrateur Simplifiée & Synchronisation Supabase (`ProductModal.tsx`, `syncParfum.ts`, `useProductStore.ts`)** :
+    - Interface épurée à 3 colonnes (Quantité reçue, Prix total du lot en MAD, Libellé optionnel) avec calcul instantané du prix unitaire équivalent et de l'économie client.
+    - Synchronisation automatique avec la base de données Supabase et le store local réactif multi-onglets.
   - [x] **Sélecteur Élégant sur la Fiche Produit (`ProductDetail.tsx`)** :
     - Affichage de cartes de sélection interactives au design luxueux nude indiquant le libellé du lot, la mention claire de réception de $N$ fois le même article, le montant global en MAD, le prix de revient par flacon et le montant économisé.
     - Sélection et mise à jour dynamique du panier et du formulaire de commande express en 1 clic.

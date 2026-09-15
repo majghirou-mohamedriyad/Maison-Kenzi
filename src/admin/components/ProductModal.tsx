@@ -97,7 +97,7 @@ const emptyForm = {
   isNew: false,
   isBestseller: false,
   hasTiers: false,
-  tiers: [] as Array<{ quantity: number; price: number; label: string; badge: string }>,
+  tiers: [] as Array<{ quantity: number; price: number; label: string }>,
 };
 
 const isUuid = (s: string) =>
@@ -243,7 +243,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                 quantity: Number(t.quantity) || 1,
                 price: Number(t.price) || 0,
                 label: t.label || "",
-                badge: t.badge || "",
               }))
             : [],
         });
@@ -277,14 +276,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
             quantity: nextQty,
             price: suggestedPrice,
             label: nextQty === 2 ? "Duo Économique" : nextQty === 3 ? "Trio Privilège" : `Lot de ${nextQty}`,
-            badge: nextQty === 2 ? "-12%" : nextQty === 3 ? "Plus Populaire" : "",
           },
         ].sort((a, b) => a.quantity - b.quantity),
       };
     });
   };
 
-  const updateTier = (index: number, field: "quantity" | "price" | "label" | "badge", value: any) => {
+  const updateTier = (index: number, field: "quantity" | "price" | "label", value: any) => {
     setF((prev) => {
       const nextTiers = [...(prev.tiers || [])];
       if (!nextTiers[index]) return prev;
@@ -606,7 +604,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
               quantity: Number(t.quantity),
               price: Number(t.price),
               label: t.label.trim() || undefined,
-              badge: t.badge.trim() || undefined,
             }))
         : [],
       weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
@@ -1053,7 +1050,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                     </div>
                                   </div>
 
-                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
                                         Quantité reçue *
@@ -1098,19 +1095,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
                                         placeholder="Ex: Pack Trio"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Badge promotionnel
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className={inputCls}
-                                        value={tier.badge}
-                                        onChange={(e) => updateTier(idx, "badge", e.target.value)}
-                                        placeholder="Ex: Plus Populaire"
                                       />
                                     </div>
                                   </div>
@@ -1534,7 +1518,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                     </div>
                                   </div>
 
-                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
                                         Quantité reçue *
@@ -1579,19 +1563,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
                                         placeholder="Ex: Pack Trio"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Badge promotionnel
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className={inputCls}
-                                        value={tier.badge}
-                                        onChange={(e) => updateTier(idx, "badge", e.target.value)}
-                                        placeholder="Ex: Plus Populaire"
                                       />
                                     </div>
                                   </div>
