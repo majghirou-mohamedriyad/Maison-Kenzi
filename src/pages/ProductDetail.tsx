@@ -340,7 +340,8 @@ const ParfumDetail = () => {
     `Produit authentique ${parfum.maison || "Maison Kenzi"} ${displayName || parfum.name}, disponible chez Maison Kenzi au Maroc.`
   ).slice(0, 160);
   const canonical = getParfumUrl(parfum);
-  const primaryImg = images[0] || parfum.image_url;
+  const productImages = getParfumImages(parfum);
+  const primaryImg = productImages[0] || parfum.image_url;
   const primaryImageUrl = primaryImg
     ? (primaryImg.startsWith("http") ? primaryImg : `https://maison-kenzi.com${primaryImg.startsWith("/") ? primaryImg : `/${primaryImg}`}`)
     : "https://maison-kenzi.com/mk-logo.png";
@@ -383,14 +384,14 @@ const ParfumDetail = () => {
       {
         "@type": "ListItem",
         "position": 1,
-        "name": language === "en" ? "Home" : "Accueil",
+        "name": t.nav?.home || (language === "en" ? "Home" : "Accueil"),
         "item": "https://maison-kenzi.com/",
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": categoryLabel || (language === "en" ? "Catalog" : "Catalogue"),
-        "item": `https://maison-kenzi.com/collection/${parfum.category || "all"}`,
+        "name": breadcrumbCategoryName,
+        "item": `https://maison-kenzi.com${breadcrumbCategoryLink}`,
       },
       {
         "@type": "ListItem",
