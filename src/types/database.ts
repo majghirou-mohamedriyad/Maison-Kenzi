@@ -6,6 +6,13 @@ export type SaleMode = "decant" | "full_bottle";
 
 export type CollectionCategory = 'homme' | 'femme' | 'deodorants-stick' | 'packs';
 
+export type ProductTier = {
+  quantity: number;
+  price: number;
+  label?: string;
+  badge?: string;
+};
+
 export type Parfum = {
   id: string;
   name: string;
@@ -40,6 +47,9 @@ export type Parfum = {
   full_bottle_price?: number | null;
   full_bottle_stock?: number | null;
   full_bottle_limited?: boolean | null;
+  // Paliers multiples / Tarification dégressive par lot du même produit
+  has_tiers?: boolean;
+  quantity_tiers?: ProductTier[];
   stock_5ml?: number;
   stock_10ml?: number;
   weight_value?: string;

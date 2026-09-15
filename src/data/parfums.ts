@@ -10,6 +10,13 @@ export type CollectionCategory = 'homme' | 'femme' | 'deodorants-stick' | 'packs
 
 export type ParfumSize = '5ml' | '10ml' | 'full';
 
+export type ProductTier = {
+  quantity: number;
+  price: number;
+  label?: string;
+  badge?: string;
+};
+
 export type Parfum = {
   id: string;
   name: string;
@@ -21,7 +28,7 @@ export type Parfum = {
   description_en?: string;
   notes: { tete: string[]; coeur: string[]; fond: string[] };
   notes_en?: string | { tete?: string[]; coeur?: string[]; fond?: string[] };
-  prices: { '5ml': number; '10ml': number };
+  prices: { '5ml': number; '10ml': number; '100ml'?: number };
   imageLabel: string;
   image_label_en?: string;
   image_url?: string | null;
@@ -31,6 +38,8 @@ export type Parfum = {
   seasons?: string[];
   sale_mode?: 'decant' | 'full_bottle';
   full_bottle_price?: number | null;
+  has_tiers?: boolean;
+  quantity_tiers?: ProductTier[];
 };
 
 export const SIZE_META: Record<ParfumSize, { label: string; sub: string }> = {

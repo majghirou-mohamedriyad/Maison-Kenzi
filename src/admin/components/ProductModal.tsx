@@ -96,6 +96,8 @@ const emptyForm = {
   active: true,
   isNew: false,
   isBestseller: false,
+  hasTiers: false,
+  tiers: [] as Array<{ quantity: number; price: number; label: string; badge: string }>,
 };
 
 const isUuid = (s: string) =>
@@ -235,6 +237,15 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           active: initial.active ?? true,
           isNew: !!initial.isNew,
           isBestseller: !!initial.isBestseller,
+          hasTiers: !!initial.has_tiers || (Array.isArray(initial.quantity_tiers) && initial.quantity_tiers.length > 0),
+          tiers: Array.isArray(initial.quantity_tiers)
+            ? initial.quantity_tiers.map((t) => ({
+                quantity: Number(t.quantity) || 1,
+                price: Number(t.price) || 0,
+                label: t.label || "",
+                badge: t.badge || "",
+              }))
+            : [],
         });
       } else {
         const initCategory = defaultCategory && defaultCategory !== "Tous" ? defaultCategory : "";
@@ -250,6 +261,44 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       setCategorySearch("");
     }
   }, [open, initial, defaultCategory]);
+
+  const addTier = (qty?: number) => {
+    setF((prev) => {
+      const currentTiers = prev.tiers || [];
+      const basePrice = Number(prev.price) || 200;
+      const nextQty = qty || (currentTiers.length > 0 ? Math.max(...currentTiers.map(t => t.quantity)) + 1 : 2);
+      const suggestedPrice = Math.round(basePrice * nextQty * (nextQty >= 3 ? 0.75 : 0.88));
+      return {
+        ...prev,
+        hasTiers: true,
+        tiers: [
+          ...currentTiers,
+          {
+            quantity: nextQty,
+            price: suggestedPrice,
+            label: nextQty === 2 ? "Duo Économique" : nextQty === 3 ? "Trio Privilège" : `Lot de ${nextQty}`,
+            badge: nextQty === 2 ? "-12%" : nextQty === 3 ? "Plus Populaire" : "",
+          },
+        ].sort((a, b) => a.quantity - b.quantity),
+      };
+    });
+  };
+
+  const updateTier = (index: number, field: "quantity" | "price" | "label" | "badge", value: any) => {
+    setF((prev) => {
+      const nextTiers = [...(prev.tiers || [])];
+      if (!nextTiers[index]) return prev;
+      nextTiers[index] = { ...nextTiers[index], [field]: value };
+      return { ...prev, tiers: nextTiers };
+    });
+  };
+
+  const removeTier = (index: number) => {
+    setF((prev) => {
+      const nextTiers = (prev.tiers || []).filter((_, i) => i !== index);
+      return { ...prev, tiers: nextTiers };
+    });
+  };
 
   const set = (key: string, val: any) => {
     setF((prev) => ({ ...prev, [key]: val }));
@@ -548,6 +597,18 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       full_bottle_price: numPrice,
       full_bottle_stock: numStock,
       full_bottle_limited: false,
+      has_tiers: f.hasTiers,
+      quantity_tiers: f.hasTiers
+        ? (f.tiers || [])
+            .filter((t) => t.quantity > 0 && t.price > 0)
+            .sort((a, b) => a.quantity - b.quantity)
+            .map((t) => ({
+              quantity: Number(t.quantity),
+              price: Number(t.price),
+              label: t.label.trim() || undefined,
+              badge: t.badge.trim() || undefined,
+            }))
+        : [],
       weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
       weight_unit: isCosmetic ? f.weightUnit : undefined,
       volume_value: isCosmetic ? (f.volumeValue || undefined) : undefined,
@@ -903,6 +964,192 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                     </div>
                   </section>
 
+                  {/* Carte Paliers Multiples & Offres par Lot (Cosmétiques) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <div>
+                          <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                            Paliers Multiples & Offres par Lot (Multi-Pack)
+                          </h3>
+                          <p className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
+                            Offres groupées pour 2, 3 exemplaires ou plus du même produit
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91]">
+                          {f.hasTiers ? "Actif" : "Désactivé"}
+                        </span>
+                        <Switch
+                          checked={f.hasTiers}
+                          onCheckedChange={(val) => {
+                            set("hasTiers", val);
+                            if (val && (!f.tiers || f.tiers.length === 0)) {
+                              const basePrice = Number(f.price) || 200;
+                              set("tiers", [
+                                { quantity: 2, price: Math.round(basePrice * 2 * 0.88), label: "Lot de 2", badge: "-12%" },
+                                { quantity: 3, price: Math.round(basePrice * 3 * 0.75), label: "Lot de 3", badge: "Plus Populaire" },
+                              ]);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {f.hasTiers && (
+                      <div className="space-y-2.5 animate-in fade-in duration-200">
+                        {f.tiers.length === 0 ? (
+                          <div className="text-center py-3 px-2 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] bg-white/50 dark:bg-[#141312]/50">
+                            <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mb-2">
+                              Aucun palier configuré.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => addTier(2)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E] text-white hover:bg-[#B89658] transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Ajouter le premier palier (2 unités)</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {f.tiers.map((tier, idx) => {
+                              const baseUnitPrice = Number(f.price) || 0;
+                              const unitInTier = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
+                              const normalTotal = baseUnitPrice * tier.quantity;
+                              const savings = normalTotal > tier.price && normalTotal > 0 ? normalTotal - tier.price : 0;
+
+                              return (
+                                <div
+                                  key={idx}
+                                  className="p-2.5 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="w-4 h-4 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] text-[9px] font-bold flex items-center justify-center">
+                                        {idx + 1}
+                                      </span>
+                                      <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                                        Palier {tier.quantity} {tier.quantity > 1 ? "unités reçues" : "unité"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {savings > 0 && (
+                                        <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+                                          Économie client : {savings} MAD
+                                        </span>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => removeTier(idx)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                                        title="Supprimer ce palier"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Quantité reçue *
+                                      </label>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        className={inputCls + " font-semibold"}
+                                        value={tier.quantity}
+                                        onChange={(e) => updateTier(idx, "quantity", Math.max(1, parseInt(e.target.value) || 1))}
+                                        placeholder="Ex: 3"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Prix total du lot (€ / MAD) *
+                                      </label>
+                                      <div className="relative">
+                                        <input
+                                          type="number"
+                                          min={0}
+                                          step="any"
+                                          className={inputCls + " pr-7 font-bold text-[#C9A96E]"}
+                                          value={tier.price}
+                                          onChange={(e) => updateTier(idx, "price", parseFloat(e.target.value) || 0)}
+                                          placeholder="Ex: 450"
+                                        />
+                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                                          MAD
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (ex: "Lot de 3")
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label}
+                                        onChange={(e) => updateTier(idx, "label", e.target.value)}
+                                        placeholder="Ex: Pack Trio"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Badge promotionnel
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.badge}
+                                        onChange={(e) => updateTier(idx, "badge", e.target.value)}
+                                        placeholder="Ex: Plus Populaire"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
+                                    <span>
+                                      Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / unité</strong>
+                                    </span>
+                                    <span className="text-[9px] italic">
+                                      Le client recevra {tier.quantity} fois le même article pour {tier.price} MAD
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+
+                            <div className="flex items-center gap-2 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => addTier()}
+                                className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-[#C9A96E] text-[#C9A96E] hover:bg-[#C9A96E]/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Ajouter un palier</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => addTier(3)}
+                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
+                              >
+                                + Palier 3 unités
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </section>
+
                   {/* Carte 2 : Descriptions & Conseils d'Utilisation (Bilingue FR / EN) */}
                   <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
                     <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
@@ -1196,6 +1443,199 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                         </div>
                       </div>
                     </div>
+                  </section>
+
+                  {/* Carte Paliers Multiples & Offres par Lot (Parfums) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <div>
+                          <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                            Paliers Multiples & Offres par Lot (Multi-Pack)
+                          </h3>
+                          <p className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
+                            Permet au client de commander 2, 3 flacons ou plus du même parfum à un tarif global préférentiel
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91]">
+                          {f.hasTiers ? "Actif" : "Désactivé"}
+                        </span>
+                        <Switch
+                          checked={f.hasTiers}
+                          onCheckedChange={(val) => {
+                            set("hasTiers", val);
+                            if (val && (!f.tiers || f.tiers.length === 0)) {
+                              const basePrice = Number(f.price) || 200;
+                              set("tiers", [
+                                { quantity: 2, price: Math.round(basePrice * 2 * 0.88), label: "Lot de 2", badge: "-12%" },
+                                { quantity: 3, price: Math.round(basePrice * 3 * 0.75), label: "Lot de 3", badge: "Plus Populaire" },
+                              ]);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {f.hasTiers && (
+                      <div className="space-y-2.5 animate-in fade-in duration-200">
+                        {f.tiers.length === 0 ? (
+                          <div className="text-center py-3 px-2 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] bg-white/50 dark:bg-[#141312]/50">
+                            <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mb-2">
+                              Aucun palier configuré.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => addTier(2)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E] text-white hover:bg-[#B89658] transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Ajouter le premier palier (2 flacons)</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {f.tiers.map((tier, idx) => {
+                              const baseUnitPrice = Number(f.price) || 0;
+                              const unitInTier = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
+                              const normalTotal = baseUnitPrice * tier.quantity;
+                              const savings = normalTotal > tier.price && normalTotal > 0 ? normalTotal - tier.price : 0;
+
+                              return (
+                                <div
+                                  key={idx}
+                                  className="p-2.5 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="w-4 h-4 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] text-[9px] font-bold flex items-center justify-center">
+                                        {idx + 1}
+                                      </span>
+                                      <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                                        Palier {tier.quantity} {tier.quantity > 1 ? "flacons reçus" : "flacon"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {savings > 0 && (
+                                        <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+                                          Économie client : {savings} MAD
+                                        </span>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => removeTier(idx)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                                        title="Supprimer ce palier"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Quantité reçue *
+                                      </label>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        className={inputCls + " font-semibold"}
+                                        value={tier.quantity}
+                                        onChange={(e) => updateTier(idx, "quantity", Math.max(1, parseInt(e.target.value) || 1))}
+                                        placeholder="Ex: 3"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Prix total du lot (€ / MAD) *
+                                      </label>
+                                      <div className="relative">
+                                        <input
+                                          type="number"
+                                          min={0}
+                                          step="any"
+                                          className={inputCls + " pr-7 font-bold text-[#C9A96E]"}
+                                          value={tier.price}
+                                          onChange={(e) => updateTier(idx, "price", parseFloat(e.target.value) || 0)}
+                                          placeholder="Ex: 450"
+                                        />
+                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
+                                          MAD
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (ex: "Lot de 3")
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label}
+                                        onChange={(e) => updateTier(idx, "label", e.target.value)}
+                                        placeholder="Ex: Pack Trio"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Badge promotionnel
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.badge}
+                                        onChange={(e) => updateTier(idx, "badge", e.target.value)}
+                                        placeholder="Ex: Plus Populaire"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
+                                    <span>
+                                      Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / flacon</strong>
+                                    </span>
+                                    <span className="text-[9px] italic">
+                                      Le client recevra {tier.quantity} fois le même parfum pour {tier.price} MAD
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+
+                            <div className="flex items-center gap-2 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => addTier()}
+                                className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-[#C9A96E] text-[#C9A96E] hover:bg-[#C9A96E]/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Ajouter un palier</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => addTier(3)}
+                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
+                              >
+                                + Palier 3 flacons
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => addTier(4)}
+                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
+                              >
+                                + Palier 4 flacons
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </section>
 
                   {/* Carte 2 : Pyramide Olfactive & Descriptions (Bilingue FR / EN) */}

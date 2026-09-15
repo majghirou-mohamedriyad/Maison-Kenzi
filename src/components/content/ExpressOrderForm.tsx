@@ -590,7 +590,7 @@ const ExpressOrderForm = ({
                         key={idx}
                         className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-primary bg-primary/15 px-2 py-0.5 rounded-md truncate"
                       >
-                        {it.sizeLabel} × {it.quantity}
+                        {it.sizeLabel?.includes("(") || it.sizeLabel?.toLowerCase().includes("lot de") ? it.sizeLabel : `${it.sizeLabel} × ${it.quantity}`}
                       </span>
                     ))
                   ) : (

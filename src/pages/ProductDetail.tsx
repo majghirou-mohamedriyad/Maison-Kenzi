@@ -38,7 +38,7 @@ import { useCart } from "@/store/cart";
 import { toast } from "sonner";
 import { SIZES, SIZE_META, formatMAD, priceFor } from "@/lib/sizes";
 import { getParfumImages } from "@/lib/productImages";
-import type { Size } from "@/types/database";
+import type { Size, ProductTier } from "@/types/database";
 import type { OrderSelectionItem } from "@/components/content/ExpressOrderForm";
 import {
   Breadcrumb,
@@ -254,6 +254,48 @@ const ParfumDetail = () => {
     parfum.stock_status === "rupture" ||
     (isFullBottle && fullStock <= 0);
 
+  // Détection des paliers multiples (offres par lot du même produit)
+  const rawTiers = (parfum as any)?.quantity_tiers;
+  const parsedTiers: ProductTier[] = useMemo(() => {
+    if (Array.isArray(rawTiers)) return rawTiers;
+    if (typeof rawTiers === "string") {
+      try {
+        const p = JSON.parse(rawTiers);
+        if (Array.isArray(p)) return p;
+      } catch {}
+    }
+    return [];
+  }, [rawTiers]);
+
+  const hasProductTiers = !!((parfum as any)?.has_tiers && parsedTiers.length > 0);
+  const [selectedTierIndex, setSelectedTierIndex] = useState<number>(0);
+
+  const baseUnitPrice = useMemo(() => {
+    if (!parfum) return 0;
+    return priceFor(parfum, isFullBottle ? "full" : "10ml");
+  }, [parfum, isFullBottle]);
+
+  const displayTiers: ProductTier[] = useMemo(() => {
+    if (!hasProductTiers) return [];
+    const hasSingle = parsedTiers.some((t) => t.quantity === 1);
+    const list: ProductTier[] = [
+      ...(hasSingle
+        ? []
+        : [
+            {
+              quantity: 1,
+              price: baseUnitPrice,
+              label: isParfum ? (language === "en" ? "1 Bottle" : "1 Flacon") : (language === "en" ? "1 Unit" : "1 Unité"),
+              badge: "",
+            },
+          ]),
+      ...parsedTiers,
+    ];
+    return list.sort((a, b) => a.quantity - b.quantity);
+  }, [hasProductTiers, parsedTiers, baseUnitPrice, isParfum, language]);
+
+  const activeTier = hasProductTiers ? (displayTiers[selectedTierIndex] || displayTiers[0]) : null;
+
   const getProductFormatInfo = (s: Size) => {
     if (s === "full") {
       if (!isParfum) {
@@ -282,23 +324,52 @@ const ParfumDetail = () => {
   };
 
   // Selected items with quantity > 0
-  const selectedItems: OrderSelectionItem[] = availableSizes
-    .filter((s) => (quantities[s] ?? 0) > 0)
-    .map((s) => {
-      const qty = quantities[s] ?? 0;
-      const unitPrice = priceFor(parfum, s);
-      const fmt = getProductFormatInfo(s);
-      return {
-        size: s,
-        sizeLabel: fmt.label,
-        quantity: qty,
-        unitPrice,
-        subtotal: unitPrice * qty,
-      };
-    });
+  const selectedItems: OrderSelectionItem[] = useMemo(() => {
+    if (!parfum) return [];
+
+    if (hasProductTiers && activeTier) {
+      const isMulti = activeTier.quantity > 1;
+      const tierLabel = activeTier.label || (isMulti
+        ? (isParfum ? `Lot de ${activeTier.quantity} flacons` : `Lot de ${activeTier.quantity} unités`)
+        : (isParfum ? "1 Flacon" : "1 Unité"));
+
+      return [
+        {
+          size: isFullBottle ? "full" : "10ml",
+          sizeLabel: `${tierLabel}${isMulti ? ` (${activeTier.quantity}x même produit)` : ""}`,
+          quantity: activeTier.quantity,
+          unitPrice: Math.round(activeTier.price / activeTier.quantity),
+          subtotal: activeTier.price,
+          parfumName: displayName || parfum.name,
+          maison: parfum.maison,
+          imageUrl: parfum.image_url || undefined,
+        },
+      ];
+    }
+
+    return availableSizes
+      .filter((s) => (quantities[s] ?? 0) > 0)
+      .map((s) => {
+        const qty = quantities[s] ?? 0;
+        const unitPrice = priceFor(parfum, s);
+        const fmt = getProductFormatInfo(s);
+        return {
+          size: s,
+          sizeLabel: fmt.label,
+          quantity: qty,
+          unitPrice,
+          subtotal: unitPrice * qty,
+          parfumName: displayName || parfum.name,
+          maison: parfum.maison,
+          imageUrl: parfum.image_url || undefined,
+        };
+      });
+  }, [parfum, hasProductTiers, activeTier, availableSizes, quantities, displayName, isFullBottle, isParfum]);
 
   const totalQuantity = selectedItems.reduce((acc, it) => acc + it.quantity, 0);
-  const totalPrice = selectedItems.reduce((acc, it) => acc + it.subtotal, 0);
+  const totalPrice = hasProductTiers && activeTier
+    ? activeTier.price
+    : selectedItems.reduce((acc, it) => acc + it.subtotal, 0);
 
   const handleAddToCart = () => {
     if (outOfStock) {
@@ -307,7 +378,7 @@ const ParfumDetail = () => {
     }
 
     if (selectedItems.length === 0) {
-      toast.error("Veuillez choisir une quantité pour au moins un format");
+      toast.error("Veuillez choisir une quantité ou une offre");
       return;
     }
 
@@ -742,116 +813,199 @@ const ParfumDetail = () => {
                 </div>
               </div>
 
-              {/* Multi-Format / Size Selection Cards with Independent Quantities */}
-              <div className="space-y-2 pt-1">
-                <div className="flex justify-between items-center flex-wrap gap-1">
-                  <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
-                    {isParfum ? (
-                      <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
-                    ) : (
-                      <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
-                    )}
-                    <span>{t.product.sizeSelect}</span>
-                  </span>
-                </div>
+              {/* Multi-Format / Size / Tier Selection Cards */}
+              {hasProductTiers ? (
+                /* SECTION PALIERS MULTIPLES & OFFRES PAR LOT */
+                <div className="space-y-2.5 pt-1">
+                  <div className="flex justify-between items-center flex-wrap gap-1">
+                    <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span>{language === "en" ? "Select your package" : "Choisissez votre offre par lot"}</span>
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      {language === "en" ? "Articles identical • Free delivery" : "Même produit • Livraison offerte"}
+                    </span>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                  {availableSizes.map((s) => {
-                    const { label: formatLabel, sub: formatSub } = getProductFormatInfo(s);
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
+                    {displayTiers.map((tier, idx) => {
+                      const isSelected = selectedTierIndex === idx;
+                      const unitEquivalent = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
+                      const regularTotal = baseUnitPrice * tier.quantity;
+                      const savings = regularTotal > tier.price && regularTotal > 0 ? regularTotal - tier.price : 0;
 
-                    const formatStock =
-                      s === "full"
-                        ? (parfum.full_bottle_stock ?? 0)
-                        : s === "5ml"
-                        ? (parfum.stock_5ml ?? 0)
-                        : s === "10ml"
-                        ? (parfum.stock_10ml ?? 0)
-                        : 0;
-
-                    const isFormatOutOfStock = outOfStock || (typeof formatStock === "number" && formatStock <= 0);
-
-                    const qty = quantities[s] ?? 0;
-                    const isSelected = qty > 0;
-                    const unitPrice = priceFor(parfum, s);
-
-                    return (
-                      <div
-                        key={s}
-                        className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 sm:gap-3 ${
-                          isFormatOutOfStock
-                            ? "opacity-50 border-border/50 bg-muted/20 cursor-not-allowed"
-                            : isSelected
-                            ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
-                            : "border-border/80 bg-card/40 hover:border-primary/40"
-                        }`}
-                      >
-                        {/* Format Info */}
-                        <div
-                          className={`flex-1 min-w-0 select-none ${isFormatOutOfStock ? "cursor-not-allowed" : "cursor-pointer"}`}
-                          onClick={() => {
-                            if (!isFormatOutOfStock) setDirectSizeQty(s, 1);
-                          }}
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedTierIndex(idx)}
+                          className={`relative p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 ${
+                            isSelected
+                              ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-sm scale-[1.01]"
+                              : "border-border/80 bg-card/40 hover:border-primary/40 hover:bg-card/70"
+                          }`}
                         >
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className={`text-sm sm:text-base font-semibold ${isFormatOutOfStock ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                              {formatLabel}
+                          {/* Badge promotionnel */}
+                          {tier.badge && (
+                            <span className="absolute -top-2.5 right-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full shadow-xs">
+                              {tier.badge}
                             </span>
-                            {formatSub ? (
-                              <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
-                                {formatSub}
+                          )}
+
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <span className="text-sm sm:text-base font-semibold text-foreground">
+                                {tier.label || (tier.quantity === 1 ? (isParfum ? "1 Flacon" : "1 Unité") : `Lot de ${tier.quantity}`)}
                               </span>
-                            ) : null}
-                            {isFormatOutOfStock && (
-                              <span className="text-[9px] font-bold text-destructive uppercase tracking-wider bg-destructive/10 px-2 py-0.5 rounded-full border border-destructive/20 shrink-0">
-                                Épuisé
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border/80 bg-background"
+                              }`}>
+                                {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                              </div>
+                            </div>
+
+                            <p className="text-[10px] text-muted-foreground">
+                              {tier.quantity === 1
+                                ? (language === "en" ? "1 item delivered" : "1 article livré")
+                                : (language === "en" ? `You receive ${tier.quantity}x same item` : `Vous recevez ${tier.quantity} fois le même produit`)}
+                            </p>
+                          </div>
+
+                          <div className="pt-2 border-t border-border/50 space-y-0.5">
+                            <div className="flex items-baseline justify-between gap-1 flex-wrap">
+                              <span className="text-base sm:text-lg font-serif font-bold text-primary">
+                                {formatMAD(tier.price)}
+                              </span>
+                              {tier.quantity > 1 && (
+                                <span className="text-[10px] text-muted-foreground">
+                                  soit {formatMAD(unitEquivalent)} / u.
+                                </span>
+                              )}
+                            </div>
+
+                            {savings > 0 && (
+                              <span className="inline-block text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                Économisez {formatMAD(savings)}
                               </span>
                             )}
                           </div>
-                          <div className={`text-xs sm:text-sm font-semibold tracking-tight mt-0.5 ${isFormatOutOfStock ? "text-muted-foreground" : "text-primary"}`}>
-                            {isFormatOutOfStock ? "Indisponible" : `${formatMAD(unitPrice)} `}
-                            {!isFormatOutOfStock && <span className="text-[10px] font-normal text-muted-foreground">/ unité</span>}
-                          </div>
-                        </div>
-
-                        {/* Individual Quantity Stepper */}
-                        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                          <div className={`flex items-center border rounded-full px-1 sm:px-1.5 py-0.5 shadow-xs ${
-                            isFormatOutOfStock ? "border-border/40 bg-muted/40 opacity-40" : "border-border bg-background"
-                          }`}>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isFormatOutOfStock) updateSizeQty(s, -1);
-                              }}
-                              className="h-7 w-7 flex items-center justify-center rounded-full text-foreground hover:text-primary hover:bg-muted/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                              disabled={qty === 0 || isFormatOutOfStock}
-                              aria-label={`Diminuer ${formatLabel}`}
-                            >
-                              <Minus size={12} />
-                            </button>
-                            <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-semibold text-foreground select-none">
-                              {qty}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isFormatOutOfStock) updateSizeQty(s, 1);
-                              }}
-                              className="h-7 w-7 flex items-center justify-center rounded-full text-foreground hover:text-primary hover:bg-muted/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                              disabled={isFormatOutOfStock || (typeof formatStock === "number" && qty >= formatStock)}
-                              aria-label={`Augmenter ${formatLabel}`}
-                            >
-                              <Plus size={12} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* SECTION FORMATS CLASSIQUES DÉCANTS / FLACON */
+                <div className="space-y-2 pt-1">
+                  <div className="flex justify-between items-center flex-wrap gap-1">
+                    <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
+                      {isParfum ? (
+                        <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                      )}
+                      <span>{t.product.sizeSelect}</span>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                    {availableSizes.map((s) => {
+                      const { label: formatLabel, sub: formatSub } = getProductFormatInfo(s);
+
+                      const formatStock =
+                        s === "full"
+                          ? (parfum.full_bottle_stock ?? 0)
+                          : s === "5ml"
+                          ? (parfum.stock_5ml ?? 0)
+                          : s === "10ml"
+                          ? (parfum.stock_10ml ?? 0)
+                          : 0;
+
+                      const isFormatOutOfStock = outOfStock || (typeof formatStock === "number" && formatStock <= 0);
+
+                      const qty = quantities[s] ?? 0;
+                      const isSelected = qty > 0;
+                      const unitPrice = priceFor(parfum, s);
+
+                      return (
+                        <div
+                          key={s}
+                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 sm:gap-3 ${
+                            isFormatOutOfStock
+                              ? "opacity-50 border-border/50 bg-muted/20 cursor-not-allowed"
+                              : isSelected
+                              ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
+                              : "border-border/80 bg-card/40 hover:border-primary/40"
+                          }`}
+                        >
+                          {/* Format Info */}
+                          <div
+                            className={`flex-1 min-w-0 select-none ${isFormatOutOfStock ? "cursor-not-allowed" : "cursor-pointer"}`}
+                            onClick={() => {
+                              if (!isFormatOutOfStock) setDirectSizeQty(s, 1);
+                            }}
+                          >
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className={`text-sm sm:text-base font-semibold ${isFormatOutOfStock ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                                {formatLabel}
+                              </span>
+                              {formatSub ? (
+                                <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full border border-border/50 truncate">
+                                  {formatSub}
+                                </span>
+                              ) : null}
+                              {isFormatOutOfStock && (
+                                <span className="text-[9px] font-bold text-destructive uppercase tracking-wider bg-destructive/10 px-2 py-0.5 rounded-full border border-destructive/20 shrink-0">
+                                  Épuisé
+                                </span>
+                              )}
+                            </div>
+                            <div className={`text-xs sm:text-sm font-semibold tracking-tight mt-0.5 ${isFormatOutOfStock ? "text-muted-foreground" : "text-primary"}`}>
+                              {isFormatOutOfStock ? "Indisponible" : `${formatMAD(unitPrice)} `}
+                              {!isFormatOutOfStock && <span className="text-[10px] font-normal text-muted-foreground">/ unité</span>}
+                            </div>
+                          </div>
+
+                          {/* Individual Quantity Stepper */}
+                          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                            <div className={`flex items-center border rounded-full px-1 sm:px-1.5 py-0.5 shadow-xs ${
+                              isFormatOutOfStock ? "border-border/40 bg-muted/40 opacity-40" : "border-border bg-background"
+                            }`}>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!isFormatOutOfStock) updateSizeQty(s, -1);
+                                }}
+                                className="h-7 w-7 flex items-center justify-center rounded-full text-foreground hover:text-primary hover:bg-muted/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                disabled={qty === 0 || isFormatOutOfStock}
+                                aria-label={`Diminuer ${formatLabel}`}
+                              >
+                                <Minus size={12} />
+                              </button>
+                              <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-semibold text-foreground select-none">
+                                {qty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!isFormatOutOfStock) updateSizeQty(s, 1);
+                                }}
+                                className="h-7 w-7 flex items-center justify-center rounded-full text-foreground hover:text-primary hover:bg-muted/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                disabled={isFormatOutOfStock || (typeof formatStock === "number" && qty >= formatStock)}
+                                aria-label={`Augmenter ${formatLabel}`}
+                              >
+                                <Plus size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* STATIC ORDER FORM (ALWAYS VISIBLE DIRECTLY UNDER FORMATS & QUANTITIES) */}
               <ExpressOrderForm

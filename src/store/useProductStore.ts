@@ -5,7 +5,7 @@
  */
 
 import { useSyncExternalStore } from "react";
-import type { Parfum } from "@/data/parfums";
+import type { Parfum, ProductTier } from "@/data/parfums";
 import { supabase } from "@/lib/supabase";
 
 const STORAGE_KEY = "maisonkenzi_products";
@@ -23,6 +23,8 @@ type ExtraMeta = {
   full_bottle_price?: number | null;
   full_bottle_stock?: number | null;
   full_bottle_limited?: boolean | null;
+  has_tiers?: boolean;
+  quantity_tiers?: ProductTier[];
   weight_value?: string;
   weight_unit?: "mg" | "g" | "kg" | string;
   volume_value?: string;
@@ -44,6 +46,16 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     ? [p.image_url]
     : [];
 
+  let parsedTiers: ProductTier[] = [];
+  if (Array.isArray(p.quantity_tiers)) {
+    parsedTiers = p.quantity_tiers;
+  } else if (typeof (p as any).quantity_tiers === "string") {
+    try {
+      const parsed = JSON.parse((p as any).quantity_tiers);
+      if (Array.isArray(parsed)) parsedTiers = parsed;
+    } catch {}
+  }
+
   return {
     ...p,
     name_en: p.name_en || "",
@@ -64,6 +76,8 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     full_bottle_price: p.full_bottle_price ?? null,
     full_bottle_stock: p.full_bottle_stock ?? 0,
     full_bottle_limited: p.full_bottle_limited ?? false,
+    has_tiers: p.has_tiers ?? (parsedTiers.length > 0),
+    quantity_tiers: parsedTiers,
     weight_value: p.weight_value,
     weight_unit: p.weight_unit || "g",
     volume_value: p.volume_value,
@@ -233,6 +247,8 @@ if (typeof window !== "undefined") {
                   full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : localMatch?.full_bottle_volume_ml ?? null,
                   full_bottle_stock: Number(r.full_bottle_stock ?? localMatch?.full_bottle_stock ?? 0),
                   full_bottle_limited: !!r.full_bottle_limited,
+                  has_tiers: r.has_tiers ?? localMatch?.has_tiers ?? false,
+                  quantity_tiers: Array.isArray(r.quantity_tiers) ? r.quantity_tiers : (typeof r.quantity_tiers === 'string' ? JSON.parse(r.quantity_tiers || '[]') : localMatch?.quantity_tiers ?? []),
                   stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
                   stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
                   active: r.is_active ?? localMatch?.active ?? true,

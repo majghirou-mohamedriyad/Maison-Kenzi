@@ -172,6 +172,8 @@ export const upsertParfumToSupabase = async (
     full_bottle_price: p.full_bottle_price != null ? Number(p.full_bottle_price) : numPrice,
     full_bottle_stock: fullStock,
     full_bottle_limited: !!p.full_bottle_limited,
+    has_tiers: !!p.has_tiers,
+    quantity_tiers: p.quantity_tiers || [],
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
     weight_value: p.weight_value || null,
     weight_unit: p.weight_unit || null,
@@ -179,17 +181,19 @@ export const upsertParfumToSupabase = async (
     volume_unit: p.volume_unit || null,
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques incluses)
+  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques, paliers inclus)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
     console.warn("Supabase upsert - tentative avec repli:", error.message);
 
-    // 2. Repli si les colonnes cosmétiques ou bilingues ne sont pas encore migrées sur PostgreSQL
+    // 2. Repli si les colonnes cosmétiques, bilingues ou tiers ne sont pas encore migrées sur PostgreSQL
     const fallbackRow = { ...row };
     delete fallbackRow.weight_value;
     delete fallbackRow.weight_unit;
     delete fallbackRow.volume_value;
     delete fallbackRow.volume_unit;
+    delete fallbackRow.has_tiers;
+    delete fallbackRow.quantity_tiers;
     
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
