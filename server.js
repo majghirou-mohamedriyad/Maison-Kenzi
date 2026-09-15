@@ -124,6 +124,111 @@ const proxyToPort = (targetPort, stripPrefix, req, res) => {
   req.pipe(proxyReq);
 };
 
+// Générateur dynamique de sitemap.xml avec intégration de tous les produits
+let sitemapCache = { xml: null, timestamp: 0 };
+const SITEMAP_CACHE_TTL_MS = 60 * 60 * 1000; // 1 heure
+
+const slugifyText = (text) => {
+  if (!text) return "";
+  return text
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
+const handleSitemapXml = async (req, res) => {
+  const now = Date.now();
+  if (sitemapCache.xml && now - sitemapCache.timestamp < SITEMAP_CACHE_TTL_MS) {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    return res.end(sitemapCache.xml);
+  }
+
+  try {
+    // 1. Récupération des produits actifs depuis l'instance locale Supabase (port 8000)
+    const supabaseUrl = `http://127.0.0.1:${SUPABASE_TARGET_PORT}/rest/v1/parfums?select=id,name,maison,category,updated_at,created_at,is_active&is_active=eq.true`;
+    const response = await fetch(supabaseUrl, {
+      headers: {
+        Accept: "application/json",
+        apikey: process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
+      },
+    }).catch(() => null);
+
+    let products = [];
+    if (response && response.ok) {
+      products = await response.json();
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // 2. Construction du XML avec l'ensemble des collections et pages institutionnelles
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    const staticUrls = [
+      { loc: "https://maison-kenzi.com/", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/all", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/homme", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/femme", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/mixte", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/cosmetiques", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/artisanat", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/antiques", lastmod: today },
+      { loc: "https://maison-kenzi.com/collection/nouveautes", lastmod: today },
+      { loc: "https://maison-kenzi.com/about/notre-histoire", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/about/ingredients", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/about/guide-des-tailles", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/about/service-client", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/about/livraison", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/privacy-policy", lastmod: "2026-09-15" },
+      { loc: "https://maison-kenzi.com/terms-of-service", lastmod: "2026-09-15" },
+    ];
+
+    for (const item of staticUrls) {
+      xml += `  <url>\n    <loc>${item.loc}</loc>\n    <lastmod>${item.lastmod}</lastmod>\n  </url>\n`;
+    }
+
+    // 3. Fiches Produits Individuelles (Slugs conviviaux SEO)
+    if (Array.isArray(products) && products.length > 0) {
+      for (const p of products) {
+        const namePart = (p.name || "").trim();
+        const maisonPart = (p.maison || "").trim();
+        let combined = namePart;
+        if (maisonPart && !namePart.toLowerCase().includes(maisonPart.toLowerCase())) {
+          combined = `${namePart} ${maisonPart}`;
+        }
+        const rawDate = p.updated_at || p.created_at;
+        const productLastmod = rawDate ? String(rawDate).split("T")[0] : "2026-09-15";
+
+        xml += `  <url>\n    <loc>https://maison-kenzi.com/parfum/${slug}</loc>\n    <lastmod>${productLastmod}</lastmod>\n  </url>\n`;
+      }
+    }
+
+    xml += `</urlset>\n`;
+
+    sitemapCache = { xml, timestamp: now };
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.end(xml);
+  } catch (err) {
+    console.error("[Sitemap Generator]:", err);
+    const staticFile = path.join(DIST_DIR, "sitemap.xml");
+    if (fs.existsSync(staticFile)) {
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/xml; charset=utf-8");
+      fs.createReadStream(staticFile).pipe(res);
+    } else {
+      res.statusCode = 500;
+      res.end("Erreur génération sitemap");
+    }
+  }
+};
+
 const routes = {
   "/api/create-payment-intent": wrapApiHandler(createPaymentIntentHandler),
   "/api/whatsapp": wrapApiHandler(whatsappHandler),
@@ -134,6 +239,11 @@ const routes = {
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const pathname = parsedUrl.pathname;
+
+  // 0. Sitemap XML Dynamique avec Fiches Produits
+  if (pathname === "/sitemap.xml") {
+    return handleSitemapXml(req, res);
+  }
 
   // 1. Proxy vers Supabase (Port 8000)
   if (pathname.startsWith("/api/supabase")) {
