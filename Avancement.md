@@ -2,10 +2,19 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-15
+- **Dernière mise à jour** : 2026-09-16
 - **Statut général** : Déploiement en Production Réussi sur VPS & Nom de Domaine Officiel https://maison-kenzi.com (HTTPS / SSL Let's Encrypt, PM2, Nginx)
 
 ---
+
+- [x] Résolution et Sécurisation de l'Intégration Stripe Elements & Synchronisation des Clés d'Environnement ([`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`api/create-payment-intent.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/create-payment-intent.js), [`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
+  - [x] **Chargement & Synchronisation Automatique des Clés .env (`vite.config.ts`)** : Injection de `loadEnv` pour propager fidèlement les variables d'environnement (`STRIPE_SECRET_KEY`) au middleware de développement local sans décalage de compte avec la clé publique du frontend.
+  - [x] **Résolution Robuste de la Clé Secrète (`api/create-payment-intent.js`)** : Fonction `resolveSecretKey()` extrayant dynamiquement la clé secrète depuis `process.env.STRIPE_SECRET_KEY`, `process.env.VITE_STRIPE_SECRET_KEY` ou par lecture directe de repli dans `.env`, avec nettoyage des guillemets et espaces.
+  - [x] **Élimination de l'Erreur « Could not retrieve elements store » (`StripePaymentSection.tsx`)** :
+    - Suppression de l'appel redondant `elements.submit()` incompatible avec l'initialisation par `clientSecret` pré-généré.
+    - Utilisation directe et fluide de `stripe.confirmPayment({ elements, ... })` avec gestion gracieuse des erreurs et assainissement des clés.
+  - [x] **Conformité & Zéro Emoji** : Formulaire de paiement haut de gamme, icônes vectorielles `lucide-react` et charte Luxury Nude respectée.
+
 
 - [x] Paliers Multiples & Tarification Dégressive par Lot du Même Produit (Multi-Packs) ([`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/data/parfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/data/parfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts), [`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/store/cart.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/cart.tsx)) :
   - [x] **Architecture Épurée des Paliers Multiples (`ProductTier`)** : Définition du type `ProductTier` avec quantité d'articles identiques reçus (`quantity`), prix global du lot en MAD (`price`), libellé optionnel (`label`, `label_en`) et calcul automatique de réduction/économie sans champ manuel superflu.

@@ -5,7 +5,42 @@
  * sécurisé auprès de l'API Stripe en utilisant la clé secrète côté serveur.
  */
 
+import fs from "node:fs";
+import path from "node:path";
+
 const HARDCODED_STRIPE_SECRET = "sk_test_51UFcdfDpritAiI2IdzbOmdciSCLLCQGKA6yAUyUG7YjWM6nWUe9KI5MG85aOWZXGAcxC21cQLyD5FArUMzFkY18C00RkWPkovR";
+
+function resolveSecretKey() {
+  if (process.env.STRIPE_SECRET_KEY) {
+    return process.env.STRIPE_SECRET_KEY.trim().replace(/^["']|["']$/g, "");
+  }
+  if (process.env.VITE_STRIPE_SECRET_KEY) {
+    return process.env.VITE_STRIPE_SECRET_KEY.trim().replace(/^["']|["']$/g, "");
+  }
+
+  // Lecture de secours depuis le fichier .env si présent
+  try {
+    const envPath = path.resolve(process.cwd(), ".env");
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, "utf8");
+      for (const line of content.split("\n")) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("STRIPE_SECRET_KEY=")) {
+          const val = trimmed.substring("STRIPE_SECRET_KEY=".length).trim().replace(/^["']|["']$/g, "");
+          if (val) return val;
+        }
+        if (trimmed.startsWith("VITE_STRIPE_SECRET_KEY=")) {
+          const val = trimmed.substring("VITE_STRIPE_SECRET_KEY=".length).trim().replace(/^["']|["']$/g, "");
+          if (val) return val;
+        }
+      }
+    }
+  } catch {
+    // Ignorer si lecture impossible
+  }
+
+  return HARDCODED_STRIPE_SECRET;
+}
 
 export default async function handler(req, res) {
   // En-têtes CORS pour autoriser les requêtes depuis le frontend
@@ -21,7 +56,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Méthode non autorisée. Seul POST est accepté." });
   }
 
-  const secretKey = (process.env.STRIPE_SECRET_KEY || HARDCODED_STRIPE_SECRET).trim();
+  const secretKey = resolveSecretKey();
 
   if (!secretKey) {
     return res.status(500).json({ error: "Clé secrète Stripe non configurée." });

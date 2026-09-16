@@ -51,9 +51,11 @@ export const StripePaymentSection = ({
   const elementsInstanceRef = useRef<any>(null);
   const paymentElementRef = useRef<any>(null);
 
-  const publishableKey =
+  const rawPublishableKey =
     import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
     "pk_test_51UFcdfDpritAiI2ImrMJnqnobmEpVkxqejhPtdNIuI0qQbwBCVsiT9CGDn4jTATsFGIOYZgJCoxYlmQaA38lvUbN0052SU5z2z";
+
+  const publishableKey = String(rawPublishableKey).trim().replace(/^["']|["']$/g, "");
 
   const isTestMode = publishableKey.startsWith("pk_test_");
 
@@ -272,13 +274,6 @@ export const StripePaymentSection = ({
     setProcessing(true);
 
     try {
-      const { error: submitError } = await elementsInstanceRef.current.submit();
-      if (submitError) {
-        toast.error(submitError.message || "Informations de carte incomplètes.");
-        setProcessing(false);
-        return;
-      }
-
       const result = await stripeInstanceRef.current.confirmPayment({
         elements: elementsInstanceRef.current,
         confirmParams: {
@@ -294,7 +289,7 @@ export const StripePaymentSection = ({
         return;
       }
 
-      if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+      if (result.paymentIntent && (result.paymentIntent.status === "succeeded" || result.paymentIntent.status === "processing")) {
         toast.success("Paiement validé avec succès.");
         await onPaymentSuccess({
           paymentIntentId: result.paymentIntent.id,
@@ -306,7 +301,7 @@ export const StripePaymentSection = ({
       }
     } catch (err: any) {
       console.error("Exception paiement Stripe:", err);
-      toast.error("Une erreur inattendue est survenue lors de la transaction.");
+      toast.error(err?.message || "Une erreur inattendue est survenue lors de la transaction.");
     } finally {
       setProcessing(false);
     }

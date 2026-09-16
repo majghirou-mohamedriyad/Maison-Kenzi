@@ -1,9 +1,14 @@
-import { defineConfig } from "vite";
+/**
+ * Configuration Vite — Maison Kenzi
+ * Inclut le serveur de développement avec proxy Supabase, WAHA et API de paiement Stripe.
+ */
+
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-const stripeDevApiPlugin = () => ({
+const stripeDevApiPlugin = (env: Record<string, string>) => ({
   name: "stripe-dev-api",
   configureServer(server: any) {
     server.middlewares.use(async (req: any, res: any, next: any) => {
@@ -14,6 +19,8 @@ const stripeDevApiPlugin = () => ({
         });
         req.on("end", async () => {
           try {
+            // S'assurer que les clés d'environnement sont injectées dans process.env
+            Object.assign(process.env, env);
             const parsed = body ? JSON.parse(body) : {};
             const { default: handler } = await import("./api/create-payment-intent.js");
             const mockRes = {
@@ -49,52 +56,57 @@ const stripeDevApiPlugin = () => ({
 });
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    proxy: {
-      "/api/supabase": {
-        target: "http://185.197.249.4:8000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/supabase/, ""),
-      },
-      "/api/openwa": {
-        target: "http://185.197.249.4:2785",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/openwa/, ""),
-      },
-    },
-  },
-  plugins: [
-    react(),
-    stripeDevApiPlugin(),
-    mode === "development" && componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
-    },
-  },
-  build: {
-    chunkSizeWarningLimit: 2500,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/") || id.includes("node_modules/react-router-dom/")) {
-            return "vendor-react";
-          }
-          if (id.includes("node_modules/jspdf") || id.includes("node_modules/jspdf-autotable")) {
-            return "vendor-pdf";
-          }
-          if (id.includes("node_modules/@supabase")) {
-            return "vendor-supabase";
-          }
-          if (id.includes("node_modules/lucide-react")) {
-            return "vendor-ui";
-          }
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  Object.assign(process.env, env);
+
+  return {
+    server: {
+      host: "::",
+      port: 8080,
+      proxy: {
+        "/api/supabase": {
+          target: "http://185.197.249.4:8000",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/supabase/, ""),
+        },
+        "/api/openwa": {
+          target: "http://185.197.249.4:2785",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/openwa/, ""),
         },
       },
     },
-  },
-}));
+    plugins: [
+      react(),
+      stripeDevApiPlugin(env),
+      mode === "development" && componentTagger(),
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": path.resolve(import.meta.dirname, "./src"),
+      },
+    },
+    build: {
+      chunkSizeWarningLimit: 2500,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/") || id.includes("node_modules/react-router-dom/")) {
+              return "vendor-react";
+            }
+            if (id.includes("node_modules/jspdf") || id.includes("node_modules/jspdf-autotable")) {
+              return "vendor-pdf";
+            }
+            if (id.includes("node_modules/@supabase")) {
+              return "vendor-supabase";
+            }
+            if (id.includes("node_modules/lucide-react")) {
+              return "vendor-ui";
+            }
+          },
+        },
+      },
+    },
+  };
+});
