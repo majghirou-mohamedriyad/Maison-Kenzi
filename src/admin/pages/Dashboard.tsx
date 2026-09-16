@@ -6,7 +6,18 @@
  * Style Haute Parfumerie & Luxe Nude (zéro emoji).
  */
 
-import { BarChart3, ShoppingBag, Box, Users, Droplet, TrendingUp, TrendingDown, AlertTriangle, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  ShoppingBag,
+  Box,
+  Users,
+  Droplet,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  Sparkles,
+  ArrowUpRight,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import KpiCard from "../components/KpiCard";
 import { useProducts } from "@/store/useProductStore";
@@ -14,8 +25,10 @@ import { useDashboardKPIs, useRevenueChart, useTopProducts } from "@/hooks/useAd
 import { useFlaconnage } from "@/hooks/useFlaconnage";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { formatEUR } from "@/lib/sizes";
 
-const fmtMad = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} MAD`;
+const fmtEur = (n: number) => formatEUR(n);
+const fmtMad = fmtEur;
 const trendPct = (cur: number, prev: number) =>
   prev > 0 ? Number((((cur - prev) / prev) * 100).toFixed(1)) : cur > 0 ? 100 : 0;
 

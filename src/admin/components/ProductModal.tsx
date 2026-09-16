@@ -12,7 +12,6 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
 import { useCategories } from "@/store/useCategoryStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
@@ -367,8 +366,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         toast.error(`"${file.name}" n'est pas une image valide.`);
         return false;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(`"${file.name}" dépasse 10 Mo.`);
+      if (file.size > 15 * 1024 * 1024) {
+        toast.error(`"${file.name}" dépasse 15 Mo.`);
         return false;
       }
       return true;
@@ -381,9 +380,10 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       const id = initial?.id && isUuid(initial.id) ? initial.id : crypto.randomUUID();
       const uploadedUrls: string[] = [];
 
-      for (const file of validFiles) {
+      for (let i = 0; i < validFiles.length; i++) {
+        const fileToUpload = validFiles[i];
         try {
-          const url = await uploadProductImage(id, file);
+          const url = await uploadProductImage(id, fileToUpload);
           uploadedUrls.push(url);
         } catch (err) {
           console.error("Erreur upload Supabase Storage, bascule en local data-URL:", err);
@@ -391,7 +391,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
             const reader = new FileReader();
             reader.onload = (e) => resolve(e.target?.result as string);
             reader.onerror = reject;
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileToUpload);
           });
           uploadedUrls.push(dataUrl);
         }

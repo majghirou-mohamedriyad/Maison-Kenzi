@@ -7,6 +7,17 @@
 
 ---
 
+- [x] Correction de l'Import Manquant `ArrowUpRight` & Harmonisation Euro du Dashboard ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
+  - [x] **Résolution du Crash ReferenceError** : Ajout de l'icône `ArrowUpRight` aux imports `lucide-react` dans `Dashboard.tsx`.
+  - [x] **Harmonisation de la Devise en Euro (€)** : Formatage unifié du chiffre d'affaires et des métriques de revenus en Euro.
+  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Retrait du Module de Détourage d'Arrière-Plan & Nettoyage du Code ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json), [`src/admin/lib/backgroundRemoval.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/backgroundRemoval.ts)) :
+  - [x] **Suppression des Dépendances & Services** : Retrait de `@imgly/background-removal` du `package.json` et nettoyage du service associé.
+  - [x] **Restauration du Flux d'Upload Direct** : Téléversement standard direct des photos de produits dans Supabase Storage / base64 sans traitement IA intermédiaire.
+  - [x] **Nettoyage de l'Interface d'Administration** : Suppression du bouton switch et des icônes de détourage dans la modal d'ajout/modification de produit.
+  - [x] **Conformité & Zéro Emoji** : Code épuré, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Optimisation Complète du Favicon Officiel & Métadonnées SEO de Prestige ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx)) :
   - [x] **Déclaration Multi-Résolutions du Favicon Google (`index.html`)** : Intégration de l'ensemble des balises de favicon officielles (`shortcut icon`, `48x48`, `96x96`, `192x192`, `apple-touch-icon`) pointant vers `/mk-logo.png` pour l'indexation de l'icône par le robot `Google-Favicon`.
   - [x] **Optimisation du Titre & de la Description SEO (`Index.tsx`, `index.html`)** : Application du titre calibré *« Maison Kenzi | Haute Parfumerie, Cosmétique & Bazar Chic »* et de la meta description ciblée de 157 caractères couvrant l'ensemble du catalogue.
