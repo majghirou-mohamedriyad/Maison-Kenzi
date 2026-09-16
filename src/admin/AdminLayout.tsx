@@ -131,7 +131,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingOrdersCount, setPendingOrdersCount] = useState<number>(0);
-  
+
   // État de la sidebar collapsible mémorisé
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     try {
@@ -218,14 +218,13 @@ const AdminLayout = () => {
   const SidebarContent = (
     <div className="flex flex-col h-full w-full bg-[#FAF7F2] dark:bg-[#121110] text-[#1A1816] dark:text-[#F3EFEA] border-r border-[#EAE3D8] dark:border-[#26221E] shadow-sm select-none transition-colors duration-300">
       {/* Brand Header avec bouton Toggle — Hauteur h-16 synchronisée avec la navbar */}
-      <div className={`h-16 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center transition-all ${
-        isCollapsed ? "justify-center px-2" : "justify-between px-4"
-      }`}>
+      <div className={`h-16 border-b border-[#EAE3D8] dark:border-[#26221E] flex items-center transition-all ${isCollapsed ? "justify-center px-2" : "justify-between px-4"
+        }`}>
         {isCollapsed ? (
           <Tooltip delayDuration={100}>
             <TooltipTrigger asChild>
-              <Link 
-                to="/admin" 
+              <Link
+                to="/admin"
                 className="flex items-center justify-center w-full h-full p-1 group transition-transform hover:scale-105"
                 title="Maison Kenzi Admin"
               >
@@ -235,7 +234,7 @@ const AdminLayout = () => {
                   className="h-9 w-auto max-w-[50px] object-contain dark:hidden"
                 />
                 <img
-                  src="/mk-logo-dark.png"
+                  src="/mk-logo-light-removebg.png"
                   alt="Maison Kenzi"
                   className="h-9 w-auto max-w-[50px] object-contain hidden dark:block"
                 />
@@ -247,8 +246,8 @@ const AdminLayout = () => {
           </Tooltip>
         ) : (
           <>
-            <Link 
-              to="/admin" 
+            <Link
+              to="/admin"
               className="flex items-center gap-2.5 group overflow-hidden min-w-0 transition-transform hover:scale-[1.02]"
               title="Maison Kenzi Admin"
             >
@@ -259,7 +258,7 @@ const AdminLayout = () => {
                   className="h-9 sm:h-10 w-auto object-contain dark:hidden"
                 />
                 <img
-                  src="/mk-logo-dark.png"
+                  src="/mk-logo-light-removebg.png"
                   alt="Maison Kenzi"
                   className="h-9 sm:h-10 w-auto object-contain hidden dark:block"
                 />
@@ -324,7 +323,7 @@ const AdminLayout = () => {
               {group.items.map((item) => {
                 const hasSubItems = Array.isArray(item.subItems) && item.subItems.length > 0;
                 const isMenuOpen = hasSubItems && !!openMenus[item.to];
-                
+
                 const isCurrent = item.end
                   ? location.pathname === item.to
                   : (location.pathname === item.to || location.pathname.startsWith(item.to + "/"));
@@ -335,19 +334,17 @@ const AdminLayout = () => {
                     <DropdownMenu key={item.to}>
                       <DropdownMenuTrigger asChild>
                         <button
-                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group cursor-pointer ${
-                            isCurrent
+                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group cursor-pointer ${isCurrent
                               ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
                               : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                          }`}
+                            }`}
                           title={item.label}
                         >
                           <item.icon
-                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
-                              isCurrent
+                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
                                 ? "text-[#C9A96E] dark:text-[#121110]"
                                 : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
-                            }`}
+                              }`}
                             strokeWidth={isCurrent ? 2.25 : 1.85}
                           />
                         </button>
@@ -364,11 +361,10 @@ const AdminLayout = () => {
                         <DropdownMenuItem asChild>
                           <Link
                             to={item.to}
-                            className={`flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${
-                              isCurrent && !currentCategoryParam
+                            className={`flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${isCurrent && !currentCategoryParam
                                 ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-medium"
                                 : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF]"
-                            }`}
+                              }`}
                           >
                             <Package className="w-4 h-4 text-[#C9A96E] shrink-0" />
                             <span>Tous les Produits</span>
@@ -381,11 +377,10 @@ const AdminLayout = () => {
                             <DropdownMenuItem key={sub.to} asChild>
                               <Link
                                 to={sub.to}
-                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${
-                                  isSubActive
+                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${isSubActive
                                     ? "bg-[#C9A96E]/20 text-[#C9A96E] font-semibold"
                                     : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] hover:text-[#C9A96E]"
-                                }`}
+                                  }`}
                               >
                                 <sub.icon className={`w-4 h-4 shrink-0 ${isSubActive ? "text-[#C9A96E]" : "text-[#7A726A] dark:text-[#A39B91]"}`} />
                                 <span>{sub.label}</span>
@@ -406,18 +401,16 @@ const AdminLayout = () => {
                         <Link
                           to={item.to}
                           onClick={() => setMobileOpen(false)}
-                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group ${
-                            isCurrent
+                          className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group ${isCurrent
                               ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
                               : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                          }`}
+                            }`}
                         >
                           <item.icon
-                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
-                              isCurrent
+                            className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
                                 ? "text-[#C9A96E] dark:text-[#121110]"
                                 : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
-                            }`}
+                              }`}
                             strokeWidth={isCurrent ? 2.25 : 1.85}
                           />
                           {item.isOrderLink && pendingOrdersCount > 0 && (
@@ -437,11 +430,10 @@ const AdminLayout = () => {
                 return (
                   <div key={item.to} className="space-y-1">
                     <div
-                      className={`relative flex items-center justify-between rounded-xl text-xs transition-all duration-200 group ${
-                        isCurrent
+                      className={`relative flex items-center justify-between rounded-xl text-xs transition-all duration-200 group ${isCurrent
                           ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
                           : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
-                      }`}
+                        }`}
                     >
                       <Link
                         to={item.to}
@@ -454,11 +446,10 @@ const AdminLayout = () => {
                         className="flex-1 flex items-center gap-3 px-3.5 py-2.5 min-w-0"
                       >
                         <item.icon
-                          className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
-                            isCurrent
+                          className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
                               ? "text-[#C9A96E] dark:text-[#121110]"
                               : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
-                          }`}
+                            }`}
                           strokeWidth={isCurrent ? 2.25 : 1.85}
                         />
                         <span className="truncate">{item.label}</span>
@@ -468,11 +459,10 @@ const AdminLayout = () => {
                         {/* Badges pour version dépliée */}
                         {item.isOrderLink && pendingOrdersCount > 0 && (
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${
-                              isCurrent
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${isCurrent
                                 ? "bg-[#C9A96E] text-[#121110]"
                                 : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
-                            }`}
+                              }`}
                           >
                             {pendingOrdersCount}
                           </span>
@@ -480,11 +470,10 @@ const AdminLayout = () => {
 
                         {item.badge && !item.isOrderLink && (
                           <span
-                            className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${
-                              isCurrent
+                            className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${isCurrent
                                 ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
                                 : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
-                            }`}
+                              }`}
                           >
                             {item.badge}
                           </span>
@@ -495,18 +484,16 @@ const AdminLayout = () => {
                           <button
                             type="button"
                             onClick={(e) => toggleSubmenu(item.to, e)}
-                            className={`p-1 rounded-lg transition-transform duration-200 cursor-pointer ${
-                              isCurrent
+                            className={`p-1 rounded-lg transition-transform duration-200 cursor-pointer ${isCurrent
                                 ? "text-[#FAF7F2] hover:bg-white/10 dark:text-[#121110] dark:hover:bg-black/10"
                                 : "text-[#8C827A] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
-                            }`}
+                              }`}
                             title={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
                             aria-label={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
                           >
                             <ChevronDown
-                              className={`w-4 h-4 transition-transform duration-200 ${
-                                isMenuOpen ? "rotate-180" : "rotate-0"
-                              }`}
+                              className={`w-4 h-4 transition-transform duration-200 ${isMenuOpen ? "rotate-180" : "rotate-0"
+                                }`}
                             />
                           </button>
                         )}
@@ -526,19 +513,17 @@ const AdminLayout = () => {
                               key={sub.to}
                               to={sub.to}
                               onClick={() => setMobileOpen(false)}
-                              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all duration-150 group ${
-                                isSubActive
+                              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all duration-150 group ${isSubActive
                                   ? "bg-[#C9A96E]/15 text-[#C9A96E] font-semibold border-l-2 border-[#C9A96E]"
                                   : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
                                 <sub.icon
-                                  className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${
-                                    isSubActive
+                                  className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${isSubActive
                                       ? "text-[#C9A96E] scale-110"
                                       : "text-[#8C827A] dark:text-[#7A726A] group-hover:text-[#C9A96E] group-hover:scale-105"
-                                  }`}
+                                    }`}
                                   strokeWidth={isSubActive ? 2.2 : 1.75}
                                 />
                                 <span className="truncate">{sub.label}</span>
@@ -593,10 +578,9 @@ const AdminLayout = () => {
     <TooltipProvider>
       <div className="min-h-screen bg-[#F5EFEB] dark:bg-[#0C0B0A] font-sans text-[#1A1816] dark:text-[#F3EFEA] transition-colors duration-300">
         {/* Sidebar Bureau */}
-        <aside 
-          className={`hidden md:flex fixed inset-y-0 left-0 z-30 transition-all duration-300 ${
-            isCollapsed ? "w-20" : "w-72"
-          }`}
+        <aside
+          className={`hidden md:flex fixed inset-y-0 left-0 z-30 transition-all duration-300 ${isCollapsed ? "w-20" : "w-72"
+            }`}
         >
           {SidebarContent}
         </aside>
@@ -615,10 +599,9 @@ const AdminLayout = () => {
         )}
 
         {/* Zone de contenu principal */}
-        <div 
-          className={`flex flex-col min-h-screen transition-all duration-300 ${
-            isCollapsed ? "md:ml-20" : "md:ml-72"
-          }`}
+        <div
+          className={`flex flex-col min-h-screen transition-all duration-300 ${isCollapsed ? "md:ml-20" : "md:ml-72"
+            }`}
         >
           {/* Topbar Intégrée — Continuité parfaite avec la Sidebar */}
           <header className="sticky top-0 z-20 bg-[#FAF7F2]/95 dark:bg-[#121110]/95 backdrop-blur-md border-b border-[#EAE3D8] dark:border-[#26221E] h-16 flex items-center justify-between px-4 sm:px-6 md:px-8">
@@ -630,7 +613,7 @@ const AdminLayout = () => {
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
-              
+
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] hidden sm:flex items-center justify-center text-[#C9A96E]">
                   <ShieldCheck className="w-4 h-4 stroke-[1.75]" />

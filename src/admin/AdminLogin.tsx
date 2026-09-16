@@ -67,13 +67,13 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen relative flex items-center justify-center bg-[#FAF7F2] dark:bg-[#0E0D0C] font-sans px-4 py-12 overflow-hidden selection:bg-[#C9A96E]/20 selection:text-[#C9A96E]">
       {/* Halos lumineux d'ambiance luxe */}
-      <div 
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#E5D7C5]/50 dark:bg-[#C9A96E]/10 blur-[100px] transform-gpu" 
+        className="pointer-events-none absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#E5D7C5]/50 dark:bg-[#C9A96E]/10 blur-[100px] transform-gpu"
       />
-      <div 
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-[#D4C3AC]/40 dark:bg-[#C9A96E]/5 blur-[120px] transform-gpu" 
+        className="pointer-events-none absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-[#D4C3AC]/40 dark:bg-[#C9A96E]/5 blur-[120px] transform-gpu"
       />
 
       <div className="w-full max-w-md relative z-10">
@@ -95,7 +95,7 @@ const AdminLogin = () => {
 
         {/* Carte de connexion principale */}
         <div className="bg-[#FFFFFF]/90 dark:bg-[#151413]/90 backdrop-blur-xl border border-[#E8E1D7] dark:border-[#262320] shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl p-8 sm:p-10 transition-all duration-300">
-          
+
           {/* En-tête / Identité de marque */}
           <div className="flex flex-col items-center text-center mb-8">
             <Link to="/" className="inline-block mb-3 transition-transform hover:scale-105" title="Retour au site">
@@ -105,7 +105,7 @@ const AdminLogin = () => {
                 className="h-16 sm:h-20 w-auto object-contain dark:hidden"
               />
               <img
-                src="/mk-logo-dark.png"
+                src="/mk-logo-light-removebg.png"
                 alt="Maison Kenzi"
                 className="h-16 sm:h-20 w-auto object-contain hidden dark:block"
               />
@@ -126,7 +126,7 @@ const AdminLogin = () => {
           <form onSubmit={submit} className="space-y-5">
             {/* Champ Email */}
             <div className="space-y-1.5">
-              <label 
+              <label
                 htmlFor="admin-email"
                 className="block text-[11px] font-medium tracking-[0.15em] uppercase text-[#4A453E] dark:text-[#D1C9BF]"
               >
@@ -151,7 +151,7 @@ const AdminLogin = () => {
 
             {/* Champ Mot de passe */}
             <div className="space-y-1.5">
-              <label 
+              <label
                 htmlFor="admin-password"
                 className="block text-[11px] font-medium tracking-[0.15em] uppercase text-[#4A453E] dark:text-[#D1C9BF]"
               >

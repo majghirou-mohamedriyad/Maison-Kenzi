@@ -38,8 +38,6 @@ import CategoriesAdmin from "./admin/pages/Categories";
 import Commandes from "./admin/pages/Commandes";
 import Parametres from "./admin/pages/Parametres";
 
-import { CurrencyProvider } from "@/contexts/CurrencyContext";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -48,12 +46,11 @@ const App = () => (
       <BrowserRouter>
         <ThemeProvider>
           <LanguageProvider>
-            <CurrencyProvider>
-              <CartProvider>
-                <Toaster />
-                <Sonner />
-                <ScrollToTop />
-                <MaintenanceGate>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <ScrollToTop />
+              <MaintenanceGate>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/collection/:collection" element={<Collection />} />
@@ -91,7 +88,6 @@ const App = () => (
               </MaintenanceGate>
 
               </CartProvider>
-            </CurrencyProvider>
           </LanguageProvider>
         </ThemeProvider>
       </BrowserRouter>

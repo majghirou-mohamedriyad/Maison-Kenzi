@@ -6,14 +6,14 @@ import type { Order, OrderItem } from "@/types/database";
 /* TABAT luxury brand palette (print-friendly)                        */
 /* ------------------------------------------------------------------ */
 const BRAND = {
-  paper:      [253, 251, 248] as [number, number, number],
-  cardBg:     [246, 241, 234] as [number, number, number],
-  ink:        [20,  14,  10  ] as [number, number, number], // #140E0A deep obsidian
-  inkSoft:    [60,  45,  35  ] as [number, number, number],
-  gold:       [216, 176, 67  ] as [number, number, number], // #D8B043 luxury gold
-  goldDeep:   [170, 135, 45  ] as [number, number, number],
-  muted:      [130, 115, 100 ] as [number, number, number],
-  rule:       [220, 205, 185] as [number, number, number],
+  paper: [253, 251, 248] as [number, number, number],
+  cardBg: [246, 241, 234] as [number, number, number],
+  ink: [20, 14, 10] as [number, number, number], // #140E0A deep obsidian
+  inkSoft: [60, 45, 35] as [number, number, number],
+  gold: [216, 176, 67] as [number, number, number], // #D8B043 luxury gold
+  goldDeep: [170, 135, 45] as [number, number, number],
+  muted: [130, 115, 100] as [number, number, number],
+  rule: [220, 205, 185] as [number, number, number],
 };
 
 const BRAND_NAME = "Maison Kenzi";
@@ -22,9 +22,9 @@ const BRAND_CONTACT = "www.maisonkenzi.ma  ·  +212 752-850156";
 
 const STATUS_LABEL: Record<string, string> = {
   en_attente: "En attente",
-  confirmee:  "Confirmée",
-  livree:     "Livrée",
-  annulee:    "Annulée",
+  confirmee: "Confirmée",
+  livree: "Livrée",
+  annulee: "Annulée",
 };
 
 const formatDate = (iso: string) =>
@@ -39,7 +39,7 @@ const money = (n: number) => {
 
 /** Utility to convert image URL to PNG base64 for jsPDF rendering with aspect ratio */
 async function loadLogoBase64(): Promise<{ data: string; aspect: number } | null> {
-  const sources = ["/mk-logo.png", "/logo.png", "/logo.svg"];
+  const sources = ["/mk-logo-light-removebg.png", "/logo.png", "/logo.svg"];
   for (const src of sources) {
     const res = await new Promise<{ data: string; aspect: number } | null>((resolve) => {
       const img = new Image();

@@ -1,5 +1,4 @@
 import type { Size } from "@/types/database";
-import { formatGlobalPrice } from "@/contexts/CurrencyContext";
 
 export const SIZES: Size[] = ["5ml", "10ml", "full"];
 
@@ -26,9 +25,22 @@ export const priceFor = (prices: PriceSource, size: Size): number => {
   }
 };
 
-export const formatMAD = (n: number) => formatGlobalPrice(n);
-export const formatEUR = formatMAD;
-export const formatPrice = formatMAD;
+/**
+ * Formatage universel des prix exclusivement en Euro (€) — Maison Kenzi
+ */
+export const formatEUR = (n: number | string | null | undefined): string => {
+  const num = Number(n || 0);
+  const formatted = num.toLocaleString("fr-FR", {
+    minimumFractionDigits: num % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).replace(/[\u00A0\u202F\s]/g, " ");
+
+  return `${formatted} €`;
+};
+
+export const formatMAD = formatEUR;
+export const formatPrice = formatEUR;
+export const formatGlobalPrice = formatEUR;
 
 export type ParfumPricingSummary = {
   priceText: string;

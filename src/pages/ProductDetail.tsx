@@ -162,9 +162,9 @@ const ParfumDetail = () => {
     const sizes: Size[] = isFull
       ? ["full"]
       : (["5ml", "10ml"] as Size[]).filter((s) => {
-          const p = priceFor(parfum, s);
-          return typeof p === "number" && !isNaN(p) && p > 0;
-        });
+        const p = priceFor(parfum, s);
+        return typeof p === "number" && !isNaN(p) && p > 0;
+      });
 
     const initial: Record<string, number> = {};
     sizes.forEach((s, idx) => {
@@ -245,9 +245,9 @@ const ParfumDetail = () => {
   const availableSizes: Size[] = isFullBottle
     ? ["full"]
     : (["5ml", "10ml"] as Size[]).filter((s) => {
-        const p = priceFor(parfum, s);
-        return typeof p === "number" && !isNaN(p) && p > 0;
-      });
+      const p = priceFor(parfum, s);
+      return typeof p === "number" && !isNaN(p) && p > 0;
+    });
 
   const fullStock = parfum.full_bottle_stock ?? 0;
   const outOfStock =
@@ -263,7 +263,7 @@ const ParfumDetail = () => {
       try {
         const p = JSON.parse(rawTiers);
         if (Array.isArray(p)) return p;
-      } catch {}
+      } catch { }
     }
     return [];
   }, [rawTiers]);
@@ -283,13 +283,13 @@ const ParfumDetail = () => {
       ...(hasSingle
         ? []
         : [
-            {
-              quantity: 1,
-              price: baseUnitPrice,
-              label: isParfum ? (language === "en" ? "1 Bottle" : "1 Flacon") : (language === "en" ? "1 Unit" : "1 Unité"),
-              badge: "",
-            },
-          ]),
+          {
+            quantity: 1,
+            price: baseUnitPrice,
+            label: isParfum ? (language === "en" ? "1 Bottle" : "1 Flacon") : (language === "en" ? "1 Unit" : "1 Unité"),
+            badge: "",
+          },
+        ]),
       ...parsedTiers,
     ];
     return list.sort((a, b) => a.quantity - b.quantity);
@@ -414,7 +414,7 @@ const ParfumDetail = () => {
   const primaryImg = productImages[0] || parfum.image_url;
   const primaryImageUrl = primaryImg
     ? (primaryImg.startsWith("http") ? primaryImg : `https://maison-kenzi.com${primaryImg.startsWith("/") ? primaryImg : `/${primaryImg}`}`)
-    : "https://maison-kenzi.com/mk-logo.png";
+    : "https://maison-kenzi.com/mk-logo-light-removebg.png";
 
   const productLd = {
     "@context": "https://schema.org",
@@ -547,9 +547,8 @@ const ParfumDetail = () => {
                         label={parfum.image_label}
                         aspect="aspect-[4/5]"
                         fitMode="contain"
-                        className={`max-h-[300px] sm:max-h-[400px] md:max-h-[460px] w-full mx-auto transition-all duration-500 ${
-                          outOfStock ? "grayscale opacity-60 contrast-75" : ""
-                        }`}
+                        className={`max-h-[300px] sm:max-h-[400px] md:max-h-[460px] w-full mx-auto transition-all duration-500 ${outOfStock ? "grayscale opacity-60 contrast-75" : ""
+                          }`}
                       />
 
                       {/* Flèches de navigation si plusieurs images */}
@@ -594,8 +593,8 @@ const ParfumDetail = () => {
                               {quantities["10ml"] > 0
                                 ? "10ml"
                                 : quantities["5ml"] > 0
-                                ? "5ml"
-                                : "Decant"}
+                                  ? "5ml"
+                                  : "Decant"}
                             </span>
                             <Sparkles className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary animate-pulse" />
                           </div>
@@ -638,11 +637,10 @@ const ParfumDetail = () => {
                             key={idx}
                             type="button"
                             onClick={() => setActiveImageIndex(idx)}
-                            className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer ${
-                              idx === activeImageIndex
+                            className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer ${idx === activeImageIndex
                                 ? "border-primary ring-2 ring-primary/30 scale-[1.03] shadow-sm"
                                 : "border-border/70 opacity-70 hover:opacity-100 hover:border-border"
-                            }`}
+                              }`}
                           >
                             <img
                               src={img}
@@ -843,11 +841,10 @@ const ParfumDetail = () => {
                           key={idx}
                           type="button"
                           onClick={() => setSelectedTierIndex(idx)}
-                          className={`relative p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 ${
-                            isSelected
+                          className={`relative p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 ${isSelected
                               ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-sm scale-[1.01]"
                               : "border-border/80 bg-card/40 hover:border-primary/40 hover:bg-card/70"
-                          }`}
+                            }`}
                         >
                           {/* Badge d'économie automatique si réduction */}
                           {savings > 0 && (
@@ -861,9 +858,8 @@ const ParfumDetail = () => {
                               <span className="text-sm sm:text-base font-semibold text-foreground">
                                 {tierInfo.label}
                               </span>
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                                isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border/80 bg-background"
-                              }`}>
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border/80 bg-background"
+                                }`}>
                                 {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                               </div>
                             </div>
@@ -920,10 +916,10 @@ const ParfumDetail = () => {
                         s === "full"
                           ? (parfum.full_bottle_stock ?? 0)
                           : s === "5ml"
-                          ? (parfum.stock_5ml ?? 0)
-                          : s === "10ml"
-                          ? (parfum.stock_10ml ?? 0)
-                          : 0;
+                            ? (parfum.stock_5ml ?? 0)
+                            : s === "10ml"
+                              ? (parfum.stock_10ml ?? 0)
+                              : 0;
 
                       const isFormatOutOfStock = outOfStock || (typeof formatStock === "number" && formatStock <= 0);
 
@@ -934,13 +930,12 @@ const ParfumDetail = () => {
                       return (
                         <div
                           key={s}
-                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 sm:gap-3 ${
-                            isFormatOutOfStock
+                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 sm:gap-3 ${isFormatOutOfStock
                               ? "opacity-50 border-border/50 bg-muted/20 cursor-not-allowed"
                               : isSelected
-                              ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
-                              : "border-border/80 bg-card/40 hover:border-primary/40"
-                          }`}
+                                ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
+                                : "border-border/80 bg-card/40 hover:border-primary/40"
+                            }`}
                         >
                           {/* Format Info */}
                           <div
@@ -972,9 +967,8 @@ const ParfumDetail = () => {
 
                           {/* Individual Quantity Stepper */}
                           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                            <div className={`flex items-center border rounded-full px-1 sm:px-1.5 py-0.5 shadow-xs ${
-                              isFormatOutOfStock ? "border-border/40 bg-muted/40 opacity-40" : "border-border bg-background"
-                            }`}>
+                            <div className={`flex items-center border rounded-full px-1 sm:px-1.5 py-0.5 shadow-xs ${isFormatOutOfStock ? "border-border/40 bg-muted/40 opacity-40" : "border-border bg-background"
+                              }`}>
                               <button
                                 type="button"
                                 onClick={(e) => {

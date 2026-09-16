@@ -21,7 +21,7 @@ import {
   RefreshCw,
   Smartphone,
 } from "lucide-react";
-import { formatMAD } from "@/lib/sizes";
+import { formatEUR } from "@/lib/sizes";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -57,6 +57,10 @@ export const StripePaymentSection = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  // Montant direct en Euro
+  const finalEurAmount = Math.max(Number(total || 0), 0.50);
+  const formattedEur = formatEUR(total);
 
   const paymentElementContainerRef = useRef<HTMLDivElement>(null);
   const stripeInstanceRef = useRef<any>(null);
@@ -168,7 +172,7 @@ export const StripePaymentSection = ({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount: total,
+            amount: finalEurAmount,
             currency: "eur",
             orderNumber: `MK-T-${Date.now().toString().slice(-6)}`,
             customerName: customerName || undefined,
@@ -275,7 +279,7 @@ export const StripePaymentSection = ({
         }
       }
     };
-  }, [stripeLoaded, total, publishableKey]);
+  }, [stripeLoaded, total, finalEurAmount, publishableKey]);
 
   // 3. Soumission et confirmation du règlement par Carte / Apple Pay
   const handlePay = async (e: React.FormEvent) => {
@@ -339,10 +343,10 @@ export const StripePaymentSection = ({
               Paiement Sécurisé
             </h3>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap justify-end">
             <span className="text-xs text-muted-foreground font-light">Total :</span>
             <span className="font-sans font-bold text-xs sm:text-sm text-primary tracking-tight">
-              {formatMAD(total)}
+              {formattedEur}
             </span>
           </div>
         </div>
@@ -424,7 +428,7 @@ export const StripePaymentSection = ({
             ) : (
               <>
                 <Lock className="w-4 h-4" />
-                <span>Payer {formatMAD(total)}</span>
+                <span>Payer {formattedEur}</span>
               </>
             )}
           </Button>

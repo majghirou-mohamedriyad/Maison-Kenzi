@@ -21,7 +21,7 @@ const ThemeToggle = ({ className = "" }: Props) => {
       onClick={toggleTheme}
       aria-label={isDark ? "Activer le mode clair nude" : "Activer le mode sombre espresso"}
       title={isDark ? "Passer en mode Clair (Nude)" : "Passer en mode Sombre (Espresso)"}
-      className={`relative w-9 h-9 rounded-xl flex items-center justify-center text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer overflow-hidden ${className}`}
+      className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] border border-border/70 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 hover:border-primary/40 transition-all duration-200 cursor-pointer overflow-hidden active:scale-95 ${className}`}
     >
       <div className="relative w-4 h-4 flex items-center justify-center">
         <Sun

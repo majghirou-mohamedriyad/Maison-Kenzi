@@ -37,7 +37,7 @@ const Maintenance = () => {
             className="h-14 sm:h-20 w-auto object-contain dark:hidden mx-auto transition-transform duration-500 group-hover:scale-105"
           />
           <img
-            src="/mk-logo-dark.png"
+            src="/mk-logo-light-removebg.png"
             alt="Maison Kenzi"
             className="h-14 sm:h-20 w-auto object-contain hidden dark:block mx-auto transition-transform duration-500 group-hover:scale-105"
           />

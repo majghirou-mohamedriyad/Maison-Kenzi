@@ -24,7 +24,7 @@ const CheckoutHeader = () => {
               className="h-11 sm:h-12 md:h-14 w-auto object-contain dark:hidden"
             />
             <img
-              src="/mk-logo-dark.png"
+              src="/mk-logo-light-removebg.png"
               alt="Maison Kenzi"
               className="h-11 sm:h-12 md:h-14 w-auto object-contain hidden dark:block"
             />

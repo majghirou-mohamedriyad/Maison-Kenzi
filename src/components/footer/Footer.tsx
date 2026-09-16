@@ -74,7 +74,7 @@ const Footer = () => {
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain dark:hidden"
               />
               <img
-                src="/mk-logo-dark.png"
+                src="/mk-logo-light-removebg.png"
                 alt="Maison Kenzi"
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain hidden dark:block"
               />
@@ -98,8 +98,8 @@ const Footer = () => {
                   to="/collection/all"
                   aria-current={isLinkActive("/collection/all") ? "page" : undefined}
                   className={`transition-colors font-light ${isLinkActive("/collection/all")
-                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                    ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                    : "text-muted-foreground hover:text-primary cursor-pointer"
                     }`}
                 >
                   {t("footer.allPerfumes", "Tous les Parfums (Catalogue)")}
@@ -124,8 +124,8 @@ const Footer = () => {
                         to={catPath}
                         aria-current={isActive ? "page" : undefined}
                         className={`transition-colors font-light ${isActive
-                            ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                            : "text-muted-foreground hover:text-primary cursor-pointer"
+                          ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                          : "text-muted-foreground hover:text-primary cursor-pointer"
                           }`}
                       >
                         {catName}
@@ -147,8 +147,8 @@ const Footer = () => {
                   to="/about"
                   aria-current={isLinkActive("/about") ? "page" : undefined}
                   className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/about")
-                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                    ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                    : "text-muted-foreground hover:text-primary cursor-pointer"
                     }`}
                 >
                   <Sparkles className={`w-3.5 h-3.5 ${isLinkActive("/about") ? "text-muted-foreground/40" : "text-primary"}`} />
@@ -160,8 +160,8 @@ const Footer = () => {
                   to="/suivi-commande"
                   aria-current={isLinkActive("/suivi-commande") ? "page" : undefined}
                   className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/suivi-commande")
-                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                    ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                    : "text-muted-foreground hover:text-primary cursor-pointer"
                     }`}
                 >
                   <Truck className={`w-3.5 h-3.5 ${isLinkActive("/suivi-commande") ? "text-muted-foreground/40" : "text-primary"}`} />
@@ -173,8 +173,8 @@ const Footer = () => {
                   to="/about/service-client"
                   aria-current={isLinkActive("/about/service-client") ? "page" : undefined}
                   className={`transition-colors flex items-center gap-1.5 font-light ${isLinkActive("/about/service-client")
-                      ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                      : "text-muted-foreground hover:text-primary cursor-pointer"
+                    ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                    : "text-muted-foreground hover:text-primary cursor-pointer"
                     }`}
                 >
                   <MessageSquare className={`w-3.5 h-3.5 ${isLinkActive("/about/service-client") ? "text-muted-foreground/40" : "text-primary"}`} />
@@ -235,8 +235,8 @@ const Footer = () => {
               to="/privacy-policy"
               aria-current={isLinkActive("/privacy-policy") ? "page" : undefined}
               className={`transition-colors font-light ${isLinkActive("/privacy-policy")
-                  ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                  : "text-muted-foreground hover:text-primary cursor-pointer"
+                ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                : "text-muted-foreground hover:text-primary cursor-pointer"
                 }`}
             >
               {t("footer.privacyPolicy", "Politique de Confidentialité")}
@@ -246,8 +246,8 @@ const Footer = () => {
               to="/terms-of-service"
               aria-current={isLinkActive("/terms-of-service") ? "page" : undefined}
               className={`transition-colors font-light ${isLinkActive("/terms-of-service")
-                  ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
-                  : "text-muted-foreground hover:text-primary cursor-pointer"
+                ? "text-muted-foreground/40 pointer-events-none cursor-default select-none"
+                : "text-muted-foreground hover:text-primary cursor-pointer"
                 }`}
             >
               {t("footer.termsOfService", "Conditions Générales de Vente")}
