@@ -6,7 +6,7 @@
  * Style Haute Parfumerie & Luxe Nude (zéro emoji).
  */
 
-import { BarChart3, ShoppingBag, Box, Users, Droplet, TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
+import { BarChart3, ShoppingBag, Box, Users, Droplet, TrendingUp, TrendingDown, AlertTriangle, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import KpiCard from "../components/KpiCard";
 import { useProducts } from "@/store/useProductStore";
@@ -15,7 +15,7 @@ import { useFlaconnage } from "@/hooks/useFlaconnage";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
-const fmtMad = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} €`;
+const fmtMad = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} MAD`;
 const trendPct = (cur: number, prev: number) =>
   prev > 0 ? Number((((cur - prev) / prev) * 100).toFixed(1)) : cur > 0 ? 100 : 0;
 
@@ -220,13 +220,6 @@ const Dashboard = () => {
               Inventaire par format
             </h3>
           </div>
-          <Link 
-            to="/admin/finances" 
-            className="inline-flex items-center gap-1.5 text-xs text-[#C9A96E] hover:text-[#B8985F] font-medium transition-colors"
-          >
-            <span>Gérer le flaconnage</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">

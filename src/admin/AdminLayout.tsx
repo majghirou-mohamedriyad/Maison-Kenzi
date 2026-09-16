@@ -16,7 +16,6 @@ import {
   LogOut,
   Menu,
   X,
-  Wallet,
   ExternalLink,
   ShieldCheck,
   Store,
@@ -96,7 +95,6 @@ const NAV_GROUPS: NavGroup[] = [
     title: "Ventes & Relations",
     items: [
       { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, isOrderLink: true },
-      { to: "/admin/finances", label: "Finances & Revenus", icon: Wallet },
     ],
   },
   {
@@ -112,7 +110,6 @@ const TITLES: Record<string, string> = {
   "/admin/produits": "Catalogue des Produits",
   "/admin/categories": "Univers & Familles Olfactives",
   "/admin/commandes": "Gestion des Commandes Clients",
-  "/admin/finances": "Statistiques Financières & Revenus",
   "/admin/parametres": "Paramètres & Statut de la Maison",
 };
 

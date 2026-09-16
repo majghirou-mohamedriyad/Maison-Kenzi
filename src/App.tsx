@@ -37,7 +37,6 @@ import Produits from "./admin/pages/Produits";
 import CategoriesAdmin from "./admin/pages/Categories";
 import Commandes from "./admin/pages/Commandes";
 import Parametres from "./admin/pages/Parametres";
-import Finances from "./admin/pages/Finances";
 
 const queryClient = new QueryClient();
 
@@ -76,7 +75,6 @@ const App = () => (
                     <Route path="/admin/produits" element={<Produits />} />
                     <Route path="/admin/categories" element={<CategoriesAdmin />} />
                     <Route path="/admin/commandes" element={<Commandes />} />
-                    <Route path="/admin/finances" element={<Finances />} />
                     <Route path="/admin/parametres" element={<Parametres />} />
                   </Route>
                 </Route>

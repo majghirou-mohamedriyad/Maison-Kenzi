@@ -25,7 +25,7 @@ const money = (n: number) => {
   const formatted = Number(n || 0)
     .toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     .replace(/[\u00A0\u202F\s]/g, " ");
-  return `${formatted} €`;
+  return `${formatted} MAD`;
 };
 
 async function loadImageAsBase64(url: string): Promise<string | null> {

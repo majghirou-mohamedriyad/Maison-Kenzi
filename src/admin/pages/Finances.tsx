@@ -33,7 +33,7 @@ import FlaconnageSection from "@/admin/components/FlaconnageSection";
 import { exportMonthlyFinancialReportPdf } from "@/admin/lib/financialReportPdf";
 
 const fmtMad = (n: number) =>
-  `${Math.round(n).toLocaleString("fr-FR")} €`;
+  `${Math.round(n).toLocaleString("fr-FR")} MAD`;
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
@@ -379,7 +379,7 @@ const Finances = () => {
             />
           </label>
           <label className="block">
-            <span className="text-xs text-muted-foreground">Montant (€)</span>
+            <span className="text-xs text-muted-foreground">Montant (MAD)</span>
             <input
               type="number"
               step="0.01"

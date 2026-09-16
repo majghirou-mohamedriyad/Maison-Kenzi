@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Suppression Intégrale de la Page Finances & Comptabilité ([`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx), [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
+  - [x] **Suppression du Routage & Navigation** : Retrait de la route `/admin/finances` dans `App.tsx` et élimination complète du lien de navigation « Finances & Revenus » dans la sidebar et la barre de titre de `AdminLayout.tsx`.
+  - [x] **Nettoyage du Tableau de Bord (`Dashboard.tsx`)** : Suppression du lien de redirection vers les finances et harmonisation de l'affichage de la devise officielle en MAD.
+  - [x] **Conformité & Architecture Épurée** : Panneau d'administration recentré sur l'essentiel (Tableau de bord, Catalogue Produits, Catégories, Commandes, Paramètres).
+
 - [x] Résolution et Sécurisation de l'Intégration Stripe Elements & Synchronisation des Clés d'Environnement ([`vite.config.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vite.config.ts), [`api/create-payment-intent.js`](file:///c:/Users/PC/Desktop/Maison-Kenzi/api/create-payment-intent.js), [`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
   - [x] **Chargement & Synchronisation Automatique des Clés .env (`vite.config.ts`)** : Injection de `loadEnv` pour propager fidèlement les variables d'environnement (`STRIPE_SECRET_KEY`) au middleware de développement local sans décalage de compte avec la clé publique du frontend.
   - [x] **Résolution Robuste de la Clé Secrète (`api/create-payment-intent.js`)** : Fonction `resolveSecretKey()` extrayant dynamiquement la clé secrète depuis `process.env.STRIPE_SECRET_KEY`, `process.env.VITE_STRIPE_SECRET_KEY` ou par lecture directe de repli dans `.env`, avec nettoyage des guillemets et espaces.

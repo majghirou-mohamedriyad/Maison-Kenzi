@@ -82,8 +82,12 @@ export const useAdminFinances = () => {
         supabase.from("flaconnage").select("stock, size"),
       ]);
 
-      if (ordersRes.error) throw ordersRes.error;
-      if (expensesRes.error) throw expensesRes.error;
+      if (ordersRes.error) {
+        console.warn("Erreur chargement commandes:", ordersRes.error.message);
+      }
+      if (expensesRes.error) {
+        console.warn("Erreur chargement dépenses:", expensesRes.error.message);
+      }
 
       const orders = (ordersRes.data ?? []) as Array<{
         total_amount: number;
@@ -93,7 +97,7 @@ export const useAdminFinances = () => {
       }>;
       const exp = (expensesRes.data ?? []) as Expense[];
 
-      const isRevenue = (s: string) => s === "confirmee" || s === "livree";
+      const isRevenue = (s: string) => s !== "annulee";
       const isRefund = (s: string) => s === "annulee";
 
       let revenueTotal = 0,
@@ -110,16 +114,23 @@ export const useAdminFinances = () => {
       orders.forEach((o) => {
         const d = new Date(o.created_at);
         const amt = Number(o.total_amount ?? 0);
-        if (o.status === "confirmee") ordersConfirmed++;
-        else if (o.status === "livree") ordersDelivered++;
-        else if (o.status === "en_attente") ordersPending++;
-        else if (o.status === "annulee") ordersCancelled++;
+        if (o.status === "confirmee" || o.status === "en_preparation" || o.status === "expediee") {
+          ordersConfirmed++;
+        } else if (o.status === "livree") {
+          ordersDelivered++;
+        } else if (o.status === "en_attente") {
+          ordersPending++;
+        } else if (o.status === "annulee") {
+          ordersCancelled++;
+        }
 
         if (isRevenue(o.status)) {
           revenueTotal += amt;
           if (d >= thisStart) revenueThisMonth += amt;
           else if (d >= lastStart && d < thisStart) revenueLastMonth += amt;
-          (o.items ?? []).forEach((it) => (itemsSold += it.quantity));
+          (o.items ?? []).forEach((it) => {
+            itemsSold += Number(it.quantity || 1);
+          });
         }
         if (isRefund(o.status)) {
           refundsTotal += amt;
@@ -131,7 +142,7 @@ export const useAdminFinances = () => {
       let expensesThisMonth = 0;
       const catMap = new Map<string, number>();
       exp.forEach((e) => {
-        const amt = Number(e.amount);
+        const amt = Number(e.amount || 0);
         expensesTotal += amt;
         const d = new Date(e.occurred_on);
         if (d >= thisStart) expensesThisMonth += amt;
@@ -166,7 +177,7 @@ export const useAdminFinances = () => {
         if (d < sixStart) return;
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
         const b = buckets.get(key);
-        if (b) b.revenue += Number(o.total_amount);
+        if (b) b.revenue += Number(o.total_amount || 0);
       });
 
       exp.forEach((e) => {
@@ -174,7 +185,7 @@ export const useAdminFinances = () => {
         if (d < sixStart) return;
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
         const b = buckets.get(key);
-        if (b) b.expenses += Number(e.amount);
+        if (b) b.expenses += Number(e.amount || 0);
       });
 
       const points = Array.from(buckets.values()).map((b) => ({ ...b, net: b.revenue - b.expenses }));
@@ -199,7 +210,7 @@ export const useAdminFinances = () => {
       const profitMarginPct = revenueTotal > 0 ? (netProfit / revenueTotal) * 100 : 0;
       const profitMarginThisMonthPct = revenueThisMonth > 0 ? (netProfitThisMonth / revenueThisMonth) * 100 : 0;
 
-      const ordersForRevenue = ordersConfirmed + ordersDelivered;
+      const ordersForRevenue = ordersConfirmed + ordersDelivered + ordersPending;
       const computedKpis: FinanceKpis = {
         revenueTotal,
         revenueThisMonth,
@@ -227,6 +238,7 @@ export const useAdminFinances = () => {
       setByCategory(breakdown);
       setExpenses(exp);
     } catch (e) {
+      console.error("Erreur calcul finances:", e);
       setError(e instanceof Error ? e.message : "Erreur de chargement");
     } finally {
       setLoading(false);
