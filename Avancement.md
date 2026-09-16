@@ -12,10 +12,11 @@
   - [x] **Harmonisation de la Devise en Euro (€)** : Formatage unifié du chiffre d'affaires et des métriques de revenus en Euro.
   - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `lucide-react`, commentaires en français.
 
-- [x] Retrait du Module de Détourage d'Arrière-Plan & Nettoyage du Code ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json), [`src/admin/lib/backgroundRemoval.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/backgroundRemoval.ts)) :
+- [x] Retrait du Module de Détourage d'Arrière-Plan & Résolution de l'Import `Switch` ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`package.json`](file:///c:/Users/PC/Desktop/Maison-Kenzi/package.json), [`src/admin/lib/backgroundRemoval.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/backgroundRemoval.ts)) :
+  - [x] **Restauration de l'Import `Switch`** : Réintégration du composant `Switch` utilisé par la fonctionnalité des *Paliers Multiples & Offres par Lot (Multi-Pack)* dans `ProductModal.tsx`.
   - [x] **Suppression des Dépendances & Services** : Retrait de `@imgly/background-removal` du `package.json` et nettoyage du service associé.
   - [x] **Restauration du Flux d'Upload Direct** : Téléversement standard direct des photos de produits dans Supabase Storage / base64 sans traitement IA intermédiaire.
-  - [x] **Nettoyage de l'Interface d'Administration** : Suppression du bouton switch et des icônes de détourage dans la modal d'ajout/modification de produit.
+  - [x] **Nettoyage de l'Interface d'Administration** : Suppression du switch et des icônes de détourage dans la modal d'ajout/modification de produit.
   - [x] **Conformité & Zéro Emoji** : Code épuré, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Optimisation Complète du Favicon Officiel & Métadonnées SEO de Prestige ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html), [`src/pages/Index.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Index.tsx)) :

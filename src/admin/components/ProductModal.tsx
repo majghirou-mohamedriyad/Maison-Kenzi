@@ -12,6 +12,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductStore";
 import { useCategories } from "@/store/useCategoryStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
