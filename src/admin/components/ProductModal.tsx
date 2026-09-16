@@ -97,7 +97,7 @@ const emptyForm = {
   isNew: false,
   isBestseller: false,
   hasTiers: false,
-  tiers: [] as Array<{ quantity: number; price: number; label: string }>,
+  tiers: [] as Array<{ quantity: number | string; price: number | string; label: string }>,
 };
 
 const isUuid = (s: string) =>
@@ -261,25 +261,19 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
     }
   }, [open, initial, defaultCategory]);
 
-  const addTier = (qty?: number) => {
-    setF((prev) => {
-      const currentTiers = prev.tiers || [];
-      const basePrice = Number(prev.price) || 200;
-      const nextQty = qty || (currentTiers.length > 0 ? Math.max(...currentTiers.map(t => t.quantity)) + 1 : 2);
-      const suggestedPrice = Math.round(basePrice * nextQty * (nextQty >= 3 ? 0.75 : 0.88));
-      return {
-        ...prev,
-        hasTiers: true,
-        tiers: [
-          ...currentTiers,
-          {
-            quantity: nextQty,
-            price: suggestedPrice,
-            label: nextQty === 2 ? "Duo Économique" : nextQty === 3 ? "Trio Privilège" : `Lot de ${nextQty}`,
-          },
-        ].sort((a, b) => a.quantity - b.quantity),
-      };
-    });
+  const addTier = () => {
+    setF((prev) => ({
+      ...prev,
+      hasTiers: true,
+      tiers: [
+        ...(prev.tiers || []),
+        {
+          quantity: "" as any,
+          price: "" as any,
+          label: "",
+        },
+      ],
+    }));
   };
 
   const updateTier = (index: number, field: "quantity" | "price" | "label", value: any) => {
@@ -984,10 +978,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                           onCheckedChange={(val) => {
                             set("hasTiers", val);
                             if (val && (!f.tiers || f.tiers.length === 0)) {
-                              const basePrice = Number(f.price) || 200;
                               set("tiers", [
-                                { quantity: 2, price: Math.round(basePrice * 2 * 0.88), label: "Lot de 2", badge: "-12%" },
-                                { quantity: 3, price: Math.round(basePrice * 3 * 0.75), label: "Lot de 3", badge: "Plus Populaire" },
+                                { quantity: "" as any, price: "" as any, label: "" },
                               ]);
                             }
                           }}
@@ -1004,20 +996,22 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                             </p>
                             <button
                               type="button"
-                              onClick={() => addTier(2)}
+                              onClick={() => addTier()}
                               className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E] text-white hover:bg-[#B89658] transition-all cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
-                              <span>Ajouter le premier palier (2 unités)</span>
+                              <span>Ajouter un palier</span>
                             </button>
                           </div>
                         ) : (
                           <div className="space-y-2">
                             {f.tiers.map((tier, idx) => {
+                              const numQty = Number(tier.quantity) || 0;
+                              const numPrice = Number(tier.price) || 0;
                               const baseUnitPrice = Number(f.price) || 0;
-                              const unitInTier = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
-                              const normalTotal = baseUnitPrice * tier.quantity;
-                              const savings = normalTotal > tier.price && normalTotal > 0 ? normalTotal - tier.price : 0;
+                              const unitInTier = numQty > 0 && numPrice > 0 ? Math.round(numPrice / numQty) : 0;
+                              const normalTotal = baseUnitPrice * numQty;
+                              const savings = numQty > 0 && numPrice > 0 && normalTotal > numPrice ? normalTotal - numPrice : 0;
 
                               return (
                                 <div
@@ -1030,7 +1024,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         {idx + 1}
                                       </span>
                                       <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2]">
-                                        Palier {tier.quantity} {tier.quantity > 1 ? "unités reçues" : "unité"}
+                                        Palier {idx + 1}{numQty > 0 ? ` (${numQty} ${numQty > 1 ? "unités reçues" : "unité reçue"})` : ""}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -1053,15 +1047,15 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Quantité reçue *
+                                        Quantité *
                                       </label>
                                       <input
                                         type="number"
                                         min={1}
                                         className={inputCls + " font-semibold"}
                                         value={tier.quantity}
-                                        onChange={(e) => updateTier(idx, "quantity", Math.max(1, parseInt(e.target.value) || 1))}
-                                        placeholder="Ex: 3"
+                                        onChange={(e) => updateTier(idx, "quantity", e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value) || 1))}
+                                        placeholder="Ex: 2"
                                       />
                                     </div>
 
@@ -1076,8 +1070,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                           step="any"
                                           className={inputCls + " pr-7 font-bold text-[#C9A96E]"}
                                           value={tier.price}
-                                          onChange={(e) => updateTier(idx, "price", parseFloat(e.target.value) || 0)}
-                                          placeholder="Ex: 450"
+                                          onChange={(e) => updateTier(idx, "price", e.target.value === "" ? "" : Math.max(0, parseFloat(e.target.value) || 0))}
+                                          placeholder="Ex: 350"
                                         />
                                         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
                                           MAD
@@ -1087,31 +1081,33 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Libellé (ex: "Lot de 3")
+                                        Libellé
                                       </label>
                                       <input
                                         type="text"
                                         className={inputCls}
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
-                                        placeholder="Ex: Pack Trio"
+                                        placeholder="Ex: Duo Soins"
                                       />
                                     </div>
                                   </div>
 
-                                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
-                                    <span>
-                                      Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / unité</strong>
-                                    </span>
-                                    <span className="text-[9px] italic">
-                                      Le client recevra {tier.quantity} fois le même article pour {tier.price} MAD
-                                    </span>
-                                  </div>
+                                  {numQty > 0 && numPrice > 0 ? (
+                                    <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
+                                      <span>
+                                        Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / unité</strong>
+                                      </span>
+                                      <span className="text-[9px] italic">
+                                        Le client recevra {numQty} fois le même article pour {numPrice} MAD
+                                      </span>
+                                    </div>
+                                  ) : null}
                                 </div>
                               );
                             })}
 
-                            <div className="flex items-center gap-2 pt-1">
+                            <div className="pt-1">
                               <button
                                 type="button"
                                 onClick={() => addTier()}
@@ -1119,13 +1115,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                               >
                                 <Plus className="w-3 h-3" />
                                 <span>Ajouter un palier</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => addTier(3)}
-                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
-                              >
-                                + Palier 3 unités
                               </button>
                             </div>
                           </div>
@@ -1452,10 +1441,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                           onCheckedChange={(val) => {
                             set("hasTiers", val);
                             if (val && (!f.tiers || f.tiers.length === 0)) {
-                              const basePrice = Number(f.price) || 200;
                               set("tiers", [
-                                { quantity: 2, price: Math.round(basePrice * 2 * 0.88), label: "Lot de 2", badge: "-12%" },
-                                { quantity: 3, price: Math.round(basePrice * 3 * 0.75), label: "Lot de 3", badge: "Plus Populaire" },
+                                { quantity: "" as any, price: "" as any, label: "" },
                               ]);
                             }
                           }}
@@ -1472,20 +1459,22 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                             </p>
                             <button
                               type="button"
-                              onClick={() => addTier(2)}
+                              onClick={() => addTier()}
                               className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E] text-white hover:bg-[#B89658] transition-all cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
-                              <span>Ajouter le premier palier (2 flacons)</span>
+                              <span>Ajouter un palier</span>
                             </button>
                           </div>
                         ) : (
                           <div className="space-y-2">
                             {f.tiers.map((tier, idx) => {
+                              const numQty = Number(tier.quantity) || 0;
+                              const numPrice = Number(tier.price) || 0;
                               const baseUnitPrice = Number(f.price) || 0;
-                              const unitInTier = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
-                              const normalTotal = baseUnitPrice * tier.quantity;
-                              const savings = normalTotal > tier.price && normalTotal > 0 ? normalTotal - tier.price : 0;
+                              const unitInTier = numQty > 0 && numPrice > 0 ? Math.round(numPrice / numQty) : 0;
+                              const normalTotal = baseUnitPrice * numQty;
+                              const savings = numQty > 0 && numPrice > 0 && normalTotal > numPrice ? normalTotal - numPrice : 0;
 
                               return (
                                 <div
@@ -1498,7 +1487,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         {idx + 1}
                                       </span>
                                       <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2]">
-                                        Palier {tier.quantity} {tier.quantity > 1 ? "flacons reçus" : "flacon"}
+                                        Palier {idx + 1}{numQty > 0 ? ` (${numQty} ${numQty > 1 ? "flacons reçus" : "flacon reçu"})` : ""}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -1521,15 +1510,15 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Quantité reçue *
+                                        Quantité *
                                       </label>
                                       <input
                                         type="number"
                                         min={1}
                                         className={inputCls + " font-semibold"}
                                         value={tier.quantity}
-                                        onChange={(e) => updateTier(idx, "quantity", Math.max(1, parseInt(e.target.value) || 1))}
-                                        placeholder="Ex: 3"
+                                        onChange={(e) => updateTier(idx, "quantity", e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value) || 1))}
+                                        placeholder="Ex: 2"
                                       />
                                     </div>
 
@@ -1544,8 +1533,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                           step="any"
                                           className={inputCls + " pr-7 font-bold text-[#C9A96E]"}
                                           value={tier.price}
-                                          onChange={(e) => updateTier(idx, "price", parseFloat(e.target.value) || 0)}
-                                          placeholder="Ex: 450"
+                                          onChange={(e) => updateTier(idx, "price", e.target.value === "" ? "" : Math.max(0, parseFloat(e.target.value) || 0))}
+                                          placeholder="Ex: 350"
                                         />
                                         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#7A726A] dark:text-[#A39B91] pointer-events-none">
                                           MAD
@@ -1555,31 +1544,33 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Libellé (ex: "Lot de 3")
+                                        Libellé
                                       </label>
                                       <input
                                         type="text"
                                         className={inputCls}
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
-                                        placeholder="Ex: Pack Trio"
+                                        placeholder="Ex: Pack Duo"
                                       />
                                     </div>
                                   </div>
 
-                                  <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
-                                    <span>
-                                      Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / flacon</strong>
-                                    </span>
-                                    <span className="text-[9px] italic">
-                                      Le client recevra {tier.quantity} fois le même parfum pour {tier.price} MAD
-                                    </span>
-                                  </div>
+                                  {numQty > 0 && numPrice > 0 ? (
+                                    <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
+                                      <span>
+                                        Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} MAD / flacon</strong>
+                                      </span>
+                                      <span className="text-[9px] italic">
+                                        Le client recevra {numQty} fois le même parfum pour {numPrice} MAD
+                                      </span>
+                                    </div>
+                                  ) : null}
                                 </div>
                               );
                             })}
 
-                            <div className="flex items-center gap-2 pt-1">
+                            <div className="pt-1">
                               <button
                                 type="button"
                                 onClick={() => addTier()}
@@ -1587,20 +1578,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                               >
                                 <Plus className="w-3 h-3" />
                                 <span>Ajouter un palier</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => addTier(3)}
-                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
-                              >
-                                + Palier 3 flacons
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => addTier(4)}
-                                className="px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26] bg-white dark:bg-[#141312] text-[#7A726A] dark:text-[#A39B91] hover:border-[#C9A96E] transition-all cursor-pointer"
-                              >
-                                + Palier 4 flacons
                               </button>
                             </div>
                           </div>
