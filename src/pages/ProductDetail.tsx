@@ -414,7 +414,7 @@ const ParfumDetail = () => {
   const primaryImg = productImages[0] || parfum.image_url;
   const primaryImageUrl = primaryImg
     ? (primaryImg.startsWith("http") ? primaryImg : `https://maison-kenzi.com${primaryImg.startsWith("/") ? primaryImg : `/${primaryImg}`}`)
-    : "https://maison-kenzi.com/mk-logo-light-removebg.png";
+    : "https://maison-kenzi.com/mk-logo.png";
 
   const productLd = {
     "@context": "https://schema.org",
@@ -638,8 +638,8 @@ const ParfumDetail = () => {
                             type="button"
                             onClick={() => setActiveImageIndex(idx)}
                             className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border transition-all shrink-0 cursor-pointer ${idx === activeImageIndex
-                                ? "border-primary ring-2 ring-primary/30 scale-[1.03] shadow-sm"
-                                : "border-border/70 opacity-70 hover:opacity-100 hover:border-border"
+                              ? "border-primary ring-2 ring-primary/30 scale-[1.03] shadow-sm"
+                              : "border-border/70 opacity-70 hover:opacity-100 hover:border-border"
                               }`}
                           >
                             <img
@@ -842,8 +842,8 @@ const ParfumDetail = () => {
                           type="button"
                           onClick={() => setSelectedTierIndex(idx)}
                           className={`relative p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 ${isSelected
-                              ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-sm scale-[1.01]"
-                              : "border-border/80 bg-card/40 hover:border-primary/40 hover:bg-card/70"
+                            ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-sm scale-[1.01]"
+                            : "border-border/80 bg-card/40 hover:border-primary/40 hover:bg-card/70"
                             }`}
                         >
                           {/* Badge d'économie automatique si réduction */}
@@ -931,10 +931,10 @@ const ParfumDetail = () => {
                         <div
                           key={s}
                           className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 sm:gap-3 ${isFormatOutOfStock
-                              ? "opacity-50 border-border/50 bg-muted/20 cursor-not-allowed"
-                              : isSelected
-                                ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
-                                : "border-border/80 bg-card/40 hover:border-primary/40"
+                            ? "opacity-50 border-border/50 bg-muted/20 cursor-not-allowed"
+                            : isSelected
+                              ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/30"
+                              : "border-border/80 bg-card/40 hover:border-primary/40"
                             }`}
                         >
                           {/* Format Info */}

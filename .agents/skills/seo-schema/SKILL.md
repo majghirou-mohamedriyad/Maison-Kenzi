@@ -144,8 +144,8 @@ Dans la page d'accueil et le pied de page :
   "@id": "https://maison-kenzi.com/#organization",
   "name": "Maison Kenzi",
   "url": "https://maison-kenzi.com/",
-  "logo": "https://maison-kenzi.com/mk-logo-light-removebg.png",
-  "image": "https://maison-kenzi.com/mk-logo-light-removebg.png",
+  "logo": "https://maison-kenzi.com/mk-logo.png",
+  "image": "https://maison-kenzi.com/mk-logo.png",
   "description": "Maison marocaine de haute parfumerie, fragrances de niche, créations artisanales et pièces rares 100% authentiques.",
   "address": {
     "@type": "PostalAddress",

@@ -69,12 +69,12 @@ const Footer = () => {
               aria-label={t("footer.homeAria", "Maison Kenzi - Accueil")}
             >
               <img
-                src="/mk-logo-light-removebg.png"
+                src="/mk-logo.png"
                 alt="Maison Kenzi"
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain dark:hidden"
               />
               <img
-                src="/mk-logo-light-removebg.png"
+                src="/mk-logo.png"
                 alt="Maison Kenzi"
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain hidden dark:block"
               />

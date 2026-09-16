@@ -11,7 +11,7 @@ interface SeoProps {
 }
 
 const SITE_URL = "https://maison-kenzi.com";
-const DEFAULT_IMAGE = `${SITE_URL}/mk-logo-light-removebg.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/mk-logo.png`;
 
 const Seo = ({
   title,

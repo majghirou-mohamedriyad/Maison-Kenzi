@@ -229,12 +229,12 @@ const AdminLayout = () => {
                 title="Maison Kenzi Admin"
               >
                 <img
-                  src="/mk-logo-light-removebg.png"
+                  src="/mk-logo.png"
                   alt="Maison Kenzi"
                   className="h-9 w-auto max-w-[50px] object-contain dark:hidden"
                 />
                 <img
-                  src="/mk-logo-light-removebg.png"
+                  src="/mk-logo.png"
                   alt="Maison Kenzi"
                   className="h-9 w-auto max-w-[50px] object-contain hidden dark:block"
                 />
@@ -253,12 +253,12 @@ const AdminLayout = () => {
             >
               <div className="shrink-0 flex items-center justify-center">
                 <img
-                  src="/mk-logo-light-removebg.png"
+                  src="/mk-logo.png"
                   alt="Maison Kenzi"
                   className="h-9 sm:h-10 w-auto object-contain dark:hidden"
                 />
                 <img
-                  src="/mk-logo-light-removebg.png"
+                  src="/mk-logo.png"
                   alt="Maison Kenzi"
                   className="h-9 sm:h-10 w-auto object-contain hidden dark:block"
                 />
@@ -335,15 +335,15 @@ const AdminLayout = () => {
                       <DropdownMenuTrigger asChild>
                         <button
                           className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group cursor-pointer ${isCurrent
-                              ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
-                              : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                            ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                            : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                             }`}
                           title={item.label}
                         >
                           <item.icon
                             className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
-                                ? "text-[#C9A96E] dark:text-[#121110]"
-                                : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                              ? "text-[#C9A96E] dark:text-[#121110]"
+                              : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
                               }`}
                             strokeWidth={isCurrent ? 2.25 : 1.85}
                           />
@@ -362,8 +362,8 @@ const AdminLayout = () => {
                           <Link
                             to={item.to}
                             className={`flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${isCurrent && !currentCategoryParam
-                                ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-medium"
-                                : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF]"
+                              ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-medium"
+                              : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF]"
                               }`}
                           >
                             <Package className="w-4 h-4 text-[#C9A96E] shrink-0" />
@@ -378,8 +378,8 @@ const AdminLayout = () => {
                               <Link
                                 to={sub.to}
                                 className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${isSubActive
-                                    ? "bg-[#C9A96E]/20 text-[#C9A96E] font-semibold"
-                                    : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] hover:text-[#C9A96E]"
+                                  ? "bg-[#C9A96E]/20 text-[#C9A96E] font-semibold"
+                                  : "hover:bg-black/5 dark:hover:bg-white/5 text-[#4A453E] dark:text-[#D1C9BF] hover:text-[#C9A96E]"
                                   }`}
                               >
                                 <sub.icon className={`w-4 h-4 shrink-0 ${isSubActive ? "text-[#C9A96E]" : "text-[#7A726A] dark:text-[#A39B91]"}`} />
@@ -402,14 +402,14 @@ const AdminLayout = () => {
                           to={item.to}
                           onClick={() => setMobileOpen(false)}
                           className={`relative flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs transition-all duration-200 group ${isCurrent
-                              ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
-                              : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                            ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                            : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                             }`}
                         >
                           <item.icon
                             className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
-                                ? "text-[#C9A96E] dark:text-[#121110]"
-                                : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                              ? "text-[#C9A96E] dark:text-[#121110]"
+                              : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
                               }`}
                             strokeWidth={isCurrent ? 2.25 : 1.85}
                           />
@@ -431,8 +431,8 @@ const AdminLayout = () => {
                   <div key={item.to} className="space-y-1">
                     <div
                       className={`relative flex items-center justify-between rounded-xl text-xs transition-all duration-200 group ${isCurrent
-                          ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
-                          : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                        ? "bg-[#1A1816] text-[#FAF7F2] dark:bg-[#C9A96E] dark:text-[#121110] font-semibold shadow-sm"
+                        : "bg-transparent text-[#6B635B] dark:text-[#E8E2D9]/85 hover:bg-[#EFE7DC] dark:hover:bg-white/10 hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
                         }`}
                     >
                       <Link
@@ -447,8 +447,8 @@ const AdminLayout = () => {
                       >
                         <item.icon
                           className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isCurrent
-                              ? "text-[#C9A96E] dark:text-[#121110]"
-                              : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
+                            ? "text-[#C9A96E] dark:text-[#121110]"
+                            : "text-[#7A726A] dark:text-[#E8E2D9] group-hover:scale-110 group-hover:text-[#C9A96E] dark:group-hover:text-[#C9A96E]"
                             }`}
                           strokeWidth={isCurrent ? 2.25 : 1.85}
                         />
@@ -460,8 +460,8 @@ const AdminLayout = () => {
                         {item.isOrderLink && pendingOrdersCount > 0 && (
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs ${isCurrent
-                                ? "bg-[#C9A96E] text-[#121110]"
-                                : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
+                              ? "bg-[#C9A96E] text-[#121110]"
+                              : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse"
                               }`}
                           >
                             {pendingOrdersCount}
@@ -471,8 +471,8 @@ const AdminLayout = () => {
                         {item.badge && !item.isOrderLink && (
                           <span
                             className={`text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${isCurrent
-                                ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
-                                : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
+                              ? "bg-white/20 text-[#FAF7F2] dark:text-[#121110]"
+                              : "bg-black/5 dark:bg-white/10 text-[#7A726A] dark:text-[#C9A96E] border border-black/5 dark:border-white/5"
                               }`}
                           >
                             {item.badge}
@@ -485,8 +485,8 @@ const AdminLayout = () => {
                             type="button"
                             onClick={(e) => toggleSubmenu(item.to, e)}
                             className={`p-1 rounded-lg transition-transform duration-200 cursor-pointer ${isCurrent
-                                ? "text-[#FAF7F2] hover:bg-white/10 dark:text-[#121110] dark:hover:bg-black/10"
-                                : "text-[#8C827A] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
+                              ? "text-[#FAF7F2] hover:bg-white/10 dark:text-[#121110] dark:hover:bg-black/10"
+                              : "text-[#8C827A] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
                               }`}
                             title={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
                             aria-label={isMenuOpen ? "Replier le sous-menu" : "Ouvrir le sous-menu"}
@@ -514,15 +514,15 @@ const AdminLayout = () => {
                               to={sub.to}
                               onClick={() => setMobileOpen(false)}
                               className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all duration-150 group ${isSubActive
-                                  ? "bg-[#C9A96E]/15 text-[#C9A96E] font-semibold border-l-2 border-[#C9A96E]"
-                                  : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
+                                ? "bg-[#C9A96E]/15 text-[#C9A96E] font-semibold border-l-2 border-[#C9A96E]"
+                                : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5"
                                 }`}
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
                                 <sub.icon
                                   className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${isSubActive
-                                      ? "text-[#C9A96E] scale-110"
-                                      : "text-[#8C827A] dark:text-[#7A726A] group-hover:text-[#C9A96E] group-hover:scale-105"
+                                    ? "text-[#C9A96E] scale-110"
+                                    : "text-[#8C827A] dark:text-[#7A726A] group-hover:text-[#C9A96E] group-hover:scale-105"
                                     }`}
                                   strokeWidth={isSubActive ? 2.2 : 1.75}
                                 />

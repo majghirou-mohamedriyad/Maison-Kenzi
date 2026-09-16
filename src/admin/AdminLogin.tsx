@@ -100,12 +100,12 @@ const AdminLogin = () => {
           <div className="flex flex-col items-center text-center mb-8">
             <Link to="/" className="inline-block mb-3 transition-transform hover:scale-105" title="Retour au site">
               <img
-                src="/mk-logo-light-removebg.png"
+                src="/mk-logo.png"
                 alt="Maison Kenzi"
                 className="h-16 sm:h-20 w-auto object-contain dark:hidden"
               />
               <img
-                src="/mk-logo-light-removebg.png"
+                src="/mk-logo.png"
                 alt="Maison Kenzi"
                 className="h-16 sm:h-20 w-auto object-contain hidden dark:block"
               />

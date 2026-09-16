@@ -51,9 +51,9 @@ Les réseaux sociaux (WhatsApp, Facebook, Instagram, Twitter/X, LinkedIn) exigen
 <meta property="og:title" content="Maison Kenzi | Parfums de Niche & Haute Parfumerie au Maroc" />
 <meta property="og:description" content="Découvrez nos fragrances d'exception, flacons de luxe et créations artisanales. Livraison express au Maroc." />
 <meta property="og:url" content="https://maison-kenzi.com/" />
-<meta property="og:image" content="https://maison-kenzi.com/mk-logo-light-removebg.png" />
+<meta property="og:image" content="https://maison-kenzi.com/mk-logo.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://maison-kenzi.com/mk-logo-light-removebg.png" />
+<meta name="twitter:image" content="https://maison-kenzi.com/mk-logo.png" />
 ```
 
 ---

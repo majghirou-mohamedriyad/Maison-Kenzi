@@ -222,12 +222,12 @@ const Navigation = () => {
             aria-label="Maison Kenzi - Accueil"
           >
             <img
-              src="/mk-logo-light-removebg.png"
+              src="/mk-logo.png"
               alt="Maison Kenzi"
               className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain drop-shadow-xs dark:hidden shrink-0"
             />
             <img
-              src="/mk-logo-light-removebg.png"
+              src="/mk-logo.png"
               alt="Maison Kenzi"
               className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain drop-shadow-xs hidden dark:block shrink-0"
             />

@@ -32,12 +32,12 @@ const Maintenance = () => {
       <div className="pt-6 sm:pt-10 text-center z-10">
         <div className="relative group inline-block">
           <img
-            src="/mk-logo-light-removebg.png"
+            src="/mk-logo.png"
             alt="Maison Kenzi"
             className="h-14 sm:h-20 w-auto object-contain dark:hidden mx-auto transition-transform duration-500 group-hover:scale-105"
           />
           <img
-            src="/mk-logo-light-removebg.png"
+            src="/mk-logo.png"
             alt="Maison Kenzi"
             className="h-14 sm:h-20 w-auto object-contain hidden dark:block mx-auto transition-transform duration-500 group-hover:scale-105"
           />

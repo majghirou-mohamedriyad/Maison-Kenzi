@@ -12,8 +12,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title="Maison Kenzi | Parfums & Déodorants Premium au Maroc"
-        description="Découvrez les parfums homme, parfums femme, déodorants stick et packs premium Maison Kenzi. Des fragrances élégantes et des soins de qualité, livraison rapide et paiement sécurisé par internet."
+        title="Maison Kenzi | Haute Parfumerie, Cosmétique & Bazar Chic"
+        description="Boutique officielle Maison Kenzi : haute parfumerie, soins cosmétiques, créations artisanales et sélection bazar chic. Paiement sécurisé et livraison rapide."
         path="/"
         ogType="website"
       />

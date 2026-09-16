@@ -1,7 +1,7 @@
 # 🌿 Maison Kenzi | Parfums & Produits Cosmétiques
 
 <p align="center">
-  <img src="public\mk-logo-light-removebg.png" alt="Maison Kenzi Logo" width="120" />
+  <img src="public\mk-logo.png" alt="Maison Kenzi Logo" width="120" />
 </p>
 
 <p align="center">
