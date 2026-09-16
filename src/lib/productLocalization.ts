@@ -227,3 +227,74 @@ export const getCategoryDescription = (
 
   return rawDesc || "Collection exclusive";
 };
+
+/**
+ * Traduit les informations d'un palier de quantité (format par lot) selon la langue active (FR / EN)
+ */
+export const getProductTierInfo = (
+  tier?: { quantity: number | string; price: number | string; label?: string; label_en?: string } | null,
+  isParfum: boolean = true,
+  language: string = "fr",
+  baseVolume?: number | null
+): { label: string; sub: string; unitLabel: string } => {
+  if (!tier) {
+    return {
+      label: language === "en" ? "Standard Format" : "Format Standard",
+      sub: "",
+      unitLabel: language === "en" ? (isParfum ? "/ bottle" : "/ unit") : (isParfum ? "/ flacon" : "/ unité"),
+    };
+  }
+
+  const qty = Number(tier.quantity) || 1;
+  const isEnglish = language === "en";
+
+  // 1. Libellé principal du palier / format
+  let label = "";
+  if (isEnglish) {
+    if (tier.label_en && tier.label_en.trim().length > 0) {
+      label = tier.label_en.trim();
+    } else if (tier.label && tier.label.trim().length > 0) {
+      const l = tier.label.trim().toLowerCase();
+      if (l === "lot de 2" || l.includes("pack duo") || l.includes("duo")) label = "Duo Pack";
+      else if (l === "lot de 3" || l.includes("pack trio") || l.includes("trio")) label = "Trio Pack";
+      else if (l.startsWith("lot de ")) label = `Pack of ${qty}`;
+      else label = tier.label.trim();
+    } else if (qty === 1) {
+      label = isParfum ? (baseVolume ? `1 Bottle (${baseVolume}ml)` : "1 Full Bottle") : "1 Single Unit";
+    } else {
+      label = isParfum ? `Pack of ${qty} Bottles` : `Pack of ${qty} Units`;
+    }
+  } else {
+    if (tier.label && tier.label.trim().length > 0) {
+      label = tier.label.trim();
+    } else if (qty === 1) {
+      label = isParfum ? (baseVolume ? `1 Flacon (${baseVolume}ml)` : "1 Flacon Complet") : "1 Unité";
+    } else {
+      label = isParfum ? `Lot de ${qty} flacons` : `Lot de ${qty} unités`;
+    }
+  }
+
+  // 2. Sous-titre descriptif
+  let sub = "";
+  if (isEnglish) {
+    if (qty === 1) {
+      sub = isParfum ? "1 original sealed bottle" : "1 item delivered";
+    } else {
+      sub = isParfum ? `You receive ${qty} bottles of the same fragrance` : `You receive ${qty}x the same item`;
+    }
+  } else {
+    if (qty === 1) {
+      sub = isParfum ? "1 flacon d'origine scellé" : "1 article livré";
+    } else {
+      sub = isParfum ? `Vous recevez ${qty} flacons du même parfum` : `Vous recevez ${qty} fois le même article`;
+    }
+  }
+
+  // 3. Libellé par unité
+  const unitLabel = isEnglish
+    ? (isParfum ? "/ bottle" : "/ unit")
+    : (isParfum ? "/ flacon" : "/ unité");
+
+  return { label, sub, unitLabel };
+};
+

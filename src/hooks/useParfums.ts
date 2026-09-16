@@ -26,6 +26,16 @@ export const mapRowToParfum = (row: any): Parfum => {
   const primaryImg = images[0] || row.image_url || null;
   const categoriesList = getParfumCategories(row);
 
+  let parsedTiers: any[] = [];
+  if (Array.isArray(row.quantity_tiers)) {
+    parsedTiers = row.quantity_tiers;
+  } else if (typeof row.quantity_tiers === "string") {
+    try {
+      const p = JSON.parse(row.quantity_tiers);
+      if (Array.isArray(p)) parsedTiers = p;
+    } catch {}
+  }
+
   return {
     id: row.id,
     name: row.name,
@@ -59,6 +69,8 @@ export const mapRowToParfum = (row: any): Parfum => {
     full_bottle_price: row.full_bottle_price ? Number(row.full_bottle_price) : null,
     full_bottle_volume_ml: row.full_bottle_volume_ml ? Number(row.full_bottle_volume_ml) : (row.sale_mode === "full_bottle" ? 50 : null),
     full_bottle_stock: fullStock,
+    has_tiers: !!row.has_tiers || parsedTiers.length > 0,
+    quantity_tiers: parsedTiers,
     stock_5ml: Number(row.stock_5ml ?? 0),
     stock_10ml: Number(row.stock_10ml ?? 0),
     created_at: row.created_at || new Date().toISOString(),
@@ -75,6 +87,16 @@ export const mapLocalToParfum = (p: AdminParfum): Parfum => {
   const images = getParfumImages(p);
   const primaryImg = images[0] || p.image_url || null;
   const categoriesList = getParfumCategories(p);
+
+  let parsedTiers: any[] = [];
+  if (Array.isArray(p.quantity_tiers)) {
+    parsedTiers = p.quantity_tiers;
+  } else if (typeof (p as any).quantity_tiers === "string") {
+    try {
+      const parsed = JSON.parse((p as any).quantity_tiers);
+      if (Array.isArray(parsed)) parsedTiers = parsed;
+    } catch {}
+  }
 
   return {
     id: p.id,
@@ -109,6 +131,8 @@ export const mapLocalToParfum = (p: AdminParfum): Parfum => {
     full_bottle_price: p.full_bottle_price ?? null,
     full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
     full_bottle_stock: fullStock,
+    has_tiers: !!p.has_tiers || parsedTiers.length > 0,
+    quantity_tiers: parsedTiers,
     stock_5ml: p.stock_5ml ?? 0,
     stock_10ml: p.stock_10ml ?? 0,
     created_at: new Date().toISOString(),
@@ -161,6 +185,18 @@ export const refreshProductsFromSupabase = async () => {
           ? rawLabel
           : (localMatch?.imageLabel && !localMatch.imageLabel.startsWith("[") ? localMatch.imageLabel : "");
 
+        let parsedTiers: any[] = [];
+        if (Array.isArray(r.quantity_tiers)) {
+          parsedTiers = r.quantity_tiers;
+        } else if (typeof r.quantity_tiers === "string") {
+          try {
+            const p = JSON.parse(r.quantity_tiers);
+            if (Array.isArray(p)) parsedTiers = p;
+          } catch {}
+        } else if (Array.isArray(localMatch?.quantity_tiers)) {
+          parsedTiers = localMatch.quantity_tiers;
+        }
+
         return {
           id: r.id,
           name: r.name,
@@ -193,6 +229,8 @@ export const refreshProductsFromSupabase = async () => {
           full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : localMatch?.full_bottle_volume_ml ?? null,
           full_bottle_stock: Number(r.full_bottle_stock ?? localMatch?.full_bottle_stock ?? 0),
           full_bottle_limited: !!r.full_bottle_limited,
+          has_tiers: r.has_tiers ?? (parsedTiers.length > 0) ?? localMatch?.has_tiers ?? false,
+          quantity_tiers: parsedTiers,
           stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
           stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
           active: r.is_active ?? localMatch?.active ?? true,

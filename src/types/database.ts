@@ -10,6 +10,7 @@ export type ProductTier = {
   quantity: number;
   price: number;
   label?: string;
+  label_en?: string;
 };
 
 export type Parfum = {

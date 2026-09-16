@@ -58,6 +58,7 @@ import {
   getProductSubtitle,
   getProductNotes,
   getProductGender,
+  getProductTierInfo,
 } from "@/lib/productLocalization";
 import { isParfumProduct, isParfumInCategory } from "@/lib/productCategories";
 import { useCategories } from "@/store/useCategoryStore";
@@ -329,14 +330,12 @@ const ParfumDetail = () => {
 
     if (hasProductTiers && activeTier) {
       const isMulti = activeTier.quantity > 1;
-      const tierLabel = activeTier.label || (isMulti
-        ? (isParfum ? `Lot de ${activeTier.quantity} flacons` : `Lot de ${activeTier.quantity} unités`)
-        : (isParfum ? "1 Flacon" : "1 Unité"));
+      const tierInfo = getProductTierInfo(activeTier, isParfum, language, parfum.full_bottle_volume_ml);
 
       return [
         {
           size: isFullBottle ? "full" : "10ml",
-          sizeLabel: `${tierLabel}${isMulti ? ` (${activeTier.quantity}x même produit)` : ""}`,
+          sizeLabel: `${tierInfo.label}${isMulti ? ` (${activeTier.quantity}x)` : ""}`,
           quantity: activeTier.quantity,
           unitPrice: Math.round(activeTier.price / activeTier.quantity),
           subtotal: activeTier.price,
@@ -815,15 +814,19 @@ const ParfumDetail = () => {
 
               {/* Multi-Format / Size / Tier Selection Cards */}
               {hasProductTiers ? (
-                /* SECTION PALIERS MULTIPLES & OFFRES PAR LOT */
+                /* SECTION FORMATS SOUHAITÉS & OFFRES PAR LOT */
                 <div className="space-y-2.5 pt-1">
                   <div className="flex justify-between items-center flex-wrap gap-1">
                     <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
-                      <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span>{language === "en" ? "Select your package" : "Choisissez votre offre par lot"}</span>
+                      {isParfum ? (
+                        <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                      )}
+                      <span>{t.product.sizeSelect}</span>
                     </span>
                     <span className="text-[10px] text-muted-foreground font-medium">
-                      {language === "en" ? "Articles identical • Free delivery" : "Même produit • Livraison offerte"}
+                      {language === "en" ? "Same product • Free delivery" : "Même produit • Livraison offerte"}
                     </span>
                   </div>
 
@@ -833,6 +836,7 @@ const ParfumDetail = () => {
                       const unitEquivalent = tier.quantity > 0 ? Math.round(tier.price / tier.quantity) : 0;
                       const regularTotal = baseUnitPrice * tier.quantity;
                       const savings = regularTotal > tier.price && regularTotal > 0 ? regularTotal - tier.price : 0;
+                      const tierInfo = getProductTierInfo(tier, isParfum, language, parfum?.full_bottle_volume_ml);
 
                       return (
                         <button
@@ -855,7 +859,7 @@ const ParfumDetail = () => {
                           <div className="space-y-1">
                             <div className="flex items-center justify-between gap-1.5">
                               <span className="text-sm sm:text-base font-semibold text-foreground">
-                                {tier.label || (tier.quantity === 1 ? (isParfum ? "1 Flacon" : "1 Unité") : `Lot de ${tier.quantity}`)}
+                                {tierInfo.label}
                               </span>
                               <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                                 isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border/80 bg-background"
@@ -865,9 +869,7 @@ const ParfumDetail = () => {
                             </div>
 
                             <p className="text-[10px] text-muted-foreground">
-                              {tier.quantity === 1
-                                ? (language === "en" ? "1 item delivered" : "1 article livré")
-                                : (language === "en" ? `You receive ${tier.quantity}x same item` : `Vous recevez ${tier.quantity} fois le même produit`)}
+                              {tierInfo.sub}
                             </p>
                           </div>
 
@@ -878,14 +880,16 @@ const ParfumDetail = () => {
                               </span>
                               {tier.quantity > 1 && (
                                 <span className="text-[10px] text-muted-foreground">
-                                  soit {formatMAD(unitEquivalent)} / u.
+                                  {language === "en" ? "i.e. " : "soit "}
+                                  {formatMAD(unitEquivalent)} {tierInfo.unitLabel}
                                 </span>
                               )}
                             </div>
 
                             {savings > 0 && (
                               <span className="inline-block text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
-                                Économisez {formatMAD(savings)}
+                                {language === "en" ? "Save " : "Économisez "}
+                                {formatMAD(savings)}
                               </span>
                             )}
                           </div>

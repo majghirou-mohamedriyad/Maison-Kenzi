@@ -97,7 +97,7 @@ const emptyForm = {
   isNew: false,
   isBestseller: false,
   hasTiers: false,
-  tiers: [] as Array<{ quantity: number | string; price: number | string; label: string }>,
+  tiers: [] as Array<{ quantity: number | string; price: number | string; label: string; label_en?: string }>,
 };
 
 const isUuid = (s: string) =>
@@ -211,6 +211,19 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         const rawImageLabelEn = (initial as any).image_label_en || (initial as any).imageLabelEn || "";
         const cleanImageLabelEn = rawImageLabelEn.startsWith("[") ? "" : rawImageLabelEn;
 
+        let initTiers: any[] = [];
+        const rawInitTiers = (initial as any).quantity_tiers ?? (initial as any).quantityTiers;
+        if (Array.isArray(rawInitTiers)) {
+          initTiers = rawInitTiers;
+        } else if (typeof rawInitTiers === "string") {
+          try {
+            const parsed = JSON.parse(rawInitTiers);
+            if (Array.isArray(parsed)) initTiers = parsed;
+          } catch {}
+        }
+
+        const hasTiersInit = !!(initial.has_tiers || (initial as any).hasTiers || initTiers.length > 0);
+
         setF({
           name: initial.name || "",
           nameEn: (initial as any).name_en || (initial as any).nameEn || "",
@@ -237,14 +250,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           active: initial.active ?? true,
           isNew: !!initial.isNew,
           isBestseller: !!initial.isBestseller,
-          hasTiers: !!initial.has_tiers || (Array.isArray(initial.quantity_tiers) && initial.quantity_tiers.length > 0),
-          tiers: Array.isArray(initial.quantity_tiers)
-            ? initial.quantity_tiers.map((t) => ({
-                quantity: Number(t.quantity) || 1,
-                price: Number(t.price) || 0,
-                label: t.label || "",
-              }))
-            : [],
+          hasTiers: hasTiersInit,
+          tiers: initTiers.map((t) => ({
+            quantity: Number(t.quantity) || 1,
+            price: Number(t.price) || 0,
+            label: t.label || "",
+            label_en: t.label_en || t.labelEn || "",
+          })),
         });
       } else {
         const initCategory = defaultCategory && defaultCategory !== "Tous" ? defaultCategory : "";
@@ -271,12 +283,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           quantity: "" as any,
           price: "" as any,
           label: "",
+          label_en: "",
         },
       ],
     }));
   };
 
-  const updateTier = (index: number, field: "quantity" | "price" | "label", value: any) => {
+  const updateTier = (index: number, field: "quantity" | "price" | "label" | "label_en", value: any) => {
     setF((prev) => {
       const nextTiers = [...(prev.tiers || [])];
       if (!nextTiers[index]) return prev;
@@ -592,12 +605,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       has_tiers: f.hasTiers,
       quantity_tiers: f.hasTiers
         ? (f.tiers || [])
-            .filter((t) => t.quantity > 0 && t.price > 0)
-            .sort((a, b) => a.quantity - b.quantity)
+            .filter((t) => Number(t.quantity) > 0 && Number(t.price) > 0)
+            .sort((a, b) => Number(a.quantity) - Number(b.quantity))
             .map((t) => ({
               quantity: Number(t.quantity),
               price: Number(t.price),
-              label: t.label.trim() || undefined,
+              label: t.label?.trim() || undefined,
+              label_en: t.label_en?.trim() || undefined,
             }))
         : [],
       weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
@@ -1044,7 +1058,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                     </div>
                                   </div>
 
-                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
                                         Quantité *
@@ -1061,7 +1075,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Prix total du lot (€ / MAD) *
+                                        Prix total du lot *
                                       </label>
                                       <div className="relative">
                                         <input
@@ -1081,7 +1095,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Libellé
+                                        Libellé (FR)
                                       </label>
                                       <input
                                         type="text"
@@ -1089,6 +1103,19 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
                                         placeholder="Ex: Duo Soins"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (EN - Optionnel)
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label_en || ""}
+                                        onChange={(e) => updateTier(idx, "label_en", e.target.value)}
+                                        placeholder="Ex: Care Duo"
                                       />
                                     </div>
                                   </div>
@@ -1507,7 +1534,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                     </div>
                                   </div>
 
-                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
                                         Quantité *
@@ -1524,7 +1551,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Prix total du lot (€ / MAD) *
+                                        Prix total du lot *
                                       </label>
                                       <div className="relative">
                                         <input
@@ -1544,7 +1571,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
                                     <div>
                                       <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
-                                        Libellé
+                                        Libellé (FR)
                                       </label>
                                       <input
                                         type="text"
@@ -1552,6 +1579,19 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                                         value={tier.label}
                                         onChange={(e) => updateTier(idx, "label", e.target.value)}
                                         placeholder="Ex: Pack Duo"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (EN - Optionnel)
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label_en || ""}
+                                        onChange={(e) => updateTier(idx, "label_en", e.target.value)}
+                                        placeholder="Ex: Duo Pack"
                                       />
                                     </div>
                                   </div>
