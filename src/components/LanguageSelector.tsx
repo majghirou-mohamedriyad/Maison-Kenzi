@@ -45,12 +45,12 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   // Capsule Haute Horlogerie / Haute Parfumerie (Double Pastille FR / EN)
   return (
     <div
-      className={`inline-flex items-center p-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-border/70 dark:border-white/10 backdrop-blur-md select-none transition-all ${className}`}
+      className={`inline-flex items-center shrink-0 whitespace-nowrap p-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-border/70 dark:border-white/10 backdrop-blur-md select-none transition-all ${className}`}
       role="group"
       aria-label="Sélecteur de langue"
     >
       {showIcon && (
-        <div className="pl-2 pr-1 text-primary/80 hidden sm:flex items-center">
+        <div className="pl-1.5 pr-0.5 text-primary/80 hidden sm:flex items-center">
           <Globe className="w-3 h-3 text-primary" strokeWidth={1.8} />
         </div>
       )}

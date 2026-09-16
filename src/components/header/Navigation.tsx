@@ -34,6 +34,7 @@ import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import CurrencySelector from "@/components/CurrencySelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useParfums } from "@/hooks/useParfums";
 import { formatMAD } from "@/lib/sizes";
@@ -193,17 +194,17 @@ const Navigation = () => {
   return (
     <div className="relative">
       {/* Barre Flottante Centrée en Pastille Arrondie (rounded-full) avec Verre Dépoli */}
-      <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-4 sm:px-6 md:px-7 py-2.5 sm:py-3 md:py-3.5 min-h-[58px] sm:min-h-[66px] md:min-h-[74px] flex items-center justify-between transition-all duration-300">
+      <nav className="bg-card/90 dark:bg-[#12100E]/90 backdrop-blur-2xl border border-border/80 dark:border-[#C9A96E]/30 rounded-full shadow-nude px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-2.5 min-h-[56px] sm:min-h-[62px] md:min-h-[68px] flex items-center justify-between flex-nowrap whitespace-nowrap overflow-visible transition-all duration-300">
 
-        {/* Left Side: Brand Logo, Mobile Hamburger & Desktop Navigation Links */}
-        <div className="flex items-center gap-1.5 sm:gap-3 z-10">
+        {/* Left Side: Brand Logo & Mobile Hamburger */}
+        <div className="flex items-center flex-nowrap shrink-0 gap-1.5 sm:gap-2.5 z-10">
           {/* Mobile Menu Button */}
           <button
             onClick={() => {
               setIsSearchOpen(false);
               setIsMobileMenuOpen((v) => !v);
             }}
-            className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-foreground hover:text-primary hover:bg-muted/50 transition-colors cursor-pointer"
+            className="md:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-foreground hover:text-primary hover:bg-muted/50 transition-colors cursor-pointer"
             aria-label="Menu"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -224,198 +225,187 @@ const Navigation = () => {
             <img
               src="/mk-logo-light-removebg.png"
               alt="Maison Kenzi"
-              className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[190px] object-contain drop-shadow-xs dark:hidden"
+              className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain drop-shadow-xs dark:hidden shrink-0"
             />
             <img
               src="/mk-logo-dark.png"
               alt="Maison Kenzi"
-              className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[190px] object-contain drop-shadow-xs hidden dark:block"
+              className="h-9 sm:h-10 md:h-11 lg:h-12 w-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain drop-shadow-xs hidden dark:block shrink-0"
             />
           </Link>
+        </div>
 
-          {/* Desktop Nav Pills (Left side) */}
-          <div className="hidden md:flex items-center gap-2">
-            {/* 1. Bouton « Nos Produits » -> Catalogue */}
-            <Link
-              to="/collection/all"
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${location.pathname === "/collection/all"
+        {/* Right Side: Liens de navigation & Actions regroupés sans écart béant */}
+        <div className="flex items-center flex-nowrap shrink-0 gap-1 sm:gap-1.5 md:gap-2 z-10">
+          {/* 1. Bouton « Nos Produits » -> Catalogue */}
+          <Link
+            to="/collection/all"
+            className={`hidden lg:inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${location.pathname === "/collection/all"
+              ? "bg-foreground text-background shadow-xs"
+              : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+              }`}
+          >
+            <span>{t("nav.products", "Nos Produits")}</span>
+          </Link>
+
+          {/* 2. Bouton « Nos Collections » -> Menu déroulant au survol */}
+          <div
+            className="hidden lg:block relative shrink-0"
+            onMouseEnter={handleCollectionsMouseEnter}
+            onMouseLeave={handleCollectionsMouseLeave}
+          >
+            <button
+              type="button"
+              onClick={() => setIsCollectionsHovered((v) => !v)}
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isCollectionsHovered || isCollectionsActive
                 ? "bg-foreground text-background shadow-xs"
                 : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
                 }`}
+              aria-expanded={isCollectionsHovered}
+              aria-haspopup="true"
             >
-              <span>{t("nav.products", "Nos Produits")}</span>
-            </Link>
-
-            {/* 2. Bouton « Nos Collections » -> Menu déroulant au survol */}
-            <div
-              className="relative"
-              onMouseEnter={handleCollectionsMouseEnter}
-              onMouseLeave={handleCollectionsMouseLeave}
-            >
-              <button
-                type="button"
-                onClick={() => setIsCollectionsHovered((v) => !v)}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isCollectionsHovered || isCollectionsActive
-                  ? "bg-foreground text-background shadow-xs"
-                  : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
+              <span>{t("nav.collections", "Nos Collections")}</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${isCollectionsHovered ? "rotate-180" : ""
                   }`}
-                aria-expanded={isCollectionsHovered}
-                aria-haspopup="true"
+              />
+            </button>
+
+            {/* Panneau Flottant Déroulant Haute Parfumerie */}
+            {isCollectionsHovered && (
+              <div
+                onMouseEnter={handleCollectionsMouseEnter}
+                onMouseLeave={handleCollectionsMouseLeave}
+                className="absolute top-full left-0 mt-2.5 z-50 w-72 sm:w-80 rounded-2xl bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-2xl p-2.5 space-y-1 animate-in fade-in-0 zoom-in-95 duration-150"
               >
-                <span>{t("nav.collections", "Nos Collections")}</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isCollectionsHovered ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
-
-              {/* Panneau Flottant Déroulant Haute Parfumerie */}
-              {isCollectionsHovered && (
-                <div
-                  onMouseEnter={handleCollectionsMouseEnter}
-                  onMouseLeave={handleCollectionsMouseLeave}
-                  className="absolute top-full left-0 mt-2.5 z-50 w-72 sm:w-80 rounded-2xl bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-2xl p-2.5 space-y-1 animate-in fade-in-0 zoom-in-95 duration-150"
-                >
-                  <div className="px-3 py-1.5 border-b border-border/60 mb-1 flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
-                      {t("nav.universesTitle", "Univers & Collections")}
-                    </span>
-                    <Link
-                      to="/collection/all"
-                      onClick={() => setIsCollectionsHovered(false)}
-                      className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-                    >
-                      <span>{t("nav.catalog", "Catalogue")}</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-
-                  {/* Lien général Toutes les Collections */}
+                <div className="px-3 py-1.5 border-b border-border/60 mb-1 flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
+                    {t("nav.universesTitle", "Univers & Collections")}
+                  </span>
                   <Link
                     to="/collection/all"
                     onClick={() => setIsCollectionsHovered(false)}
-                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group"
+                    className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors block truncate">
-                        {t("nav.allCollections", "Toutes les Collections")}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground truncate block font-light">
-                        {t("nav.catalogSubtitle", "Catalogue complet des parfums")}
-                      </span>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    <span>{t("nav.catalog", "Catalogue")}</span>
+                    <ChevronRight className="w-3 h-3" />
                   </Link>
-
-                  {/* Liste des Catégories / Univers dynamiques disponibles */}
-                  {sortedCategories.length > 0 ? (
-                    sortedCategories.map((cat) => {
-                      const s = cat.slug.toLowerCase();
-                      let Icon = Tag;
-                      if (s === "homme") Icon = Flame;
-                      else if (s === "femme") Icon = Flower2;
-                      else if (s.includes("deodorant")) Icon = Shield;
-                      else if (s.includes("pack")) Icon = Crown;
-                      else if (s.includes("cosmetique")) Icon = Flower2;
-                      else if (s.includes("artisanal") || s.includes("artisanat")) Icon = Palette;
-                      else if (s.includes("antique") || s.includes("antiquit")) Icon = Landmark;
-                      else if (s.includes("parfum")) Icon = Sparkles;
-
-                      const isCurrent = location.pathname === `/collection/${cat.slug}`;
-                      const catName = getCategoryName(cat, language);
-                      const catDesc = getCategoryDescription(cat, language);
-
-                      return (
-                        <Link
-                          key={cat.id}
-                          to={`/collection/${cat.slug}`}
-                          onClick={() => setIsCollectionsHovered(false)}
-                          className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${isCurrent ? "bg-primary/15 border border-primary/30 text-primary" : "hover:bg-primary/10 text-foreground"
-                            }`}
-                        >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isCurrent
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
-                            }`}>
-                            <Icon className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-semibold group-hover:text-primary transition-colors truncate">
-                                {catName}
-                              </span>
-                              {cat.is_coming_soon && !allParfums.some((p) => isParfumInCategory(p, cat.slug)) && (
-                                <span className="text-[9px] uppercase tracking-wider text-[#C9A96E] bg-[#C9A96E]/15 border border-[#C9A96E]/30 px-1.5 py-0.2 rounded-full font-medium">
-                                  {language === "en" ? "Soon" : "À venir"}
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[10px] text-muted-foreground truncate block font-light">
-                              {catDesc}
-                            </span>
-                          </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                        </Link>
-                      );
-                    })
-                  ) : null}
                 </div>
-              )}
-            </div>
+
+                {/* Lien général Toutes les Collections */}
+                <Link
+                  to="/collection/all"
+                  onClick={() => setIsCollectionsHovered(false)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors block truncate">
+                      {t("nav.allCollections", "Toutes les Collections")}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground truncate block font-light">
+                      {t("nav.catalogSubtitle", "Catalogue complet des parfums")}
+                    </span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                </Link>
+
+                {/* Liste des Catégories / Univers dynamiques disponibles */}
+                {sortedCategories.length > 0 ? (
+                  sortedCategories.map((cat) => {
+                    const s = cat.slug.toLowerCase();
+                    let Icon = Tag;
+                    if (s === "homme") Icon = Flame;
+                    else if (s === "femme") Icon = Flower2;
+                    else if (s.includes("deodorant")) Icon = Shield;
+                    else if (s.includes("pack")) Icon = Crown;
+                    else if (s.includes("cosmetique")) Icon = Flower2;
+                    else if (s.includes("artisanal") || s.includes("artisanat")) Icon = Palette;
+                    else if (s.includes("antique") || s.includes("antiquit")) Icon = Landmark;
+                    else if (s.includes("parfum")) Icon = Sparkles;
+
+                    const isCurrent = location.pathname === `/collection/${cat.slug}`;
+                    const catName = getCategoryName(cat, language);
+                    const catDesc = getCategoryDescription(cat, language);
+
+                    return (
+                      <Link
+                        key={cat.id}
+                        to={`/collection/${cat.slug}`}
+                        onClick={() => setIsCollectionsHovered(false)}
+                        className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${isCurrent ? "bg-primary/15 border border-primary/30 text-primary" : "hover:bg-primary/10 text-foreground"
+                          }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isCurrent
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                          }`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-semibold group-hover:text-primary transition-colors truncate">
+                              {catName}
+                            </span>
+                            {cat.is_coming_soon && !allParfums.some((p) => isParfumInCategory(p, cat.slug)) && (
+                              <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-extrabold text-black bg-gradient-to-r from-amber-400 to-amber-300 px-2 py-0.5 rounded-full shadow-xs border border-amber-200">
+                                {language === "en" ? "Soon" : "À venir"}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-muted-foreground truncate block font-light">
+                            {catDesc}
+                          </span>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                      </Link>
+                    );
+                  })
+                ) : null}
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* Right Side: Suivi Commande, Service Client, À Propos, Language, Theme, Search, Cart */}
-        <div className="flex items-center gap-1 sm:gap-2 z-10">
-
-          {/* Desktop Suivi Commande Link */}
+          {/* 3. Desktop Suivi Commande Link */}
           <Link
             to="/suivi-commande"
-            className={`hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/suivi-commande"
+            className={`hidden xl:inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/suivi-commande"
               ? "bg-foreground text-background shadow-xs"
               : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             title="Suivre ma commande en direct"
           >
             <Truck className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">{t("nav.tracking", "Suivi")}</span>
+            <span className="hidden 2xl:inline">{t("nav.tracking", "Suivi")}</span>
           </Link>
 
-          {/* Desktop Service Client Link */}
+          {/* 4. Desktop Service Client Link */}
           <Link
             to="/service-client"
-            className={`hidden md:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
+            className={`hidden 2xl:inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/service-client" || location.pathname === "/about/service-client" || location.pathname === "/contact"
               ? "bg-foreground text-background shadow-xs"
               : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             title="Service Client & Conciergerie Privée"
           >
             <Headset className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">{t("nav.customerService", "Service Client")}</span>
-          </Link>
-
-          {/* Desktop À Propos Link */}
-          <Link
-            to="/about"
-            className={`hidden xl:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${location.pathname === "/about"
-              ? "bg-foreground text-background shadow-xs"
-              : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
-              }`}
-          >
-            <Info className="w-3.5 h-3.5" />
-            <span>{t("nav.about", "À Propos")}</span>
+            <span>{t("nav.customerService", "Service Client")}</span>
           </Link>
 
           {/* Language Selector (FR / EN) */}
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0">
             <LanguageSelector variant="capsule" />
           </div>
 
+          {/* Currency Selector (MAD, EUR, USD, USDT, AED, etc.) */}
+          <div className="flex items-center shrink-0">
+            <CurrencySelector variant="capsule" />
+          </div>
+
           {/* Theme Toggle */}
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0">
             <ThemeToggle />
           </div>
 
@@ -427,7 +417,7 @@ const Navigation = () => {
               setIsCollectionsHovered(false);
               setIsSearchOpen((v) => !v);
             }}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${isSearchOpen
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center transition-all duration-200 cursor-pointer ${isSearchOpen
               ? "bg-primary text-primary-foreground shadow-xs"
               : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
@@ -440,7 +430,7 @@ const Navigation = () => {
           {/* Cart Button with Animated Badge */}
           <button
             onClick={() => setIsBagOpen(true)}
-            className="relative w-10 h-10 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
+            className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-all duration-200 cursor-pointer active:scale-95"
             aria-label={t("nav.cart", "Panier")}
           >
             <BagIcon size={18} strokeWidth={1.8} />
@@ -591,13 +581,15 @@ const Navigation = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <div className="bg-background/95 dark:bg-[#151821]/95 backdrop-blur-2xl border border-border/80 dark:border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
-            {/* Langue & Thème rapide en haut du menu mobile */}
+            {/* Langue, Devise & Thème rapide en haut du menu mobile */}
             <div className="flex items-center justify-between pb-2 border-b border-border/60">
               <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
                 {t("nav.preferences", "Préférences")}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <LanguageSelector variant="pill" />
+                <CurrencySelector variant="pill" />
+                <ThemeToggle />
               </div>
             </div>
 

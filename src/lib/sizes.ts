@@ -1,4 +1,5 @@
 import type { Size } from "@/types/database";
+import { formatGlobalPrice } from "@/contexts/CurrencyContext";
 
 export const SIZES: Size[] = ["5ml", "10ml", "full"];
 
@@ -25,7 +26,7 @@ export const priceFor = (prices: PriceSource, size: Size): number => {
   }
 };
 
-export const formatMAD = (n: number) => `${Number(n).toLocaleString("fr-FR")} €`;
+export const formatMAD = (n: number) => formatGlobalPrice(n);
 export const formatEUR = formatMAD;
 export const formatPrice = formatMAD;
 

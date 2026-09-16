@@ -1,12 +1,14 @@
 /**
  * Section Univers Olfactifs (FiftyFiftySection / Grille Catégories Dynamiques) — Maison Kenzi
  *
- * Affiche les univers et catégories configurés dans Supabase.
- * Masque automatiquement la section si aucune catégorie n'est encore enregistrée en base.
+ * Affiche les univers et catégories configurés dans Supabase avec une direction artistique Haute Parfumerie :
+ * - Cards au ratio élancé (3:4) avec effet de profondeur, dégradés feutrés et zoom fluide
+ * - Badge « À venir » / « Soon » hautement contrasté et parfaitement lisible
+ * - Zéro Emoji — Typographie éditoriale, bordures champagne et icônes lucide-react.
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Clock } from "lucide-react";
+import { ArrowUpRight, Sparkles, Clock } from "lucide-react";
 import { useCategories } from "@/store/useCategoryStore";
 import { useParfums } from "@/hooks/useParfums";
 import { isParfumInCategory } from "@/lib/productCategories";
@@ -16,7 +18,6 @@ const Card = ({
   title,
   text,
   href,
-  tag,
   image,
   isComingSoon,
   discoverText,
@@ -25,7 +26,6 @@ const Card = ({
   title: string;
   text: string;
   href: string;
-  tag: string;
   image?: string;
   isComingSoon?: boolean;
   discoverText: string;
@@ -33,45 +33,45 @@ const Card = ({
 }) => (
   <Link
     to={href}
-    className="group relative overflow-hidden rounded-2xl border border-border/70 hover:border-primary/50 transition-all duration-700 shadow-nude aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card"
+    className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border/80 dark:border-white/10 hover:border-[#C9A96E]/80 transition-all duration-500 shadow-md hover:shadow-[0_16px_40px_rgba(201,169,110,0.22)] aspect-[3/4] flex flex-col justify-between p-4 sm:p-6 bg-card select-none"
   >
-    {/* Image de fond de catégorie (taille et ratio 3:4 unifiés) */}
+    {/* Image de fond de catégorie avec micro-zoom doux */}
     <img
       src={image || "/mk-banner.png"}
       alt={title}
-      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
     />
 
-    {/* Voile de fond feutré uniforme */}
-    <div className="absolute inset-0 z-1 transition-opacity duration-500 bg-gradient-to-t from-black/85 via-black/40 to-black/20 group-hover:opacity-90" />
+    {/* Double dégradé feutré pour une lisibilité textuelle absolue */}
+    <div className="absolute inset-0 z-1 bg-gradient-to-t from-black/95 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 group-hover:to-black/30 transition-all duration-500" />
 
-    {/* Badge supérieur */}
-    <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
-      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium px-3 py-1 rounded-full backdrop-blur-md shadow-xs bg-black/50 text-white/90 border border-white/15">
-        {tag}
-      </span>
+    {/* Badge supérieur (À venir uniquement lorsque applicable) */}
+    <div className="relative z-10 flex items-center justify-end min-h-[26px]">
       {isComingSoon && (
-        <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md bg-[#C9A96E]/20 text-[#C9A96E] border border-[#C9A96E]/40 shadow-xs">
-          <Clock className="w-2.5 h-2.5" strokeWidth={2} />
+        <span className="inline-flex items-center gap-1.5 text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.2em] font-extrabold px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-black border border-amber-100 shadow-md animate-pulse">
+          <Clock className="w-3 h-3 text-black shrink-0" strokeWidth={2.4} />
           <span>{comingSoonText}</span>
         </span>
       )}
     </div>
 
-    {/* Typographie intégrée */}
-    <div className="relative z-10 space-y-1.5">
-      <h3 className="font-serif text-base sm:text-xl font-normal text-white group-hover:text-primary transition-colors leading-tight">
+    {/* Contenu textuel inférieur */}
+    <div className="relative z-10 space-y-2">
+      <h3 className="font-serif text-lg sm:text-2xl font-medium text-white group-hover:text-[#F5E6CC] transition-colors leading-tight">
         {title}
       </h3>
       {text && (
-        <p className="text-[11px] sm:text-xs font-light text-white/75 line-clamp-2 leading-snug">
+        <p className="text-[11px] sm:text-xs font-light text-white/85 line-clamp-2 leading-relaxed">
           {text}
         </p>
       )}
 
-      <div className="pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-primary uppercase tracking-[0.2em] transition-all group-hover:translate-x-1">
-        <span>{discoverText}</span>
-        <ArrowRight size={13} strokeWidth={1.5} />
+      {/* Bouton d'action élégant */}
+      <div className="pt-1.5 flex items-center">
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 group-hover:bg-[#C9A96E] text-white group-hover:text-[#12100E] text-[10.5px] sm:text-[11px] font-semibold tracking-wider uppercase backdrop-blur-md border border-white/20 group-hover:border-[#C9A96E] transition-all duration-300 shadow-xs">
+          <span>{discoverText}</span>
+          <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2} />
+        </span>
       </div>
     </div>
   </Link>
@@ -117,7 +117,6 @@ const FiftyFiftySection = () => {
               title={displayName}
               text={displayDesc}
               href={`/collection/${cat.slug}`}
-              tag={displayName}
               image={cat.image || cat.icon || (cat.images && cat.images.length > 0 ? cat.images[0] : "/mk-banner.png")}
               isComingSoon={effectiveComingSoon}
               discoverText={effectiveComingSoon ? t.univers.discover : t.common.explore}

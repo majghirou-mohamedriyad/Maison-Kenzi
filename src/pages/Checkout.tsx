@@ -171,9 +171,8 @@ const Checkout = () => {
       customer_address: fullAddressText,
       total_amount: total,
       status: "en_attente" as const, // Statut officiel reconnu dans l'enum maisonkenzi.order_status
-      notes: `Paiement en ligne validé (Stripe Carte / Apple Pay — Réf: ${details.paymentIntentId})${
-        notes.trim() ? `\nNote client: ${notes.trim()}` : ""
-      }`,
+      notes: `Paiement en ligne validé (Stripe Carte / Apple Pay — Réf: ${details.paymentIntentId})${notes.trim() ? `\nNote client: ${notes.trim()}` : ""
+        }`,
       items: items.map((item) => ({
         parfum_id: item.id,
         parfum_name: item.name,
@@ -433,7 +432,7 @@ const Checkout = () => {
                         id="phone"
                         type="tel"
                         required
-                        placeholder="Ex: 212652535301 (ou 33612345678)"
+                        placeholder="Ex: 212642138484 (ou 33612345678)"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
                         className="h-11 text-xs sm:text-sm rounded-xl bg-background border-border/80 focus:border-primary"
@@ -678,77 +677,77 @@ const Checkout = () => {
                       const itemName = (language === "en" && item.name_en) ? item.name_en : item.name;
                       const itemLabel = (language === "en" && item.imageLabel_en) ? item.imageLabel_en : (item.imageLabel || item.name);
                       return (
-                      <div
-                        key={`${item.id}-${item.size}`}
-                        className="pt-3 first:pt-0 flex items-center gap-3"
-                      >
-                        {/* Item image */}
-                        <div className="w-14 h-14 bg-card border border-border/70 rounded-xl flex items-center justify-center shrink-0 overflow-hidden relative">
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt={itemName}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-[8px] font-serif text-primary/80 text-center px-1 break-all">
-                              {itemLabel}
+                        <div
+                          key={`${item.id}-${item.size}`}
+                          className="pt-3 first:pt-0 flex items-center gap-3"
+                        >
+                          {/* Item image */}
+                          <div className="w-14 h-14 bg-card border border-border/70 rounded-xl flex items-center justify-center shrink-0 overflow-hidden relative">
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={itemName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[8px] font-serif text-primary/80 text-center px-1 break-all">
+                                {itemLabel}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Item details */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[9px] uppercase tracking-widest font-semibold text-primary/80 truncate">
+                              {item.maison}
+                            </p>
+                            <h3 className="text-xs font-serif font-bold text-foreground truncate">
+                              {itemName}
+                            </h3>
+                            <span className="inline-block text-[10px] text-muted-foreground bg-secondary/80 px-1.5 py-0.2 rounded border border-border/50 mt-0.5">
+                              {item.sizeLabel || SIZE_META[item.size]?.label || item.size}
                             </span>
-                          )}
-                        </div>
 
-                        {/* Item details */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[9px] uppercase tracking-widest font-semibold text-primary/80 truncate">
-                            {item.maison}
-                          </p>
-                          <h3 className="text-xs font-serif font-bold text-foreground truncate">
-                            {itemName}
-                          </h3>
-                          <span className="inline-block text-[10px] text-muted-foreground bg-secondary/80 px-1.5 py-0.2 rounded border border-border/50 mt-0.5">
-                            {item.sizeLabel || SIZE_META[item.size]?.label || item.size}
-                          </span>
+                            {/* Stepper */}
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <div className="flex items-center bg-card border border-border/70 rounded-md overflow-hidden">
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
+                                  className="w-5 h-5 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                                  aria-label="Diminuer"
+                                >
+                                  <Minus size={10} />
+                                </button>
+                                <span className="px-1.5 text-[11px] font-bold select-none">{item.quantity}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                                  className="w-5 h-5 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                                  aria-label="Augmenter"
+                                >
+                                  <Plus size={10} />
+                                </button>
+                              </div>
 
-                          {/* Stepper */}
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <div className="flex items-center bg-card border border-border/70 rounded-md overflow-hidden">
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
-                                className="w-5 h-5 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-                                aria-label="Diminuer"
+                                onClick={() => removeItem(item.id, item.size)}
+                                className="text-muted-foreground hover:text-destructive p-0.5 cursor-pointer"
+                                title="Supprimer"
                               >
-                                <Minus size={10} />
-                              </button>
-                              <span className="px-1.5 text-[11px] font-bold select-none">{item.quantity}</span>
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
-                                className="w-5 h-5 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-                                aria-label="Augmenter"
-                              >
-                                <Plus size={10} />
+                                <Trash2 size={12} />
                               </button>
                             </div>
-
-                            <button
-                              type="button"
-                              onClick={() => removeItem(item.id, item.size)}
-                              className="text-muted-foreground hover:text-destructive p-0.5 cursor-pointer"
-                              title="Supprimer"
-                            >
-                              <Trash2 size={12} />
-                            </button>
                           </div>
-                        </div>
 
-                        {/* Price */}
-                        <span className="text-xs font-semibold tracking-tight text-primary shrink-0">
-                          {formatMAD(item.price * item.quantity)}
-                        </span>
-                      </div>
-                    );
-                  })}
+                          {/* Price */}
+                          <span className="text-xs font-semibold tracking-tight text-primary shrink-0">
+                            {formatMAD(item.price * item.quantity)}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Pricing details */}
