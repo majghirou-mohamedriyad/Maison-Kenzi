@@ -54,11 +54,11 @@ const About = () => {
     },
     {
       icon: Truck,
-      title: isEn ? "Express Courier Across Morocco & Europe" : "Livraison Express Partout au Maroc & en Europe",
+      title: isEn ? "Worldwide Priority Express Shipping" : "Expédition Express dans Tous les Pays",
       desc: isEn
-        ? "Insured dispatch within 24 to 48 hours across all Moroccan cities and Europe with reinforced shockproof packaging."
-        : "Expédition sécurisée sous 24 à 48 heures dans toutes les villes du Royaume (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir...) et en Europe avec emballage haute protection anti-choc.",
-      tag: isEn ? "24–48h Express" : "24–48h à Domicile",
+        ? "Insured worldwide dispatch with tracked priority express shipping and reinforced shockproof luxury packaging."
+        : "Expédition sécurisée et rapide dans tous les pays du monde avec suivi en temps réel et emballage haute protection anti-choc.",
+      tag: isEn ? "Worldwide Delivery" : "Livraison Mondiale",
     },
     {
       icon: PackageCheck,

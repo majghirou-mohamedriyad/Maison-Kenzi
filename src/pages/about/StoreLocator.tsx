@@ -21,8 +21,8 @@ const Livraison = () => {
         <div className="hidden lg:block"><AboutSidebar /></div>
         <main className="w-full lg:w-[70vw] lg:ml-auto px-6">
           <PageHeader
-            title={isEn ? "Shipping & Delivery" : "Livraison & Expédition"}
-            subtitle={isEn ? "Secure, premium express delivery across Morocco and Europe." : "Un acheminement sécurisé et soigné, partout au Maroc et en Europe."}
+            title={isEn ? "Worldwide Shipping & Delivery" : "Expédition & Livraison Mondiale"}
+            subtitle={isEn ? "Secure, premium express delivery to all countries worldwide." : "Un acheminement sécurisé et soigné dans tous les pays du monde."}
           />
           <ContentSection>
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl">
@@ -31,7 +31,7 @@ const Livraison = () => {
                   <Truck className="w-5 h-5" />
                 </div>
                 <h3 className="font-serif text-lg font-bold text-primary">
-                  {isEn ? "Morocco Express" : "Maroc Express"}
+                  {isEn ? "National & Regional" : "Maroc & Proximité"}
                 </h3>
                 <p className="text-sm font-light text-foreground/80">
                   {isEn ? "Delivery within 24h to 48h across all cities in the Kingdom." : "Livraison sous 24h à 48h ouvrées dans toutes les villes du Royaume."}
@@ -45,10 +45,10 @@ const Livraison = () => {
                   <Globe className="w-5 h-5" />
                 </div>
                 <h3 className="font-serif text-lg font-bold text-primary">
-                  {isEn ? "Europe Standard" : "Europe Standard"}
+                  {isEn ? "International & Worldwide" : "Europe & Monde Entier"}
                 </h3>
                 <p className="text-sm font-light text-foreground/80">
-                  {isEn ? "France, Belgium, Switzerland, Spain, Italy, Germany, and the UK (3 to 5 business days)." : "France, Belgique, Suisse, Espagne, Italie, Allemagne et Royaume-Uni (3 à 5 jours ouvrés)."}
+                  {isEn ? "Express tracked shipping to Europe, Americas, Middle East, Asia and all countries." : "Expédition express sécurisée vers l'Europe, les Amériques, le Moyen-Orient, l'Asie et tous les pays."}
                 </p>
                 <span className="text-xs font-semibold text-primary block pt-1">
                   {isEn ? "Live international tracking" : "Suivi international direct"}
@@ -75,11 +75,11 @@ const Livraison = () => {
             <p className="text-foreground/80 font-light max-w-3xl leading-relaxed">
               {isEn ? (
                 <>
-                  We ensure complete, insured shipping throughout <strong>Morocco</strong> (Casablanca, Rabat, Marrakech, Tangier, Fez, Agadir, Oujda, Meknes, etc.) as well as across <strong>Europe</strong> (France, Belgium, Switzerland, Spain, Italy, Germany, United Kingdom, Netherlands, Portugal, etc.). Every order receives a live tracking code accessible on our website.
+                  We ensure complete, insured shipping to <strong>all countries worldwide</strong>: throughout <strong>Morocco</strong>, across <strong>Europe</strong> (France, Belgium, Switzerland, Spain, Italy, Germany, United Kingdom, Netherlands, etc.), the <strong>Americas</strong>, the <strong>Middle East</strong>, and globally. Every order receives a live tracking code accessible on our website.
                 </>
               ) : (
                 <>
-                  Nous assurons une expédition complète et sécurisée partout au <strong>Maroc</strong> (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, etc.) ainsi que dans toute l'<strong>Europe</strong> (France, Belgique, Suisse, Espagne, Italie, Allemagne, Royaume-Uni, Pays-Bas, Portugal, etc.). Chaque commande bénéficie d'un numéro de suivi direct accessible sur notre site.
+                  Nous assurons une expédition complète et sécurisée dans <strong>tous les pays du monde</strong> : partout au <strong>Maroc</strong>, dans toute l'<strong>Europe</strong> (France, Belgique, Suisse, Espagne, Italie, Allemagne, Royaume-Uni, etc.), aux <strong>Amériques</strong>, au <strong>Moyen-Orient</strong> et à l'international. Chaque commande bénéficie d'un numéro de suivi direct accessible sur notre site.
                 </>
               )}
             </p>

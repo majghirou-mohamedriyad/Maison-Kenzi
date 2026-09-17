@@ -44,8 +44,8 @@ const NotreHistoire = () => {
                 </h3>
                 <p className="text-foreground/75 leading-relaxed font-light">
                   {isEn
-                    ? "Maison Kenzi is a Moroccan house born from a passion for olfactory elegance and well-being. We offer exceptional fragrances for men and women, premium deodorants and exclusive curated packages delivered directly to your doorstep across Morocco and Europe."
-                    : "Maison Kenzi est une enseigne marocaine née d'une passion pour l'élégance olfactive et le bien-être. Nous proposons des parfums homme & femme d'exception, des déodorants stick premium et des packs exclusifs livrés directement chez vous partout au Maroc et en Europe."}
+                    ? "Maison Kenzi is a Moroccan house born from a passion for olfactory elegance and lifestyle. We offer exceptional fragrances, cosmetics, handcrafted creations and trendy bazar chic delivered directly to your doorstep in all countries worldwide."
+                    : "Maison Kenzi est une enseigne marocaine née d'une passion pour l'élégance olfactive et l'art de vivre. Nous proposons des parfums d'exception, des soins cosmétiques, des créations artisanales et du bazar chic livrés directement chez vous dans tous les pays du monde."}
                 </p>
                 <p className="text-foreground/75 leading-relaxed font-light">
                   {isEn

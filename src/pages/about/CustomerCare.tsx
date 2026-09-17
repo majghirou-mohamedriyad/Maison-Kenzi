@@ -19,26 +19,15 @@ import { Button } from "@/components/ui/button";
 import {
   MessageCircle,
   Instagram,
-  Phone,
-  Clock,
-  Sparkles,
   ShieldCheck,
   Truck,
   RotateCcw,
-  Send,
-  CheckCircle2,
   ChevronDown,
-  Mail,
-  MapPin,
-  Gift,
   Compass,
-  ArrowRight,
   PackageCheck,
   Crown,
-  Gem,
-  HeartHandshake,
+  Sparkles,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -56,16 +45,16 @@ const CustomerCare = () => {
       image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?q=80&w=900&auto=format&fit=crop",
     },
     {
-      title: isEn ? "Noble Packaging & Cases" : "Coffrets & Emballages Nobles",
+      title: isEn ? "Premium Packaging & Protection" : "Emballage Soigné & Protection Maximale",
       tag: isEn ? "Maximum Shielding" : "Protection Maximale",
-      desc: isEn ? "Every bottle and handcrafted creation is encased in secure shockproof packaging." : "Chaque flacon et création artisanale est préparé dans un écrin anti-choc sécurisé sous blister.",
-      image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=900&auto=format&fit=crop",
+      desc: isEn ? "Every order is carefully prepared in a shockproof sealed package." : "Chaque commande est minutieusement préparée dans un écrin anti-choc sécurisé et scellé.",
+      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop",
     },
     {
-      title: isEn ? "Express Courier 24–48h" : "Expédition Express 24–48h",
-      tag: isEn ? "Across Morocco & Europe" : "Partout au Maroc & en Europe",
-      desc: isEn ? "Tracked parcel delivery to Casablanca, Rabat, Marrakech, Tangier and throughout Europe." : "Livraison suivie en direct à Casablanca, Rabat, Marrakech, Tanger et toutes les villes du Royaume.",
-      image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=900&auto=format&fit=crop",
+      title: isEn ? "Worldwide Express Delivery" : "Expédition Express Internationale",
+      tag: isEn ? "Worldwide Shipping" : "Partout dans le Monde",
+      desc: isEn ? "Tracked priority parcel delivery to all countries worldwide with dedicated real-time tracking." : "Livraison express suivie et sécurisée dans tous les pays du monde avec suivi en temps réel.",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop",
     },
   ];
 
@@ -73,12 +62,12 @@ const CustomerCare = () => {
     {
       step: "01",
       title: isEn ? "Bespoke Selection" : "Conseil & Choix Personnalisé",
-      desc: isEn ? "Chat directly with our fragrance specialists on WhatsApp to refine your choice." : "Échangez avec nos conseillers sur WhatsApp pour affiner votre sélection de fragrances, artisanat ou objets d'art.",
+      desc: isEn ? "Chat directly with our advisors on WhatsApp to refine your choice of fragrances, cosmetics, artisanship or bazar chic." : "Échangez avec nos conseillers sur WhatsApp pour affiner votre sélection : parfums, cosmétiques, artisanat ou bazar chic.",
       icon: Compass,
     },
     {
       step: "02",
-      title: isEn ? "Factory Sealed Flacons" : "Conditionnement d'Origine",
+      title: isEn ? "Factory Sealed Packaging" : "Conditionnement d'Origine",
       desc: isEn ? "Careful packaging of 100% genuine and sealed products in their official packaging." : "Préparation soignée de vos articles 100% authentiques et neufs dans leur emballage officiel scellé.",
       icon: Crown,
     },
@@ -100,21 +89,21 @@ const CustomerCare = () => {
   const faqItems = [
     {
       id: 1,
-      categoryLabel: isEn ? "Authenticity & Flacons" : "Authenticité & Flacons",
+      categoryLabel: isEn ? "Authenticity & Quality" : "Authenticité & Qualité",
       icon: ShieldCheck,
-      question: isEn ? "Are the fragrances 100% original and factory-sealed?" : "Les créations vendues sont-elles 100% d'origine et scellées ?",
+      question: isEn ? "Are the fragrances and products 100% original and factory-sealed?" : "Les créations vendues sont-elles 100% d'origine et scellées ?",
       answer: isEn
-        ? "Absolute authenticity is our primary commitment. Every fragrance is delivered brand-new in its original factory-sealed box with official cellophane wrapper."
-        : "L'authenticité absolue est notre premier engagement. Chaque parfum est livré dans son flacon d'origine complet, neuf et scellé sous blister avec emballage officiel. Nos pièces artisanales et objets antiques sont minutieusement expertisés.",
+        ? "Absolute authenticity is our primary commitment. Every fragrance and cosmetic item is delivered brand-new in its original factory-sealed box with official cellophane wrapper. Our artisanal creations and bazar chic pieces are individually curated and inspected."
+        : "L'authenticité absolue est notre premier engagement. Chaque parfum et produit cosmétique est livré neuf et scellé sous blister dans son emballage d'origine. Nos créations artisanales et articles de bazar chic font l'objet d'une sélection rigoureuse.",
     },
     {
       id: 2,
-      categoryLabel: isEn ? "Shipping & Lead Times" : "Délais & Expédition",
+      categoryLabel: isEn ? "Shipping & Worldwide Delivery" : "Délais & Expédition Mondiale",
       icon: Truck,
-      question: isEn ? "What are the shipping delivery times in Morocco and Europe?" : "Quels sont les délais et modalités de livraison au Maroc ?",
+      question: isEn ? "What are the shipping delivery times worldwide?" : "Quels sont les délais et modalités de livraison ?",
       answer: isEn
-        ? "We ship orders within 24 to 48 business hours throughout Morocco, and 3 to 5 business days in Europe. Every parcel benefits from live tracking and reinforced protective shielding."
-        : "Nous expédions vos commandes sous 24 à 48 heures ouvrées partout au Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, etc.) et en Europe. Chaque commande bénéficie d'un suivi en temps réel et d'un emballage de haute sécurité.",
+        ? "We ship orders to all countries worldwide with priority tracked express couriers. Every parcel benefits from dedicated live tracking and reinforced shockproof shielding."
+        : "Nous expédions vos commandes dans tous les pays du monde avec des transporteurs express prioritaires. Chaque commande bénéficie d'un numéro de suivi en direct et d'un emballage haute sécurité anti-choc.",
     },
     {
       id: 3,
@@ -145,55 +134,16 @@ const CustomerCare = () => {
     },
   ];
 
-  // Téléphone & WhatsApp
+  // Coordonnées Conciergerie
   const rawWa = settings.whatsapp_phone || settings.store_phone || "212652535301";
   const waNumber = rawWa.replace(/[^0-9]/g, "") || "212652535301";
-  const formattedPhone = rawWa.startsWith("+")
-    ? rawWa
-    : `+${rawWa.replace(/^(\d{3})(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})$/, "$1 $2 $3 $4 $5 $6")}`;
-
   const instagramUrl = settings.instagram_url || "https://instagram.com/maisonkenzi";
-  const storeEmail = settings.store_email || "contact@maisonkenzi.com";
-  const storeAddress = settings.store_address || (isEn ? "Casablanca & Across Morocco / Europe" : "Casablanca & Partout au Royaume du Maroc");
-
-  // État du formulaire
-  const [formData, setFormData] = useState({
-    name: "",
-    contact: "",
-    categoryType: "parfums",
-    subject: isEn ? "Perfume Advice & Selection" : "Conseil & Choix de Parfum",
-    message: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   // État accordéons FAQ
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name.trim() || !formData.contact.trim() || !formData.message.trim()) {
-      toast.error(isEn ? "Please fill in all required fields." : "Veuillez renseigner tous les champs obligatoires.");
-      return;
-    }
-
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      toast.success(isEn ? "Your inquiry has been sent to our concierge." : "Votre demande a été transmise à notre conciergerie.");
-    }, 600);
-  };
-
-  const handleWhatsappSend = () => {
-    const text = isEn
-      ? `Hello Maison Kenzi,\n\nName: ${formData.name || "Client"}\nContact: ${formData.contact || "N/A"}\nUniverse: ${formData.categoryType}\nSubject: ${formData.subject}\nMessage: ${formData.message || "Hello, I would like more information."}`
-      : `Bonjour Maison Kenzi,\n\nNom: ${formData.name || "Client"}\nContact: ${formData.contact || "Non précisé"}\nUnivers: ${formData.categoryType}\nSujet: ${formData.subject}\nMessage: ${formData.message || "Bonjour, je souhaiterais obtenir un renseignement."}`;
-    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   const handleDirectWhatsapp = () => {
@@ -315,8 +265,8 @@ const CustomerCare = () => {
         {/* =========================================================================
             3. CARTES DE CONTACT DIRECTES HAUTE COUTURE
            ========================================================================= */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Carte WhatsApp */}
             <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <div className="space-y-4">
@@ -349,49 +299,6 @@ const CustomerCare = () => {
               </div>
             </div>
 
-            {/* Carte Téléphone & Horaires */}
-            <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
-              <div className="space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
-                  <Phone className="w-7 h-7" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-2xl font-medium text-foreground mb-1">
-                    {isEn ? "Direct Line" : "Ligne Directe"}
-                  </h3>
-                  <p className="text-xs uppercase tracking-wider text-primary font-bold">
-                    {isEn ? "Call & Inquiries" : "Appel & Renseignement"}
-                  </p>
-                </div>
-                <div className="space-y-2 text-xs sm:text-sm font-light text-muted-foreground">
-                  <p className="text-foreground font-semibold text-base tracking-wide">
-                    {formattedPhone}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs pt-1">
-                    <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>{isEn ? "7/7: 09:30 AM — 09:00 PM" : "7j/7 : 09h30 — 21h00"}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>{storeAddress}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-border/50 mt-6">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full rounded-full border-border hover:border-primary text-foreground hover:bg-primary/5 uppercase tracking-[0.15em] text-xs h-11 font-semibold cursor-pointer"
-                >
-                  <a href={`tel:+${waNumber}`}>
-                    <Phone className="w-4 h-4 mr-2 text-primary" />
-                    {isEn ? "Call Concierge" : "Appeler l'Atelier"}
-                  </a>
-                </Button>
-              </div>
-            </div>
-
             {/* Carte Instagram & Galerie */}
             <div className="group relative rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <div className="space-y-4">
@@ -403,7 +310,7 @@ const CustomerCare = () => {
                     {isEn ? "Instagram Universe" : "Univers Instagram"}
                   </h3>
                   <p className="text-xs uppercase tracking-wider text-primary font-bold">
-                    @maisonkenzi
+                    @maisonkenzii
                   </p>
                 </div>
                 <p className="text-xs sm:text-sm font-light text-muted-foreground leading-relaxed">
@@ -476,164 +383,7 @@ const CustomerCare = () => {
         </section>
 
         {/* =========================================================================
-            5. FORMULAIRE DE MESSAGE AVEC SÉLECTEUR D'UNIVERS
-           ========================================================================= */}
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 mb-20 sm:mb-28">
-          <div className="rounded-3xl border border-primary/30 bg-card/80 backdrop-blur-xl p-6 sm:p-12 shadow-md relative overflow-hidden">
-            <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] uppercase tracking-[0.2em] font-semibold">
-                <Mail className="w-3.5 h-3.5" />
-                <span>{isEn ? "Contact Form" : "Formulaire de Contact"}</span>
-              </div>
-              <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-medium">
-                {isEn ? "Send a Message to the Concierge" : "Transmettre un Message à la Conciergerie"}
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground font-light">
-                {isEn ? "State your requirements and we will respond with the utmost diligence." : "Indiquez votre besoin et nous reviendrons vers vous avec la plus haute diligence."}
-              </p>
-            </div>
-
-            {submitted ? (
-              <div className="text-center py-10 space-y-5 animate-in fade-in max-w-lg mx-auto">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 mx-auto flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <h3 className="font-serif text-2xl text-foreground font-medium">
-                  {isEn ? "Message Successfully Sent" : "Demande Transmise avec Succès"}
-                </h3>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  {isEn ? (
-                    <>Thank you <span className="font-semibold text-foreground">{formData.name}</span>, your message has been received. Our concierge will contact you shortly.</>
-                  ) : (
-                    <>Merci <span className="font-semibold text-foreground">{formData.name}</span>, votre message a bien été reçu. Notre conciergerie vous recontactera très rapidement.</>
-                  )}
-                </p>
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setSubmitted(false);
-                      setFormData({ name: "", contact: "", categoryType: "parfums", subject: isEn ? "Perfume Advice & Selection" : "Conseil & Choix de Parfum", message: "" });
-                    }}
-                    variant="outline"
-                    className="rounded-full text-xs uppercase tracking-wider px-6 border-border hover:border-primary"
-                  >
-                    {isEn ? "New Message" : "Nouveau message"}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleWhatsappSend}
-                    className="rounded-full text-xs uppercase tracking-wider px-6 bg-[#25D366] hover:bg-[#20ba5a] text-white gap-2"
-                  >
-                    <MessageCircle className="w-4 h-4" /> {isEn ? "Continue on WhatsApp" : "Continuer sur WhatsApp"}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Sélecteur Visuel d'Univers */}
-                <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider font-semibold text-foreground">
-                    {isEn ? "Category / Universe:" : "Univers Concerné :"}
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {[
-                      { key: "parfums", label: isEn ? "Haute Parfumerie" : "Haute Parfumerie" },
-                      { key: "artisanat", label: isEn ? "Artisanship" : "Artisanat d'Art" },
-                      { key: "antiques", label: isEn ? "Antiques" : "Objets Antiques" },
-                      { key: "suivi", label: isEn ? "Order Tracking" : "Suivi Commande" },
-                    ].map((item) => {
-                      const isSelected = formData.categoryType === item.key;
-                      return (
-                        <button
-                          key={item.key}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, categoryType: item.key })}
-                          className={`py-2.5 px-3 rounded-2xl text-xs font-medium border transition-all cursor-pointer ${isSelected
-                              ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs scale-[1.02]"
-                              : "bg-background/80 border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
-                            }`}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Nom */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                      {isEn ? "Full Name *" : "Nom & Prénom *"}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder={isEn ? "e.g. John Doe" : "Ex: Sarah Benkirane"}
-                      className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
-                    />
-                  </div>
-
-                  {/* Contact */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                      {isEn ? "Phone or Email *" : "Téléphone ou Email *"}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.contact}
-                      onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                      placeholder={isEn ? "e.g. +212 6 12 34 56 78" : "Ex: 06 12 34 56 78"}
-                      className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:ring-1 focus:ring-primary/40"
-                    />
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs uppercase tracking-wider font-medium text-foreground/80">
-                    {isEn ? "Your Message or Request *" : "Votre Message ou Demande *"}
-                  </label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder={isEn ? "Describe your fragrance preferences, order reference or special request..." : "Décrivez votre besoin, le type de fragrance ou la référence de commande..."}
-                    className="w-full bg-background border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-all resize-none focus:ring-1 focus:ring-primary/40"
-                  />
-                </div>
-
-                {/* Boutons d'action */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-border/60">
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full sm:w-auto rounded-full bg-primary text-primary-foreground hover:bg-primary/90 uppercase tracking-[0.15em] text-xs h-12 px-8 font-bold shadow-sm cursor-pointer"
-                  >
-                    {loading ? (isEn ? "Sending..." : "Envoi en cours...") : (isEn ? "Send Message" : "Transmettre le Message")}
-                  </Button>
-
-                  <button
-                    type="button"
-                    onClick={handleWhatsappSend}
-                    className="inline-flex items-center gap-2 text-xs font-semibold text-[#25D366] hover:underline cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    {isEn ? "Send directly via WhatsApp" : "Envoyer directement via WhatsApp"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </section>
-
-        {/* =========================================================================
-            6. ACCORDÉONS FAQ
+            5. ACCORDÉONS FAQ
            ========================================================================= */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 space-y-2">

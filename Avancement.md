@@ -7,8 +7,29 @@
 
 ---
 
+- [x] Suppression du Formulaire de Message sur la Page Service Client ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
+  - [x] **Élimination du Formulaire Redondant** : Retrait du bloc formulaire de contact et des états associés pour simplifier l'expérience client et canaliser les échanges directement vers WhatsApp Privé et Instagram DM.
+  - [x] **Transition Fluide & Épurée** : Enchaînement direct entre le parcours en 4 étapes de la commande et la section FAQ interactive.
+  - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Suppression de la Section « Ligne Directe » & Optimisation des Canaux Privilégiés ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
+  - [x] **Retrait de la Carte Ligne Directe / Téléphone** : Suppression de l'encadré d'appel téléphonique direct pour concentrer le service client sur les 2 canaux numériques d'excellence de la Maison (WhatsApp Privé Conciergerie & Univers Instagram).
+  - [x] **Agencement Harmonieux à 2 Colonnes** : Réorganisation de la grille de contact en 2 grandes cartes aérées (`md:grid-cols-2 max-w-5xl mx-auto`) pour une ergonomie fluide et une mise en valeur de l'assistance personnalisée.
+  - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Généralisation de la Livraison Internationale dans Tous les Pays du Monde ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts), [`src/pages/About.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/About.tsx), [`src/pages/about/OurStory.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/OurStory.tsx), [`src/pages/about/StoreLocator.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/StoreLocator.tsx)) :
+  - [x] **Affichage Mondial Harmonisé (FR & EN)** : Remplacement des mentions régionales par l'expédition express dans tous les pays du monde (*« Expédition Express Internationale — Livraison dans le monde entier »* / EN: *« Worldwide Priority Express Shipping »*).
+  - [x] **Bandeaux, En-tête & Pied de Page** : Mise à jour de la barre de réassurance haute, du panier, du footer et des pages d'information.
+  - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Nouveaux Visuels & Harmonisation des 4 Univers sur la Page Service Client ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
+  - [x] **Carte « Emballage Soigné & Protection Maximale »** : Nouveau titre et texte valorisant l'ensemble de vos 4 gammes (Parfums, Produits Cosmétiques, Produits Artisanaux et Bazar Chic) dans un conditionnement anti-choc sécurisé sous blister.
+  - [x] **Visuels Haute Définition** : Remplacement des photos pour le conditionnement protecteur et l'acheminement express 24-48h.
+  - [x] **Formulaire de Contact & FAQ** : Intégration des 4 univers réels (Parfums, Cosmétiques, Artisanat, Bazar Chic) dans le sélecteur d'univers et les réponses de la conciergerie.
+  - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Remplacement des Visuels & Univers de la Bannière Principale ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
-  - [x] **Nouveau Visuel « L'Excellence de L'Artisanat » (`LargeHero.tsx`)** : Remplacement de l'image de fond par un visuel haut de gamme d'artisanat noble et céramique traditionnelle aux teintes chaudes et dorées.
+  - [x] **Nouveau Visuel « L'Excellence de L'Artisanat » (`LargeHero.tsx`)** : Remplacement de l'image de fond par un visuel haut de gamme d'atelier d'art et matières nobles.
   - [x] **Hero Banner & Univers « Bazar Chic » (`translations.ts`, `LargeHero.tsx`)** : Remplacement du slide « Le Charme des Antiquités » par *« L'Élégance du Bazar Chic »* avec redirection vers `/collection/bazar-chic`.
   - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
 
