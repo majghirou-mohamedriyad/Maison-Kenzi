@@ -40,7 +40,7 @@ const LargeHero = () => {
       subtitle: t.hero.slide2Sub,
       btnText: t.hero.slide2Btn,
       btnLink: "/collection/produits-artisanaux",
-      bgImage: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=2000&auto=format&fit=crop",
+      bgImage: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?q=80&w=2000&auto=format&fit=crop",
     },
     {
       id: 3,
@@ -49,8 +49,8 @@ const LargeHero = () => {
       titleHighlight: t.hero.slide3Highlight,
       subtitle: t.hero.slide3Sub,
       btnText: t.hero.slide3Btn,
-      btnLink: "/collection/antiques",
-      bgImage: "https://images.unsplash.com/photo-1544457070-4cd773b4d71e?q=80&w=2000&auto=format&fit=crop",
+      btnLink: "/collection/bazar-chic",
+      bgImage: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=2000&auto=format&fit=crop",
     },
     {
       id: 4,

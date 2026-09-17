@@ -95,11 +95,11 @@ export const translations = {
       slide2Sub: "Créations artisanales d'exception, pièces uniques façonnées avec passion selon les traditions nobles marocaines.",
       slide2Btn: "Découvrir l'Artisanat",
 
-      slide3Tag: "OBJETS DE COLLECTION · PATRIMOINE & HISTOIRE",
-      slide3Prefix: "Le Charme des ",
-      slide3Highlight: "Antiquités",
-      slide3Sub: "Pièces rares, objets précieux d'époque et trésors intemporels chargés d'histoire et d'élégance.",
-      slide3Btn: "Explorer les Antiques",
+      slide3Tag: "SÉLECTION TENDANCE · DÉCO & ART DE VIVRE",
+      slide3Prefix: "L'Élégance du ",
+      slide3Highlight: "Bazar Chic",
+      slide3Sub: "Trouvailles raffinées, accessoires tendance et objets de décoration soigneusement choisis pour un intérieur chaleureux et élégant.",
+      slide3Btn: "Explorer le Bazar Chic",
 
       slide4Tag: "FLACONS COMPLETS & SILLAGES NOBLES",
       slide4Prefix: "L'Art du ",
@@ -505,11 +505,11 @@ export const translations = {
       slide2Sub: "Exceptional handcrafted creations, unique pieces shaped with passion according to noble Moroccan traditions.",
       slide2Btn: "Discover Artisanship",
 
-      slide3Tag: "COLLECTOR PIECES · HERITAGE & HISTORY",
-      slide3Prefix: "The Timeless Charm of ",
-      slide3Highlight: "Antiques",
-      slide3Sub: "Rare authentic period objects and timeless treasures infused with history and sheer elegance.",
-      slide3Btn: "Explore Antiques",
+      slide3Tag: "TRENDY SELECTION · HOME DECOR & LIFESTYLE",
+      slide3Prefix: "The Elegance of ",
+      slide3Highlight: "Bazar Chic",
+      slide3Sub: "Refined finds, trendy accessories, and curated decorative treasures for an elegant and cozy interior.",
+      slide3Btn: "Explore Bazar Chic",
 
       slide4Tag: "SEALED BOTTLES & NOBLE SILLAGES",
       slide4Prefix: "The Art of ",

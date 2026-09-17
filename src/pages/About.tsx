@@ -223,19 +223,19 @@ const About = () => {
 
             <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] border border-border/80 shadow-lg bg-card">
               <img
-                src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/12/c4/c9/f8/art-and-decoration.jpg?w=1200&h=1200&s=1"
-                alt="Trésors Antiques et Pièces Rares Maison Kenzi"
+                src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop"
+                alt="Bazar Chic et Décoration Tendance Maison Kenzi"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-5 sm:p-6 flex flex-col justify-end">
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A96E]">
-                  {isEn ? "Rare Antiques" : "Objets Rares"}
+                  {isEn ? "Trendy Selection" : "Sélection Chic"}
                 </span>
                 <h3 className="font-serif text-lg sm:text-xl text-white font-medium">
-                  {isEn ? "Timeless Antiques" : "Antiquités Intemporelles"}
+                  {isEn ? "Bazar Chic & Lifestyle" : "Bazar Chic & Déco"}
                 </h3>
                 <p className="text-xs text-white/80 font-light mt-1">
-                  {isEn ? "Precious collector treasures." : "Objets précieux de collection."}
+                  {isEn ? "Refined home decor and trendy accessories." : "Trouvailles élégantes et objets d'ambiance raffinés."}
                 </p>
               </div>
             </div>

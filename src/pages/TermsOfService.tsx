@@ -38,8 +38,8 @@ const TermsOfService = () => {
               </h2>
               <p>
                 {isEn
-                  ? "All fragrances offered by Maison Kenzi are 100% genuine, brand-new and sealed in their original manufacturer packaging. Handcrafted pieces and antiques are individually curated and inspected."
-                  : "L'ensemble des parfums proposés par Maison Kenzi sont 100% originaux, neufs et scellés dans leur conditionnement officiel sous blister. Les créations artisanales et antiquités font l'objet d'une sélection rigoureuse."}
+                  ? "All fragrances offered by Maison Kenzi are 100% genuine, brand-new and sealed in their original manufacturer packaging. Handcrafted creations and bazar chic items are individually curated and inspected."
+                  : "L'ensemble des parfums proposés par Maison Kenzi sont 100% originaux, neufs et scellés dans leur conditionnement officiel sous blister. Les créations artisanales et articles de bazar chic font l'objet d'une sélection rigoureuse."}
               </p>
             </section>
 

@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Remplacement des Visuels & Univers de la Bannière Principale ([`src/components/content/LargeHero.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/LargeHero.tsx), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
+  - [x] **Nouveau Visuel « L'Excellence de L'Artisanat » (`LargeHero.tsx`)** : Remplacement de l'image de fond par un visuel haut de gamme d'artisanat noble et céramique traditionnelle aux teintes chaudes et dorées.
+  - [x] **Hero Banner & Univers « Bazar Chic » (`translations.ts`, `LargeHero.tsx`)** : Remplacement du slide « Le Charme des Antiquités » par *« L'Élégance du Bazar Chic »* avec redirection vers `/collection/bazar-chic`.
+  - [x] **Conformité & Zéro Emoji** : Typographie éditoriale, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Correction de l'Import Manquant `ArrowUpRight` & Harmonisation Euro du Dashboard ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
   - [x] **Résolution du Crash ReferenceError** : Ajout de l'icône `ArrowUpRight` aux imports `lucide-react` dans `Dashboard.tsx`.
   - [x] **Harmonisation de la Devise en Euro (€)** : Formatage unifié du chiffre d'affaires et des métriques de revenus en Euro.
