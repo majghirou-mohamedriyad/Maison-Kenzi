@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Suppression de la Section « Inventaire par format » & Correction des Imports sur le Dashboard Admin ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
+  - [x] **Élimination de la Section Flaconnage & Décants** : Retrait du bloc d'inventaire par format (5ml, 10ml, full), du sous-composant `BottleCard` et du hook `useFlaconnage` pour un tableau de bord épuré et focalisé sur les KPIs essentiels (Chiffre d'affaires, Commandes, Produits actifs, Clients, Graphique et Meilleures Ventes).
+  - [x] **Restauration des Imports Vectoriels `TrendingUp` & `TrendingDown`** : Résolution de l'erreur `ReferenceError` sur les indicateurs de tendance rapides au bas de la page.
+  - [x] **Conformité & Zéro Emoji** : Typographie sobre, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Suppression du Formulaire de Message sur la Page Service Client ([`src/pages/about/CustomerCare.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/about/CustomerCare.tsx)) :
   - [x] **Élimination du Formulaire Redondant** : Retrait du bloc formulaire de contact et des états associés pour simplifier l'expérience client et canaliser les échanges directement vers WhatsApp Privé et Instagram DM.
   - [x] **Transition Fluide & Épurée** : Enchaînement direct entre le parcours en 4 étapes de la commande et la section FAQ interactive.

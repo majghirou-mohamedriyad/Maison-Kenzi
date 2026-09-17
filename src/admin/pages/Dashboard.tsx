@@ -11,18 +11,15 @@ import {
   ShoppingBag,
   Box,
   Users,
-  Droplet,
-  TrendingUp,
-  TrendingDown,
-  AlertTriangle,
   Sparkles,
   ArrowUpRight,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import KpiCard from "../components/KpiCard";
 import { useProducts } from "@/store/useProductStore";
 import { useDashboardKPIs, useRevenueChart, useTopProducts } from "@/hooks/useAdminDashboard";
-import { useFlaconnage } from "@/hooks/useFlaconnage";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { formatEUR } from "@/lib/sizes";
@@ -31,70 +28,6 @@ const fmtEur = (n: number) => formatEUR(n);
 const fmtMad = fmtEur;
 const trendPct = (cur: number, prev: number) =>
   prev > 0 ? Number((((cur - prev) / prev) * 100).toFixed(1)) : cur > 0 ? 100 : 0;
-
-const BottleCard = ({
-  label,
-  available,
-  used,
-  initialStock,
-  isLow,
-}: {
-  label: string;
-  available: number;
-  used: number;
-  initialStock: number;
-  isLow?: boolean;
-}) => {
-  const total = initialStock > 0 ? initialStock : available + used;
-  const pct = total > 0 ? Math.round((used / total) * 100) : 0;
-
-  return (
-    <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:border-[#C9A96E]/40 transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center border ${
-              isLow 
-                ? "bg-rose-500/10 text-rose-500 border-rose-500/20" 
-                : "bg-[#FAF7F2] dark:bg-[#1C1A18] text-[#C9A96E] border-[#E5DDD0] dark:border-[#332E28]"
-            }`}
-          >
-            <Droplet className="w-4 h-4 stroke-[1.75]" />
-          </div>
-          <h3 className="text-xs font-medium uppercase tracking-wider text-[#1A1816] dark:text-[#F3EFEA]">{label}</h3>
-        </div>
-        {isLow ? (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-            <AlertTriangle className="w-3 h-3 stroke-[2]" />
-            Stock bas
-          </span>
-        ) : (
-          <span className="text-[11px] text-[#8C827A] dark:text-[#9E958C]">{pct}% utilisé</span>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Disponibles</p>
-          <p className={`text-2xl font-bold tracking-tight mt-1 ${isLow ? "text-rose-500" : "text-[#1A1816] dark:text-[#FAF7F2]"}`}>
-            {available}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8C827A] dark:text-[#9E958C] font-medium">Utilisées</p>
-          <p className="text-2xl font-bold tracking-tight text-[#C9A96E] mt-1">{used}</p>
-        </div>
-      </div>
-
-      <div className="h-1.5 rounded-full bg-[#EAE3D8] dark:bg-[#24211E] overflow-hidden">
-        <div
-          className={`h-full transition-all duration-500 rounded-full ${isLow ? "bg-rose-500" : "bg-[#C9A96E]"}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-};
 
 const RevenueChart = ({ data }: { data: { month: string; revenue: number }[] }) => {
   const { theme } = useThemeContext();
@@ -166,9 +99,6 @@ const Dashboard = () => {
         : (p.stock_5ml ?? 0) + (p.stock_10ml ?? 0) === 0,
   ).length;
 
-  const { stats: flacons } = useFlaconnage();
-  const flacon = (size: "5ml" | "10ml" | "full") => flacons.find((f) => f.size === size);
-
   const revenueTrend = kpis ? trendPct(kpis.revenueThisMonth, kpis.revenueLastMonth) : 0;
 
   return (
@@ -222,35 +152,6 @@ const Dashboard = () => {
           sub={`+${kpis?.customersThisMonth ?? 0} ce mois`}
           icon={Users}
         />
-      </div>
-
-      {/* Inventaire & Flaconnage */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">Stock & Conditionnement</span>
-            <h3 className="text-lg font-serif font-medium text-[#1A1816] dark:text-[#FAF7F2]">
-              Inventaire par format
-            </h3>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          {(["5ml", "10ml", "full"] as const).map((s) => {
-            const f = flacon(s);
-            const label = s === "full" ? "Flacons 50ml & 100ml" : `Échantillons & Décants ${s}`;
-            return (
-              <BottleCard
-                key={s}
-                label={label}
-                available={f?.stock ?? 0}
-                used={f?.used ?? 0}
-                initialStock={f?.initialStock ?? 0}
-                isLow={f?.isLow}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Graphiques & Meilleures Ventes */}
