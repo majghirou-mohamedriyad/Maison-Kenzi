@@ -36,6 +36,16 @@ export const mapRowToParfum = (row: any): Parfum => {
     } catch {}
   }
 
+  let parsedCustomOptions: any[] = [];
+  if (Array.isArray(row.custom_options)) {
+    parsedCustomOptions = row.custom_options;
+  } else if (typeof row.custom_options === "string") {
+    try {
+      const p = JSON.parse(row.custom_options);
+      if (Array.isArray(p)) parsedCustomOptions = p;
+    } catch {}
+  }
+
   return {
     id: row.id,
     name: row.name,
@@ -71,6 +81,8 @@ export const mapRowToParfum = (row: any): Parfum => {
     full_bottle_stock: fullStock,
     has_tiers: !!row.has_tiers || parsedTiers.length > 0,
     quantity_tiers: parsedTiers,
+    has_custom_options: !!row.has_custom_options || parsedCustomOptions.length > 0,
+    custom_options: parsedCustomOptions,
     stock_5ml: Number(row.stock_5ml ?? 0),
     stock_10ml: Number(row.stock_10ml ?? 0),
     created_at: row.created_at || new Date().toISOString(),
@@ -95,6 +107,16 @@ export const mapLocalToParfum = (p: AdminParfum): Parfum => {
     try {
       const parsed = JSON.parse((p as any).quantity_tiers);
       if (Array.isArray(parsed)) parsedTiers = parsed;
+    } catch {}
+  }
+
+  let parsedCustomOptions: any[] = [];
+  if (Array.isArray(p.custom_options)) {
+    parsedCustomOptions = p.custom_options;
+  } else if (typeof (p as any).custom_options === "string") {
+    try {
+      const parsed = JSON.parse((p as any).custom_options);
+      if (Array.isArray(parsed)) parsedCustomOptions = parsed;
     } catch {}
   }
 
@@ -133,6 +155,8 @@ export const mapLocalToParfum = (p: AdminParfum): Parfum => {
     full_bottle_stock: fullStock,
     has_tiers: !!p.has_tiers || parsedTiers.length > 0,
     quantity_tiers: parsedTiers,
+    has_custom_options: !!p.has_custom_options || parsedCustomOptions.length > 0,
+    custom_options: parsedCustomOptions,
     stock_5ml: p.stock_5ml ?? 0,
     stock_10ml: p.stock_10ml ?? 0,
     created_at: new Date().toISOString(),
@@ -197,6 +221,18 @@ export const refreshProductsFromSupabase = async () => {
           parsedTiers = localMatch.quantity_tiers;
         }
 
+        let parsedCustomOptions: any[] = [];
+        if (Array.isArray(r.custom_options)) {
+          parsedCustomOptions = r.custom_options;
+        } else if (typeof r.custom_options === "string") {
+          try {
+            const p = JSON.parse(r.custom_options);
+            if (Array.isArray(p)) parsedCustomOptions = p;
+          } catch {}
+        } else if (Array.isArray(localMatch?.custom_options)) {
+          parsedCustomOptions = localMatch.custom_options;
+        }
+
         return {
           id: r.id,
           name: r.name,
@@ -231,6 +267,8 @@ export const refreshProductsFromSupabase = async () => {
           full_bottle_limited: !!r.full_bottle_limited,
           has_tiers: r.has_tiers ?? (parsedTiers.length > 0) ?? localMatch?.has_tiers ?? false,
           quantity_tiers: parsedTiers,
+          has_custom_options: r.has_custom_options ?? (parsedCustomOptions.length > 0) ?? localMatch?.has_custom_options ?? false,
+          custom_options: parsedCustomOptions,
           stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
           stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
           active: r.is_active ?? localMatch?.active ?? true,

@@ -87,6 +87,16 @@ ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS weight_value TEXT;
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS weight_unit TEXT DEFAULT 'g';
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_value TEXT;
 ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS volume_unit TEXT DEFAULT 'ml';
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS has_tiers BOOLEAN DEFAULT false;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS quantity_tiers JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS has_custom_options BOOLEAN DEFAULT false;
+ALTER TABLE maisonkenzi.parfums ADD COLUMN IF NOT EXISTS custom_options JSONB DEFAULT '[]'::jsonb;
+
+-- Assurer aussi sur public si l'instance Supabase n'utilise pas de schéma dédié
+ALTER TABLE IF EXISTS public.parfums ADD COLUMN IF NOT EXISTS has_tiers BOOLEAN DEFAULT false;
+ALTER TABLE IF EXISTS public.parfums ADD COLUMN IF NOT EXISTS quantity_tiers JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE IF EXISTS public.parfums ADD COLUMN IF NOT EXISTS has_custom_options BOOLEAN DEFAULT false;
+ALTER TABLE IF EXISTS public.parfums ADD COLUMN IF NOT EXISTS custom_options JSONB DEFAULT '[]'::jsonb;
 
 -- Assurer la présence des colonnes étendues pour les catégories
 ALTER TABLE maisonkenzi.categories ADD COLUMN IF NOT EXISTS is_coming_soon BOOLEAN DEFAULT false;

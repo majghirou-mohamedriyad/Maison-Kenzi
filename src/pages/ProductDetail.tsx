@@ -285,7 +285,7 @@ const ParfumDetail = () => {
     return [];
   }, [parfum]);
 
-  const hasCustomOptions = !!((parfum as any)?.has_custom_options && parsedCustomOptions.length > 0);
+  const hasCustomOptions = !!((parfum as any)?.has_custom_options || parsedCustomOptions.length > 0) && parsedCustomOptions.length > 0;
   const [selectedCustomOptions, setSelectedCustomOptions] = useState<Record<string, string>>({});
   const [customTextInputs, setCustomTextInputs] = useState<Record<string, string>>({});
 

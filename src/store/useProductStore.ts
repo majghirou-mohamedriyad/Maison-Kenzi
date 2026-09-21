@@ -272,6 +272,19 @@ if (typeof window !== "undefined") {
                   full_bottle_limited: !!r.full_bottle_limited,
                   has_tiers: r.has_tiers ?? localMatch?.has_tiers ?? false,
                   quantity_tiers: Array.isArray(r.quantity_tiers) ? r.quantity_tiers : (typeof r.quantity_tiers === 'string' ? JSON.parse(r.quantity_tiers || '[]') : localMatch?.quantity_tiers ?? []),
+                  has_custom_options: r.has_custom_options ?? localMatch?.has_custom_options ?? false,
+                  custom_options: Array.isArray(r.custom_options)
+                    ? r.custom_options
+                    : typeof r.custom_options === "string"
+                    ? (() => {
+                        try {
+                          const parsed = JSON.parse(r.custom_options);
+                          return Array.isArray(parsed) ? parsed : [];
+                        } catch {
+                          return [];
+                        }
+                      })()
+                    : (localMatch?.custom_options ?? []),
                   stock_5ml: Number(r.stock_5ml ?? localMatch?.stock_5ml ?? 0),
                   stock_10ml: Number(r.stock_10ml ?? localMatch?.stock_10ml ?? 0),
                   active: r.is_active ?? localMatch?.active ?? true,

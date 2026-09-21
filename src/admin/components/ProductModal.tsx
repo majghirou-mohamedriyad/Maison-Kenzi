@@ -839,23 +839,29 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
               label_en: t.label_en?.trim() || undefined,
             }))
         : [],
-      has_custom_options: f.hasCustomOptions,
+      has_custom_options: !!f.hasCustomOptions && (f.customOptions || []).some((opt) => opt.title && opt.title.trim().length > 0),
       custom_options: f.hasCustomOptions
         ? (f.customOptions || [])
-            .filter((opt) => opt.title.trim().length > 0)
-            .map((opt) => ({
+            .filter((opt) => opt.title && opt.title.trim().length > 0)
+            .map((opt, idx) => ({
               ...opt,
+              id: opt.id || `opt_${Date.now()}_${idx}`,
               title: opt.title.trim(),
               title_en: opt.title_en?.trim() || undefined,
-              values: (opt.values || [])
-                .filter((v) => v.label.trim().length > 0)
-                .map((v) => ({
-                  ...v,
-                  label: v.label.trim(),
-                  label_en: v.label_en?.trim() || undefined,
-                  price_modifier: Number(v.price_modifier) || 0,
-                  color_code: v.color_code?.trim() || undefined,
-                })),
+              type: opt.type || "select",
+              required: opt.required ?? true,
+              values: opt.type === "text"
+                ? []
+                : (opt.values || [])
+                    .filter((v) => v.label && v.label.trim().length > 0)
+                    .map((v, vIdx) => ({
+                      ...v,
+                      id: v.id || `val_${Date.now()}_${idx}_${vIdx}`,
+                      label: v.label.trim(),
+                      label_en: v.label_en?.trim() || undefined,
+                      price_modifier: Number(v.price_modifier) || 0,
+                      color_code: v.color_code?.trim() || undefined,
+                    })),
             }))
         : [],
       weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
