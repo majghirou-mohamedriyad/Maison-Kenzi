@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Suppression de la Carte « Clients Enregistrés » sur le Dashboard Admin ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
+  - [x] **Élimination de la Carte KPI Redondante** : Retrait de la carte `Clients Enregistrés` et de l'icône `Users` pour épurer les indicateurs du haut de page.
+  - [x] **Agencement Équilibré à 3 Colonnes** : Réorganisation fluide de la grille KPI (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`) mettant en valeur le Chiffre d'affaires, les Commandes et les Produits Actifs.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Correction & Persistance Intégrale des Options de Personnalisation Client ([`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`supabase/setup_maisonkenzi_database.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/setup_maisonkenzi_database.sql)) :
   - [x] **Résolution de l'Écrasement lors du Rechargement / Sync** : Ajout du mapping complet de `has_custom_options` et `custom_options` dans `mapRowToParfum`, `mapLocalToParfum`, `refreshProductsFromSupabase` et dans le listener temps réel Supabase (`useProductStore.ts`), évitant toute perte de données lors du rechargement de la page ou de la synchronisation.
   - [x] **Sauvegarde Fiable & Génération Sécurisée des Identifiants (`ProductModal.tsx`)** : Attibution d'IDs uniques pérennes (`opt_...` et `val_...`), nettoyage des libellés et conservation des options textuelles sans sous-valeurs obligatoires.

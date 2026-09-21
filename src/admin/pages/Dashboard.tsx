@@ -10,7 +10,6 @@ import {
   BarChart3,
   ShoppingBag,
   Box,
-  Users,
   Sparkles,
   ArrowUpRight,
   TrendingUp,
@@ -126,7 +125,7 @@ const Dashboard = () => {
       </div>
 
       {/* Cartes KPI Principales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <KpiCard
           title="Chiffre d'affaires"
           value={loading ? "…" : fmtMad(kpis?.revenueThisMonth ?? 0)}
@@ -145,12 +144,6 @@ const Dashboard = () => {
           value={String(active)}
           sub={`${rupture} en rupture de stock`}
           icon={Box}
-        />
-        <KpiCard
-          title="Clients Enregistrés"
-          value={loading ? "…" : String(kpis?.customers ?? 0)}
-          sub={`+${kpis?.customersThisMonth ?? 0} ce mois`}
-          icon={Users}
         />
       </div>
 
