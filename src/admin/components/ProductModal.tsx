@@ -122,12 +122,24 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Détection si l'univers actif ou sélectionné est Produits Artisanaux (Artisanat / Bazar Chic)
+  const isArtisanal = useMemo(() => {
+    const cat = (defaultCategory || f.category || "").toLowerCase();
+    const cats = (f.categories || []).map((c) => c.toLowerCase());
+    return (
+      cat.includes("artisan") ||
+      cat.includes("bazar") ||
+      cats.some((c) => c.includes("artisan") || c.includes("bazar"))
+    );
+  }, [defaultCategory, f.category, f.categories]);
+
   // Détection si l'univers actif ou sélectionné est Cosmétiques
   const isCosmetic = useMemo(() => {
+    if (isArtisanal) return false;
     const cat = (defaultCategory || f.category || "").toLowerCase();
     const cats = (f.categories || []).map((c) => c.toLowerCase());
     return cat.includes("cosmetique") || cats.some((c) => c.includes("cosmetique"));
-  }, [defaultCategory, f.category, f.categories]);
+  }, [defaultCategory, f.category, f.categories, isArtisanal]);
 
   // Filtrage réactif des catégories dynamiques issues de Supabase
   const filteredCategories = useMemo(() => {
@@ -466,18 +478,27 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
     e.preventDefault();
     const errs: Record<string, string> = {};
     if (!f.name.trim()) {
-      errs.name = isCosmetic ? "Veuillez renseigner le nom du produit cosmétique" : "Veuillez renseigner le nom du parfum";
-    }
-    if (!f.maison.trim()) {
-      errs.maison = isCosmetic ? "Veuillez renseigner la marque ou laboratoire" : "Veuillez renseigner la maison ou marque";
+      errs.name = isArtisanal
+        ? "Veuillez renseigner le nom du produit artisanal"
+        : isCosmetic
+        ? "Veuillez renseigner le nom du produit cosmétique"
+        : "Veuillez renseigner le nom du parfum";
     }
 
-    if (!isCosmetic) {
-      if (!f.gender) errs.gender = "Veuillez sélectionner un genre";
-      const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
-      if (currentSeasons.length === 0) errs.seasons = "Veuillez sélectionner au moins une saison d'utilisation";
-      if (!f.notes.trim()) {
-        errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
+    if (!isArtisanal) {
+      if (!f.maison.trim()) {
+        errs.maison = isCosmetic
+          ? "Veuillez renseigner la marque ou laboratoire"
+          : "Veuillez renseigner la maison ou marque";
+      }
+
+      if (!isCosmetic) {
+        if (!f.gender) errs.gender = "Veuillez sélectionner un genre";
+        const currentSeasons = Array.isArray(f.seasons) ? f.seasons : [];
+        if (currentSeasons.length === 0) errs.seasons = "Veuillez sélectionner au moins une saison d'utilisation";
+        if (!f.notes.trim()) {
+          errs.notes = "Veuillez renseigner au moins une note olfactive (séparées par une virgule)";
+        }
       }
     }
 
@@ -492,15 +513,17 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const currentCategories = Array.isArray(f.categories) && f.categories.length > 0
       ? f.categories
-      : (f.category ? [f.category] : (isCosmetic ? ["cosmetiques"] : []));
+      : (f.category ? [f.category] : (isArtisanal ? ["artisanat"] : isCosmetic ? ["cosmetiques"] : []));
 
     if (currentCategories.length === 0) {
       errs.category = "Veuillez sélectionner au moins une catégorie pour le produit";
     }
 
-    // Gestion du volume et poids pour les cosmétiques (au moins un des deux requis)
+    // Gestion du volume et poids
     let calculatedVolumeMl = 0;
-    if (isCosmetic) {
+    if (isArtisanal) {
+      calculatedVolumeMl = 100;
+    } else if (isCosmetic) {
       const hasWeight = !!f.weightValue && Number(f.weightValue) > 0;
       const hasVol = !!f.volumeValue && Number(f.volumeValue) > 0;
       if (!hasWeight && !hasVol) {
@@ -547,7 +570,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const primaryImageUrl = finalImages[0] || null;
 
-    const currentSeasonsList = isCosmetic
+    const currentSeasonsList = (isArtisanal || isCosmetic)
       ? []
       : (Array.isArray(f.seasons) && f.seasons.length > 0
         ? f.seasons
@@ -570,8 +593,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       id,
       name: f.name.trim(),
       name_en: f.nameEn ? f.nameEn.trim() : undefined,
-      maison: f.maison.trim(),
-      gender: isCosmetic ? undefined : (f.gender || "Mixte"),
+      maison: f.maison.trim() || (isArtisanal ? "Maison Kenzi" : ""),
+      gender: (isArtisanal || isCosmetic) ? undefined : (f.gender || "Mixte"),
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
       seasons: currentSeasonsList,
@@ -579,7 +602,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       description_en: f.descriptionEn ? f.descriptionEn : undefined,
       notes_en: f.notesEn ? f.notesEn.trim() : undefined,
       notes: {
-        tete: parsedNotes.length > 0 ? parsedNotes : (isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
+        tete: parsedNotes.length > 0 ? parsedNotes : (isArtisanal ? ["Artisanat d'Art"] : isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
         coeur: [],
         fond: [],
       },
@@ -637,6 +660,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         toast.success(
           initial
             ? "Produit mis à jour et synchronisé avec succès"
+            : isArtisanal
+            ? "Nouveau produit artisanal enregistré avec succès"
             : isCosmetic
             ? "Nouveau produit cosmétique enregistré avec succès"
             : "Nouveau parfum enregistré dans la base de données"
@@ -668,18 +693,18 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       };
     }
     const cat = (defaultCategory || f.category || "").toLowerCase();
+    if (cat.includes("artisan") || cat.includes("artisanat") || cat.includes("artisanaux") || cat.includes("bazar") || cat.includes("bazar-chic")) {
+      return {
+        title: "Nouveau Produit Artisanal",
+        subtitle: "Renseignez les détails pour ajouter une création artisanale ou pièce de bazar chic.",
+        icon: Palette,
+      };
+    }
     if (cat.includes("cosmetique")) {
       return {
         title: "Nouveau Produit Cosmétique",
         subtitle: "Renseignez les détails pour ajouter un nouveau soin ou cosmétique d'exception.",
         icon: Flower2,
-      };
-    }
-    if (cat.includes("artisan") || cat.includes("artisanat") || cat.includes("artisanaux")) {
-      return {
-        title: "Nouveau Produit Artisanal",
-        subtitle: "Renseignez les détails pour ajouter une création artisanale et savoir-faire d'art.",
-        icon: Palette,
       };
     }
     if (cat.includes("antique") || cat.includes("antiquite") || cat.includes("antiquités")) {
@@ -755,7 +780,391 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
             {/* COLONNE GAUCHE (6 colonnes) */}
             <div className="lg:col-span-6 space-y-3">
-              {isCosmetic ? (
+              {isArtisanal ? (
+                /* ============================================================ */
+                /* FORMULAIRE DÉDIÉ : PRODUITS ARTISANAUX & BAZAR CHIC          */
+                /* ============================================================ */
+                <>
+                  {/* Carte 1 : Informations générales & Tarifs */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                        Informations générales & Tarifs
+                      </h3>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {/* Nom du produit */}
+                      <div>
+                        <label className={labelCls}>Nom du produit *</label>
+                        <input
+                          className={errors.name ? inputErrorCls : inputCls}
+                          value={f.name}
+                          onChange={(e) => set("name", e.target.value)}
+                          placeholder="Ex: Plateau en Laiton Ciselé ou Bougie d'Artisan"
+                        />
+                        {errors.name && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.name}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tarification & Stock (2 colonnes) */}
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {/* Prix */}
+                        <div>
+                          <label className={labelCls}>Prix de vente (€) *</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={0}
+                              step="any"
+                              className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
+                              value={f.price}
+                              onChange={(e) => set("price", e.target.value)}
+                              placeholder="0"
+                            />
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
+                              €
+                            </span>
+                          </div>
+                          {errors.price && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
+                          )}
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                          <label className={labelCls}>Stock disponible *</label>
+                          <input
+                            type="number"
+                            min={0}
+                            className={errors.stock ? inputErrorCls : inputCls}
+                            value={f.stock}
+                            onChange={(e) => set("stock", e.target.value)}
+                            placeholder="15"
+                          />
+                          {errors.stock && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Carte 2 : Paliers Multiples & Offres par Lot (Multi-Pack) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <div>
+                          <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                            Paliers Multiples & Offres par Lot (Multi-Pack)
+                          </h3>
+                          <p className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
+                            Offres groupées pour 2, 3 pièces ou plus du même produit
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91]">
+                          {f.hasTiers ? "Actif" : "Désactivé"}
+                        </span>
+                        <Switch
+                          checked={f.hasTiers}
+                          onCheckedChange={(val) => {
+                            set("hasTiers", val);
+                            if (val && (!f.tiers || f.tiers.length === 0)) {
+                              set("tiers", [
+                                { quantity: "" as any, price: "" as any, label: "" },
+                              ]);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {f.hasTiers && (
+                      <div className="space-y-2.5 animate-in fade-in duration-200">
+                        {f.tiers.length === 0 ? (
+                          <div className="text-center py-3 px-2 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] bg-white/50 dark:bg-[#141312]/50">
+                            <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91] mb-2">
+                              Aucun palier configuré.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => addTier()}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E] text-white hover:bg-[#B89658] transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Ajouter un palier</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {f.tiers.map((tier, idx) => {
+                              const numQty = Number(tier.quantity) || 0;
+                              const numPrice = Number(tier.price) || 0;
+                              const baseUnitPrice = Number(f.price) || 0;
+                              const unitInTier = numQty > 0 && numPrice > 0 ? (numPrice / numQty).toFixed(2).replace(/\.00$/, '') : 0;
+                              const normalTotal = baseUnitPrice * numQty;
+                              const savings = numQty > 0 && numPrice > 0 && normalTotal > numPrice ? Number((normalTotal - numPrice).toFixed(2)) : 0;
+
+                              return (
+                                <div
+                                  key={idx}
+                                  className="p-2.5 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="w-4 h-4 rounded-full bg-[#C9A96E]/15 text-[#C9A96E] text-[9px] font-bold flex items-center justify-center">
+                                        {idx + 1}
+                                      </span>
+                                      <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2]">
+                                        Palier {idx + 1}{numQty > 0 ? ` (${numQty} ${numQty > 1 ? "pièces reçues" : "pièce reçue"})` : ""}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {savings > 0 && (
+                                        <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+                                          Économie client : {savings} €
+                                        </span>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => removeTier(idx)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                                        title="Supprimer ce palier"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Quantité *
+                                      </label>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        className={inputCls + " font-semibold"}
+                                        value={tier.quantity}
+                                        onChange={(e) => updateTier(idx, "quantity", e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value) || 1))}
+                                        placeholder="Ex: 2"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Prix total du lot *
+                                      </label>
+                                      <div className="relative">
+                                        <input
+                                          type="number"
+                                          min={0}
+                                          step="any"
+                                          className={inputCls + " pr-6 font-bold text-[#C9A96E]"}
+                                          value={tier.price}
+                                          onChange={(e) => updateTier(idx, "price", e.target.value === "" ? "" : Math.max(0, parseFloat(e.target.value) || 0))}
+                                          placeholder="Ex: 80"
+                                        />
+                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#C9A96E] pointer-events-none">
+                                          €
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (FR)
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label}
+                                        onChange={(e) => updateTier(idx, "label", e.target.value)}
+                                        placeholder="Ex: Lot de 2"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-1">
+                                        Libellé (EN - Optionnel)
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className={inputCls}
+                                        value={tier.label_en || ""}
+                                        onChange={(e) => updateTier(idx, "label_en", e.target.value)}
+                                        placeholder="Ex: Pack of 2"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  {numQty > 0 && numPrice > 0 ? (
+                                    <div className="text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center justify-between pt-0.5">
+                                      <span>
+                                        Soit : <strong className="text-[#1A1816] dark:text-[#FAF7F2]">{unitInTier} € / pièce</strong>
+                                      </span>
+                                      <span className="text-[9px] italic">
+                                        Le client recevra {numQty} fois le même article pour {numPrice} €
+                                      </span>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              );
+                            })}
+
+                            <div className="pt-1">
+                              <button
+                                type="button"
+                                onClick={() => addTier()}
+                                className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-[#C9A96E] text-[#C9A96E] hover:bg-[#C9A96E]/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Ajouter un palier</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </section>
+
+                  {/* Carte 3 : Descriptions & Notes Olfactives (Bilingue FR / EN) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                          Descriptions & Notes Olfactives
+                        </h3>
+                      </div>
+
+                      {/* Onglets FR / EN */}
+                      <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("fr")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "fr"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>Français (FR)</span>
+                          {f.notes && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("en")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "en"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>English (EN)</span>
+                          {f.notesEn ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          ) : (
+                            <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* CONTENU FR */}
+                    {contentLang === "fr" ? (
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Notes olfactives & Matières (FR)</label>
+                          <input
+                            className={inputCls}
+                            value={f.notes}
+                            onChange={(e) => set("notes", e.target.value)}
+                            placeholder="Ex: Cuir véritable, Bois de cèdre, Cuivre gravé, Jasmin"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Description du produit artisanal (FR)</label>
+                          <textarea
+                            className={inputCls + " min-h-[64px] resize-y whitespace-pre-wrap font-sans"}
+                            value={f.description}
+                            onChange={(e) => set("description", e.target.value)}
+                            placeholder="Pièce d'artisanat d'art façonnée à la main selon les techniques traditionnelles nobles..."
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Sous-titre / Accroche (FR)</label>
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
+                            value={f.imageLabel}
+                            onChange={(e) => set("imageLabel", e.target.value)}
+                            placeholder="Ex: Fait main • Matière noble • Savoir-faire ancestral..."
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      /* CONTENU EN */
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Nom du produit (EN - Optionnel)</label>
+                          <input
+                            className={inputCls}
+                            value={f.nameEn}
+                            onChange={(e) => set("nameEn", e.target.value)}
+                            placeholder={f.name ? `Laisser vide pour "${f.name}"` : "Ex: Handcrafted Brass Tray"}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Olfactory Notes & Materials (EN)</label>
+                          <input
+                            className={inputCls}
+                            value={f.notesEn}
+                            onChange={(e) => set("notesEn", e.target.value)}
+                            placeholder="Ex: Genuine Leather, Cedarwood, Hand-engraved Brass"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Product Description (EN)</label>
+                          <textarea
+                            className={inputCls + " min-h-[64px] resize-y whitespace-pre-wrap font-sans"}
+                            value={f.descriptionEn}
+                            onChange={(e) => set("descriptionEn", e.target.value)}
+                            placeholder="Handmade artisanal piece crafted with traditional noble materials..."
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Subtitle / Tagline (EN)</label>
+                          <textarea
+                            className={inputCls + " min-h-[52px] resize-y whitespace-pre-wrap font-sans"}
+                            value={f.imageLabelEn}
+                            onChange={(e) => set("imageLabelEn", e.target.value)}
+                            placeholder="Ex: Handcrafted • Noble material • Ancestral craftsmanship..."
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                </>
+              ) : isCosmetic ? (
                 /* ============================================================ */
                 /* FORMULAIRE DÉDIÉ : PRODUIT COSMÉTIQUE                        */
                 /* ============================================================ */
@@ -2097,7 +2506,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           <div className="text-[10px] sm:text-[11px] text-[#7A726A] dark:text-[#A39B91] flex items-center flex-wrap gap-1.5">
             {f.name && <span className="font-semibold text-[#1A1816] dark:text-[#FAF7F2]">{f.name}</span>}
             {f.price && <span>• {f.price} €</span>}
-            {f.volume && <span>• {f.volume} ml</span>}
+            {!isArtisanal && f.volume && <span>• {f.volume} ml</span>}
             {f.stock && <span>• {f.stock} en stock</span>}
             {(f.images || []).length > 0 && (
               <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#C9A96E]/10 text-[#C9A96E]">

@@ -7,6 +7,13 @@
 
 ---
 
+- [x] Formulaire Spécifique d'Ajout & Modification des Produits Artisanaux ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
+  - [x] **Informations Générales & Tarifs Adaptés** : Saisie ciblée du Nom du produit artisanal, Prix de vente en Euro (€) et Stock disponible (suppression des champs non pertinents comme le Genre, la Marque ou la Contenance obligatoire).
+  - [x] **Paliers Multiples & Offres par Lot (Multi-Pack)** : Configuration interactive des offres groupées (Quantité, Prix total du lot en €, Libellé FR & EN) avec calcul en temps réel du prix par pièce et de l'économie réalisée par le client.
+  - [x] **Descriptions & Notes Olfactives Bilingues (FR / EN)** : Onglets bilingues pour les Notes olfactives / Matières & Senteurs (FR & EN), la Description du produit artisanal et le Sous-titre / Accroche.
+  - [x] **Visuels, Catégories & Badges** : Galerie multi-photos avec glisser-déposer et photo de couverture, sélecteur dynamique des catégories Supabase et interrupteurs de visibilité (Actif, Nouveau, Bestseller).
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Suppression de la Section « Inventaire par format » & Correction des Imports sur le Dashboard Admin ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
   - [x] **Élimination de la Section Flaconnage & Décants** : Retrait du bloc d'inventaire par format (5ml, 10ml, full), du sous-composant `BottleCard` et du hook `useFlaconnage` pour un tableau de bord épuré et focalisé sur les KPIs essentiels (Chiffre d'affaires, Commandes, Produits actifs, Clients, Graphique et Meilleures Ventes).
   - [x] **Restauration des Imports Vectoriels `TrendingUp` & `TrendingDown`** : Résolution de l'erreur `ReferenceError` sur les indicateurs de tendance rapides au bas de la page.
