@@ -85,7 +85,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/produits?category=parfums", label: "Parfums", icon: Sparkles, categoryKey: "parfums" },
           { to: "/admin/produits?category=cosmetiques", label: "Produits Cosmétiques", icon: Flower2, categoryKey: "cosmetiques" },
           { to: "/admin/produits?category=artisanat", label: "Produits Artisanaux", icon: Palette, categoryKey: "artisanat" },
-          { to: "/admin/produits?category=antiques", label: "Antiques", icon: Landmark, categoryKey: "antiques" },
+          { to: "/admin/produits?category=bazar-chic", label: "Bazar Chic", icon: Sparkles, categoryKey: "bazar-chic" },
         ],
       },
       { to: "/admin/categories", label: "Catégories", icon: FolderTree },
@@ -120,7 +120,7 @@ const getPageTitle = (pathname: string, search: string) => {
     if (cat === "parfums" || cat === "parfum") return "Catalogue — Parfums de Niche";
     if (cat === "cosmetiques" || cat === "produits-cosmetiques") return "Catalogue — Produits Cosmétiques";
     if (cat === "artisanat" || cat === "produits-artisanaux" || cat === "artisanal") return "Catalogue — Produits Artisanaux";
-    if (cat === "antiques" || cat === "antiquites") return "Catalogue — Antiques & Pièces Rares";
+    if (cat === "bazar-chic" || cat === "bazar" || cat === "antiques" || cat === "antiquites") return "Catalogue — Bazar Chic & Décoration";
     return "Catalogue des Produits";
   }
   return TITLES[pathname] || "Administration";

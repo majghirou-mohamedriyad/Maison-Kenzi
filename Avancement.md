@@ -7,6 +7,13 @@
 
 ---
 
+- [x] Remplacement & Harmonisation de la Catégorie « Antiques » par « Bazar Chic » dans l'Administration ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts)) :
+  - [x] **Barre Latérale de Navigation Admin (`AdminLayout.tsx`)** : Remplacement de l'entrée « Antiques » par « Bazar Chic » (`/admin/produits?category=bazar-chic`) avec l'icône vectorielle `Sparkles` et mise à jour dynamique du titre d'en-tête de page (*« Catalogue — Bazar Chic & Décoration »*).
+  - [x] **Page Catalogue Produits (`Produits.tsx`)** : Configuration du dictionnaire `CATEGORY_TITLES` pour `bazar-chic` (*« Bazar Chic & Décoration »*, sous-titre *« Trouvailles raffinées, accessoires tendance & art de vivre »*, bouton *« Nouveau Produit Bazar Chic »*) avec rétrocompatibilité automatique.
+  - [x] **Formulaire d'Ajout & Modification de Produit (`ProductModal.tsx`)** : Titrage dynamique *« Nouveau Produit Bazar Chic »*, sous-titre adapté aux objets déco et trouvailles tendance, et formulaire fluide à 6 modules.
+  - [x] **Localisation & Traduction Bilingue (`productLocalization.ts`)** : Prise en charge multilingue FR/EN pour l'univers *Bazar Chic & Fine Living*.
+  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `lucide-react`, typographie soignée, commentaires en français.
+
 - [x] Formulaire Spécifique d'Ajout & Modification des Produits Artisanaux ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx)) :
   - [x] **Informations Générales & Tarifs Adaptés** : Saisie ciblée du Nom du produit artisanal, Prix de vente en Euro (€) et Stock disponible (suppression des champs non pertinents comme le Genre, la Marque ou la Contenance obligatoire).
   - [x] **Paliers Multiples & Offres par Lot (Multi-Pack)** : Configuration interactive des offres groupées (Quantité, Prix total du lot en €, Libellé FR & EN) avec calcul en temps réel du prix par pièce et de l'économie réalisée par le client.

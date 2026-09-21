@@ -152,7 +152,7 @@ export const getCategoryName = (
     if (s === "parfums" || s === "parfum" || n === "parfums" || n === "parfum") return "Fragrances & Perfumes";
     if (s.includes("cosmetique") || n.includes("cosmétique") || n.includes("cosmetique")) return "Cosmetics & Skincare";
     if (s.includes("artisanal") || s.includes("artisanat") || s.includes("artisanaux") || n.includes("artisanal") || n.includes("artisanat")) return "Handcrafted Creations";
-    if (s.includes("antique") || s.includes("antiquit") || n.includes("antique") || n.includes("antiquité")) return "Rare Antiques & Treasures";
+    if (s.includes("bazar") || s.includes("chic") || s.includes("antique") || s.includes("antiquit") || n.includes("bazar") || n.includes("antique") || n.includes("antiquité")) return "Bazar Chic & Fine Living";
     if (s.includes("deodorant") || n.includes("déodorant") || n.includes("deodorant")) return "Deodorant Sticks";
     if (s.includes("pack") || n.includes("pack")) return "Discovery Packs";
     if (s === "homme" || n === "homme") return "Men";
@@ -209,8 +209,8 @@ export const getCategoryDescription = (
     if (s.includes("artisanal") || s.includes("artisanat") || s.includes("artisanaux") || n.includes("artisanal") || n.includes("artisanat")) {
       return "Handcrafted artisan pieces & fine heritage";
     }
-    if (s.includes("antique") || s.includes("antiquit") || n.includes("antique") || n.includes("antiquité")) {
-      return "Collector items, vintage treasures & antiques";
+    if (s.includes("bazar") || s.includes("chic") || s.includes("antique") || s.includes("antiquit") || n.includes("bazar") || n.includes("antique") || n.includes("antiquité")) {
+      return "Chic finds, trendy lifestyle & rare treasures";
     }
     if (s.includes("deodorant") || n.includes("déodorant") || n.includes("deodorant")) {
       return "Long-lasting freshness & luxury body care";

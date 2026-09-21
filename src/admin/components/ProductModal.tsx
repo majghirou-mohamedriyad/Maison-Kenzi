@@ -693,10 +693,17 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       };
     }
     const cat = (defaultCategory || f.category || "").toLowerCase();
-    if (cat.includes("artisan") || cat.includes("artisanat") || cat.includes("artisanaux") || cat.includes("bazar") || cat.includes("bazar-chic")) {
+    if (cat.includes("bazar") || cat.includes("bazar-chic") || cat.includes("antique") || cat.includes("antiquite")) {
+      return {
+        title: "Nouveau Produit Bazar Chic",
+        subtitle: "Renseignez les détails pour ajouter une création tendance ou objet d'exception.",
+        icon: Sparkles,
+      };
+    }
+    if (cat.includes("artisan") || cat.includes("artisanat") || cat.includes("artisanaux")) {
       return {
         title: "Nouveau Produit Artisanal",
-        subtitle: "Renseignez les détails pour ajouter une création artisanale ou pièce de bazar chic.",
+        subtitle: "Renseignez les détails pour ajouter une création artisanale et savoir-faire d'art.",
         icon: Palette,
       };
     }
@@ -705,13 +712,6 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
         title: "Nouveau Produit Cosmétique",
         subtitle: "Renseignez les détails pour ajouter un nouveau soin ou cosmétique d'exception.",
         icon: Flower2,
-      };
-    }
-    if (cat.includes("antique") || cat.includes("antiquite") || cat.includes("antiquités")) {
-      return {
-        title: "Nouvelle Pièce Antique",
-        subtitle: "Renseignez les détails pour ajouter une pièce antique ou objet d'époque rare.",
-        icon: Landmark,
       };
     }
     if (cat.includes("parfum")) {
@@ -1670,7 +1670,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                 </>
               ) : (
                 /* ============================================================ */
-                /* FORMULAIRE CLASSIQUE : PARFUMS, ARTISANAT, ANTIQUES          */
+                /* FORMULAIRE CLASSIQUE : PARFUMS, ARTISANAT, BAZAR CHIC        */
                 /* ============================================================ */
                 <>
                   {/* Carte 1 : Informations Générales & Tarifs */}
