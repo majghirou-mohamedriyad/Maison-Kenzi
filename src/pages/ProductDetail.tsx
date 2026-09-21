@@ -38,7 +38,7 @@ import { useCart } from "@/store/cart";
 import { toast } from "sonner";
 import { SIZES, SIZE_META, formatMAD, priceFor } from "@/lib/sizes";
 import { getParfumImages } from "@/lib/productImages";
-import type { Size, ProductTier } from "@/types/database";
+import type { Size, ProductTier, ProductCustomOption } from "@/types/database";
 import type { OrderSelectionItem } from "@/components/content/ExpressOrderForm";
 import {
   Breadcrumb,
@@ -271,10 +271,78 @@ const ParfumDetail = () => {
   const hasProductTiers = !!((parfum as any)?.has_tiers && parsedTiers.length > 0);
   const [selectedTierIndex, setSelectedTierIndex] = useState<number>(0);
 
+  // Parsing des options de personnalisation client (Couleurs, Tailles, Matières, Gravures)
+  const parsedCustomOptions: ProductCustomOption[] = useMemo(() => {
+    if (!parfum) return [];
+    const raw = (parfum as any)?.custom_options ?? (parfum as any)?.customOptions;
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === "string") {
+      try {
+        const p = JSON.parse(raw);
+        if (Array.isArray(p)) return p;
+      } catch {}
+    }
+    return [];
+  }, [parfum]);
+
+  const hasCustomOptions = !!((parfum as any)?.has_custom_options && parsedCustomOptions.length > 0);
+  const [selectedCustomOptions, setSelectedCustomOptions] = useState<Record<string, string>>({});
+  const [customTextInputs, setCustomTextInputs] = useState<Record<string, string>>({});
+
+  // Initialisation automatique de la première variante pour chaque option à choix
+  useEffect(() => {
+    if (hasCustomOptions && parsedCustomOptions.length > 0) {
+      const defaults: Record<string, string> = {};
+      parsedCustomOptions.forEach((opt) => {
+        if (opt.type !== "text" && opt.values && opt.values.length > 0) {
+          defaults[opt.id] = opt.values[0].id;
+        }
+      });
+      setSelectedCustomOptions(defaults);
+    }
+  }, [hasCustomOptions, parsedCustomOptions]);
+
+  // Calcul du supplément de prix lié aux options personnalisées sélectionnées
+  const customOptionsPriceModifier = useMemo(() => {
+    if (!hasCustomOptions) return 0;
+    let extra = 0;
+    parsedCustomOptions.forEach((opt) => {
+      if (opt.type !== "text" && opt.values) {
+        const selectedValId = selectedCustomOptions[opt.id];
+        const found = opt.values.find((v) => v.id === selectedValId);
+        if (found && found.price_modifier) {
+          extra += Number(found.price_modifier) || 0;
+        }
+      }
+    });
+    return extra;
+  }, [hasCustomOptions, parsedCustomOptions, selectedCustomOptions]);
+
+  // Récapitulatif texte des options choisies pour l'article
+  const customOptionsSummary = useMemo(() => {
+    if (!hasCustomOptions) return "";
+    const parts: string[] = [];
+    parsedCustomOptions.forEach((opt) => {
+      const optTitle = language === "en" ? (opt.title_en || opt.title) : opt.title;
+      if (opt.type === "text") {
+        const textVal = customTextInputs[opt.id]?.trim();
+        if (textVal) parts.push(`${optTitle}: "${textVal}"`);
+      } else if (opt.values) {
+        const selectedValId = selectedCustomOptions[opt.id];
+        const found = opt.values.find((v) => v.id === selectedValId);
+        if (found) {
+          const valLabel = language === "en" ? (found.label_en || found.label) : found.label;
+          parts.push(`${optTitle}: ${valLabel}`);
+        }
+      }
+    });
+    return parts.join(" • ");
+  }, [hasCustomOptions, parsedCustomOptions, selectedCustomOptions, customTextInputs, language]);
+
   const baseUnitPrice = useMemo(() => {
     if (!parfum) return 0;
-    return priceFor(parfum, isFullBottle ? "full" : "10ml");
-  }, [parfum, isFullBottle]);
+    return priceFor(parfum, isFullBottle ? "full" : "10ml") + customOptionsPriceModifier;
+  }, [parfum, isFullBottle, customOptionsPriceModifier]);
 
   const displayTiers: ProductTier[] = useMemo(() => {
     if (!hasProductTiers) return [];
@@ -331,14 +399,15 @@ const ParfumDetail = () => {
     if (hasProductTiers && activeTier) {
       const isMulti = activeTier.quantity > 1;
       const tierInfo = getProductTierInfo(activeTier, isParfum, language, parfum.full_bottle_volume_ml);
+      const tierTotal = activeTier.price + (customOptionsPriceModifier * activeTier.quantity);
 
       return [
         {
           size: isFullBottle ? "full" : "10ml",
-          sizeLabel: `${tierInfo.label}${isMulti ? ` (${activeTier.quantity}x)` : ""}`,
+          sizeLabel: `${tierInfo.label}${isMulti ? ` (${activeTier.quantity}x)` : ""}${customOptionsSummary ? ` [${customOptionsSummary}]` : ""}`,
           quantity: activeTier.quantity,
-          unitPrice: Math.round(activeTier.price / activeTier.quantity),
-          subtotal: activeTier.price,
+          unitPrice: Math.round(tierTotal / activeTier.quantity),
+          subtotal: tierTotal,
           parfumName: displayName || parfum.name,
           maison: parfum.maison,
           imageUrl: parfum.image_url || undefined,
@@ -350,11 +419,11 @@ const ParfumDetail = () => {
       .filter((s) => (quantities[s] ?? 0) > 0)
       .map((s) => {
         const qty = quantities[s] ?? 0;
-        const unitPrice = priceFor(parfum, s);
+        const unitPrice = priceFor(parfum, s) + customOptionsPriceModifier;
         const fmt = getProductFormatInfo(s);
         return {
           size: s,
-          sizeLabel: fmt.label,
+          sizeLabel: `${fmt.label}${customOptionsSummary ? ` [${customOptionsSummary}]` : ""}`,
           quantity: qty,
           unitPrice,
           subtotal: unitPrice * qty,
@@ -363,11 +432,11 @@ const ParfumDetail = () => {
           imageUrl: parfum.image_url || undefined,
         };
       });
-  }, [parfum, hasProductTiers, activeTier, availableSizes, quantities, displayName, isFullBottle, isParfum]);
+  }, [parfum, hasProductTiers, activeTier, availableSizes, quantities, displayName, isFullBottle, isParfum, customOptionsPriceModifier, customOptionsSummary, language]);
 
   const totalQuantity = selectedItems.reduce((acc, it) => acc + it.quantity, 0);
   const totalPrice = hasProductTiers && activeTier
-    ? activeTier.price
+    ? (activeTier.price + (customOptionsPriceModifier * activeTier.quantity))
     : selectedItems.reduce((acc, it) => acc + it.subtotal, 0);
 
   const handleAddToCart = () => {
@@ -391,8 +460,8 @@ const ParfumDetail = () => {
         sizeLabel: item.sizeLabel,
         quantity: item.quantity,
         price: item.unitPrice,
-        imageLabel: displaySubtitle || parfum.image_label,
-        imageLabel_en: parfum.image_label_en,
+        imageLabel: (customOptionsSummary ? `${customOptionsSummary} • ` : "") + (displaySubtitle || parfum.image_label),
+        imageLabel_en: (customOptionsSummary ? `${customOptionsSummary} • ` : "") + (parfum.image_label_en || ""),
         imageUrl: parfum.image_url,
       });
     });
@@ -809,6 +878,143 @@ const ParfumDetail = () => {
                   })}
                 </div>
               </div>
+
+              {/* Options de Personnalisation Client (Couleurs, Tailles, Matières, Gravures) */}
+              {hasCustomOptions && (
+                <div className="space-y-3 pt-1 pb-1">
+                  {parsedCustomOptions.map((opt) => {
+                    const optTitle = language === "en" ? (opt.title_en || opt.title) : opt.title;
+                    const selectedValId = selectedCustomOptions[opt.id];
+                    const selectedValueObj = (opt.values || []).find((v) => v.id === selectedValId);
+
+                    return (
+                      <div key={opt.id} className="space-y-2 p-3 sm:p-3.5 rounded-2xl bg-card/60 border border-border/70 shadow-xs">
+                        {/* En-tête de l'option */}
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs uppercase tracking-wider font-bold text-foreground">
+                              {optTitle}
+                            </span>
+                            {opt.required && (
+                              <span className="text-[10px] text-primary font-semibold">*</span>
+                            )}
+                          </div>
+                          {selectedValueObj && opt.type !== "text" && (
+                            <span className="text-xs font-semibold text-primary">
+                              {language === "en" ? (selectedValueObj.label_en || selectedValueObj.label) : selectedValueObj.label}
+                              {selectedValueObj.price_modifier ? ` (+${formatMAD(selectedValueObj.price_modifier)})` : ""}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Rendu dynamique selon le type */}
+                        {opt.type === "color" ? (
+                          /* Pastilles de couleurs élégantes */
+                          <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                            {(opt.values || []).map((val) => {
+                              const isSelected = selectedValId === val.id;
+                              const valLabel = language === "en" ? (val.label_en || val.label) : val.label;
+                              return (
+                                <button
+                                  key={val.id}
+                                  type="button"
+                                  onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
+                                  className={`group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all duration-200 cursor-pointer ${
+                                    isSelected
+                                      ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-xs"
+                                      : "border-border/80 bg-background hover:border-primary/40"
+                                  }`}
+                                >
+                                  {val.color_code && (
+                                    <span
+                                      className="w-4 h-4 rounded-full border border-black/20 shadow-xs shrink-0 inline-block"
+                                      style={{ backgroundColor: val.color_code }}
+                                    />
+                                  )}
+                                  <span className="text-foreground font-semibold">{valLabel}</span>
+                                  {val.price_modifier ? (
+                                    <span className="text-[10px] text-primary font-bold">
+                                      +{formatMAD(val.price_modifier)}
+                                    </span>
+                                  ) : null}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : opt.type === "size" ? (
+                          /* Boutons de tailles */
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-0.5">
+                            {(opt.values || []).map((val) => {
+                              const isSelected = selectedValId === val.id;
+                              const valLabel = language === "en" ? (val.label_en || val.label) : val.label;
+                              return (
+                                <button
+                                  key={val.id}
+                                  type="button"
+                                  onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
+                                  className={`p-2.5 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                                    isSelected
+                                      ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-xs"
+                                      : "border-border/80 bg-background hover:border-primary/40"
+                                  }`}
+                                >
+                                  <span className="text-xs sm:text-sm font-semibold text-foreground">{valLabel}</span>
+                                  {val.price_modifier ? (
+                                    <span className="text-[10px] text-primary font-bold">
+                                      +{formatMAD(val.price_modifier)}
+                                    </span>
+                                  ) : null}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : opt.type === "text" ? (
+                          /* Champ texte libre pour gravure / personnalisation sur-mesure */
+                          <div className="pt-0.5 space-y-1">
+                            <input
+                              type="text"
+                              value={customTextInputs[opt.id] || ""}
+                              onChange={(e) => setCustomTextInputs((prev) => ({ ...prev, [opt.id]: e.target.value }))}
+                              placeholder={language === "en" ? "Enter your custom text or name here..." : "Saisissez votre prénom, inscription ou texte gravé..."}
+                              className="w-full px-3 py-2 text-xs bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground placeholder:text-muted-foreground"
+                            />
+                            <p className="text-[10px] text-muted-foreground italic">
+                              {language === "en" ? "Customized specifically for your order." : "Personnalisation artisanale réalisée sur-mesure pour votre commande."}
+                            </p>
+                          </div>
+                        ) : (
+                          /* Liste de sélection / Variantes standard */
+                          <div className="flex flex-wrap gap-2 pt-0.5">
+                            {(opt.values || []).map((val) => {
+                              const isSelected = selectedValId === val.id;
+                              const valLabel = language === "en" ? (val.label_en || val.label) : val.label;
+                              return (
+                                <button
+                                  key={val.id}
+                                  type="button"
+                                  onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
+                                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                                    isSelected
+                                      ? "border-primary bg-primary/10 ring-2 ring-primary/40 text-foreground"
+                                      : "border-border/80 bg-background text-foreground hover:border-primary/40"
+                                  }`}
+                                >
+                                  <span>{valLabel}</span>
+                                  {val.price_modifier ? (
+                                    <span className="text-[10px] text-primary font-bold">
+                                      +{formatMAD(val.price_modifier)}
+                                    </span>
+                                  ) : null}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Multi-Format / Size / Tier Selection Cards */}
               {hasProductTiers ? (

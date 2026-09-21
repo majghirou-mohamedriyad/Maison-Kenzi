@@ -5,7 +5,7 @@
  */
 
 import { useSyncExternalStore } from "react";
-import type { Parfum, ProductTier } from "@/data/parfums";
+import type { Parfum, ProductTier, ProductCustomOption } from "@/data/parfums";
 import { supabase } from "@/lib/supabase";
 
 const STORAGE_KEY = "maisonkenzi_products";
@@ -25,6 +25,8 @@ type ExtraMeta = {
   full_bottle_limited?: boolean | null;
   has_tiers?: boolean;
   quantity_tiers?: ProductTier[];
+  has_custom_options?: boolean;
+  custom_options?: ProductCustomOption[];
   weight_value?: string;
   weight_unit?: "mg" | "g" | "kg" | string;
   volume_value?: string;
@@ -56,6 +58,16 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     } catch {}
   }
 
+  let parsedCustomOptions: ProductCustomOption[] = [];
+  if (Array.isArray(p.custom_options)) {
+    parsedCustomOptions = p.custom_options;
+  } else if (typeof (p as any).custom_options === "string") {
+    try {
+      const parsed = JSON.parse((p as any).custom_options);
+      if (Array.isArray(parsed)) parsedCustomOptions = parsed;
+    } catch {}
+  }
+
   return {
     ...p,
     name_en: p.name_en || "",
@@ -78,6 +90,8 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     full_bottle_limited: p.full_bottle_limited ?? false,
     has_tiers: p.has_tiers ?? (parsedTiers.length > 0),
     quantity_tiers: parsedTiers,
+    has_custom_options: p.has_custom_options ?? (parsedCustomOptions.length > 0),
+    custom_options: parsedCustomOptions,
     weight_value: p.weight_value,
     weight_unit: p.weight_unit || "g",
     volume_value: p.volume_value,

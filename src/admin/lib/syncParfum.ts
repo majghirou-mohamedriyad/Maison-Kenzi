@@ -174,6 +174,8 @@ export const upsertParfumToSupabase = async (
     full_bottle_limited: !!p.full_bottle_limited,
     has_tiers: !!p.has_tiers,
     quantity_tiers: p.quantity_tiers || [],
+    has_custom_options: !!p.has_custom_options,
+    custom_options: p.custom_options || [],
     stock_status: ((isFull ? fullStock : decantStock) > 0 ? "actif" : "rupture") as "actif" | "rupture",
     weight_value: p.weight_value || null,
     weight_unit: p.weight_unit || null,
@@ -181,12 +183,12 @@ export const upsertParfumToSupabase = async (
     volume_unit: p.volume_unit || null,
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques, paliers inclus)
+  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques, paliers, options personnalisables)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
     console.warn("Supabase upsert - tentative avec repli:", error.message);
 
-    // 2. Repli si les colonnes cosmétiques, bilingues ou tiers ne sont pas encore migrées sur PostgreSQL
+    // 2. Repli si les colonnes cosmétiques, bilingues, tiers ou custom_options ne sont pas encore migrées sur PostgreSQL
     const fallbackRow = { ...row };
     delete fallbackRow.weight_value;
     delete fallbackRow.weight_unit;
@@ -194,6 +196,8 @@ export const upsertParfumToSupabase = async (
     delete fallbackRow.volume_unit;
     delete fallbackRow.has_tiers;
     delete fallbackRow.quantity_tiers;
+    delete fallbackRow.has_custom_options;
+    delete fallbackRow.custom_options;
     
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {

@@ -7,6 +7,19 @@
 
 ---
 
+- [x] Formulaire Spécifique Bazar Chic & Options de Personnalisation Client ([`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx), [`src/types/database.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/database.ts), [`src/data/parfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/data/parfums.ts), [`src/store/useProductStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useProductStore.ts), [`src/admin/lib/syncParfum.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/syncParfum.ts)) :
+  - [x] **Formulaire Dédié Bazar Chic dans l'Administration (`ProductModal.tsx`)** : Saisie ciblée du Nom du produit (FR & EN), Prix de vente en Euro (€), Stock disponible, Description détaillée (FR & EN) et Accroche / Sous-titre.
+  - [x] **Module Interactif d'Options de Personnalisation Client** :
+    - [x] Activation interactive via interrupteur (*Switch*).
+    - [x] Modèles d'options rapides en 1 clic : Palette de Couleurs (avec pastilles hexadécimales), Tailles / Formats / Dimensions, Matières & Finitions, Champ texte libre (pour gravure sur-mesure / monogramme / prénom).
+    - [x] Gestion dynamique complète côté administrateur : ajout, modification, suppression d'options et de valeurs avec calcul de suppléments tarifaires éventuels (+€) et sélecteur de pastilles de couleurs.
+  - [x] **Fiche Produit Client Interactive (`ProductDetail.tsx`)** :
+    - [x] Rendu haute couture des options configurées : pastilles de couleurs sélectionnables, sélecteur de tailles/dimensions, options de matières et champ de gravure/personnalisation.
+    - [x] Mise à jour en temps réel du prix total (prix de base + suppléments d'options sélectionnés).
+    - [x] Transmission transparente des options sélectionnées dans le panier d'achat et le bon de commande express.
+  - [x] **Synchronisation & Persistance (`syncParfum.ts`, `useProductStore.ts`)** : Typage TypeScript complet (`ProductCustomOption`, `ProductOptionValue`), synchronisation PostgreSQL Supabase et repli sécurisé.
+  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `lucide-react`, typographie soignée, commentaires en français.
+
 - [x] Remplacement & Harmonisation de la Catégorie « Antiques » par « Bazar Chic » dans l'Administration ([`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductModal.tsx), [`src/lib/productLocalization.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productLocalization.ts)) :
   - [x] **Barre Latérale de Navigation Admin (`AdminLayout.tsx`)** : Remplacement de l'entrée « Antiques » par « Bazar Chic » (`/admin/produits?category=bazar-chic`) avec l'icône vectorielle `Sparkles` et mise à jour dynamique du titre d'en-tête de page (*« Catalogue — Bazar Chic & Décoration »*).
   - [x] **Page Catalogue Produits (`Produits.tsx`)** : Configuration du dictionnaire `CATEGORY_TITLES` pour `bazar-chic` (*« Bazar Chic & Décoration »*, sous-titre *« Trouvailles raffinées, accessoires tendance & art de vivre »*, bouton *« Nouveau Produit Bazar Chic »*) avec rétrocompatibilité automatique.

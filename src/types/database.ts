@@ -13,6 +13,23 @@ export type ProductTier = {
   label_en?: string;
 };
 
+export type ProductOptionValue = {
+  id: string;
+  label: string;
+  label_en?: string;
+  price_modifier?: number;
+  color_code?: string;
+};
+
+export type ProductCustomOption = {
+  id: string;
+  title: string;
+  title_en?: string;
+  type?: "select" | "color" | "size" | "text";
+  required?: boolean;
+  values: ProductOptionValue[];
+};
+
 export type Parfum = {
   id: string;
   name: string;
@@ -50,6 +67,9 @@ export type Parfum = {
   // Paliers multiples / Tarification dégressive par lot du même produit
   has_tiers?: boolean;
   quantity_tiers?: ProductTier[];
+  // Options de personnalisation client (Couleurs, Tailles, Matières, Finitions, Gravures)
+  has_custom_options?: boolean;
+  custom_options?: ProductCustomOption[];
   stock_5ml?: number;
   stock_10ml?: number;
   weight_value?: string;

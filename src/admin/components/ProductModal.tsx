@@ -17,7 +17,7 @@ import { addProduct, updateProduct, type AdminParfum } from "@/store/useProductS
 import { useCategories } from "@/store/useCategoryStore";
 import { uploadProductImage, upsertParfumToSupabase } from "@/admin/lib/syncParfum";
 import { getParfumImages } from "@/lib/productImages";
-import type { Gender } from "@/data/parfums";
+import type { Gender, ProductCustomOption, ProductOptionValue } from "@/data/parfums";
 import { toast } from "sonner";
 import {
   Upload,
@@ -41,6 +41,11 @@ import {
   Palette,
   Landmark,
   Package,
+  Sliders,
+  Paintbrush,
+  Ruler,
+  Type,
+  HelpCircle,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
@@ -98,6 +103,8 @@ const emptyForm = {
   isBestseller: false,
   hasTiers: false,
   tiers: [] as Array<{ quantity: number | string; price: number | string; label: string; label_en?: string }>,
+  hasCustomOptions: false,
+  customOptions: [] as ProductCustomOption[],
 };
 
 const isUuid = (s: string) =>
@@ -122,24 +129,43 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Détection si l'univers actif ou sélectionné est Produits Artisanaux (Artisanat / Bazar Chic)
+  // Détection si l'univers actif ou sélectionné est Bazar Chic
+  const isBazarChic = useMemo(() => {
+    const cat = (defaultCategory || f.category || "").toLowerCase();
+    const cats = (f.categories || []).map((c) => c.toLowerCase());
+    return (
+      cat.includes("bazar") ||
+      cat.includes("chic") ||
+      cat.includes("antique") ||
+      cat.includes("antiquite") ||
+      cats.some(
+        (c) =>
+          c.includes("bazar") ||
+          c.includes("chic") ||
+          c.includes("antique") ||
+          c.includes("antiquite")
+      )
+    );
+  }, [defaultCategory, f.category, f.categories]);
+
+  // Détection si l'univers actif ou sélectionné est Produits Artisanaux
   const isArtisanal = useMemo(() => {
+    if (isBazarChic) return false;
     const cat = (defaultCategory || f.category || "").toLowerCase();
     const cats = (f.categories || []).map((c) => c.toLowerCase());
     return (
       cat.includes("artisan") ||
-      cat.includes("bazar") ||
-      cats.some((c) => c.includes("artisan") || c.includes("bazar"))
+      cats.some((c) => c.includes("artisan"))
     );
-  }, [defaultCategory, f.category, f.categories]);
+  }, [defaultCategory, f.category, f.categories, isBazarChic]);
 
   // Détection si l'univers actif ou sélectionné est Cosmétiques
   const isCosmetic = useMemo(() => {
-    if (isArtisanal) return false;
+    if (isArtisanal || isBazarChic) return false;
     const cat = (defaultCategory || f.category || "").toLowerCase();
     const cats = (f.categories || []).map((c) => c.toLowerCase());
     return cat.includes("cosmetique") || cats.some((c) => c.includes("cosmetique"));
-  }, [defaultCategory, f.category, f.categories, isArtisanal]);
+  }, [defaultCategory, f.category, f.categories, isArtisanal, isBazarChic]);
 
   // Filtrage réactif des catégories dynamiques issues de Supabase
   const filteredCategories = useMemo(() => {
@@ -236,6 +262,39 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
         const hasTiersInit = !!(initial.has_tiers || (initial as any).hasTiers || initTiers.length > 0);
 
+        // Parsing des options de personnalisation client
+        let initCustomOptions: ProductCustomOption[] = [];
+        const rawCustomOpts = (initial as any).custom_options ?? (initial as any).customOptions;
+        if (Array.isArray(rawCustomOpts)) {
+          initCustomOptions = rawCustomOpts;
+        } else if (typeof rawCustomOpts === "string") {
+          try {
+            const parsed = JSON.parse(rawCustomOpts);
+            if (Array.isArray(parsed)) initCustomOptions = parsed;
+          } catch {}
+        }
+
+        const normalizedCustomOptions: ProductCustomOption[] = initCustomOptions.map((opt, idx) => ({
+          id: opt.id || `opt_${Date.now()}_${idx}`,
+          title: opt.title || "",
+          title_en: opt.title_en || (opt as any).titleEn || "",
+          type: opt.type || "select",
+          required: opt.required ?? true,
+          values: (opt.values || []).map((val, vIdx) => ({
+            id: val.id || `val_${Date.now()}_${vIdx}`,
+            label: val.label || "",
+            label_en: val.label_en || (val as any).labelEn || "",
+            price_modifier: val.price_modifier ?? (val as any).priceModifier ?? 0,
+            color_code: val.color_code || (val as any).colorCode || "",
+          })),
+        }));
+
+        const hasCustomOptsInit = !!(
+          initial.has_custom_options ||
+          (initial as any).hasCustomOptions ||
+          normalizedCustomOptions.length > 0
+        );
+
         setF({
           name: initial.name || "",
           nameEn: (initial as any).name_en || (initial as any).nameEn || "",
@@ -269,6 +328,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
             label: t.label || "",
             label_en: t.label_en || t.labelEn || "",
           })),
+          hasCustomOptions: hasCustomOptsInit,
+          customOptions: normalizedCustomOptions,
         });
       } else {
         const initCategory = defaultCategory && defaultCategory !== "Tous" ? defaultCategory : "";
@@ -314,6 +375,144 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
     setF((prev) => {
       const nextTiers = (prev.tiers || []).filter((_, i) => i !== index);
       return { ...prev, tiers: nextTiers };
+    });
+  };
+
+  const addCustomOption = (templateType: "color" | "size" | "finish" | "text" | "blank" = "blank") => {
+    let newOption: ProductCustomOption;
+    const now = Date.now();
+
+    if (templateType === "color") {
+      newOption = {
+        id: `opt_${now}`,
+        title: "Choix de la Couleur",
+        title_en: "Color Selection",
+        type: "color",
+        required: true,
+        values: [
+          { id: `val_${now}_1`, label: "Noir Ébène", label_en: "Ebony Black", color_code: "#1A1816", price_modifier: 0 },
+          { id: `val_${now}_2`, label: "Doré Champagne", label_en: "Champagne Gold", color_code: "#D4AF37", price_modifier: 0 },
+          { id: `val_${now}_3`, label: "Albâtre Crème", label_en: "Cream Alabaster", color_code: "#F5F2EB", price_modifier: 0 },
+          { id: `val_${now}_4`, label: "Nude Travertin", label_en: "Travertine Nude", color_code: "#D9C9B4", price_modifier: 0 },
+        ],
+      };
+    } else if (templateType === "size") {
+      newOption = {
+        id: `opt_${now}`,
+        title: "Taille / Dimensions",
+        title_en: "Size / Dimensions",
+        type: "size",
+        required: true,
+        values: [
+          { id: `val_${now}_1`, label: "Petit Modèle (S)", label_en: "Small (S)", price_modifier: 0 },
+          { id: `val_${now}_2`, label: "Moyen Modèle (M)", label_en: "Medium (M)", price_modifier: 10 },
+          { id: `val_${now}_3`, label: "Grand Modèle (L)", label_en: "Large (L)", price_modifier: 20 },
+        ],
+      };
+    } else if (templateType === "finish") {
+      newOption = {
+        id: `opt_${now}`,
+        title: "Matière / Finition",
+        title_en: "Material / Finish",
+        type: "select",
+        required: false,
+        values: [
+          { id: `val_${now}_1`, label: "Laiton Brossé", label_en: "Brushed Brass", price_modifier: 0 },
+          { id: `val_${now}_2`, label: "Bois d'Olivier", label_en: "Olive Wood", price_modifier: 5 },
+          { id: `val_${now}_3`, label: "Marbre Poli", label_en: "Polished Marble", price_modifier: 15 },
+        ],
+      };
+    } else if (templateType === "text") {
+      newOption = {
+        id: `opt_${now}`,
+        title: "Personnalisation / Gravure sur-mesure",
+        title_en: "Custom Engraving / Name",
+        type: "text",
+        required: false,
+        values: [],
+      };
+    } else {
+      newOption = {
+        id: `opt_${now}`,
+        title: "",
+        title_en: "",
+        type: "select",
+        required: true,
+        values: [
+          { id: `val_${now}_1`, label: "", label_en: "", price_modifier: 0 },
+        ],
+      };
+    }
+
+    setF((prev) => ({
+      ...prev,
+      hasCustomOptions: true,
+      customOptions: [...(prev.customOptions || []), newOption],
+    }));
+  };
+
+  const updateCustomOption = (optIndex: number, field: string, value: any) => {
+    setF((prev) => {
+      const next = [...(prev.customOptions || [])];
+      if (!next[optIndex]) return prev;
+      next[optIndex] = { ...next[optIndex], [field]: value };
+      return { ...prev, customOptions: next };
+    });
+  };
+
+  const removeCustomOption = (optIndex: number) => {
+    setF((prev) => {
+      const next = (prev.customOptions || []).filter((_, i) => i !== optIndex);
+      return {
+        ...prev,
+        customOptions: next,
+        hasCustomOptions: next.length > 0 ? prev.hasCustomOptions : false,
+      };
+    });
+  };
+
+  const addOptionValue = (optIndex: number) => {
+    setF((prev) => {
+      const next = [...(prev.customOptions || [])];
+      if (!next[optIndex]) return prev;
+      const target = next[optIndex];
+      const now = Date.now();
+      const nextValues = [
+        ...(target.values || []),
+        {
+          id: `val_${now}_${(target.values || []).length + 1}`,
+          label: "",
+          label_en: "",
+          price_modifier: 0,
+          color_code: target.type === "color" ? "#1A1816" : undefined,
+        },
+      ];
+      next[optIndex] = { ...target, values: nextValues };
+      return { ...prev, customOptions: next };
+    });
+  };
+
+  const updateOptionValue = (optIndex: number, valIndex: number, field: string, value: any) => {
+    setF((prev) => {
+      const next = [...(prev.customOptions || [])];
+      if (!next[optIndex]) return prev;
+      const target = next[optIndex];
+      const nextValues = [...(target.values || [])];
+      if (!nextValues[valIndex]) return prev;
+      nextValues[valIndex] = { ...nextValues[valIndex], [field]: value };
+      next[optIndex] = { ...target, values: nextValues };
+      return { ...prev, customOptions: next };
+    });
+  };
+
+  const removeOptionValue = (optIndex: number, valIndex: number) => {
+    setF((prev) => {
+      const next = [...(prev.customOptions || [])];
+      if (!next[optIndex]) return prev;
+      const target = next[optIndex];
+      const nextValues = (target.values || []).filter((_, i) => i !== valIndex);
+      next[optIndex] = { ...target, values: nextValues };
+      return { ...prev, customOptions: next };
     });
   };
 
@@ -478,14 +677,16 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
     e.preventDefault();
     const errs: Record<string, string> = {};
     if (!f.name.trim()) {
-      errs.name = isArtisanal
+      errs.name = isBazarChic
+        ? "Veuillez renseigner le nom du produit Bazar Chic"
+        : isArtisanal
         ? "Veuillez renseigner le nom du produit artisanal"
         : isCosmetic
         ? "Veuillez renseigner le nom du produit cosmétique"
         : "Veuillez renseigner le nom du parfum";
     }
 
-    if (!isArtisanal) {
+    if (!isArtisanal && !isBazarChic) {
       if (!f.maison.trim()) {
         errs.maison = isCosmetic
           ? "Veuillez renseigner la marque ou laboratoire"
@@ -513,7 +714,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const currentCategories = Array.isArray(f.categories) && f.categories.length > 0
       ? f.categories
-      : (f.category ? [f.category] : (isArtisanal ? ["artisanat"] : isCosmetic ? ["cosmetiques"] : []));
+      : (f.category ? [f.category] : (isBazarChic ? ["bazar-chic"] : isArtisanal ? ["artisanat"] : isCosmetic ? ["cosmetiques"] : []));
 
     if (currentCategories.length === 0) {
       errs.category = "Veuillez sélectionner au moins une catégorie pour le produit";
@@ -521,7 +722,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     // Gestion du volume et poids
     let calculatedVolumeMl = 0;
-    if (isArtisanal) {
+    if (isBazarChic || isArtisanal) {
       calculatedVolumeMl = 100;
     } else if (isCosmetic) {
       const hasWeight = !!f.weightValue && Number(f.weightValue) > 0;
@@ -570,7 +771,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
 
     const primaryImageUrl = finalImages[0] || null;
 
-    const currentSeasonsList = (isArtisanal || isCosmetic)
+    const currentSeasonsList = (isBazarChic || isArtisanal || isCosmetic)
       ? []
       : (Array.isArray(f.seasons) && f.seasons.length > 0
         ? f.seasons
@@ -593,8 +794,8 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       id,
       name: f.name.trim(),
       name_en: f.nameEn ? f.nameEn.trim() : undefined,
-      maison: f.maison.trim() || (isArtisanal ? "Maison Kenzi" : ""),
-      gender: (isArtisanal || isCosmetic) ? undefined : (f.gender || "Mixte"),
+      maison: f.maison.trim() || (isBazarChic || isArtisanal ? "Maison Kenzi" : ""),
+      gender: (isBazarChic || isArtisanal || isCosmetic) ? undefined : (f.gender || "Mixte"),
       category: (currentCategories[0] || "") as any,
       categories: currentCategories,
       seasons: currentSeasonsList,
@@ -602,7 +803,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       description_en: f.descriptionEn ? f.descriptionEn : undefined,
       notes_en: f.notesEn ? f.notesEn.trim() : undefined,
       notes: {
-        tete: parsedNotes.length > 0 ? parsedNotes : (isArtisanal ? ["Artisanat d'Art"] : isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
+        tete: parsedNotes.length > 0 ? parsedNotes : (isBazarChic ? ["Bazar Chic"] : isArtisanal ? ["Artisanat d'Art"] : isCosmetic ? ["Soin Cosmétique"] : ["Essence"]),
         coeur: [],
         fond: [],
       },
@@ -636,6 +837,25 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
               price: Number(t.price),
               label: t.label?.trim() || undefined,
               label_en: t.label_en?.trim() || undefined,
+            }))
+        : [],
+      has_custom_options: f.hasCustomOptions,
+      custom_options: f.hasCustomOptions
+        ? (f.customOptions || [])
+            .filter((opt) => opt.title.trim().length > 0)
+            .map((opt) => ({
+              ...opt,
+              title: opt.title.trim(),
+              title_en: opt.title_en?.trim() || undefined,
+              values: (opt.values || [])
+                .filter((v) => v.label.trim().length > 0)
+                .map((v) => ({
+                  ...v,
+                  label: v.label.trim(),
+                  label_en: v.label_en?.trim() || undefined,
+                  price_modifier: Number(v.price_modifier) || 0,
+                  color_code: v.color_code?.trim() || undefined,
+                })),
             }))
         : [],
       weight_value: isCosmetic ? (f.weightValue || undefined) : undefined,
@@ -780,9 +1000,458 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
             {/* COLONNE GAUCHE (6 colonnes) */}
             <div className="lg:col-span-6 space-y-3">
-              {isArtisanal ? (
+              {isBazarChic ? (
                 /* ============================================================ */
-                /* FORMULAIRE DÉDIÉ : PRODUITS ARTISANAUX & BAZAR CHIC          */
+                /* FORMULAIRE DÉDIÉ : BAZAR CHIC & OPTIONS CLIENT               */
+                /* ============================================================ */
+                <>
+                  {/* Carte 1 : Informations Générales & Tarifs */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <Sparkles className="w-3.5 h-3.5 text-[#C9A96E]" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                        Informations générales & Tarifs
+                      </h3>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {/* Nom du produit */}
+                      <div>
+                        <label className={labelCls}>Nom du produit Bazar Chic *</label>
+                        <input
+                          className={errors.name ? inputErrorCls : inputCls}
+                          value={f.name}
+                          onChange={(e) => set("name", e.target.value)}
+                          placeholder="Ex: Miroir Soleil en Laiton ou Vase Céramique Vintage"
+                        />
+                        {errors.name && (
+                          <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5 font-medium">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{errors.name}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tarification & Stock (2 colonnes) */}
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {/* Prix */}
+                        <div>
+                          <label className={labelCls}>Prix de vente (€) *</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={0}
+                              step="any"
+                              className={(errors.price ? inputErrorCls : inputCls) + " pr-6 font-semibold"}
+                              value={f.price}
+                              onChange={(e) => set("price", e.target.value)}
+                              placeholder="0"
+                            />
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C9A96E] pointer-events-none">
+                              €
+                            </span>
+                          </div>
+                          {errors.price && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.price}</div>
+                          )}
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                          <label className={labelCls}>Stock disponible *</label>
+                          <input
+                            type="number"
+                            min={0}
+                            className={errors.stock ? inputErrorCls : inputCls}
+                            value={f.stock}
+                            onChange={(e) => set("stock", e.target.value)}
+                            placeholder="10"
+                          />
+                          {errors.stock && (
+                            <div className="text-[10px] text-red-500 mt-0.5">{errors.stock}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Carte 2 : Descriptions & Présentation (Bilingue FR / EN) */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                          Description & Présentation
+                        </h3>
+                      </div>
+
+                      {/* Onglets FR / EN */}
+                      <div className="inline-flex p-0.5 bg-white dark:bg-[#141312] rounded-lg border border-[#E5DDD0] dark:border-[#2D2A26]">
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("fr")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "fr"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>Français (FR)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContentLang("en")}
+                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                            contentLang === "en"
+                              ? "bg-[#111827] dark:bg-[#C9A96E] text-white dark:text-[#111827] font-semibold shadow-xs"
+                              : "text-[#7A726A] dark:text-[#A39B91] hover:text-[#1A1816] dark:hover:text-[#FAF7F2]"
+                          }`}
+                        >
+                          <span>English (EN)</span>
+                          {f.descriptionEn ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          ) : (
+                            <span className="text-[9px] text-[#A39B91] italic">Opt.</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {contentLang === "fr" ? (
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Sous-titre / Accroche (FR)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabel}
+                            onChange={(e) => set("imageLabel", e.target.value)}
+                            placeholder="Ex: Objet d'exception & pièce maîtresse de décoration"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Description détaillée (FR)</label>
+                          <textarea
+                            rows={3}
+                            className={inputCls + " resize-none"}
+                            value={f.description}
+                            onChange={(e) => set("description", e.target.value)}
+                            placeholder="Décrivez l'histoire de la création, son style, ses matériaux nobles et ses finitions..."
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 animate-in fade-in duration-150">
+                        <div>
+                          <label className={labelCls}>Product Name (EN - Optional)</label>
+                          <input
+                            className={inputCls}
+                            value={f.nameEn}
+                            onChange={(e) => set("nameEn", e.target.value)}
+                            placeholder="Ex: Handcrafted Brass Sun Mirror"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Subtitle / Tagline (EN - Optional)</label>
+                          <input
+                            className={inputCls}
+                            value={f.imageLabelEn}
+                            onChange={(e) => set("imageLabelEn", e.target.value)}
+                            placeholder="Ex: Timeless chic lifestyle piece"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Detailed Description (EN - Optional)</label>
+                          <textarea
+                            rows={3}
+                            className={inputCls + " resize-none"}
+                            value={f.descriptionEn}
+                            onChange={(e) => set("descriptionEn", e.target.value)}
+                            placeholder="Describe the craft, premium materials, and unique aesthetics in English..."
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </section>
+
+                  {/* Carte 3 : Options de Personnalisation pour le Client */}
+                  <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-[#E5DDD0]/60 dark:border-[#2D2A26]/60">
+                      <div className="flex items-center gap-2">
+                        <Sliders className="w-3.5 h-3.5 text-[#C9A96E]" />
+                        <div>
+                          <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">
+                            Options de Personnalisation Client
+                          </h3>
+                          <p className="text-[9px] text-[#7A726A] dark:text-[#A39B91]">
+                            Couleurs, tailles/formats, finitions ou gravure au choix du client
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-[#7A726A] dark:text-[#A39B91]">
+                          {f.hasCustomOptions ? "Actif" : "Désactivé"}
+                        </span>
+                        <Switch
+                          checked={f.hasCustomOptions}
+                          onCheckedChange={(val) => {
+                            set("hasCustomOptions", val);
+                            if (val && (!f.customOptions || f.customOptions.length === 0)) {
+                              addCustomOption("color");
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {f.hasCustomOptions && (
+                      <div className="space-y-3 animate-in fade-in duration-200">
+                        {/* Boutons d'ajout rapide de modèles d'options */}
+                        <div className="p-2 bg-white/70 dark:bg-[#141312]/70 rounded-xl border border-[#E5DDD0]/80 dark:border-[#2D2A26]/80 space-y-1.5">
+                          <span className="text-[9px] font-semibold text-[#7A726A] dark:text-[#A39B91] uppercase tracking-wider block">
+                            Ajouter une option en 1 clic :
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => addCustomOption("color")}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-[#FAF7F2] dark:bg-[#1F1C19] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:border-[#C9A96E] hover:text-[#C9A96E] transition-all cursor-pointer"
+                            >
+                              <Paintbrush className="w-3 h-3 text-[#C9A96E]" />
+                              <span>+ Couleurs</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => addCustomOption("size")}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-[#FAF7F2] dark:bg-[#1F1C19] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:border-[#C9A96E] hover:text-[#C9A96E] transition-all cursor-pointer"
+                            >
+                              <Ruler className="w-3 h-3 text-[#C9A96E]" />
+                              <span>+ Tailles / Dimensions</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => addCustomOption("finish")}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-[#FAF7F2] dark:bg-[#1F1C19] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:border-[#C9A96E] hover:text-[#C9A96E] transition-all cursor-pointer"
+                            >
+                              <Sliders className="w-3 h-3 text-[#C9A96E]" />
+                              <span>+ Finitions</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => addCustomOption("text")}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-[#FAF7F2] dark:bg-[#1F1C19] border border-[#E5DDD0] dark:border-[#2D2A26] text-[#1A1816] dark:text-[#FAF7F2] hover:border-[#C9A96E] hover:text-[#C9A96E] transition-all cursor-pointer"
+                            >
+                              <Type className="w-3 h-3 text-[#C9A96E]" />
+                              <span>+ Gravure / Prénom</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => addCustomOption("blank")}
+                              className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-lg bg-[#C9A96E]/10 border border-[#C9A96E]/30 text-[#C9A96E] hover:bg-[#C9A96E]/20 transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Personnalisée</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Liste des groupes d'options configurés */}
+                        {(!f.customOptions || f.customOptions.length === 0) ? (
+                          <div className="text-center py-4 px-2 rounded-xl border border-dashed border-[#E5DDD0] dark:border-[#2D2A26] bg-white/40 dark:bg-[#141312]/40">
+                            <Sliders className="w-5 h-5 mx-auto text-[#C9A96E]/60 mb-1" />
+                            <p className="text-[10px] text-[#7A726A] dark:text-[#A39B91]">
+                              Aucune option configurée. Cliquez sur l'un des boutons ci-dessus pour ajouter vos choix de couleurs, tailles ou finitions.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2.5">
+                            {f.customOptions.map((opt, optIdx) => (
+                              <div
+                                key={opt.id || optIdx}
+                                className="p-2.5 bg-white dark:bg-[#141312] rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-2"
+                              >
+                                {/* En-tête du groupe d'option */}
+                                <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-[#E5DDD0]/50 dark:border-[#2D2A26]/50">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <span className="w-4 h-4 rounded-full bg-[#C9A96E] text-[#111827] text-[9px] font-bold flex items-center justify-center shrink-0">
+                                      {optIdx + 1}
+                                    </span>
+                                    <span className="text-[11px] font-bold text-[#1A1816] dark:text-[#FAF7F2] truncate">
+                                      {opt.title || `Option ${optIdx + 1}`}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    {/* Type d'affichage */}
+                                    <select
+                                      value={opt.type || "select"}
+                                      onChange={(e) => updateCustomOption(optIdx, "type", e.target.value)}
+                                      className="px-2 py-0.5 text-[9px] font-semibold bg-[#FAF7F2] dark:bg-[#1F1C19] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-md text-[#1A1816] dark:text-[#FAF7F2] focus:outline-none cursor-pointer"
+                                    >
+                                      <option value="color">Palette Couleurs (Pastilles)</option>
+                                      <option value="size">Tailles & Formats</option>
+                                      <option value="select">Liste déroulante</option>
+                                      <option value="text">Texte libre / Gravure</option>
+                                    </select>
+
+                                    {/* Obligatoire */}
+                                    <label className="flex items-center gap-1 text-[9px] font-medium text-[#7A726A] dark:text-[#A39B91] cursor-pointer">
+                                      <input
+                                        type="checkbox"
+                                        checked={opt.required ?? true}
+                                        onChange={(e) => updateCustomOption(optIdx, "required", e.target.checked)}
+                                        className="rounded text-[#C9A96E] focus:ring-[#C9A96E]"
+                                      />
+                                      <span>Requis</span>
+                                    </label>
+
+                                    {/* Bouton supprimer groupe */}
+                                    <button
+                                      type="button"
+                                      onClick={() => removeCustomOption(optIdx)}
+                                      className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                                      title="Supprimer cette option"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {/* Titre de l'option (FR & EN) */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  <div>
+                                    <label className="block text-[9px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-0.5">
+                                      Titre de l'option (FR) *
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className={inputCls}
+                                      value={opt.title}
+                                      onChange={(e) => updateCustomOption(optIdx, "title", e.target.value)}
+                                      placeholder="Ex: Choix de la Couleur, Taille..."
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-[9px] font-medium text-[#7A726A] dark:text-[#A39B91] mb-0.5">
+                                      Option Title (EN - Optionnel)
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className={inputCls}
+                                      value={opt.title_en || ""}
+                                      onChange={(e) => updateCustomOption(optIdx, "title_en", e.target.value)}
+                                      placeholder="Ex: Color Selection, Dimensions..."
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Valeurs / Choix disponibles si non textuel */}
+                                {opt.type === "text" ? (
+                                  <div className="p-2 bg-[#FAF7F2] dark:bg-[#1C1A18] rounded-lg border border-[#E5DDD0]/60 dark:border-[#2D2A26]/60 text-[10px] text-[#7A726A] dark:text-[#A39B91] flex items-center gap-1.5">
+                                    <Type className="w-3.5 h-3.5 text-[#C9A96E] shrink-0" />
+                                    <span>
+                                      Le client disposera d'un champ texte sur la fiche produit pour saisir son inscription, prénom ou gravure personnalisée.
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-1.5 pt-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[9px] font-bold text-[#C9A96E] uppercase tracking-wider">
+                                        Choix & Variantes disponibles :
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => addOptionValue(optIdx)}
+                                        className="text-[9px] font-bold text-[#C9A96E] hover:underline flex items-center gap-1 cursor-pointer"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                        <span>Ajouter un choix</span>
+                                      </button>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                      {(opt.values || []).map((val, valIdx) => (
+                                        <div
+                                          key={val.id || valIdx}
+                                          className="flex items-center gap-1.5 p-1.5 bg-[#FAF7F2]/80 dark:bg-[#1C1A18]/80 rounded-lg border border-[#E5DDD0]/70 dark:border-[#2D2A26]/70"
+                                        >
+                                          {/* Pastille / Sélecteur de couleur si type couleur */}
+                                          {opt.type === "color" && (
+                                            <div className="relative shrink-0" title="Choisir la couleur visuelle">
+                                              <input
+                                                type="color"
+                                                value={val.color_code || "#C9A96E"}
+                                                onChange={(e) => updateOptionValue(optIdx, valIdx, "color_code", e.target.value)}
+                                                className="w-6 h-6 rounded-md border border-[#E5DDD0] dark:border-[#2D2A26] p-0 cursor-pointer overflow-hidden bg-transparent"
+                                              />
+                                            </div>
+                                          )}
+
+                                          {/* Label FR */}
+                                          <div className="flex-1 min-w-0">
+                                            <input
+                                              type="text"
+                                              className="w-full px-2 py-1 text-[11px] bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-md text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF]"
+                                              value={val.label}
+                                              onChange={(e) => updateOptionValue(optIdx, valIdx, "label", e.target.value)}
+                                              placeholder="Libellé FR (ex: Doré Champagne)"
+                                            />
+                                          </div>
+
+                                          {/* Label EN */}
+                                          <div className="flex-1 min-w-0">
+                                            <input
+                                              type="text"
+                                              className="w-full px-2 py-1 text-[11px] bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-md text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF]"
+                                              value={val.label_en || ""}
+                                              onChange={(e) => updateOptionValue(optIdx, valIdx, "label_en", e.target.value)}
+                                              placeholder="Label EN (ex: Champagne Gold)"
+                                            />
+                                          </div>
+
+                                          {/* Supplément de prix éventuel */}
+                                          <div className="w-20 shrink-0 relative">
+                                            <input
+                                              type="number"
+                                              step="any"
+                                              className="w-full px-2 py-1 pr-4 text-[11px] font-semibold bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] rounded-md text-[#1A1816] dark:text-[#FAF7F2] placeholder:text-[#9CA3AF]"
+                                              value={val.price_modifier === 0 ? "" : val.price_modifier ?? ""}
+                                              onChange={(e) => updateOptionValue(optIdx, valIdx, "price_modifier", e.target.value === "" ? 0 : Number(e.target.value))}
+                                              placeholder="+0"
+                                              title="Supplément de prix pour cette variante (+€)"
+                                            />
+                                            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-[#C9A96E] pointer-events-none">
+                                              €
+                                            </span>
+                                          </div>
+
+                                          {/* Bouton supprimer valeur */}
+                                          <button
+                                            type="button"
+                                            onClick={() => removeOptionValue(optIdx, valIdx)}
+                                            className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-all shrink-0 cursor-pointer"
+                                            title="Supprimer ce choix"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </section>
+                </>
+              ) : isArtisanal ? (
+                /* ============================================================ */
+                /* FORMULAIRE DÉDIÉ : PRODUITS ARTISANAUX                       */
                 /* ============================================================ */
                 <>
                   {/* Carte 1 : Informations générales & Tarifs */}

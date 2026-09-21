@@ -14,6 +14,24 @@ export type ProductTier = {
   quantity: number;
   price: number;
   label?: string;
+  label_en?: string;
+};
+
+export type ProductOptionValue = {
+  id: string;
+  label: string;
+  label_en?: string;
+  price_modifier?: number;
+  color_code?: string;
+};
+
+export type ProductCustomOption = {
+  id: string;
+  title: string;
+  title_en?: string;
+  type?: 'select' | 'color' | 'size' | 'text';
+  required?: boolean;
+  values: ProductOptionValue[];
 };
 
 export type Parfum = {
@@ -39,6 +57,8 @@ export type Parfum = {
   full_bottle_price?: number | null;
   has_tiers?: boolean;
   quantity_tiers?: ProductTier[];
+  has_custom_options?: boolean;
+  custom_options?: ProductCustomOption[];
 };
 
 export const SIZE_META: Record<ParfumSize, { label: string; sub: string }> = {
