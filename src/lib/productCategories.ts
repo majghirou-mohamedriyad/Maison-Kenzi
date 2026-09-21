@@ -95,8 +95,13 @@ export const isParfumProduct = (p?: {
   id?: string;
   weight_value?: string | null;
   volume_value?: string | null;
+  has_custom_options?: boolean;
+  custom_options?: any;
 }): boolean => {
   if (!p) return false;
+  if ((p as any).has_custom_options || (Array.isArray((p as any).custom_options) && (p as any).custom_options.length > 0)) {
+    return false;
+  }
   const cats = getParfumCategories(p).map((c) => c.toLowerCase().trim());
   
   // Tout produit rattaché explicitement à un univers non-parfum

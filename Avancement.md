@@ -13,10 +13,10 @@
     - [x] Activation interactive via interrupteur (*Switch*).
     - [x] Modèles d'options rapides en 1 clic : Palette de Couleurs (avec pastilles hexadécimales), Tailles / Formats / Dimensions, Matières & Finitions, Champ texte libre (pour gravure sur-mesure / monogramme / prénom).
     - [x] Gestion dynamique complète côté administrateur : ajout, modification, suppression d'options et de valeurs avec calcul de suppléments tarifaires éventuels (+€) et sélecteur de pastilles de couleurs.
-  - [x] **Fiche Produit Client Interactive (`ProductDetail.tsx`)** :
-    - [x] Rendu haute couture des options configurées : pastilles de couleurs sélectionnables, sélecteur de tailles/dimensions, options de matières et champ de gravure/personnalisation.
-    - [x] Mise à jour en temps réel du prix total (prix de base + suppléments d'options sélectionnés).
-    - [x] Transmission transparente des options sélectionnées dans le panier d'achat et le bon de commande express.
+  - [x] **Fiche Produit Client Interactive & Correction du Format 100ml (`ProductDetail.tsx`, `productCategories.ts`)** :
+    - [x] **Suppression de la Mention « 100 ml » Involontaire** : Élimination de la valeur de repli parfum sur les articles Bazar Chic et Artisanat (le volume n'est plus attribué artificiellement).
+    - [x] **Masquage Intelligent de la Carte « Format souhaité »** : Lorsque des options de personnalisation sont actives, l'encadré redondant de format de flacon est masqué au profit de vos pastilles de couleurs, tailles et choix sur-mesure.
+    - [x] Rendu haute couture des options configurées avec mise à jour du prix total en temps réel et transmission dans le panier / bon de commande.
   - [x] **Synchronisation & Persistance (`syncParfum.ts`, `useProductStore.ts`)** : Typage TypeScript complet (`ProductCustomOption`, `ProductOptionValue`), synchronisation PostgreSQL Supabase et repli sécurisé.
   - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `lucide-react`, typographie soignée, commentaires en français.
 

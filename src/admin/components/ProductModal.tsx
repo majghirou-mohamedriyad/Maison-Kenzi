@@ -823,7 +823,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       stock_5ml: numStock,
       stock_10ml: numStock,
       sale_mode: "full_bottle",
-      full_bottle_volume_ml: calculatedVolumeMl > 0 ? calculatedVolumeMl : 100,
+      full_bottle_volume_ml: (isBazarChic || isArtisanal) ? null : (calculatedVolumeMl > 0 ? calculatedVolumeMl : null),
       full_bottle_price: numPrice,
       full_bottle_stock: numStock,
       full_bottle_limited: false,

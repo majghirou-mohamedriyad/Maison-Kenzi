@@ -68,6 +68,15 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     } catch {}
   }
 
+  const isNonParfum = cats.some((c) =>
+    c.includes("bazar") ||
+    c.includes("chic") ||
+    c.includes("antique") ||
+    c.includes("artisan")
+  ) || !!p.has_custom_options || parsedCustomOptions.length > 0;
+
+  const cleanVolume = isNonParfum ? null : (p.full_bottle_volume_ml ?? null);
+
   return {
     ...p,
     name_en: p.name_en || "",
@@ -81,10 +90,10 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     stock_10ml: p.stock_10ml ?? 20,
     stock: p.stock ?? 20,
     sale_mode: p.sale_mode ?? "decant",
-    seasons: p.seasons ?? [],
+    seasons: isNonParfum ? [] : (p.seasons ?? []),
     images: rawImages,
     image_url: rawImages[0] || p.image_url || null,
-    full_bottle_volume_ml: p.full_bottle_volume_ml ?? null,
+    full_bottle_volume_ml: cleanVolume,
     full_bottle_price: p.full_bottle_price ?? null,
     full_bottle_stock: p.full_bottle_stock ?? 0,
     full_bottle_limited: p.full_bottle_limited ?? false,

@@ -377,7 +377,7 @@ const ParfumDetail = () => {
         }
         const label = parts.length > 0
           ? parts.join(" • ")
-          : (parfum?.full_bottle_volume_ml ? `${parfum.full_bottle_volume_ml} ml` : (language === "en" ? "Standard Format" : "Format Standard"));
+          : (language === "en" ? "Standard Format" : "Format Standard");
         const sub = parfum?.category === "deodorants-stick" ? "Stick Corporel" : "";
         return { label, sub };
       }
@@ -1100,8 +1100,8 @@ const ParfumDetail = () => {
                     })}
                   </div>
                 </div>
-              ) : (
-                /* SECTION FORMATS CLASSIQUES DÉCANTS / FLACON */
+              ) : !hasCustomOptions ? (
+                /* SECTION FORMATS CLASSIQUES DÉCANTS / FLACON (PARFUMS & COSMÉTIQUES) */
                 <div className="space-y-2 pt-1">
                   <div className="flex justify-between items-center flex-wrap gap-1">
                     <span className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-foreground flex items-center gap-1.5">
@@ -1209,7 +1209,7 @@ const ParfumDetail = () => {
                     })}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* STATIC ORDER FORM (ALWAYS VISIBLE DIRECTLY UNDER FORMATS & QUANTITIES) */}
               <ExpressOrderForm
