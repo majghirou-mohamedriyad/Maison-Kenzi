@@ -24,6 +24,7 @@ import {
   CheckSquare,
   Square,
   Flower2,
+  Palette,
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 import { getPrimaryImage } from "@/lib/productImages";
@@ -357,7 +358,10 @@ const ProductTable = ({
                 {products.map((p, i) => {
                   const isPack = p.category === "packs" || p.id.startsWith("pack-") || p.name.toLowerCase().includes("pack");
                   const isDeo = p.category === "deodorants-stick" || p.id.includes("deodorant") || p.id.includes("old-spice");
-                  const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo;
+                  const catStr = ((p.category || "") + " " + (p.categories || []).join(" ")).toLowerCase();
+                  const isBazarChicItem = catStr.includes("bazar") || catStr.includes("chic") || catStr.includes("antique");
+                  const isArtisanalItem = !isBazarChicItem && catStr.includes("artisan");
+                  const isFull = (p.sale_mode ?? "decant") === "full_bottle" || isPack || isDeo || isBazarChicItem || isArtisanalItem;
                   const s5 = p.stock_5ml ?? 0;
                   const s10 = p.stock_10ml ?? 0;
                   const sFull = p.full_bottle_stock ?? 0;
@@ -423,6 +427,14 @@ const ProductTable = ({
                                     {p.volume_value ? `${p.volume_value} ${p.volume_unit || "ml"}` : (!p.weight_value ? (p.imageLabel || "Cosmétique") : "")}
                                   </span>
                                 </span>
+                              ) : isBazarChicItem ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                                  <Sparkles className="w-2.5 h-2.5" /> Bazar Chic
+                                </span>
+                              ) : isArtisanalItem ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                                  <Palette className="w-2.5 h-2.5" /> Artisanat
+                                </span>
                               ) : (
                                 <>
                                   {isPack && (
@@ -437,7 +449,7 @@ const ProductTable = ({
                                   )}
                                   {isFull && !isPack && !isDeo && (
                                     <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C9A96E]/15 text-[#C9A96E] border border-[#C9A96E]/30 shrink-0">
-                                      <Wine className="w-2.5 h-2.5" /> Flacon {p.full_bottle_volume_ml ?? 100}ml
+                                      <Wine className="w-2.5 h-2.5" /> {p.full_bottle_volume_ml ? `Flacon ${p.full_bottle_volume_ml}ml` : "Flacon"}
                                     </span>
                                   )}
                                   {!isFull && (

@@ -254,9 +254,11 @@ const SeasonalSection = () => {
                   }`}>
                     {outOfStock ? "Rupture de stock" : pricing.priceText}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
-                    {pricing.volumeText}
-                  </span>
+                  {pricing.volumeText ? (
+                    <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                      {pricing.volumeText}
+                    </span>
+                  ) : null}
                 </div>
               </Link>
             );

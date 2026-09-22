@@ -49,9 +49,12 @@ export type ParfumPricingSummary = {
 };
 
 /**
- * Calcule et formate de façon élégante le prix d'appel et la contenance en ML
+ * Calcule et formate de façon élégante le prix d'appel et la contenance / format
  */
 export const getParfumPricingSummary = (parfum: {
+  category?: string | null;
+  categories?: string[] | null;
+  has_custom_options?: boolean;
   sale_mode?: "decant" | "full_bottle" | string;
   price_5ml?: number | null;
   price_10ml?: number | null;
@@ -72,9 +75,25 @@ export const getParfumPricingSummary = (parfum: {
     if (parfum.volume_value) {
       parts.push(`${parfum.volume_value} ${parfum.volume_unit || "ml"}`);
     }
-    const volumeText = parts.length > 0
-      ? parts.join(" · ")
-      : (parfum.full_bottle_volume_ml ? `Flacon · ${parfum.full_bottle_volume_ml} ml` : "100 ml");
+
+    const catStr = ((parfum.category || "") + " " + (parfum.categories || []).join(" ")).toLowerCase();
+    const isNonParfum =
+      catStr.includes("bazar") ||
+      catStr.includes("chic") ||
+      catStr.includes("antique") ||
+      catStr.includes("artisan") ||
+      !!parfum.has_custom_options;
+
+    let volumeText = "";
+    if (parts.length > 0) {
+      volumeText = parts.join(" · ");
+    } else if (parfum.full_bottle_volume_ml) {
+      volumeText = `Flacon · ${parfum.full_bottle_volume_ml} ml`;
+    } else if (isNonParfum) {
+      volumeText = "";
+    } else {
+      volumeText = "Flacon complet";
+    }
 
     return {
       priceText: formatMAD(price),
@@ -108,7 +127,7 @@ export const getParfumPricingSummary = (parfum: {
 
   return {
     priceText: formatMAD(p5 || p10 || 0),
-    volumeText: "Décant 5 ml",
+    volumeText: "",
     startingPrice: p5 || p10 || 0,
   };
 };

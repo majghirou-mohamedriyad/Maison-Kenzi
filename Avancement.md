@@ -7,6 +7,12 @@
 
 ---
 
+- [x] Élimination Définitive du Tag « 100ml » sur les Produits Artisanaux & Bazar Chic ([`src/lib/sizes.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/sizes.ts), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts)) :
+  - [x] **Correction de la Fonction de Tarification Globale (`sizes.ts`)** : Suppression de la valeur de repli textuelle `"100 ml"` dans `getParfumPricingSummary` pour tous les produits hors parfumerie (Bazar Chic, Créations Artisanales ou avec options de personnalisation).
+  - [x] **Rendu Conditionnel des Badges de Format sur les Cartes** : Masquage du badge de contenance dans les grilles de catégories, carrousels, sections saisonnières et produits recommandés si aucune contenance en ml/poids n'est définie.
+  - [x] **Badges Distincts dans l'Administration (`ProductTable.tsx`)** : Affichage des badges dorés/ambrés dédiés *« Bazar Chic »* et *« Artisanat »* en lieu et place de la mention erronée *« Flacon 100ml »*.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Suppression de la Carte « Clients Enregistrés » sur le Dashboard Admin ([`src/admin/pages/Dashboard.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Dashboard.tsx)) :
   - [x] **Élimination de la Carte KPI Redondante** : Retrait de la carte `Clients Enregistrés` et de l'icône `Users` pour épurer les indicateurs du haut de page.
   - [x] **Agencement Équilibré à 3 Colonnes** : Réorganisation fluide de la grille KPI (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`) mettant en valeur le Chiffre d'affaires, les Commandes et les Produits Actifs.

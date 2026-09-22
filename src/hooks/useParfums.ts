@@ -77,7 +77,11 @@ export const mapRowToParfum = (row: any): Parfum => {
     stock_status: inStock ? "actif" : "rupture",
     sale_mode: isFull ? "full_bottle" : (row.sale_mode ?? "decant"),
     full_bottle_price: row.full_bottle_price ? Number(row.full_bottle_price) : null,
-    full_bottle_volume_ml: row.full_bottle_volume_ml ? Number(row.full_bottle_volume_ml) : (row.sale_mode === "full_bottle" ? 50 : null),
+    full_bottle_volume_ml: categoriesList.some((c) =>
+      c.includes("bazar") || c.includes("chic") || c.includes("antique") || c.includes("artisan")
+    ) || !!row.has_custom_options || parsedCustomOptions.length > 0
+      ? null
+      : (row.full_bottle_volume_ml ? Number(row.full_bottle_volume_ml) : null),
     full_bottle_stock: fullStock,
     has_tiers: !!row.has_tiers || parsedTiers.length > 0,
     quantity_tiers: parsedTiers,
