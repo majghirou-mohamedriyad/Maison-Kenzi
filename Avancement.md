@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Séparation Stricte & Étanchéité de la Catégorie « Gestion des Parfums » ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
+  - [x] **Résolution du Rapprochement Automatique Involontaire** : Correction de `isParfumInCategory` qui incluait par défaut tous les produits dont les catégories n'étaient pas explicitement listées dans l'ancien filtre d'exclusion.
+  - [x] **Étanchéité Totale des Univers** : Les créations *Bazar Chic* et *Produits Artisanaux* sont désormais filtrées exclusivement dans leurs univers respectifs et n'apparaissent plus dans la vue *« Gestion des Parfums »*.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Élimination Définitive du Tag « 100ml » sur les Produits Artisanaux & Bazar Chic ([`src/lib/sizes.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/sizes.ts), [`src/pages/Category.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Category.tsx), [`src/components/content/ProductCarousel.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ProductCarousel.tsx), [`src/components/content/SeasonalSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/SeasonalSection.tsx), [`src/components/content/RelatedProducts.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/RelatedProducts.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx), [`src/hooks/useParfums.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/hooks/useParfums.ts)) :
   - [x] **Correction de la Fonction de Tarification Globale (`sizes.ts`)** : Suppression de la valeur de repli textuelle `"100 ml"` dans `getParfumPricingSummary` pour tous les produits hors parfumerie (Bazar Chic, Créations Artisanales ou avec options de personnalisation).
   - [x] **Rendu Conditionnel des Badges de Format sur les Cartes** : Masquage du badge de contenance dans les grilles de catégories, carrousels, sections saisonnières et produits recommandés si aucune contenance en ml/poids n'est définie.

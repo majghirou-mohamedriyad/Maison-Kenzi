@@ -42,8 +42,13 @@ export const isParfumInCategory = (
   p?: {
     category?: string | null;
     categories?: string[] | null;
+    category_slugs?: string[] | null;
     gender?: string | null;
     id?: string;
+    has_custom_options?: boolean;
+    custom_options?: any;
+    weight_value?: string | null;
+    volume_value?: string | null;
   },
   categorySlug?: string
 ): boolean => {
@@ -52,34 +57,41 @@ export const isParfumInCategory = (
   if (target === "toutes" || target === "all") return true;
 
   const cats = getParfumCategories(p).map((c) => c.toLowerCase().trim());
-  if (cats.includes(target)) return true;
+  const isPureParfum = isParfumProduct(p);
 
-  // Catégorie générale Parfums / Parfum
+  // Catégorie générale Parfums / Parfum / Gestion des Parfums
   if (target === "parfums" || target === "parfum") {
-    if (cats.includes("parfums") || cats.includes("parfum")) return true;
-    const isSpecializedOtherCategory = cats.some((c) => 
-      c.includes("deodorant") || 
-      c.includes("cosmetique") || 
-      c.includes("artisanal") || 
-      c.includes("antique")
-    );
-    // Si ce n'est pas un produit d'une autre catégorie spécifique (déodorants, cosmétiques, antiquités...), c'est un parfum
-    if (!isSpecializedOtherCategory) return true;
+    return isPureParfum;
   }
 
-  // Rapprochement par genre si la catégorie correspond à un genre
-  if (target === "homme" && p.gender?.toLowerCase() === "homme") return true;
-  if (target === "femme" && p.gender?.toLowerCase() === "femme") return true;
-  if (target === "mixte" && (p.gender?.toLowerCase() === "mixte" || p.gender?.toLowerCase() === "unisexe")) return true;
+  // Si c'est un parfum et qu'on filtre par univers non-parfum, ce n'est pas bon
+  const isTargetCosmetic = target.includes("cosmetique") || target.includes("soin");
+  const isTargetArtisanal = target.includes("artisanal") || target.includes("artisanat") || target.includes("artisanaux");
+  const isTargetBazarChic = target.includes("bazar") || target.includes("chic") || target.includes("antique") || target.includes("antiquite") || target.includes("antiquités");
+
+  if (isTargetCosmetic) {
+    return cats.some((c) => c.includes("cosmetique") || c.includes("soin")) || !!p.weight_value || !!p.volume_value;
+  }
+
+  if (isTargetArtisanal) {
+    return cats.some((c) => c.includes("artisan"));
+  }
+
+  if (isTargetBazarChic) {
+    return cats.some((c) => c.includes("bazar") || c.includes("chic") || c.includes("antique") || c.includes("antiquite") || c.includes("antiquités"));
+  }
+
+  // Correspondance exacte par slug
+  if (cats.includes(target)) return true;
+
+  // Rapprochement par genre (valable uniquement pour les vrais parfums)
+  if (target === "homme" && p.gender?.toLowerCase() === "homme" && isPureParfum) return true;
+  if (target === "femme" && p.gender?.toLowerCase() === "femme" && isPureParfum) return true;
+  if (target === "mixte" && (p.gender?.toLowerCase() === "mixte" || p.gender?.toLowerCase() === "unisexe") && isPureParfum) return true;
 
   // Déodorants et Packs
   if (target.includes("deodorant") && (cats.some((c) => c.includes("deodorant")) || p.id?.includes("old-spice"))) return true;
   if (target.includes("pack") && (cats.some((c) => c.includes("pack")) || p.id?.includes("pack"))) return true;
-
-  // Cosmétiques, Artisanat, Bazar Chic et Antiquités (tolérance singulier/pluriel)
-  if (target.includes("cosmetique") && cats.some((c) => c.includes("cosmetique"))) return true;
-  if ((target.includes("artisanal") || target.includes("artisanat") || target.includes("artisanaux")) && cats.some((c) => c.includes("artisanal") || c.includes("artisanat") || c.includes("artisanaux"))) return true;
-  if ((target.includes("bazar") || target.includes("chic") || target.includes("antique") || target.includes("antiquite") || target.includes("antiquités")) && cats.some((c) => c.includes("bazar") || c.includes("chic") || c.includes("antique") || c.includes("antiquite") || c.includes("antiquités"))) return true;
 
   return false;
 };
