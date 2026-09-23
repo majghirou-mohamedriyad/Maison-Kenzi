@@ -54,14 +54,14 @@ const Checkout = () => {
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("Maroc");
-  const [countryQuery, setCountryQuery] = useState("Maroc");
+  const [country, setCountry] = useState("Belgique");
+  const [countryQuery, setCountryQuery] = useState("Belgique");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const countryWrapperRef = useRef<HTMLDivElement>(null);
 
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("Casablanca");
-  const [cityQuery, setCityQuery] = useState("Casablanca");
+  const [city, setCity] = useState("Bruxelles");
+  const [cityQuery, setCityQuery] = useState("Bruxelles");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const cityWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -432,7 +432,7 @@ const Checkout = () => {
                         id="phone"
                         type="tel"
                         required
-                        placeholder="Ex: 212642138484 (ou 33612345678)"
+                        placeholder="Ex: 32478123456"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
                         className="h-11 text-xs sm:text-sm rounded-xl bg-background border-border/80 focus:border-primary"
@@ -500,7 +500,7 @@ const Checkout = () => {
 
                         {/* Top Country Badges */}
                         <div className="flex flex-wrap gap-1 pt-0.5">
-                          {["Maroc", "France", "Belgique", "Suisse", "Espagne", "Italie"].map((cName) => (
+                          {["Belgique", "France", "Maroc", "Suisse", "Espagne", "Italie"].map((cName) => (
                             <button
                               key={cName}
                               type="button"

@@ -19,9 +19,9 @@ export interface RestCountry {
 
 // Liste initiale de secours et d'accès instantané (Zero-Lag)
 export const FALLBACK_COUNTRIES: RestCountry[] = [
-  { code: "MA", name: "Maroc", officialName: "Royaume du Maroc", phonePrefix: "+212", capital: "Rabat", region: "Africa" },
-  { code: "FR", name: "France", officialName: "République française", phonePrefix: "+33", capital: "Paris", region: "Europe" },
   { code: "BE", name: "Belgique", officialName: "Royaume de Belgique", phonePrefix: "+32", capital: "Bruxelles", region: "Europe" },
+  { code: "FR", name: "France", officialName: "République française", phonePrefix: "+33", capital: "Paris", region: "Europe" },
+  { code: "MA", name: "Maroc", officialName: "Royaume du Maroc", phonePrefix: "+212", capital: "Rabat", region: "Africa" },
   { code: "CH", name: "Suisse", officialName: "Confédération suisse", phonePrefix: "+41", capital: "Berne", region: "Europe" },
   { code: "ES", name: "Espagne", officialName: "Royaume d'Espagne", phonePrefix: "+34", capital: "Madrid", region: "Europe" },
   { code: "IT", name: "Italie", officialName: "République italienne", phonePrefix: "+39", capital: "Rome", region: "Europe" },

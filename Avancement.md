@@ -7,6 +7,18 @@
 
 ---
 
+- [x] Initialisation par Défaut des Champs Pays et Ville sur « Belgique » et « Bruxelles » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/services/restCountriesService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/restCountriesService.ts), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
+  - [x] **Formulaire de Commande Directe (`ExpressOrderForm.tsx`)** : Initialisation automatique des champs `country` et `countryQuery` sur *"Belgique"*, et des champs `city` et `cityQuery` sur *"Bruxelles"*.
+  - [x] **Page de Validation de Commande (`Checkout.tsx`)** : Initialisation par défaut sur *"Belgique"* et *"Bruxelles"* avec placement en tête des raccourcis rapides de pays.
+  - [x] **Services & Traductions (`restCountriesService.ts`, `translations.ts`)** : Priorisation de la Belgique dans la liste `FALLBACK_COUNTRIES` et harmonisation bilingue des placeholders et libellés.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Optimisation de l'Affichage Responsive des Univers Cosmétiques, Artisanat et Bazar Chic dans l'Admin ([`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx), [`src/admin/components/ProductTable.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/components/ProductTable.tsx)) :
+  - [x] **Barre de Filtres Épurée & Responsive par Univers** : Remplacement de la grille rigide à 6 colonnes (réservée aux parfums) par une barre de filtres fluide (recherche plein format + statut + tri + réinitialisation) pour les univers *Produits Cosmétiques*, *Produits Artisanaux* et *Bazar Chic & Décoration*.
+  - [x] **Tableau Défilant Fluide & Suppression des Colonnes Superflues** : Remplacement de la classe contraignante `table-fixed` par un défilement horizontal fluide (`overflow-x-auto min-w-[680px]`), masquage des colonnes olfactives inutiles (Genre/Saison) et adaptation dynamique du libellé de marque/origine (*Marque*, *Atelier / Origine*, *Origine / Type*).
+  - [x] **Grille de Cartes & Actions Groupées Mobiles** : Disposition responsive `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`, badges spécifiques par univers et barre d'actions groupées flottante parfaitement adaptée aux écrans tactiles mobiles et tablettes (`flex-col sm:flex-row`).
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Séparation Stricte & Étanchéité de la Catégorie « Gestion des Parfums » ([`src/lib/productCategories.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/lib/productCategories.ts), [`src/admin/pages/Produits.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Produits.tsx)) :
   - [x] **Résolution du Rapprochement Automatique Involontaire** : Correction de `isParfumInCategory` qui incluait par défaut tous les produits dont les catégories n'étaient pas explicitement listées dans l'ancien filtre d'exclusion.
   - [x] **Étanchéité Totale des Univers** : Les créations *Bazar Chic* et *Produits Artisanaux* sont désormais filtrées exclusivement dans leurs univers respectifs et n'apparaissent plus dans la vue *« Gestion des Parfums »*.

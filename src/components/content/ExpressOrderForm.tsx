@@ -105,13 +105,13 @@ const ExpressOrderForm = ({
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("Maroc");
-  const [countryQuery, setCountryQuery] = useState("Maroc");
+  const [country, setCountry] = useState("Belgique");
+  const [countryQuery, setCountryQuery] = useState("Belgique");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const countryWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [city, setCity] = useState("Casablanca");
-  const [cityQuery, setCityQuery] = useState("Casablanca");
+  const [city, setCity] = useState("Bruxelles");
+  const [cityQuery, setCityQuery] = useState("Bruxelles");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const cityWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -834,7 +834,7 @@ const ExpressOrderForm = ({
 
               {/* Raccourcis rapides pays */}
               <div className="flex flex-wrap gap-1 pt-0.5">
-                {["Maroc", "France", "Belgique", "Suisse", "Espagne"].map((cName) => (
+                {["Belgique", "France", "Maroc", "Suisse", "Espagne"].map((cName) => (
                   <button
                     key={cName}
                     type="button"

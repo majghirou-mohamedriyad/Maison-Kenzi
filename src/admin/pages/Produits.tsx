@@ -187,11 +187,23 @@ const Produits = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Tous");
   const [sortOption, setSortOption] = useState<SortOption>("name_asc");
 
-  // Détection si la page actuelle correspond aux Produits Cosmétiques
+  // Détection des différents univers pour adapter les filtres et colonnes
   const isCosmeticPage = useMemo(() => {
     const cat = (categoryFilter || "").toLowerCase();
     return cat.includes("cosmetique");
   }, [categoryFilter]);
+
+  const isArtisanalPage = useMemo(() => {
+    const cat = (categoryFilter || "").toLowerCase();
+    return cat.includes("artisan");
+  }, [categoryFilter]);
+
+  const isBazarChicPage = useMemo(() => {
+    const cat = (categoryFilter || "").toLowerCase();
+    return cat.includes("bazar") || cat.includes("chic") || cat.includes("antique");
+  }, [categoryFilter]);
+
+  const isSpecializedUniverse = isCosmeticPage || isArtisanalPage || isBazarChicPage;
 
   // Multi-sélection des parfums
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -585,14 +597,14 @@ const Produits = () => {
   return (
     <div className="space-y-6">
       {/* Barre d'En-tête Dynamique */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-4 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
         <div>
           <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A96E] font-medium">
             {currentCategoryInfo.tag}
           </span>
           <div className="flex items-center gap-2.5 mt-0.5">
-            <currentCategoryInfo.icon className="w-6 h-6 text-[#C9A96E] shrink-0" />
-            <h1 className="font-serif text-2xl sm:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight">
+            <currentCategoryInfo.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#C9A96E] shrink-0" />
+            <h1 className="font-serif text-xl sm:text-2xl md:text-3xl text-[#1A1816] dark:text-[#FAF7F2] font-medium tracking-tight">
               {currentCategoryInfo.title}
             </h1>
           </div>
@@ -601,7 +613,7 @@ const Produits = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
           {/* Bascule Tableau / Cartes */}
           <div className="inline-flex items-center bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#E5DDD0] dark:border-[#332E28] rounded-xl p-1 shadow-xs">
             <button
@@ -615,7 +627,7 @@ const Produits = () => {
               title="Affichage en Tableau"
             >
               <Table2 className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Tableau</span>
+              <span className="hidden sm:inline">Tableau</span>
             </button>
 
             <button
@@ -629,33 +641,39 @@ const Produits = () => {
               title="Affichage en Grille de Cartes"
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Cartes</span>
+              <span className="hidden sm:inline">Cartes</span>
             </button>
           </div>
 
           {/* Bouton Nouveau Produit Contextuel */}
           <Button
             onClick={onAdd}
-            className="rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs font-medium uppercase tracking-[0.15em] h-10 px-5 gap-2 shadow-sm cursor-pointer"
+            className="rounded-xl bg-[#1A1816] hover:bg-[#2B2724] dark:bg-[#C9A96E] dark:hover:bg-[#B8985F] text-[#FAF7F2] dark:text-[#121110] text-xs font-medium uppercase tracking-[0.15em] h-10 px-4 sm:px-5 gap-2 shadow-sm cursor-pointer flex-1 sm:flex-initial justify-center"
           >
             <Plus className="w-4 h-4" />
-            <span>{currentCategoryInfo.addButtonText}</span>
+            <span className="truncate">{currentCategoryInfo.addButtonText}</span>
           </Button>
         </div>
       </div>
 
       {/* Barre de Filtres & Recherche */}
-      <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-        {isCosmeticPage ? (
-          /* BARRE ÉPURÉE POUR LES PRODUITS COSMÉTIQUES : Recherche + Statut + Tri */
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
-            {/* Recherche de Soin */}
+      <div className="bg-[#FFFFFF]/90 dark:bg-[#141312]/90 backdrop-blur-md border border-[#EAE3D8] dark:border-[#24211E] p-4 sm:p-5 rounded-2xl space-y-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+        {isSpecializedUniverse ? (
+          /* BARRE ÉPURÉE ET RESPONSIVE POUR LES UNIVERS SPÉCIALISÉS (Cosmétiques, Artisanat, Bazar Chic) */
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
+            {/* Recherche spécifique */}
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher par nom de soin, marque, laboratoire…"
+                placeholder={
+                  isCosmeticPage
+                    ? "Rechercher par nom de soin, marque, laboratoire…"
+                    : isArtisanalPage
+                    ? "Rechercher une pièce artisanale, artisan, matière…"
+                    : "Rechercher un objet déco, accessoire, matière…"
+                }
                 className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] transition-colors text-[#1A1816] dark:text-[#F3EFEA] h-10 placeholder-[#9E958C]"
               />
               {search && (
@@ -668,14 +686,14 @@ const Produits = () => {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 shrink-0 text-xs">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0 text-xs">
               {/* Statut */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#8C827A] dark:text-[#9E958C] font-medium">Statut :</span>
+              <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+                <span className="text-[#8C827A] dark:text-[#9E958C] font-medium shrink-0">Statut :</span>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                  className="py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
+                  className="w-full sm:w-auto py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
                 >
                   <option value="Tous">Tous les Statuts</option>
                   <option value="in_stock">En stock uniquement</option>
@@ -684,18 +702,18 @@ const Produits = () => {
               </div>
 
               {/* Tri */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier par :
+              <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+                <span className="text-[#8C827A] dark:text-[#9E958C] flex items-center gap-1 font-medium shrink-0">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#C9A96E]" /> Trier :
                 </span>
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as SortOption)}
-                  className="py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
+                  className="w-full sm:w-auto py-2 px-3 text-xs bg-[#FAF7F2]/80 dark:bg-[#1C1A17]/80 border border-[#E5DDD0] dark:border-[#2D2A26] rounded-xl focus:outline-none focus:border-[#C9A96E] text-[#1A1816] dark:text-[#F3EFEA] font-medium cursor-pointer h-10"
                 >
                   <option value="name_asc">Nom (A → Z)</option>
                   <option value="name_desc">Nom (Z → A)</option>
-                  <option value="maison_asc">Marque (A → Z)</option>
+                  <option value="maison_asc">Marque / Origine (A → Z)</option>
                   <option value="price_asc">Prix Vente (Croissant)</option>
                   <option value="price_desc">Prix Vente (Décroissant)</option>
                   <option value="stock_desc">Stock (Plus élevé)</option>
@@ -707,7 +725,7 @@ const Produits = () => {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer pl-1"
+                  className="inline-flex items-center gap-1 text-xs text-[#C9A96E] hover:text-[#B8985F] font-semibold cursor-pointer py-2 px-1"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Réinitialiser</span>
@@ -719,7 +737,7 @@ const Produits = () => {
           /* BARRE COMPLETE POUR LES AUTRES UNIVERS (Parfums, etc.) */
           <>
             {/* Ligne 1: Recherche & Sélecteurs (Genre, Saison, Maison, Catégorie, Statut) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
               {/* Recherche */}
               <div className="relative sm:col-span-2 md:col-span-3 lg:col-span-2">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C827A]" />
@@ -859,8 +877,8 @@ const Produits = () => {
 
       {/* Barre d'Actions Groupées Flottante */}
       {selectedIds.length > 0 && (
-        <div className="sticky top-4 z-30 bg-[#1A1816] dark:bg-[#FAF7F2] text-[#FAF7F2] dark:text-[#1A1816] p-4 rounded-2xl shadow-2xl border border-[#C9A96E]/40 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
-          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+        <div className="sticky top-20 z-30 bg-[#1A1816] dark:bg-[#FAF7F2] text-[#FAF7F2] dark:text-[#1A1816] p-3 sm:p-4 rounded-2xl shadow-2xl border border-[#C9A96E]/40 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-top-3 duration-300">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#C9A96E] animate-pulse" />
               <span className="font-semibold text-xs sm:text-sm tracking-wide">
@@ -877,7 +895,7 @@ const Produits = () => {
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-start sm:justify-end">
             {/* Changer de Catégorie */}
             <Button
               type="button"
@@ -925,7 +943,8 @@ const Produits = () => {
               className="h-8 text-xs bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-[#FAF7F2] dark:text-[#1A1816] hover:bg-white/20 gap-1.5 cursor-pointer rounded-xl"
             >
               <Download className="w-3.5 h-3.5 text-[#C9A96E]" />
-              <span>Exporter CSV</span>
+              <span className="hidden sm:inline">Exporter CSV</span>
+              <span className="sm:hidden">CSV</span>
             </Button>
 
             {/* Supprimer */}
@@ -955,8 +974,10 @@ const Produits = () => {
         onToggleSelect={toggleSelect}
         onSelectAll={selectAll}
         isAllSelected={isAllSelected}
-        hideCategory={isCosmeticPage}
+        hideCategory={isSpecializedUniverse}
         isCosmetics={isCosmeticPage}
+        isArtisanal={isArtisanalPage}
+        isBazarChic={isBazarChicPage}
       />
 
       {/* Modale d'ajout / modification de produit contextuelle */}
