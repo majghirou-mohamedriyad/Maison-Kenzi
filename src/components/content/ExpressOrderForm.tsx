@@ -989,7 +989,11 @@ const ExpressOrderForm = ({
             <StripePaymentSection
               total={cumulativeTotalPrice}
               customerName={fullName.trim()}
-              customerEmail={phone.trim() ? undefined : "client@maisonkenzi.ma"}
+              customerEmail={phone.trim().includes("@") ? phone.trim() : undefined}
+              customerPhone={!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined}
+              customerCountry={country}
+              customerCity={city}
+              customerAddress={address}
               isFormValid={isFormValid}
               onValidateForm={validateFormBeforePayPal}
               onPaymentSuccess={handleStripePaymentSuccess}

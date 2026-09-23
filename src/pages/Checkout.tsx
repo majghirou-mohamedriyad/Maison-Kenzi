@@ -539,7 +539,7 @@ const Checkout = () => {
                             id="city"
                             type="text"
                             required
-                            placeholder="Ex: Casablanca, Paris, Bruxelles..."
+                            placeholder="Ex: Paris, Bruxelles..."
                             value={cityQuery}
                             onFocus={() => setShowCityDropdown(true)}
                             onChange={(e) => {
@@ -650,7 +650,11 @@ const Checkout = () => {
                     <StripePaymentSection
                       total={total}
                       customerName={fullName.trim()}
-                      customerEmail={phone.trim() ? undefined : "client@maisonkenzi.ma"}
+                      customerEmail={phone.trim().includes("@") ? phone.trim() : undefined}
+                      customerPhone={!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined}
+                      customerCountry={country}
+                      customerCity={city}
+                      customerAddress={address}
                       isFormValid={isFormValid}
                       onValidateForm={validateFormBeforePayment}
                       onPaymentSuccess={handleStripePaymentSuccess}

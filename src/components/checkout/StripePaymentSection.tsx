@@ -35,6 +35,10 @@ interface StripePaymentSectionProps {
   total: number;
   customerName?: string;
   customerEmail?: string;
+  customerPhone?: string;
+  customerCountry?: string;
+  customerCity?: string;
+  customerAddress?: string;
   isFormValid: boolean;
   onValidateForm: () => boolean;
   onPaymentSuccess: (details: {
@@ -44,10 +48,47 @@ interface StripePaymentSectionProps {
   }) => Promise<void>;
 }
 
+const COUNTRY_CODE_MAP: Record<string, string> = {
+  belgique: "BE",
+  belgium: "BE",
+  france: "FR",
+  maroc: "MA",
+  morocco: "MA",
+  suisse: "CH",
+  switzerland: "CH",
+  espagne: "ES",
+  spain: "ES",
+  italie: "IT",
+  italy: "IT",
+  allemagne: "DE",
+  germany: "DE",
+  "royaume-uni": "GB",
+  "united kingdom": "GB",
+  "pays-bas": "NL",
+  netherlands: "NL",
+  portugal: "PT",
+  luxembourg: "LU",
+  monaco: "MC",
+  autriche: "AT",
+  austria: "AT",
+  irlande: "IE",
+  ireland: "IE",
+  danemark: "DK",
+  denmark: "DK",
+  suede: "SE",
+  sweden: "SE",
+  norvege: "NO",
+  norway: "NO",
+};
+
 export const StripePaymentSection = ({
   total,
   customerName,
   customerEmail,
+  customerPhone,
+  customerCountry = "Belgique",
+  customerCity = "Bruxelles",
+  customerAddress,
   isFormValid,
   onValidateForm,
   onPaymentSuccess,
@@ -245,10 +286,33 @@ export const StripePaymentSection = ({
 
         elementsInstanceRef.current = elements;
 
+        const resolvedCountryCode = (customerCountry ? COUNTRY_CODE_MAP[customerCountry.toLowerCase().trim()] : null) || "BE";
+
         const paymentElement = elements.create("payment", {
           layout: {
             type: "tabs",
             defaultCollapsed: false,
+          },
+          defaultValues: {
+            billingDetails: {
+              name: customerName || undefined,
+              email: customerEmail || undefined,
+              phone: customerPhone || undefined,
+              address: {
+                country: resolvedCountryCode,
+                city: customerCity || "Bruxelles",
+                line1: customerAddress || undefined,
+              },
+            },
+          },
+          wallets: {
+            applePay: "auto",
+            googlePay: "auto",
+          },
+          fields: {
+            billingDetails: {
+              address: "never",
+            },
           },
         });
 

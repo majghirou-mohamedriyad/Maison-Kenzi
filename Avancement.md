@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Configuration de la Belgique (BE / +32) & Pré-remplissage Client dans Stripe Link ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Drapeau & Format Belge par Défaut dans Link** : Injection du code pays `BE` dans `defaultValues.billingDetails.address.country` de Stripe PaymentElement, affichant ainsi immédiatement le drapeau de la Belgique 🇧🇪 (+32) et le format de numéro belge.
+  - [x] **Transmission Automatique des Coordonnées Client** : Liaison en temps réel du Nom, de l'Email / Téléphone, de la Ville et de l'Adresse depuis les formulaires de commande vers les champs Stripe.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Initialisation par Défaut des Champs Pays et Ville sur « Belgique » et « Bruxelles » ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/services/restCountriesService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/restCountriesService.ts), [`src/i18n/translations.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/i18n/translations.ts)) :
   - [x] **Formulaire de Commande Directe (`ExpressOrderForm.tsx`)** : Initialisation automatique des champs `country` et `countryQuery` sur *"Belgique"*, et des champs `city` et `cityQuery` sur *"Bruxelles"*.
   - [x] **Page de Validation de Commande (`Checkout.tsx`)** : Initialisation par défaut sur *"Belgique"* et *"Bruxelles"* avec placement en tête des raccourcis rapides de pays.

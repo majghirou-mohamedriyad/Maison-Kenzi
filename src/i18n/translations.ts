@@ -224,7 +224,7 @@ export const translations = {
       country: "Pays (Belgique, Europe & International) *",
       countryPlaceholder: "Rechercher pays (Belgique, France, Maroc...)",
       city: "Ville de Destination *",
-      cityPlaceholder: "Ex: Bruxelles, Paris, Casablanca...",
+      cityPlaceholder: "Ex: Bruxelles, Paris ...",
       address: "Adresse de Livraison Précise *",
       addressPlaceholder: "Quartier, Rue, N° Immeuble / Résidence...",
       submitBtn: "Commander Directement",
