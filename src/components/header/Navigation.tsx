@@ -29,9 +29,11 @@ import {
   Grid,
   Palette,
   Landmark,
+  User,
 } from "lucide-react";
 import ShoppingBag from "./ShoppingBag";
 import { useCart } from "@/store/cart";
+import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -50,6 +52,7 @@ import {
 
 const Navigation = () => {
   const { t, language } = useLanguage();
+  const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -424,6 +427,32 @@ const Navigation = () => {
             <Search size={17} strokeWidth={1.8} />
           </button>
 
+          {/* Account Button (Mon Compte / Connexion) */}
+          {isAuthenticated ? (
+            <Link
+              to="/compte"
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center border transition-all duration-200 cursor-pointer active:scale-95 ${
+                location.pathname === "/compte" || location.pathname === "/mon-compte"
+                  ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                  : "border-border/70 dark:border-white/10 bg-black/5 dark:bg-white/5 text-foreground hover:bg-black/10 dark:hover:bg-white/10 hover:border-primary/40"
+              }`}
+              aria-label="Mon Compte"
+              title={`Mon Compte (${customer?.first_name || "Client"})`}
+            >
+              <User size={17} strokeWidth={1.8} />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openAuthModal("login")}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center border border-border/70 dark:border-white/10 bg-black/5 dark:bg-white/5 text-foreground hover:bg-black/10 dark:hover:bg-white/10 hover:border-primary/40 transition-all duration-200 cursor-pointer active:scale-95"
+              aria-label="Connexion / Inscription"
+              title="Connexion / Créer un compte"
+            >
+              <User size={17} strokeWidth={1.8} />
+            </button>
+          )}
+
           {/* Cart Button with Animated Badge */}
           <button
             onClick={() => setIsBagOpen(true)}
@@ -659,6 +688,28 @@ const Navigation = () => {
             )}
 
             <div className="pt-2 border-t border-border/60 flex flex-col gap-2">
+              <Link
+                to="/compte"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (!isAuthenticated) openAuthModal("login");
+                }}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-colors ${location.pathname === "/compte" || location.pathname === "/mon-compte"
+                  ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                  : "bg-card/60 border-border/60 text-foreground hover:bg-muted/50"
+                  }`}
+              >
+                <span className="flex items-center gap-2">
+                  <User className={`w-4 h-4 ${location.pathname === "/compte" || location.pathname === "/mon-compte" ? "text-background" : "text-primary"}`} />
+                  <span>
+                    {isAuthenticated
+                      ? `Mon Compte (${customer?.first_name || "Profil"})`
+                      : "Espace Client / Connexion"}
+                  </span>
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 opacity-70" />
+              </Link>
+
               <Link
                 to="/suivi-commande"
                 onClick={() => setIsMobileMenuOpen(false)}

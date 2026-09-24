@@ -139,17 +139,35 @@ CREATE TABLE IF NOT EXISTS maisonkenzi.orders (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Table: customers (Fichier Clients)
+-- Table: customers (Fichier Clients & Profils)
 CREATE TABLE IF NOT EXISTS maisonkenzi.customers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
+    first_name TEXT,
+    last_name TEXT,
     phone TEXT,
+    birth_date DATE,
     address TEXT,
+    city TEXT,
+    country TEXT DEFAULT 'Maroc',
     total_orders INTEGER NOT NULL DEFAULT 0,
     total_spent NUMERIC NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Assurer la présence des nouvelles colonnes pour les bases existantes
+ALTER TABLE maisonkenzi.customers ADD COLUMN IF NOT EXISTS first_name TEXT;
+ALTER TABLE maisonkenzi.customers ADD COLUMN IF NOT EXISTS last_name TEXT;
+ALTER TABLE maisonkenzi.customers ADD COLUMN IF NOT EXISTS birth_date DATE;
+ALTER TABLE maisonkenzi.customers ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE maisonkenzi.customers ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'Maroc';
+
+ALTER TABLE IF EXISTS public.customers ADD COLUMN IF NOT EXISTS first_name TEXT;
+ALTER TABLE IF EXISTS public.customers ADD COLUMN IF NOT EXISTS last_name TEXT;
+ALTER TABLE IF EXISTS public.customers ADD COLUMN IF NOT EXISTS birth_date DATE;
+ALTER TABLE IF EXISTS public.customers ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE IF EXISTS public.customers ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'Maroc';
 
 -- Table: expenses (Gestion des Frais)
 CREATE TABLE IF NOT EXISTS maisonkenzi.expenses (

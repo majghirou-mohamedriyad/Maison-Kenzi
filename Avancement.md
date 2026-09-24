@@ -2,10 +2,34 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-16
-- **Statut général** : Déploiement en Production Réussi sur VPS & Nom de Domaine Officiel https://maison-kenzi.com (HTTPS / SSL Let's Encrypt, PM2, Nginx)
+- **Dernière mise à jour** : 2026-09-24
+- **Statut général** : Système d'Authentification & Espace Client Implémenté — Page /compte Opérationnelle & Hydratation Instantanée
 
 ---
+
+- [x] Harmonisation des Placeholders Téléphone au Format Belge (+32) ([`src/components/auth/CustomerAuthModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/auth/CustomerAuthModal.tsx), [`src/pages/Auth.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Auth.tsx), [`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Placeholders Belges Harmonisés** : Remplacement de tous les exemples de numéros par le format belge officiel (`+32 470 12 34 56` / `Ex: +32 4...`) dans la modale d'authentification, les pages de connexion/inscription, la page `/compte` et les formulaires de commande.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Correction de l'Affichage & Séparation Stricte des Sessions Admin / Client ([`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx), [`src/contexts/CustomerAuthContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/CustomerAuthContext.tsx)) :
+  - [x] **Distinction Stricte Session Administrateur vs Session Client** : Empêche la session d'administration Supabase de se connecter automatiquement en tant que profil client en l'absence de données client spécifiques (Prénom, Date de Naissance, rôle client).
+  - [x] **Nettoyage & Sécurité au Démarrage** : Purge automatique des profils locaux incomplets pour garantir que la page `/compte` affiche les formulaires de connexion/création de compte lorsqu'aucun client n'est connecté.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Système de Création de Compte, Connexion & Profil Client avec Obligation de Connexion pour Commander ([`src/types/customer.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/customer.ts), [`src/contexts/CustomerAuthContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/CustomerAuthContext.tsx), [`src/components/auth/CustomerAuthModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/auth/CustomerAuthModal.tsx), [`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx), [`src/pages/Auth.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Auth.tsx), [`src/components/header/Navigation.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/Navigation.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
+  - [x] **Création de Compte & Formulaire Complet** : Saisie sécurisée de tous les détails obligatoires : **Nom**, **Prénom**, **Adresse Email**, **Numéro de Téléphone**, **Date de Naissance** et Mot de passe.
+  - [x] **Page Profil & Espace Client Dédiée (`/compte` / `/mon-compte`)** : Affichage élégant des coordonnées personnelles (Nom, Prénom, Email, Numéro, Date de Naissance, Adresse), mode d'édition interactif en direct avec sauvegarde Supabase / local, et historique complet des commandes avec statuts en direct.
+  - [x] **Obligation de Connexion pour Commander (Tunnels Checkout & Express)** : Blocage sécurisé et ouverture fluide de la modale d'authentification si le client tente de valider une commande sans compte, tout en conservant scrupuleusement les articles du panier et les sélections express.
+  - [x] **Pré-remplissage Automatique Intelligent** : Dès la connexion du client, les formulaires de commande (`Checkout.tsx` et `ExpressOrderForm.tsx`) s'auto-complètent instantanément avec son nom, son numéro de téléphone et son adresse enregistrée.
+  - [x] **Intégration Barre de Navigation & Menu Mobile** : Bouton d'accès rapide avec icône `User` permettant d'ouvrir la modale de connexion ou d'accéder au profil `/compte`.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, palette Luxury Nude, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Élaboration du Plan Complet & Cahier des Charges du Système de Promotions ([`promotions.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/promotions.md)) :
+  - [x] **Typologie Complète des Promotions** : Spécification des Codes Promo (% / Montant fixe en €), des Prix Promotionnels Directs avec prix barrés et des Offres par Paliers Multi-Packs.
+  - [x] **Règles de Sécurité & Anti-Fraude** : Définition des mécanismes de blocage (1 seule utilisation par numéro/email client, quotas maximaux globaux, dates d'expiration et seuils minimaux d'achat).
+  - [x] **Schéma de Données & Architecture** : Modèles TypeScript (`PromoCode`, `PromoValidationResult`) et schéma de base de données relationnelle Supabase SQL (`promotions`, `promotion_redemptions`).
+  - [x] **Feuille de Route en 5 Phases** : Découpage méthodique du développement (Moteur de calcul, Interface Admin `/admin/promotions`, Fiches produits avec prix barrés, Tunnels Panier/Express/Checkout, Validation Anti-Fraude).
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Configuration de la Belgique (BE / +32) & Pré-remplissage Client dans Stripe Link ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Drapeau & Format Belge par Défaut dans Link** : Injection du code pays `BE` dans `defaultValues.billingDetails.address.country` de Stripe PaymentElement, affichant ainsi immédiatement le drapeau de la Belgique 🇧🇪 (+32) et le format de numéro belge.

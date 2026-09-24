@@ -42,10 +42,12 @@ import { useRef, useEffect, useMemo } from "react";
 import { useCountries } from "@/hooks/useCountries";
 import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/destinations";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 
 const Checkout = () => {
   const { t, language } = useLanguage();
+  const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
@@ -64,6 +66,24 @@ const Checkout = () => {
   const [cityQuery, setCityQuery] = useState("Bruxelles");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const cityWrapperRef = useRef<HTMLDivElement>(null);
+
+  // Pré-remplissage automatique depuis le profil client connecté
+  useEffect(() => {
+    if (customer) {
+      const name = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+      if (name) setFullName(name);
+      if (customer.phone) setPhone(customer.phone);
+      if (customer.address) setAddress(customer.address);
+      if (customer.city) {
+        setCity(customer.city);
+        setCityQuery(customer.city);
+      }
+      if (customer.country) {
+        setCountry(customer.country);
+        setCountryQuery(customer.country);
+      }
+    }
+  }, [customer]);
 
   const [notes, setNotes] = useState("");
   const [completeOrder, setCompleteOrder] = useState<{
@@ -144,6 +164,13 @@ const Checkout = () => {
   };
 
   const validateFormBeforePayment = (): boolean => {
+    if (!isAuthenticated) {
+      toast.error("Compte client obligatoire pour commander", {
+        description: "Veuillez vous connecter ou créer un compte pour finaliser votre commande.",
+      });
+      openAuthModal("login");
+      return false;
+    }
     if (!fullName.trim() || !phone.trim() || !address.trim() || !city.trim()) {
       toast.error("Veuillez renseigner votre Nom, Téléphone, Ville et Adresse de livraison.");
       return false;
@@ -160,7 +187,7 @@ const Checkout = () => {
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `MK-${randomSuffix}`;
     const fullAddressText = `${address.trim()}, ${city}, ${country}`;
-    const cleanEmail = details.payerEmail || `client_${Date.now()}@maisonkenzi.ma`;
+    const cleanEmail = customer?.email || details.payerEmail || `client_${Date.now()}@maisonkenzi.ma`;
     const customerFinalName = fullName.trim() || details.payerName || "Client Maison Kenzi";
 
     const orderPayload = {
@@ -387,6 +414,62 @@ const Checkout = () => {
 
               {/* Left Column: Client Delivery Details Form */}
               <div className="lg:col-span-7 space-y-6">
+                {/* Bannière Compte Client Requis ou Profil Connecté */}
+                {!isAuthenticated ? (
+                  <div className="p-5 rounded-3xl bg-primary/10 border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in-0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-primary/20 text-primary flex items-center justify-center shrink-0 shadow-inner">
+                        <Lock className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-xs sm:text-sm font-semibold text-foreground">
+                          Compte Client Requis pour Commander
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                          Connectez-vous ou créez votre compte en quelques secondes pour valider votre commande.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                      <Button
+                        type="button"
+                        onClick={() => openAuthModal("login")}
+                        className="flex-1 sm:flex-initial h-9 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
+                      >
+                        Connexion
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => openAuthModal("register")}
+                        className="flex-1 sm:flex-initial h-9 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold border-border/80 hover:bg-muted/50 cursor-pointer"
+                      >
+                        Créer un compte
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xs animate-in fade-in-0">
+                    <div className="flex items-center gap-2.5">
+                      <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <div className="text-xs">
+                        <span className="font-semibold text-foreground">
+                          Connecté en tant que {customer?.first_name} {customer?.last_name}
+                        </span>
+                        <span className="text-muted-foreground ml-1.5 font-mono text-[11px]">
+                          ({customer?.email})
+                        </span>
+                      </div>
+                    </div>
+                    <Link
+                      to="/compte"
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      Modifier mes infos
+                    </Link>
+                  </div>
+                )}
+
                 <div className="bg-card/80 border border-border/80 rounded-3xl p-5 sm:p-8 space-y-6 shadow-sm">
                   <div className="border-b border-border/60 pb-4 flex flex-wrap items-center justify-between gap-2">
                     <div>
@@ -426,13 +509,13 @@ const Checkout = () => {
                         <Label htmlFor="phone" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                           <Phone className="w-3.5 h-3.5 text-primary" /> Numéro de Téléphone (avec indicatif pays) *
                         </Label>
-                        <span className="text-[10px] text-primary font-mono font-medium">Ex: 2126... / 336...</span>
+                        <span className="text-[10px] text-primary font-mono font-medium">Ex: +32 4... / +33 6...</span>
                       </div>
                       <Input
                         id="phone"
                         type="tel"
                         required
-                        placeholder="Ex: 32478123456"
+                        placeholder="Ex: +32 478 12 34 56"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
                         className="h-11 text-xs sm:text-sm rounded-xl bg-background border-border/80 focus:border-primary"

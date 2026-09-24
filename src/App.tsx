@@ -14,6 +14,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import { CartProvider } from "./store/cart";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CustomerAuthProvider } from "./contexts/CustomerAuthContext";
+import { CustomerAuthModal } from "./components/auth/CustomerAuthModal";
 import MaintenanceGate from "./components/MaintenanceGate";
 import ChatBotMount from "./components/ChatBotMount";
 import FloatingCartButton from "./components/cart/FloatingCartButton";
@@ -23,6 +25,8 @@ import Index from "./pages/Index";
 import Collection from "./pages/Category";
 import ParfumDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
+import Account from "./pages/Account";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import OrderTracking from "./pages/OrderTracking";
 import ServiceClient from "./pages/about/CustomerCare";
@@ -46,48 +50,55 @@ const App = () => (
       <BrowserRouter>
         <ThemeProvider>
           <LanguageProvider>
-            <CartProvider>
-              <Toaster />
-              <Sonner />
-              <ScrollToTop />
-              <MaintenanceGate>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/collection/:collection" element={<Collection />} />
-                <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/service-client" element={<ServiceClient />} />
-                <Route path="/about/service-client" element={<ServiceClient />} />
-                <Route path="/contact" element={<ServiceClient />} />
-                <Route path="/suivi-commande" element={<OrderTracking />} />
-                <Route path="/tracking" element={<OrderTracking />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="/conditions-generales" element={<TermsOfService />} />
+            <CustomerAuthProvider>
+              <CartProvider>
+                <Toaster />
+                <Sonner />
+                <ScrollToTop />
+                <CustomerAuthModal />
+                <MaintenanceGate>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/collection/:collection" element={<Collection />} />
+                    <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/compte" element={<Account />} />
+                    <Route path="/mon-compte" element={<Account />} />
+                    <Route path="/connexion" element={<Auth />} />
+                    <Route path="/inscription" element={<Auth />} />
+                    <Route path="/login" element={<Auth />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/service-client" element={<ServiceClient />} />
+                    <Route path="/about/service-client" element={<ServiceClient />} />
+                    <Route path="/contact" element={<ServiceClient />} />
+                    <Route path="/suivi-commande" element={<OrderTracking />} />
+                    <Route path="/tracking" element={<OrderTracking />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/conditions-generales" element={<TermsOfService />} />
 
-                {/* Admin */}
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route element={<AdminGuard />}>
-                  <Route element={<AdminLayout />}>
-                    <Route path="/admin" element={<Dashboard />} />
-                    <Route path="/admin/produits" element={<Produits />} />
-                    <Route path="/admin/categories" element={<CategoriesAdmin />} />
-                    <Route path="/admin/commandes" element={<Commandes />} />
-                    <Route path="/admin/parametres" element={<Parametres />} />
-                  </Route>
-                </Route>
+                    {/* Admin */}
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route element={<AdminGuard />}>
+                      <Route element={<AdminLayout />}>
+                        <Route path="/admin" element={<Dashboard />} />
+                        <Route path="/admin/produits" element={<Produits />} />
+                        <Route path="/admin/categories" element={<CategoriesAdmin />} />
+                        <Route path="/admin/commandes" element={<Commandes />} />
+                        <Route path="/admin/parametres" element={<Parametres />} />
+                      </Route>
+                    </Route>
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <FloatingCartButton />
-              <ChatBotMount />
-              <BackToTop />
-              <SpeedInsights />
-              </MaintenanceGate>
-
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <FloatingCartButton />
+                  <ChatBotMount />
+                  <BackToTop />
+                  <SpeedInsights />
+                </MaintenanceGate>
               </CartProvider>
+            </CustomerAuthProvider>
           </LanguageProvider>
         </ThemeProvider>
       </BrowserRouter>

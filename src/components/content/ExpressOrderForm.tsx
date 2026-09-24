@@ -37,6 +37,7 @@ import {
   X,
   PlusCircle,
   Globe,
+  Lock,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCountries } from "@/hooks/useCountries";
@@ -48,6 +49,7 @@ import { useParfums } from "@/hooks/useParfums";
 import { getPrimaryImage } from "@/lib/productImages";
 import type { Parfum } from "@/types/database";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { getProductGender, getProductName } from "@/lib/productLocalization";
 import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 
@@ -97,6 +99,7 @@ const ExpressOrderForm = ({
   outOfStock = false,
 }: ExpressOrderFormProps) => {
   const { t, language } = useLanguage();
+  const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
   const navigate = useNavigate();
   const { settings } = useAppSettings();
   const { data: parfums = [] } = useParfums();
@@ -119,6 +122,24 @@ const ExpressOrderForm = ({
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Pré-remplissage automatique depuis le profil client connecté
+  useEffect(() => {
+    if (customer) {
+      const name = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+      if (name) setFullName(name);
+      if (customer.phone) setPhone(customer.phone);
+      if (customer.address) setAddress(customer.address);
+      if (customer.city) {
+        setCity(customer.city);
+        setCityQuery(customer.city);
+      }
+      if (customer.country) {
+        setCountry(customer.country);
+        setCountryQuery(customer.country);
+      }
+    }
+  }, [customer]);
 
   // État d'ajout multi-parfums à la commande directe
   const [extraItems, setExtraItems] = useState<ExtraOrderItem[]>([]);
@@ -285,6 +306,13 @@ const ExpressOrderForm = ({
     );
 
     const validateFormBeforePayPal = (): boolean => {
+      if (!isAuthenticated) {
+        toast.error("Compte client obligatoire pour commander", {
+          description: "Veuillez vous connecter ou créer un compte pour valider votre commande.",
+        });
+        openAuthModal("login");
+        return false;
+      }
       if (outOfStock && extraItems.length === 0) {
         toast.error("Ce produit est actuellement en rupture de stock.");
         return false;
@@ -346,6 +374,7 @@ const ExpressOrderForm = ({
       const orderNumber = `MK-${randomSuffix}`;
       const customerFinalName = fullName.trim() || details.payerName || "Client Maison Kenzi";
       const cleanEmail =
+        customer?.email ||
         details.payerEmail ||
         `${customerFinalName.toLowerCase().replace(/[^a-z0-9]/g, "") || "client"}@client.maisonkenzi.ma`;
       const fullAddressText = `${address.trim()}, ${city.trim()}, ${country}`;
@@ -710,6 +739,41 @@ const ExpressOrderForm = ({
 
         {/* Form Fields */}
         <div className="space-y-2.5">
+          {/* Statut Compte Client */}
+          {!isAuthenticated ? (
+            <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="text-[11px] text-foreground font-medium">
+                  Compte requis pour commander
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => openAuthModal("login")}
+                className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider cursor-pointer"
+              >
+                Se connecter
+              </button>
+            </div>
+          ) : (
+            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 text-[11px]">
+              <div className="flex items-center gap-1.5 truncate">
+                <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span className="text-foreground truncate">
+                  Client : <strong className="font-semibold">{customer?.first_name} {customer?.last_name}</strong>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate("/compte")}
+                className="text-[10px] font-semibold text-primary hover:underline shrink-0 cursor-pointer"
+              >
+                Mon compte
+              </button>
+            </div>
+          )}
+
           {/* Field 1: Nom et Prénom */}
           <div className="space-y-1">
             <Label
@@ -744,14 +808,14 @@ const ExpressOrderForm = ({
                 <Phone className="w-3 h-3 text-primary shrink-0" />
                 <span>{t.expressOrder.phone}</span>
               </span>
-              <span className="text-[8.5px] text-primary font-mono font-medium">{t.expressOrder.phoneHelper}</span>
+              <span className="text-[8.5px] text-primary font-mono font-medium">Ex: +32 4... / +33 6...</span>
             </Label>
             <div className="relative">
               <Input
                 id="phone"
                 type="tel"
                 required
-                placeholder={t.expressOrder.phonePlaceholder}
+                placeholder="Ex: +32 478 12 34 56"
                 value={phone}
                 onFocus={() => setFocusedField("phone")}
                 onBlur={() => setFocusedField(null)}
