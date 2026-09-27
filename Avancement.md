@@ -2,10 +2,24 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-24
-- **Statut général** : Système d'Authentification & Espace Client Implémenté — Page /compte Opérationnelle & Hydratation Instantanée
+- **Dernière mise à jour** : 2026-09-27
+- **Statut général** : Configuration SMTP Resend & Supabase Auth Documentée — Prêt pour Activation sur VPS
 
 ---
+
+- [x] Correction de la Transmission des Coordonnées de Facturation Stripe Elements ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
+  - [x] **Résolution de l'IntegrationError Stripe** : Configuration de `fields.billingDetails.address: 'auto'` et injection dynamique de `payment_method_data.billing_details` (Nom, Email, Téléphone, Pays BE/FR/MA, Ville, Adresse) lors de l'appel `stripe.confirmPayment()`.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Guide & Configuration SMTP Resend pour l'Authentification Supabase ([`vps-guide.txt`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vps-guide.txt)) :
+  - [x] **Paramétrage GoTrue SMTP avec Resend** : Définition des variables d'environnement (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_ADMIN_EMAIL`, `SMTP_SENDER_NAME`, `SITE_URL`).
+  - [x] **Documentation du Déploiement VPS** : Ajout de la section dédiée dans le guide VPS avec les commandes de redémarrage des conteneurs Docker Auth.
+  - [x] **Conformité & Zéro Emoji** : Rédaction professionnelle en français.
+
+- [x] Verrouillage Strict & Total du Processus de Commande sans Compte Client ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Blocage Physique du Paiement en Ligne** : Si le client n'est pas connecté, le module de paiement Stripe est entièrement verrouillé et remplacé par un bouton haute couture **« Se connecter pour commander »** / **« Connexion requise pour valider votre commande »**.
+  - [x] **Validation de Formulaire Stricte (`isFormValid`)** : Intégration obligatoire du drapeau `isAuthenticated` dans toutes les conditions de validation de formulaire (`Checkout.tsx` & `ExpressOrderForm.tsx`).
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Harmonisation des Placeholders Téléphone au Format Belge (+32) ([`src/components/auth/CustomerAuthModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/auth/CustomerAuthModal.tsx), [`src/pages/Auth.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Auth.tsx), [`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Placeholders Belges Harmonisés** : Remplacement de tous les exemples de numéros par le format belge officiel (`+32 470 12 34 56` / `Ex: +32 4...`) dans la modale d'authentification, les pages de connexion/inscription, la page `/compte` et les formulaires de commande.

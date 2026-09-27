@@ -299,10 +299,11 @@ const ExpressOrderForm = ({
   };
 
     const isFormValid = Boolean(
+      isAuthenticated &&
       fullName.trim() !== "" &&
-        phone.trim() !== "" &&
-        city.trim() !== "" &&
-        address.trim() !== ""
+      phone.trim() !== "" &&
+      city.trim() !== "" &&
+      address.trim() !== ""
     );
 
     const validateFormBeforePayPal = (): boolean => {
@@ -1050,18 +1051,29 @@ const ExpressOrderForm = ({
 
           {/* SECTION DE PAIEMENT EN LIGNE SÉCURISÉ STRIPE (CARTE & APPLE PAY) */}
           <div className="pt-2">
-            <StripePaymentSection
-              total={cumulativeTotalPrice}
-              customerName={fullName.trim()}
-              customerEmail={phone.trim().includes("@") ? phone.trim() : undefined}
-              customerPhone={!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined}
-              customerCountry={country}
-              customerCity={city}
-              customerAddress={address}
-              isFormValid={isFormValid}
-              onValidateForm={validateFormBeforePayPal}
-              onPaymentSuccess={handleStripePaymentSuccess}
-            />
+            {isAuthenticated ? (
+              <StripePaymentSection
+                total={cumulativeTotalPrice}
+                customerName={fullName.trim()}
+                customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
+                customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
+                customerCountry={country}
+                customerCity={city}
+                customerAddress={address}
+                isFormValid={isFormValid}
+                onValidateForm={validateFormBeforePayPal}
+                onPaymentSuccess={handleStripePaymentSuccess}
+              />
+            ) : (
+              <Button
+                type="button"
+                onClick={() => openAuthModal("login")}
+                className="w-full h-11 rounded-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-[0.14em] text-[11px] font-bold shadow-md gap-2 cursor-pointer transition-all duration-300 select-none"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Se connecter pour commander</span>
+              </Button>
+            )}
           </div>
 
           <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">

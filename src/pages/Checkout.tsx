@@ -133,7 +133,13 @@ const Checkout = () => {
   const shippingCost = 0; // Livraison express offerte
   const total = subtotal + shippingCost;
 
-  const isFormValid = fullName.trim() !== "" && phone.trim() !== "" && address.trim() !== "" && city.trim() !== "";
+  const isFormValid = Boolean(
+    isAuthenticated &&
+    fullName.trim() !== "" &&
+    phone.trim() !== "" &&
+    address.trim() !== "" &&
+    city.trim() !== ""
+  );
 
   const waRaw = settings.whatsapp_phone || "212652535301";
   const waNumber = waRaw.replace(/[^0-9]/g, "");
@@ -730,18 +736,51 @@ const Checkout = () => {
 
                   {/* Section de Paiement Sécurisé en Ligne Stripe (Cartes & Apple Pay) */}
                   <div className="pt-2">
-                    <StripePaymentSection
-                      total={total}
-                      customerName={fullName.trim()}
-                      customerEmail={phone.trim().includes("@") ? phone.trim() : undefined}
-                      customerPhone={!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined}
-                      customerCountry={country}
-                      customerCity={city}
-                      customerAddress={address}
-                      isFormValid={isFormValid}
-                      onValidateForm={validateFormBeforePayment}
-                      onPaymentSuccess={handleStripePaymentSuccess}
-                    />
+                    {isAuthenticated ? (
+                      <StripePaymentSection
+                        total={total}
+                        customerName={fullName.trim()}
+                        customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
+                        customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
+                        customerCountry={country}
+                        customerCity={city}
+                        customerAddress={address}
+                        isFormValid={isFormValid}
+                        onValidateForm={validateFormBeforePayment}
+                        onPaymentSuccess={handleStripePaymentSuccess}
+                      />
+                    ) : (
+                      <div className="p-6 rounded-2xl bg-muted/40 border border-border/80 text-center space-y-4 shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+                          <Lock className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="font-serif text-base font-medium text-foreground">
+                            Connexion requise pour valider votre commande
+                          </h3>
+                          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                            Veuillez vous connecter à votre compte client ou en créer un en quelques secondes pour accéder au paiement sécurisé.
+                          </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
+                          <Button
+                            type="button"
+                            onClick={() => openAuthModal("login")}
+                            className="w-full sm:w-auto h-11 px-6 rounded-xl text-xs uppercase tracking-wider font-semibold bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
+                          >
+                            Se connecter
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => openAuthModal("register")}
+                            className="w-full sm:w-auto h-11 px-6 rounded-xl text-xs uppercase tracking-wider font-semibold border-border/80 hover:bg-muted/50 cursor-pointer"
+                          >
+                            Créer un compte
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

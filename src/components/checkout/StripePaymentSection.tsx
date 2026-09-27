@@ -311,7 +311,7 @@ export const StripePaymentSection = ({
           },
           fields: {
             billingDetails: {
-              address: "never",
+              address: "auto",
             },
           },
         });
@@ -362,10 +362,24 @@ export const StripePaymentSection = ({
     setProcessing(true);
 
     try {
+      const resolvedCountryCode = (customerCountry ? COUNTRY_CODE_MAP[customerCountry.toLowerCase().trim()] : null) || "BE";
+
       const result = await stripeInstanceRef.current.confirmPayment({
         elements: elementsInstanceRef.current,
         confirmParams: {
           return_url: window.location.href,
+          payment_method_data: {
+            billing_details: {
+              name: customerName || undefined,
+              email: customerEmail || undefined,
+              phone: customerPhone || undefined,
+              address: {
+                country: resolvedCountryCode,
+                city: customerCity || "Bruxelles",
+                line1: customerAddress || undefined,
+              },
+            },
+          },
         },
         redirect: "if_required",
       });
