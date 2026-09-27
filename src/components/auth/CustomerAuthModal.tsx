@@ -24,12 +24,21 @@ import {
   Phone,
   Calendar,
   Lock,
+  Eye,
+  EyeOff,
   ArrowRight,
   Loader2,
   Sparkles,
   ShieldCheck,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
+
+// Validation stricte du format d'adresse email
+const isValidEmail = (val: string): boolean => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(val.trim());
+};
 
 export const CustomerAuthModal: React.FC = () => {
   const { isAuthModalOpen, authModalTab, closeAuthModal, openAuthModal, signIn, signUp, isLoading } =
@@ -43,25 +52,55 @@ export const CustomerAuthModal: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   // État du formulaire Connexion
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) return;
-    await signIn(loginEmail, loginPassword);
+    if (!loginEmail.trim() || !loginPassword) return;
+
+    if (!isValidEmail(loginEmail)) {
+      toast.error("Format d'email invalide", {
+        description: "Veuillez saisir une adresse email valide (ex: contact@exemple.com).",
+      });
+      return;
+    }
+
+    await signIn(loginEmail.trim(), loginPassword);
   };
 
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName || !lastName || !email || !phone || !birthDate || !password) return;
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !phone.trim() || !birthDate || !password) {
+      toast.error("Champs obligatoires manquants", {
+        description: "Veuillez renseigner tous les champs du formulaire.",
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast.error("Format d'email invalide", {
+        description: "Veuillez saisir une adresse email valide (ex: contact@exemple.com).",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Mot de passe trop court", {
+        description: "Le mot de passe doit comporter au moins 6 caractères.",
+      });
+      return;
+    }
+
     await signUp({
-      firstName,
-      lastName,
-      email,
-      phone,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
       birthDate,
       password,
     });
@@ -126,6 +165,7 @@ export const CustomerAuthModal: React.FC = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="exemple@email.com"
+                    autoComplete="email"
                     className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                   />
                 </div>
@@ -138,13 +178,26 @@ export const CustomerAuthModal: React.FC = () => {
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    type="password"
+                    type={showLoginPassword ? "text" : "password"}
                     required
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
+                    autoComplete="current-password"
+                    className="pl-10 pr-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    title={showLoginPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  >
+                    {showLoginPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -221,6 +274,7 @@ export const CustomerAuthModal: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="contact@exemple.com"
+                    autoComplete="email"
                     className="pl-10 h-10 text-xs rounded-xl bg-background/50 border-border/80 focus:border-primary"
                   />
                 </div>
@@ -262,14 +316,27 @@ export const CustomerAuthModal: React.FC = () => {
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    type="password"
+                    type={showRegisterPassword ? "text" : "password"}
                     required
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Au moins 6 caractères"
-                    className="pl-10 h-10 text-xs rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                    autoComplete="new-password"
+                    className="pl-10 pr-10 h-10 text-xs rounded-xl bg-background/50 border-border/80 focus:border-primary"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    title={showRegisterPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  >
+                    {showRegisterPassword ? (
+                      <EyeOff className="w-3.5 h-3.5" />
+                    ) : (
+                      <Eye className="w-3.5 h-3.5" />
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -321,3 +388,4 @@ export const CustomerAuthModal: React.FC = () => {
     </Dialog>
   );
 };
+

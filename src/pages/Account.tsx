@@ -29,6 +29,8 @@ import {
   Calendar,
   MapPin,
   Lock,
+  Eye,
+  EyeOff,
   LogOut,
   ShoppingBag,
   Sparkles,
@@ -48,6 +50,12 @@ import { supabase } from "@/lib/supabase";
 import { formatMAD } from "@/lib/sizes";
 import { ORDER_STATUS_LABEL, type Order } from "@/types/database";
 import { toast } from "sonner";
+
+// Validation stricte du format d'adresse email
+const isValidEmail = (val: string): boolean => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(val.trim());
+};
 
 const Account: React.FC = () => {
   const {
@@ -71,10 +79,12 @@ const Account: React.FC = () => {
   const [regPhone, setRegPhone] = useState("");
   const [regBirthDate, setRegBirthDate] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   // Formulaire de connexion inline
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // État d'édition du profil connecté
   const [isEditing, setIsEditing] = useState(false);
@@ -136,21 +146,46 @@ const Account: React.FC = () => {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) return;
-    await signIn(loginEmail, loginPassword);
+    if (!loginEmail.trim() || !loginPassword) return;
+
+    if (!isValidEmail(loginEmail)) {
+      toast.error("Format d'email invalide", {
+        description: "Veuillez saisir une adresse email valide (ex: contact@exemple.com).",
+      });
+      return;
+    }
+
+    await signIn(loginEmail.trim(), loginPassword);
   };
 
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regFirstName || !regLastName || !regEmail || !regPhone || !regBirthDate || !regPassword) {
-      toast.error("Veuillez renseigner tous les champs obligatoires.");
+    if (!regFirstName.trim() || !regLastName.trim() || !regEmail.trim() || !regPhone.trim() || !regBirthDate || !regPassword) {
+      toast.error("Champs obligatoires manquants", {
+        description: "Veuillez renseigner tous les champs du formulaire.",
+      });
       return;
     }
+
+    if (!isValidEmail(regEmail)) {
+      toast.error("Format d'email invalide", {
+        description: "Veuillez saisir une adresse email valide (ex: contact@exemple.com).",
+      });
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      toast.error("Mot de passe trop court", {
+        description: "Le mot de passe doit comporter au moins 6 caractères.",
+      });
+      return;
+    }
+
     await signUp({
-      firstName: regFirstName,
-      lastName: regLastName,
-      email: regEmail,
-      phone: regPhone,
+      firstName: regFirstName.trim(),
+      lastName: regLastName.trim(),
+      email: regEmail.trim().toLowerCase(),
+      phone: regPhone.trim(),
       birthDate: regBirthDate,
       password: regPassword,
     });
@@ -280,13 +315,26 @@ const Account: React.FC = () => {
                       <div className="relative">
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                          type="password"
+                          type={showLoginPassword ? "text" : "password"}
                           required
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
+                          autoComplete="current-password"
+                          className="pl-10 pr-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginPassword(!showLoginPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                          title={showLoginPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                        >
+                          {showLoginPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
@@ -398,14 +446,27 @@ const Account: React.FC = () => {
                       <div className="relative">
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                          type="password"
+                          type={showRegisterPassword ? "text" : "password"}
                           required
                           minLength={6}
                           value={regPassword}
                           onChange={(e) => setRegPassword(e.target.value)}
                           placeholder="Au moins 6 caractères"
-                          className="pl-10 h-10 text-xs rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                          autoComplete="new-password"
+                          className="pl-10 pr-10 h-10 text-xs rounded-xl bg-background/50 border-border/80 focus:border-primary"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                          title={showRegisterPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                        >
+                          {showRegisterPassword ? (
+                            <EyeOff className="w-3.5 h-3.5" />
+                          ) : (
+                            <Eye className="w-3.5 h-3.5" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
