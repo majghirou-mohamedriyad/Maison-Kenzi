@@ -7,6 +7,11 @@
 
 ---
 
+- [x] Diagnostic & Résolution de l'Erreur 500 Inscription Client (« Error sending confirmation email ») ([`vps-guide.txt`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vps-guide.txt)) :
+  - [x] **Cause Identifiée** : Supabase Auth bloque lors de l'inscription car `ENABLE_EMAIL_AUTOCONFIRM=false` tente d'expédier un email de confirmation via le sandbox Resend (`onboarding@resend.dev`), lequel rejette les envois vers les emails clients tiers sans domaine vérifié.
+  - [x] **Solution Recommandée E-Commerce** : Activation de `ENABLE_EMAIL_AUTOCONFIRM=true` dans `/var/www/supabase-docker/supabase/docker/.env` pour permettre une création de compte instantanée et sans friction au moment du passage de commande.
+  - [x] **Conformité & Zéro Emoji** : Documentation en français.
+
 - [x] Validation Stricte des Emails & Icône Afficher/Masquer Mot de Passe sur tous les Formulaires ([`src/components/auth/CustomerAuthModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/auth/CustomerAuthModal.tsx), [`src/pages/Auth.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Auth.tsx), [`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx)) :
   - [x] **Validation Stricte du Format d'Email** : Intégration d'une fonction de vérification regex (`isValidEmail`) sur les champs email de connexion et d'inscription, bloquant les saisies invalides avec notifications toast claires en français.
   - [x] **Basculement Visibilité Mot de Passe (Show/Hide Password)** : Ajout d'un bouton interactif avec icônes vectorielles professionnelles `Eye` / `EyeOff` (`lucide-react`) sur chaque champ de mot de passe (connexion et inscription).
