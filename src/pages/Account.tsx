@@ -256,7 +256,7 @@ const Account: React.FC = () => {
               </div>
 
               {/* Formulaires Connexion / Inscription */}
-              <div className="p-6 sm:p-8">
+              <div className="p-4 sm:p-8">
                 {authTab === "login" ? (
                   /* Formulaire Connexion */
                   <form onSubmit={handleLoginSubmit} className="space-y-4">
@@ -270,7 +270,7 @@ const Account: React.FC = () => {
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
                           placeholder="votre.email@exemple.com"
-                          className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                          className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                         />
                       </div>
                     </div>
@@ -285,7 +285,7 @@ const Account: React.FC = () => {
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                          className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                         />
                       </div>
                     </div>
@@ -314,9 +314,9 @@ const Account: React.FC = () => {
                   </form>
                 ) : (
                   /* Formulaire Inscription */
-                  <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
+                  <form onSubmit={handleSignUpSubmit} className="space-y-3 sm:space-y-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                      <div className="space-y-1 min-w-0">
                         <Label className="text-xs font-medium text-foreground">Prénom *</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -331,7 +331,7 @@ const Account: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-w-0">
                         <Label className="text-xs font-medium text-foreground">Nom *</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -362,8 +362,8 @@ const Account: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                      <div className="space-y-1 min-w-0">
                         <Label className="text-xs font-medium text-foreground">Numéro de téléphone *</Label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -378,7 +378,7 @@ const Account: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-w-0">
                         <Label className="text-xs font-medium text-foreground">Date de naissance *</Label>
                         <div className="relative">
                           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -409,9 +409,9 @@ const Account: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground">
-                      <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>Données confidentielles et sécurisées selon les normes Maison Kenzi.</span>
+                    <div className="flex items-start sm:items-center gap-2 pt-1 text-[11px] text-muted-foreground">
+                      <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
+                      <span className="leading-tight">Données confidentielles et sécurisées selon les normes Maison Kenzi.</span>
                     </div>
 
                     <Button

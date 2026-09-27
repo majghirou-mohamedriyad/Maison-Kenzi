@@ -418,79 +418,113 @@ const Checkout = () => {
             /* Checkout Form & Order Summary Grid */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-              {/* Left Column: Client Delivery Details Form */}
+              {/* Left Column: Client Delivery Details Form OR Auth Invitation Card */}
               <div className="lg:col-span-7 space-y-6">
-                {/* Bannière Compte Client Requis ou Profil Connecté */}
                 {!isAuthenticated ? (
-                  <div className="p-5 rounded-3xl bg-primary/10 border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in-0">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-primary/20 text-primary flex items-center justify-center shrink-0 shadow-inner">
-                        <Lock className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-xs sm:text-sm font-semibold text-foreground">
-                          Compte Client Requis pour Commander
-                        </h3>
-                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                          Connectez-vous ou créez votre compte en quelques secondes pour valider votre commande.
-                        </p>
-                      </div>
+                  /* CARTE D'AUTHENTIFICATION LUXE QUAND NON CONNECTÉ */
+                  <div className="bg-card/90 border border-primary/40 rounded-3xl p-6 sm:p-10 space-y-6 shadow-xl text-center relative overflow-hidden animate-in fade-in-0 duration-300">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/15 blur-2xl rounded-full pointer-events-none" />
+
+                    <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary/30 text-primary flex items-center justify-center mx-auto shadow-inner">
+                      <Lock className="w-7 h-7" />
                     </div>
-                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+
+                    <div className="space-y-2 max-w-md mx-auto">
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-bold block">
+                        Espace Client Privé
+                      </span>
+                      <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-light">
+                        Connexion Requise pour Commander
+                      </h2>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light">
+                        Pour sécuriser votre commande, enregistrer vos adresses et bénéficier d'un suivi sur-mesure de vos extraits de parfum, veuillez vous identifier.
+                      </p>
+                    </div>
+
+                    {/* Actions de Connexion / Inscription */}
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-sm mx-auto">
                       <Button
                         type="button"
                         onClick={() => openAuthModal("login")}
-                        className="flex-1 sm:flex-initial h-9 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
+                        className="w-full sm:flex-1 h-12 rounded-2xl bg-foreground text-background hover:bg-foreground/90 uppercase tracking-wider text-xs font-semibold shadow-lg gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
-                        Connexion
+                        <span>Se connecter</span>
+                        <ArrowRight className="w-4 h-4" />
                       </Button>
+
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => openAuthModal("register")}
-                        className="flex-1 sm:flex-initial h-9 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold border-border/80 hover:bg-muted/50 cursor-pointer"
+                        className="w-full sm:flex-1 h-12 rounded-2xl border-border/80 hover:border-primary text-foreground uppercase tracking-wider text-xs font-semibold cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
                         Créer un compte
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="p-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xs animate-in fade-in-0">
-                    <div className="flex items-center gap-2.5">
-                      <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
-                      <div className="text-xs">
-                        <span className="font-semibold text-foreground">
-                          Connecté en tant que {customer?.first_name} {customer?.last_name}
-                        </span>
-                        <span className="text-muted-foreground ml-1.5 font-mono text-[11px]">
-                          ({customer?.email})
-                        </span>
+
+                    {/* Réassurance Haute Parfumerie */}
+                    <div className="pt-6 border-t border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                      <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/30">
+                        <Truck className="w-4 h-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-[11px] font-semibold text-foreground">Livraison Express</p>
+                          <p className="text-[10px] text-muted-foreground">Offerte dès 2 articles</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/30">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <div>
+                          <p className="text-[11px] font-semibold text-foreground">100% Sécurisé</p>
+                          <p className="text-[10px] text-muted-foreground">Stripe & Apple Pay</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/30">
+                        <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-[11px] font-semibold text-foreground">Suivi Privilège</p>
+                          <p className="text-[10px] text-muted-foreground">Notification en direct</p>
+                        </div>
                       </div>
                     </div>
-                    <Link
-                      to="/compte"
-                      className="text-xs font-semibold text-primary hover:underline"
-                    >
-                      Modifier mes infos
-                    </Link>
                   </div>
-                )}
+                ) : (
+                  /* FORMULAIRE DE LIVRAISON POUR CLIENT CONNECTÉ */
+                  <>
+                    <div className="p-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xs animate-in fade-in-0">
+                      <div className="flex items-center gap-2.5">
+                        <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
+                        <div className="text-xs">
+                          <span className="font-semibold text-foreground">
+                            Connecté en tant que {customer?.first_name} {customer?.last_name}
+                          </span>
+                          <span className="text-muted-foreground ml-1.5 font-mono text-[11px]">
+                            ({customer?.email})
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        to="/compte"
+                        className="text-xs font-semibold text-primary hover:underline"
+                      >
+                        Modifier mon profil
+                      </Link>
+                    </div>
 
-                <div className="bg-card/80 border border-border/80 rounded-3xl p-5 sm:p-8 space-y-6 shadow-sm">
-                  <div className="border-b border-border/60 pb-4 flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <h2 className="font-serif text-xl sm:text-2xl text-foreground font-bold">
-                        Détails de Livraison
-                      </h2>
-                      <p className="text-xs text-muted-foreground font-light mt-0.5">
-                        Renseignez vos coordonnées pour l'expédition de votre colis.
-                      </p>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">
-                      <CreditCard className="w-3 h-3" />
-                      <span>Paiement Sécurisé Carte & Apple Pay</span>
-                    </div>
-                  </div>
+                    <div className="bg-card/80 border border-border/80 rounded-3xl p-5 sm:p-8 space-y-6 shadow-sm">
+                      <div className="border-b border-border/60 pb-4 flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <h2 className="font-serif text-xl sm:text-2xl text-foreground font-bold">
+                            Détails de Livraison
+                          </h2>
+                          <p className="text-xs text-muted-foreground font-light mt-0.5">
+                            Coordonnées pré-remplies pour l'expédition de votre commande.
+                          </p>
+                        </div>
+                        <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">
+                          <CreditCard className="w-3 h-3" />
+                          <span>Paiement Sécurisé Carte & Apple Pay</span>
+                        </div>
+                      </div>
 
                   <div className="space-y-4">
                     {/* Full Name */}
@@ -736,54 +770,23 @@ const Checkout = () => {
 
                   {/* Section de Paiement Sécurisé en Ligne Stripe (Cartes & Apple Pay) */}
                   <div className="pt-2">
-                    {isAuthenticated ? (
-                      <StripePaymentSection
-                        total={total}
-                        customerName={fullName.trim()}
-                        customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
-                        customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
-                        customerCountry={country}
-                        customerCity={city}
-                        customerAddress={address}
-                        isFormValid={isFormValid}
-                        onValidateForm={validateFormBeforePayment}
-                        onPaymentSuccess={handleStripePaymentSuccess}
-                      />
-                    ) : (
-                      <div className="p-6 rounded-2xl bg-muted/40 border border-border/80 text-center space-y-4 shadow-sm">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
-                          <Lock className="w-6 h-6" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="font-serif text-base font-medium text-foreground">
-                            Connexion requise pour valider votre commande
-                          </h3>
-                          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                            Veuillez vous connecter à votre compte client ou en créer un en quelques secondes pour accéder au paiement sécurisé.
-                          </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
-                          <Button
-                            type="button"
-                            onClick={() => openAuthModal("login")}
-                            className="w-full sm:w-auto h-11 px-6 rounded-xl text-xs uppercase tracking-wider font-semibold bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
-                          >
-                            Se connecter
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => openAuthModal("register")}
-                            className="w-full sm:w-auto h-11 px-6 rounded-xl text-xs uppercase tracking-wider font-semibold border-border/80 hover:bg-muted/50 cursor-pointer"
-                          >
-                            Créer un compte
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                    <StripePaymentSection
+                      total={total}
+                      customerName={fullName.trim()}
+                      customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
+                      customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
+                      customerCountry={country}
+                      customerCity={city}
+                      customerAddress={address}
+                      isFormValid={isFormValid}
+                      onValidateForm={validateFormBeforePayment}
+                      onPaymentSuccess={handleStripePaymentSuccess}
+                    />
                   </div>
                 </div>
-              </div>
+              </>
+            )}
+          </div>
 
               {/* Right Column: Order Summary & Item Rows */}
               <div className="lg:col-span-5 space-y-4">

@@ -727,359 +727,364 @@ const ExpressOrderForm = ({
         </div>
 
         {/* Header Livraison */}
-        <div className="flex items-center justify-between border-b border-border/50 pb-2 flex-wrap gap-1">
-          <h3 className="font-serif text-xs sm:text-sm font-semibold text-foreground tracking-wide">
-            {t.expressOrder.deliveryInfo}
-          </h3>
+        {/* SECTION LIVRAISON & PAIEMENT */}
+        {isAuthenticated ? (
+          <>
+            {/* Header Livraison */}
+            <div className="flex items-center justify-between border-b border-border/50 pb-2 flex-wrap gap-1">
+              <h3 className="font-serif text-xs sm:text-sm font-semibold text-foreground tracking-wide">
+                {t.expressOrder.deliveryInfo}
+              </h3>
 
-          <span className="text-[8.5px] sm:text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
-            <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
-            <span>{t.common.securePayment}</span>
-          </span>
-        </div>
-
-        {/* Form Fields */}
-        <div className="space-y-2.5">
-          {/* Statut Compte Client */}
-          {!isAuthenticated ? (
-            <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span className="text-[11px] text-foreground font-medium">
-                  Compte requis pour commander
+              <div className="flex items-center gap-1.5">
+                <span className="text-[8.5px] sm:text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                  <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
+                  <span>{t.common.securePayment}</span>
                 </span>
+                <button
+                  type="button"
+                  onClick={() => navigate("/compte")}
+                  className="text-[10px] font-semibold text-primary hover:underline shrink-0 cursor-pointer ml-1"
+                >
+                  Mon profil
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => openAuthModal("login")}
-                className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider cursor-pointer"
-              >
-                Se connecter
-              </button>
             </div>
-          ) : (
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 text-[11px]">
-              <div className="flex items-center gap-1.5 truncate">
-                <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span className="text-foreground truncate">
-                  Client : <strong className="font-semibold">{customer?.first_name} {customer?.last_name}</strong>
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate("/compte")}
-                className="text-[10px] font-semibold text-primary hover:underline shrink-0 cursor-pointer"
-              >
-                Mon compte
-              </button>
-            </div>
-          )}
 
-          {/* Field 1: Nom et Prénom */}
-          <div className="space-y-1">
-            <Label
-              htmlFor="fullName"
-              className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
-            >
-              <User className="w-3 h-3 text-primary shrink-0" />
-              <span>{t.expressOrder.fullName}</span>
-            </Label>
-            <Input
-              id="fullName"
-              type="text"
-              required
-              placeholder={t.expressOrder.fullNamePlaceholder}
-              value={fullName}
-              onFocus={() => setFocusedField("fullName")}
-              onBlur={() => setFocusedField(null)}
-              onChange={(e) => setFullName(e.target.value)}
-              className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                focusedField === "fullName" ? "border-primary ring-2 ring-primary/20" : ""
-              }`}
-            />
-          </div>
-
-          {/* Field 2: Numéro de Téléphone avec Indicatif */}
-          <div className="space-y-1">
-            <Label
-              htmlFor="phone"
-              className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1">
-                <Phone className="w-3 h-3 text-primary shrink-0" />
-                <span>{t.expressOrder.phone}</span>
-              </span>
-              <span className="text-[8.5px] text-primary font-mono font-medium">Ex: +32 4... / +33 6...</span>
-            </Label>
-            <div className="relative">
-              <Input
-                id="phone"
-                type="tel"
-                required
-                placeholder="Ex: +32 478 12 34 56"
-                value={phone}
-                onFocus={() => setFocusedField("phone")}
-                onBlur={() => setFocusedField(null)}
-                onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
-                className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                  focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
-                }`}
-              />
-            </div>
-          </div>
-
-          {/* Field 3 & 4 (Côte à côte): Destination (Pays REST Countries) & Ville */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {/* Colonne 1: Destination / Pays (API REST Countries) */}
-            <div className="space-y-1 relative" ref={countryWrapperRef}>
-              <div className="flex items-center justify-between">
+            {/* Form Fields de Livraison Pré-remplis */}
+            <div className="space-y-2.5">
+              {/* Field 1: Nom et Prénom */}
+              <div className="space-y-1">
                 <Label
-                  htmlFor="country"
+                  htmlFor="fullName"
                   className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
                 >
-                  <Globe className="w-3 h-3 text-primary shrink-0" />
-                  <span>{t.expressOrder.country}</span>
+                  <User className="w-3 h-3 text-primary shrink-0" />
+                  <span>{t.expressOrder.fullName}</span>
                 </Label>
-              </div>
-
-              <div className="relative">
                 <Input
-                  id="country"
+                  id="fullName"
                   type="text"
                   required
-                  placeholder={t.expressOrder.countryPlaceholder}
-                  value={countryQuery}
-                  onFocus={() => {
-                    setFocusedField("country");
-                    setShowCountryDropdown(true);
-                  }}
+                  placeholder={t.expressOrder.fullNamePlaceholder}
+                  value={fullName}
+                  onFocus={() => setFocusedField("fullName")}
                   onBlur={() => setFocusedField(null)}
-                  onChange={(e) => {
-                    setCountryQuery(e.target.value);
-                    setCountry(e.target.value);
-                    setShowCountryDropdown(true);
-                  }}
+                  onChange={(e) => setFullName(e.target.value)}
                   className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                    focusedField === "country" ? "border-primary ring-2 ring-primary/20" : ""
+                    focusedField === "fullName" ? "border-primary ring-2 ring-primary/20" : ""
                   }`}
                 />
               </div>
 
-              {/* Dropdown Pays (REST Countries filtré Maroc & Europe) */}
-              {showCountryDropdown && filteredCountries.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
-                  {filteredCountries.map((c) => (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => {
-                        setCountry(c.name);
-                        setCountryQuery(c.name);
-                        setShowCountryDropdown(false);
-                        const cCities = getCities(c.name);
-                        if (cCities && cCities.length > 0) {
-                          setCity(cCities[0]);
-                          setCityQuery(cCities[0]);
-                        }
-                      }}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                        (country || "").toLowerCase() === c.name.toLowerCase()
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground hover:bg-secondary/80"
-                      }`}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <span className="font-medium">{c.name}</span>
-                      </span>
-                      <span className="text-[10px] text-muted-foreground uppercase font-mono">{c.code}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Raccourcis rapides pays */}
-              <div className="flex flex-wrap gap-1 pt-0.5">
-                {["Belgique", "France", "Maroc", "Suisse", "Espagne"].map((cName) => (
-                  <button
-                    key={cName}
-                    type="button"
-                    onClick={() => {
-                      setCountry(cName);
-                      setCountryQuery(cName);
-                      setShowCountryDropdown(false);
-                      const cCities = getCities(cName);
-                      if (cCities && cCities.length > 0) {
-                        setCity(cCities[0]);
-                        setCityQuery(cCities[0]);
-                      }
-                    }}
-                    className={`px-1.5 py-0.5 rounded text-[9px] font-medium transition-all cursor-pointer ${
-                      country === cName
-                        ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                        : "bg-secondary/60 text-muted-foreground hover:text-foreground border border-border/40"
-                    }`}
-                  >
-                    {cName}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Colonne 2: Ville de Livraison */}
-            <div className="space-y-1 relative" ref={cityWrapperRef}>
-              <div className="flex items-center justify-between">
+              {/* Field 2: Numéro de Téléphone avec Indicatif */}
+              <div className="space-y-1">
                 <Label
-                  htmlFor="city"
+                  htmlFor="phone"
+                  className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-primary shrink-0" />
+                    <span>{t.expressOrder.phone}</span>
+                  </span>
+                  <span className="text-[8.5px] text-primary font-mono font-medium">Ex: +32 4... / +33 6...</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="phone"
+                    type="tel"
+                    required
+                    placeholder="Ex: +32 478 12 34 56"
+                    value={phone}
+                    onFocus={() => setFocusedField("phone")}
+                    onBlur={() => setFocusedField(null)}
+                    onChange={(e) => setPhone(e.target.value.replace(/[^0-9+]/g, ""))}
+                    className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
+                      focusedField === "phone" ? "border-primary ring-2 ring-primary/20" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Field 3 & 4 (Côte à côte): Destination (Pays REST Countries) & Ville */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Colonne 1: Destination / Pays (API REST Countries) */}
+                <div className="space-y-1 relative" ref={countryWrapperRef}>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="country"
+                      className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
+                    >
+                      <Globe className="w-3 h-3 text-primary shrink-0" />
+                      <span>{t.expressOrder.country}</span>
+                    </Label>
+                  </div>
+
+                  <div className="relative">
+                    <Input
+                      id="country"
+                      type="text"
+                      required
+                      placeholder={t.expressOrder.countryPlaceholder}
+                      value={countryQuery}
+                      onFocus={() => {
+                        setFocusedField("country");
+                        setShowCountryDropdown(true);
+                      }}
+                      onBlur={() => setFocusedField(null)}
+                      onChange={(e) => {
+                        setCountryQuery(e.target.value);
+                        setCountry(e.target.value);
+                        setShowCountryDropdown(true);
+                      }}
+                      className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
+                        focusedField === "country" ? "border-primary ring-2 ring-primary/20" : ""
+                      }`}
+                    />
+                  </div>
+
+                  {/* Dropdown Pays (REST Countries filtré Maroc & Europe) */}
+                  {showCountryDropdown && filteredCountries.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
+                      {filteredCountries.map((c) => (
+                        <button
+                          key={c.code}
+                          type="button"
+                          onClick={() => {
+                            setCountry(c.name);
+                            setCountryQuery(c.name);
+                            setShowCountryDropdown(false);
+                            const cCities = getCities(c.name);
+                            if (cCities && cCities.length > 0) {
+                              setCity(cCities[0]);
+                              setCityQuery(cCities[0]);
+                            }
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
+                            (country || "").toLowerCase() === c.name.toLowerCase()
+                              ? "bg-primary/10 text-primary font-semibold"
+                              : "text-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <span className="font-medium">{c.name}</span>
+                          </span>
+                          <span className="text-[10px] text-muted-foreground uppercase font-mono">{c.code}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Raccourcis rapides pays */}
+                  <div className="flex flex-wrap gap-1 pt-0.5">
+                    {["Belgique", "France", "Maroc", "Suisse", "Espagne"].map((cName) => (
+                      <button
+                        key={cName}
+                        type="button"
+                        onClick={() => {
+                          setCountry(cName);
+                          setCountryQuery(cName);
+                          setShowCountryDropdown(false);
+                          const cCities = getCities(cName);
+                          if (cCities && cCities.length > 0) {
+                            setCity(cCities[0]);
+                            setCityQuery(cCities[0]);
+                          }
+                        }}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-medium transition-all cursor-pointer ${
+                          country === cName
+                            ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                            : "bg-secondary/60 text-muted-foreground hover:text-foreground border border-border/40"
+                        }`}
+                      >
+                        {cName}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Colonne 2: Ville de Livraison */}
+                <div className="space-y-1 relative" ref={cityWrapperRef}>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="city"
+                      className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
+                    >
+                      <Building2 className="w-3 h-3 text-primary shrink-0" />
+                      <span>{t.expressOrder.city}</span>
+                    </Label>
+                  </div>
+
+                  <div className="relative">
+                    <Input
+                      id="city"
+                      type="text"
+                      required
+                      placeholder={t.expressOrder.cityPlaceholder}
+                      value={cityQuery}
+                      onFocus={() => {
+                        setFocusedField("city");
+                        setShowCityDropdown(true);
+                      }}
+                      onBlur={() => setFocusedField(null)}
+                      onChange={(e) => {
+                        setCityQuery(e.target.value);
+                        setCity(e.target.value);
+                        setShowCityDropdown(true);
+                      }}
+                      className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
+                        focusedField === "city" ? "border-primary ring-2 ring-primary/20" : ""
+                      }`}
+                    />
+                  </div>
+
+                  {/* Dropdown Villes */}
+                  {showCityDropdown && suggestedCities.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
+                      {suggestedCities.map((cityName) => (
+                        <button
+                          key={cityName}
+                          type="button"
+                          onClick={() => {
+                            setCity(cityName);
+                            setCityQuery(cityName);
+                            setShowCityDropdown(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
+                            (city || "").toLowerCase() === cityName.toLowerCase()
+                              ? "bg-primary/10 text-primary font-semibold"
+                              : "text-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-primary/70 shrink-0" />
+                            <span>{cityName}</span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Raccourcis villes pour le pays sélectionné */}
+                  <div className="flex flex-wrap gap-1 pt-0.5">
+                    {topCitiesForCountry.slice(0, 4).map((cityName) => (
+                      <button
+                        key={cityName}
+                        type="button"
+                        onClick={() => {
+                          setCity(cityName);
+                          setCityQuery(cityName);
+                          setShowCityDropdown(false);
+                        }}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-medium transition-all cursor-pointer ${
+                          (city || "").toLowerCase() === cityName.toLowerCase()
+                            ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                            : "bg-secondary/50 text-muted-foreground hover:text-foreground border border-border/40"
+                        }`}
+                      >
+                        {cityName}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Field 4: Adresse de Livraison Précise */}
+              <div className="space-y-1">
+                <Label
+                  htmlFor="address"
                   className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
                 >
-                  <Building2 className="w-3 h-3 text-primary shrink-0" />
-                  <span>{t.expressOrder.city}</span>
+                  <MapPin className="w-3 h-3 text-primary shrink-0" />
+                  <span>{t.expressOrder.address}</span>
                 </Label>
-              </div>
-
-              <div className="relative">
                 <Input
-                  id="city"
+                  id="address"
                   type="text"
                   required
-                  placeholder={t.expressOrder.cityPlaceholder}
-                  value={cityQuery}
-                  onFocus={() => {
-                    setFocusedField("city");
-                    setShowCityDropdown(true);
-                  }}
+                  placeholder={t.expressOrder.addressPlaceholder}
+                  value={address}
+                  onFocus={() => setFocusedField("address")}
                   onBlur={() => setFocusedField(null)}
-                  onChange={(e) => {
-                    setCityQuery(e.target.value);
-                    setCity(e.target.value);
-                    setShowCityDropdown(true);
-                  }}
+                  onChange={(e) => setAddress(e.target.value)}
                   className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                    focusedField === "city" ? "border-primary ring-2 ring-primary/20" : ""
+                    focusedField === "address" ? "border-primary ring-2 ring-primary/20" : ""
                   }`}
                 />
               </div>
+            </div>
 
-              {/* Dropdown Villes */}
-              {showCityDropdown && suggestedCities.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
-                  {suggestedCities.map((cityName) => (
-                    <button
-                      key={cityName}
-                      type="button"
-                      onClick={() => {
-                        setCity(cityName);
-                        setCityQuery(cityName);
-                        setShowCityDropdown(false);
-                      }}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                        (city || "").toLowerCase() === cityName.toLowerCase()
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground hover:bg-secondary/80"
-                      }`}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <MapPin className="w-3 h-3 text-primary/70 shrink-0" />
-                        <span>{cityName}</span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
+            {/* ACTION BUTTONS POUR CLIENT CONNECTÉ */}
+            <div className="space-y-2 pt-1">
+              {onAddToCart && (
+                <Button
+                  type="button"
+                  onClick={onAddToCart}
+                  className="w-full h-10 sm:h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:shadow-lg hover:shadow-primary/25 border border-primary/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer select-none"
+                >
+                  <ShoppingBag className="w-4 h-4 stroke-[2]" />
+                  <span>{t.product.addToBag}</span>
+                </Button>
               )}
 
-              {/* Raccourcis villes pour le pays sélectionné */}
-              <div className="flex flex-wrap gap-1 pt-0.5">
-                {topCitiesForCountry.slice(0, 4).map((cityName) => (
-                  <button
-                    key={cityName}
-                    type="button"
-                    onClick={() => {
-                      setCity(cityName);
-                      setCityQuery(cityName);
-                      setShowCityDropdown(false);
-                    }}
-                    className={`px-1.5 py-0.5 rounded text-[9px] font-medium transition-all cursor-pointer ${
-                      (city || "").toLowerCase() === cityName.toLowerCase()
-                        ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                        : "bg-secondary/50 text-muted-foreground hover:text-foreground border border-border/40"
-                    }`}
-                  >
-                    {cityName}
-                  </button>
-                ))}
+              {/* Module de Paiement Stripe Sécurisé */}
+              <div className="pt-2">
+                <StripePaymentSection
+                  total={cumulativeTotalPrice}
+                  customerName={fullName.trim()}
+                  customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
+                  customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
+                  customerCountry={country}
+                  customerCity={city}
+                  customerAddress={address}
+                  isFormValid={isFormValid}
+                  onValidateForm={validateFormBeforePayPal}
+                  onPaymentSuccess={handleStripePaymentSuccess}
+                />
               </div>
             </div>
-          </div>
-
-          {/* Field 4: Adresse de Livraison Précise */}
-          <div className="space-y-1">
-            <Label
-              htmlFor="address"
-              className="text-[10px] sm:text-[11px] font-medium text-foreground/90 flex items-center gap-1"
-            >
-              <MapPin className="w-3 h-3 text-primary shrink-0" />
-              <span>{t.expressOrder.address}</span>
-            </Label>
-            <Input
-              id="address"
-              type="text"
-              required
-              placeholder={t.expressOrder.addressPlaceholder}
-              value={address}
-              onFocus={() => setFocusedField("address")}
-              onBlur={() => setFocusedField(null)}
-              onChange={(e) => setAddress(e.target.value)}
-              className={`h-9.5 text-[13px] sm:text-xs rounded-xl bg-background/80 border-border/80 transition-all ${
-                focusedField === "address" ? "border-primary ring-2 ring-primary/20" : ""
-              }`}
-            />
-          </div>
-        </div>
-
-        {/* ACTION BUTTONS (Ajouter au Panier + Commander Directement) */}
-        <div className="space-y-2 pt-1">
-          {onAddToCart && (
-            <Button
-              type="button"
-              onClick={onAddToCart}
-              className="w-full h-10 sm:h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:shadow-lg hover:shadow-primary/25 border border-primary/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer select-none"
-            >
-              <ShoppingBag className="w-4 h-4 stroke-[2]" />
-              <span>{t.product.addToBag}</span>
-            </Button>
-          )}
-
-          {/* SECTION DE PAIEMENT EN LIGNE SÉCURISÉ STRIPE (CARTE & APPLE PAY) */}
-          <div className="pt-2">
-            {isAuthenticated ? (
-              <StripePaymentSection
-                total={cumulativeTotalPrice}
-                customerName={fullName.trim()}
-                customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
-                customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}
-                customerCountry={country}
-                customerCity={city}
-                customerAddress={address}
-                isFormValid={isFormValid}
-                onValidateForm={validateFormBeforePayPal}
-                onPaymentSuccess={handleStripePaymentSuccess}
-              />
-            ) : (
+          </>
+        ) : (
+          /* VUE ÉPURÉE HAUTE COUTURE POUR VISITEUR NON CONNECTÉ */
+          <div className="space-y-3 pt-1">
+            {onAddToCart && (
               <Button
                 type="button"
-                onClick={() => openAuthModal("login")}
-                className="w-full h-11 rounded-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-[0.14em] text-[11px] font-bold shadow-md gap-2 cursor-pointer transition-all duration-300 select-none"
+                onClick={onAddToCart}
+                className="w-full h-11 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[11px] font-bold shadow-md hover:shadow-lg hover:shadow-primary/25 border border-primary/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 gap-2 cursor-pointer select-none"
               >
-                <Lock className="w-4 h-4" />
-                <span>Se connecter pour commander</span>
+                <ShoppingBag className="w-4 h-4 stroke-[2]" />
+                <span>{t.product.addToBag}</span>
               </Button>
             )}
-          </div>
 
-          <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
-            <ShieldCheck className="w-3 h-3 text-primary shrink-0" />
-            <span>{t.common.securePayment} • {t.common.noReturnPolicy}</span>
+            <Button
+              type="button"
+              onClick={() => openAuthModal("login")}
+              className="w-full h-11 rounded-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-[0.14em] text-[11px] font-bold shadow-md gap-2 cursor-pointer transition-all duration-300 select-none hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Se connecter pour commander</span>
+            </Button>
+
+            <div className="text-center pt-1">
+              <p className="text-[11px] text-muted-foreground">
+                Pas encore de compte ?{" "}
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("register")}
+                  className="text-primary font-semibold hover:underline cursor-pointer"
+                >
+                  Créer un compte en 30 secondes
+                </button>
+              </p>
+            </div>
           </div>
+        )}
+
+        <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
+          <ShieldCheck className="w-3 h-3 text-primary shrink-0" />
+          <span>{t.common.securePayment} • {t.common.noReturnPolicy}</span>
         </div>
       </form>
 

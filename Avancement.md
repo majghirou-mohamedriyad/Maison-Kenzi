@@ -7,6 +7,18 @@
 
 ---
 
+- [x] Masquage des Champs de Livraison & Affichage Épuré pour Visiteurs Non Connectés ([`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx)) :
+  - [x] **Expérience Produit Épurée (`ExpressOrderForm.tsx`)** : Les visiteurs non connectés ne voient plus le long formulaire de livraison mais une interface directe avec le bouton de sélection, **« Ajouter au Panier »** et **« Se connecter pour commander »** (avec lien rapide de création de compte).
+  - [x] **Tunnel de Commande Haute Couture (`Checkout.tsx`)** : Remplacement des champs de livraison par une carte d'invitation à l'authentification prestigieuse avec boutons de connexion/inscription rapides et badges de réassurance.
+  - [x] **Révélation Automatique & Pré-remplissage dès la Connexion** : Dès que le client s'authentifie, le formulaire de livraison apparaît instantanément complété avec ses coordonnées enregistrées et le module de paiement Stripe est immédiatement prêt.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
+- [x] Optimisation Responsive Complète des Formulaires Connexion & Inscription ([`src/components/auth/CustomerAuthModal.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/auth/CustomerAuthModal.tsx), [`src/pages/Auth.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Auth.tsx), [`src/pages/Account.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Account.tsx)) :
+  - [x] **Adaptabilité Mobile & Écrans Étroits** : Passage en grille 1 colonne fluide sur smartphones (`grid-cols-1 sm:grid-cols-2`) pour les champs Prénom/Nom et Téléphone/Date de naissance, évitant tout écrasement ou débordement.
+  - [x] **Défilement & Gestion de la Hauteur Maximale** : Ajout d'un conteneur avec défilement vertical interne (`max-h-[92vh] overflow-y-auto`) pour garantir l'accessibilité de tous les champs et boutons d'action lors de l'ouverture du clavier tactile.
+  - [x] **Typographie & Marges Optimisées** : Ajustement des paddings (`p-4 sm:p-6/p-8`), des tailles d'icônes et des textes d'aide pour une ergonomie tactile irréprochable.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
+
 - [x] Correction de la Transmission des Coordonnées de Facturation Stripe Elements ([`src/components/checkout/StripePaymentSection.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/checkout/StripePaymentSection.tsx)) :
   - [x] **Résolution de l'IntegrationError Stripe** : Configuration de `fields.billingDetails.address: 'auto'` et injection dynamique de `payment_method_data.billing_details` (Nom, Email, Téléphone, Pays BE/FR/MA, Ville, Adresse) lors de l'appel `stripe.confirmPayment()`.
   - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.

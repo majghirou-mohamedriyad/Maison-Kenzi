@@ -69,27 +69,27 @@ export const CustomerAuthModal: React.FC = () => {
 
   return (
     <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-border/80 dark:border-white/10 shadow-2xl rounded-3xl">
-        {/* En-tête de Prestige */}
-        <div className="bg-gradient-to-br from-primary/15 via-background to-background p-6 border-b border-border/50 text-center relative">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-3 shadow-inner">
-            <Sparkles className="w-6 h-6" />
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[480px] p-0 overflow-hidden bg-background/95 dark:bg-[#12141a]/95 backdrop-blur-2xl border-border/80 dark:border-white/10 shadow-2xl rounded-3xl max-h-[92vh] flex flex-col my-auto">
+        {/* En-tête de Prestige Fixe */}
+        <div className="bg-gradient-to-br from-primary/15 via-background to-background p-4 sm:p-6 border-b border-border/50 text-center relative shrink-0">
+          <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-2.5 shadow-inner">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <DialogTitle className="font-serif text-2xl font-light tracking-wide text-foreground">
+          <DialogTitle className="font-serif text-xl sm:text-2xl font-light tracking-wide text-foreground">
             {authModalTab === "login" ? "Espace Client Privé" : "Créer votre Compte"}
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
+          <DialogDescription className="text-[11px] sm:text-xs text-muted-foreground mt-1 max-w-xs mx-auto leading-relaxed">
             {authModalTab === "login"
               ? "Accédez à votre compte pour finaliser votre commande et suivre vos créations."
               : "Rejoignez Maison Kenzi pour commander nos extraits de prestige et bénéficier d'un suivi sur-mesure."}
           </DialogDescription>
 
           {/* Sélecteur d'Onglets Connexion / Inscription */}
-          <div className="flex bg-muted/60 dark:bg-white/5 p-1 rounded-2xl mt-5 border border-border/60">
+          <div className="flex bg-muted/60 dark:bg-white/5 p-1 rounded-2xl mt-4 border border-border/60 max-w-sm mx-auto">
             <button
               type="button"
               onClick={() => openAuthModal("login")}
-              className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                 authModalTab === "login"
                   ? "bg-background text-foreground shadow-sm dark:bg-card"
                   : "text-muted-foreground hover:text-foreground"
@@ -100,7 +100,7 @@ export const CustomerAuthModal: React.FC = () => {
             <button
               type="button"
               onClick={() => openAuthModal("register")}
-              className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                 authModalTab === "register"
                   ? "bg-background text-foreground shadow-sm dark:bg-card"
                   : "text-muted-foreground hover:text-foreground"
@@ -111,8 +111,8 @@ export const CustomerAuthModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Corps des formulaires */}
-        <div className="p-6">
+        {/* Corps des formulaires avec défilement fluide sur petits écrans */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {authModalTab === "login" ? (
             /* Formulaire de Connexion */
             <form onSubmit={handleLoginSubmit} className="space-y-4">
@@ -126,7 +126,7 @@ export const CustomerAuthModal: React.FC = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="exemple@email.com"
-                    className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                    className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -143,7 +143,7 @@ export const CustomerAuthModal: React.FC = () => {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                    className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -151,7 +151,7 @@ export const CustomerAuthModal: React.FC = () => {
               <Button
                 type="submit"
                 disabled={isLoading || !loginEmail || !loginPassword}
-                className="w-full h-11 rounded-xl font-medium tracking-wide uppercase text-xs shadow-md bg-foreground text-background hover:bg-foreground/90 transition-all flex items-center justify-center gap-2 mt-2"
+                className="w-full h-11 rounded-xl font-medium tracking-wide uppercase text-xs shadow-md bg-foreground text-background hover:bg-foreground/90 transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -178,9 +178,9 @@ export const CustomerAuthModal: React.FC = () => {
             </form>
           ) : (
             /* Formulaire d'Inscription */
-            <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
+            <form onSubmit={handleSignUpSubmit} className="space-y-3 sm:space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="space-y-1 min-w-0">
                   <Label className="text-xs font-medium text-foreground">Prénom *</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -195,7 +195,7 @@ export const CustomerAuthModal: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   <Label className="text-xs font-medium text-foreground">Nom *</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -226,8 +226,8 @@ export const CustomerAuthModal: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="space-y-1 min-w-0">
                   <Label className="text-xs font-medium text-foreground">Numéro de téléphone *</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -242,7 +242,7 @@ export const CustomerAuthModal: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   <Label className="text-xs font-medium text-foreground">Date de naissance *</Label>
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -273,9 +273,9 @@ export const CustomerAuthModal: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground">
-                <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Données protégées et confidentielles selon la charte Maison Kenzi.</span>
+              <div className="flex items-start sm:items-center gap-2 pt-1 text-[11px] text-muted-foreground">
+                <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
+                <span className="leading-tight">Données protégées et confidentielles selon la charte Maison Kenzi.</span>
               </div>
 
               <Button
@@ -290,7 +290,7 @@ export const CustomerAuthModal: React.FC = () => {
                   !password ||
                   password.length < 6
                 }
-                className="w-full h-11 rounded-xl font-medium tracking-wide uppercase text-xs shadow-md bg-foreground text-background hover:bg-foreground/90 transition-all flex items-center justify-center gap-2 mt-2"
+                className="w-full h-11 rounded-xl font-medium tracking-wide uppercase text-xs shadow-md bg-foreground text-background hover:bg-foreground/90 transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -302,7 +302,7 @@ export const CustomerAuthModal: React.FC = () => {
                 )}
               </Button>
 
-              <div className="text-center pt-1">
+              <div className="text-center pt-1 pb-1">
                 <p className="text-xs text-muted-foreground">
                   Vous avez déjà un compte ?{" "}
                   <button

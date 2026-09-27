@@ -82,12 +82,12 @@ const Auth: React.FC = () => {
 
       <Header />
 
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <main className="flex-1 flex items-center justify-center px-3 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div className="w-full max-w-lg bg-card border border-border/80 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in-0 duration-300">
           {/* En-tête */}
-          <div className="bg-gradient-to-br from-primary/15 via-background to-background p-6 sm:p-8 border-b border-border/50 text-center">
-            <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-3 shadow-inner">
-              <Sparkles className="w-6 h-6" />
+          <div className="bg-gradient-to-br from-primary/15 via-background to-background p-5 sm:p-8 border-b border-border/50 text-center">
+            <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-2.5 shadow-inner">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <h1 className="font-serif text-2xl sm:text-3xl font-light text-foreground">
               {tab === "login" ? "Espace Client Privé" : "Rejoindre Maison Kenzi"}
@@ -99,11 +99,11 @@ const Auth: React.FC = () => {
             </p>
 
             {/* Onglets */}
-            <div className="flex bg-muted/60 dark:bg-white/5 p-1 rounded-2xl mt-6 border border-border/60 max-w-xs mx-auto">
+            <div className="flex bg-muted/60 dark:bg-white/5 p-1 rounded-2xl mt-5 border border-border/60 max-w-xs mx-auto">
               <button
                 type="button"
                 onClick={() => setTab("login")}
-                className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 py-1.5 sm:py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                   tab === "login"
                     ? "bg-background text-foreground shadow-sm dark:bg-card"
                     : "text-muted-foreground hover:text-foreground"
@@ -114,7 +114,7 @@ const Auth: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setTab("register")}
-                className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 py-1.5 sm:py-2 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                   tab === "register"
                     ? "bg-background text-foreground shadow-sm dark:bg-card"
                     : "text-muted-foreground hover:text-foreground"
@@ -126,7 +126,7 @@ const Auth: React.FC = () => {
           </div>
 
           {/* Formulaires */}
-          <div className="p-6 sm:p-8">
+          <div className="p-4 sm:p-8">
             {tab === "login" ? (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div className="space-y-1.5">
@@ -139,7 +139,7 @@ const Auth: React.FC = () => {
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="votre.email@exemple.com"
-                      className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                      className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                     />
                   </div>
                 </div>
@@ -154,7 +154,7 @@ const Auth: React.FC = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary"
+                      className="pl-10 h-11 rounded-xl bg-background/50 border-border/80 focus:border-primary text-xs sm:text-sm"
                     />
                   </div>
                 </div>
@@ -188,9 +188,9 @@ const Auth: React.FC = () => {
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
+              <form onSubmit={handleSignUpSubmit} className="space-y-3 sm:space-y-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="space-y-1 min-w-0">
                     <Label className="text-xs font-medium text-foreground">Prénom *</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -205,7 +205,7 @@ const Auth: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label className="text-xs font-medium text-foreground">Nom *</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -236,8 +236,8 @@ const Auth: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="space-y-1 min-w-0">
                     <Label className="text-xs font-medium text-foreground">Numéro de téléphone *</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -252,7 +252,7 @@ const Auth: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label className="text-xs font-medium text-foreground">Date de naissance *</Label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -283,9 +283,9 @@ const Auth: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Données confidentielles et sécurisées selon les standards de Maison Kenzi.</span>
+                <div className="flex items-start sm:items-center gap-2 pt-1 text-[11px] text-muted-foreground">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
+                  <span className="leading-tight">Données confidentielles et sécurisées selon les standards de Maison Kenzi.</span>
                 </div>
 
                 <Button
