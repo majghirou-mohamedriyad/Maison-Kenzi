@@ -2,10 +2,17 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-27
-- **Statut général** : Configuration SMTP Resend & Supabase Auth Documentée — Prêt pour Activation sur VPS
+- **Dernière mise à jour** : 2026-09-29
+- **Statut général** : Système de Promotions — Phases 1 & 2 Développées avec Succès (Moteur de Calcul & Interface Admin)
 
 ---
+
+- [x] Phase 1 & Phase 2 du Système de Promotions & Codes Coupons ([`src/types/promotions.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/promotions.ts), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx), [`supabase/migrations/20260929153000_create_promotions_tables.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20260929153000_create_promotions_tables.sql)) :
+  - [x] **Phase 1 (Modèles & Moteur de Calcul)** : Création des interfaces `PromoCode`, `PromoValidationResult`, `PromotionRedemption`, du service métier `promoService.ts` avec gestion des types (% / € / Livraison offerte), contrôle des dates d'expiration, seuils minimaux, quotas d'utilisations, restriction à 1x par client et persistance Supabase / localStorage.
+  - [x] **Phase 1 (Contexte & Store Global `usePromo`)** : Mise en place du `PromoProvider` et du hook `usePromo` avec application/retrait de codes, recalcul automatique lors des modifications de panier et notifications toast descriptives.
+  - [x] **Phase 2 (Interface d'Administration `/admin/promotions`)** : Développement complet de la page de gestion avec 4 cartes KPIs, barre de recherche en direct, filtrage par type et statut, tableau détaillé, interrupteur d'activation 1 clic, modale de création/édition avec générateur aléatoire et modale de suppression.
+  - [x] **Phase 2 (Intégration Menu & Navigation)** : Ajout de l'entrée « Promotions & Codes » avec icône vectorielle `Tag` dans la barre latérale admin (`AdminLayout.tsx`) et déclaration de la route dans `App.tsx`.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Diagnostic & Résolution de l'Erreur 500 Inscription Client (« Error sending confirmation email ») ([`vps-guide.txt`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vps-guide.txt)) :
   - [x] **Cause Identifiée** : Supabase Auth bloque lors de l'inscription car `ENABLE_EMAIL_AUTOCONFIRM=false` tente d'expédier un email de confirmation via le sandbox Resend (`onboarding@resend.dev`), lequel rejette les envois vers les emails clients tiers sans domaine vérifié.

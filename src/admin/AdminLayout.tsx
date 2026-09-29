@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Store,
   FolderTree,
+  Tag,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -92,9 +93,10 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: "Ventes & Relations",
+    title: "Ventes & Marketing",
     items: [
       { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, isOrderLink: true },
+      { to: "/admin/promotions", label: "Promotions & Codes", icon: Tag },
     ],
   },
   {
@@ -110,6 +112,7 @@ const TITLES: Record<string, string> = {
   "/admin/produits": "Catalogue des Produits",
   "/admin/categories": "Univers & Familles Olfactives",
   "/admin/commandes": "Gestion des Commandes Clients",
+  "/admin/promotions": "Promotions & Codes Réduction",
   "/admin/parametres": "Paramètres & Statut de la Maison",
 };
 
