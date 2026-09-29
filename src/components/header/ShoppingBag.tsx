@@ -32,6 +32,8 @@ import { SIZE_META, formatMAD } from "@/lib/sizes";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useProducts } from "@/store/useProductStore";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePromo } from "@/contexts/PromoContext";
+import { Tag, Loader2, Check } from "lucide-react";
 
 interface ShoppingBagProps {
   isOpen: boolean;
@@ -41,11 +43,28 @@ interface ShoppingBagProps {
 const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   const { t, language } = useLanguage();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
+  const { appliedPromo, discountAmount, freeShippingApplied, applyPromo, removePromo, recalculateDiscount, isLoading: isPromoLoading } = usePromo();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
   const allProducts = useProducts();
   const [confirmClear, setConfirmClear] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
+  // Recalcul de la remise si le sous-total ou les articles changent
+  React.useEffect(() => {
+    recalculateDiscount(subtotal, items);
+  }, [subtotal, items, recalculateDiscount]);
+
+  const handleApplyPromo = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!promoInput.trim()) return;
+    setIsApplyingPromo(true);
+    await applyPromo(promoInput, subtotal, items);
+    setIsApplyingPromo(false);
+    setPromoInput("");
+  };
 
   // Déclenche l'animation de sortie fluide avant d'appeler onClose
   const handleClose = React.useCallback(() => {
@@ -328,8 +347,66 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
               })}
               </div>
 
-              {/* Bloc Inférieur de Commande & Récapitulatif */}
-              <div className="border-t border-border/80 pt-3.5 space-y-3 mt-auto bg-background/60">
+                {/* Section Code Promo */}
+                <div className="bg-card/70 border border-border/70 rounded-xl p-2.5 shadow-xs space-y-2">
+                  {appliedPromo ? (
+                    <div className="flex items-center justify-between gap-2 bg-primary/10 border border-primary/25 rounded-lg px-2.5 py-2 text-xs animate-in fade-in duration-200">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Tag className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <span className="font-mono font-bold text-primary uppercase text-[11px] block truncate">
+                            {appliedPromo.code}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground block">
+                            {appliedPromo.type === "percentage"
+                              ? `-${appliedPromo.value}% de remise`
+                              : appliedPromo.type === "fixed"
+                              ? `-${appliedPromo.value} € de remise`
+                              : "Livraison Offerte"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                          {discountAmount > 0 ? `-${formatMAD(discountAmount)}` : "Offert"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={removePromo}
+                          className="w-5 h-5 rounded-md hover:bg-destructive/15 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors cursor-pointer"
+                          title="Retirer le code promotionnel"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleApplyPromo} className="flex items-center gap-1.5">
+                      <div className="relative flex-1">
+                        <Tag className="w-3 h-3 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder="Code promo (ex: KENZI10)"
+                          value={promoInput}
+                          onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                          className="w-full h-8 pl-7 pr-2 text-[11px] font-mono uppercase rounded-lg bg-background border border-border/70 focus:border-primary focus:outline-none placeholder:normal-case placeholder:font-sans placeholder:text-muted-foreground/70"
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={!promoInput.trim() || isApplyingPromo}
+                        className="h-8 px-3 text-[11px] font-semibold rounded-lg bg-primary hover:bg-primary-hover text-primary-foreground shrink-0 cursor-pointer disabled:opacity-50"
+                      >
+                        {isApplyingPromo ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          "Appliquer"
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </div>
+
                 {/* Carte des Totaux */}
                 <div className="space-y-1.5 bg-card/70 border border-border/70 rounded-xl p-3.5 shadow-xs">
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
@@ -337,12 +414,22 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                   </div>
 
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-xs text-emerald-600 dark:text-emerald-400 font-semibold animate-in fade-in duration-150">
+                      <span className="flex items-center gap-1">
+                        <Tag className="w-3 h-3" />
+                        <span>Remise ({appliedPromo?.code})</span>
+                      </span>
+                      <span>-{formatMAD(discountAmount)}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center text-xs text-muted-foreground font-light">
                     <span className="flex items-center gap-1">
                       <Truck className="w-3 h-3 text-primary" />
                       <span>{t("cart.shippingToMorocco", "Livraison partout au Maroc & Europe")}</span>
                     </span>
-                    {remainingForFree === 0 ? (
+                    {remainingForFree === 0 || freeShippingApplied ? (
                       <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
                         {t("cart.free", "GRATUITE")}
                       </span>
@@ -361,7 +448,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                       <span className="text-[10px] text-muted-foreground">{t("cart.paymentOnline", "Paiement en ligne sécurisé")}</span>
                     </div>
                     <span className="text-lg font-bold tracking-tight text-primary">
-                      {formatMAD(subtotal)}
+                      {formatMAD(Math.max(0, subtotal - discountAmount))}
                     </span>
                   </div>
                 </div>

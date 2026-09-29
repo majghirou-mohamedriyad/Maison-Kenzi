@@ -44,15 +44,27 @@ import { COUNTRIES, searchDestinations, POPULAR_DESTINATIONS } from "@/data/dest
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
+import { usePromo } from "@/contexts/PromoContext";
+import { recordPromotionRedemption } from "@/services/promoService";
+import { Tag, Loader2, X } from "lucide-react";
 
 const Checkout = () => {
   const { t, language } = useLanguage();
   const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
   const { items, totalItems, subtotal, updateQuantity, removeItem, clear } = useCart();
+  const { appliedPromo, discountAmount, freeShippingApplied, applyPromo, removePromo, recalculateDiscount, isLoading: isPromoLoading } = usePromo();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
 
   const { countries, getCities } = useCountries();
+
+  const [promoInput, setPromoInput] = useState("");
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
+  // Recalcul de la remise si le sous-total ou les articles changent
+  useEffect(() => {
+    recalculateDiscount(subtotal, items);
+  }, [subtotal, items, recalculateDiscount]);
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -131,7 +143,22 @@ const Checkout = () => {
   }, [country, getCities]);
 
   const shippingCost = 0; // Livraison express offerte
-  const total = subtotal + shippingCost;
+  const total = Math.max(0, subtotal - discountAmount + shippingCost);
+
+  const handleApplyPromo = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!promoInput.trim()) return;
+    setIsApplyingPromo(true);
+    await applyPromo(
+      promoInput,
+      subtotal,
+      items.map((i) => ({ price: i.price, quantity: i.quantity, category: (i as any).category })),
+      phone.trim() || customer?.phone || undefined,
+      customer?.email || undefined
+    );
+    setIsApplyingPromo(false);
+    setPromoInput("");
+  };
 
   const isFormValid = Boolean(
     isAuthenticated &&
@@ -196,6 +223,10 @@ const Checkout = () => {
     const cleanEmail = customer?.email || details.payerEmail || `client_${Date.now()}@maisonkenzi.ma`;
     const customerFinalName = fullName.trim() || details.payerName || "Client Maison Kenzi";
 
+    const promoNote = appliedPromo
+      ? `\nCode promo appliqué: ${appliedPromo.code} (${appliedPromo.type === "percentage" ? `-${appliedPromo.value}%` : appliedPromo.type === "fixed" ? `-${appliedPromo.value} €` : "Livraison Offerte"}, Remise: -${discountAmount} €)`
+      : "";
+
     const orderPayload = {
       order_number: orderNumber,
       customer_name: customerFinalName,
@@ -204,7 +235,7 @@ const Checkout = () => {
       customer_address: fullAddressText,
       total_amount: total,
       status: "en_attente" as const, // Statut officiel reconnu dans l'enum maisonkenzi.order_status
-      notes: `Paiement en ligne validé (Stripe Carte / Apple Pay — Réf: ${details.paymentIntentId})${notes.trim() ? `\nNote client: ${notes.trim()}` : ""
+      notes: `Paiement en ligne validé (Stripe Carte / Apple Pay — Réf: ${details.paymentIntentId})${promoNote}${notes.trim() ? `\nNote client: ${notes.trim()}` : ""
         }`,
       items: items.map((item) => ({
         parfum_id: item.id,
@@ -226,6 +257,18 @@ const Checkout = () => {
         toast.error("Erreur d'enregistrement de la commande", {
           description: dbError.message,
         });
+      }
+
+      // Enregistrement de l'utilisation du coupon promotionnel
+      if (appliedPromo) {
+        recordPromotionRedemption({
+          promo_code: appliedPromo.code,
+          order_number: orderNumber,
+          customer_phone: phone.trim() || customer?.phone || undefined,
+          customer_email: cleanEmail || undefined,
+          discount_amount: discountAmount,
+          order_total: total,
+        }).catch((err) => console.warn("Erreur enregistrement promo redemption :", err));
       }
 
       // Enregistrement et mise à jour automatique dans la base clients
@@ -879,6 +922,69 @@ const Checkout = () => {
                     })}
                   </div>
 
+                  {/* Promo Code Input / Active Coupon Card */}
+                  <div className="border-t border-border/60 pt-3.5 space-y-2">
+                    <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-primary" /> Code Promotionnel ou Privilège
+                    </Label>
+
+                    {appliedPromo ? (
+                      <div className="flex items-center justify-between gap-2 bg-primary/10 border border-primary/30 rounded-xl px-3 py-2.5 text-xs animate-in fade-in duration-200">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                            <Tag className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-mono font-bold text-primary uppercase text-xs block truncate">
+                              {appliedPromo.code}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground block truncate">
+                              {appliedPromo.description ||
+                                (appliedPromo.type === "percentage"
+                                  ? `Remise de ${appliedPromo.value}%`
+                                  : appliedPromo.type === "fixed"
+                                  ? `Remise de ${appliedPromo.value} €`
+                                  : "Livraison Offerte")}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                            {discountAmount > 0 ? `-${formatMAD(discountAmount)}` : "Offert"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={removePromo}
+                            className="w-6 h-6 rounded-lg hover:bg-destructive/15 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors cursor-pointer"
+                            title="Retirer ce code"
+                          >
+                            <X size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleApplyPromo} className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <Input
+                            type="text"
+                            placeholder="Ex: KENZI10, BIENVENUE15..."
+                            value={promoInput}
+                            onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                            className="h-10 text-xs font-mono uppercase rounded-xl bg-background border-border/80 focus:border-primary placeholder:normal-case placeholder:font-sans"
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          disabled={!promoInput.trim() || isApplyingPromo}
+                          className="h-10 px-4 text-xs font-semibold rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground shrink-0 cursor-pointer disabled:opacity-50"
+                        >
+                          {isApplyingPromo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Appliquer"}
+                        </Button>
+                      </form>
+                    )}
+                  </div>
+
                   {/* Pricing details */}
                   <div className="border-t border-border/60 pt-4 space-y-2 text-xs">
                     <div className="flex justify-between text-muted-foreground font-light">
@@ -886,18 +992,37 @@ const Checkout = () => {
                       <span className="font-semibold text-foreground tracking-tight">{formatMAD(subtotal)}</span>
                     </div>
 
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold animate-in fade-in duration-150">
+                        <span className="flex items-center gap-1">
+                          <Tag className="w-3.5 h-3.5" />
+                          <span>Remise ({appliedPromo?.code})</span>
+                        </span>
+                        <span>-{formatMAD(discountAmount)}</span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between text-muted-foreground font-light">
-                      <span>Livraison</span>
-                      <span className="font-medium text-primary text-[11px]">Selon tarif par ville</span>
+                      <span className="flex items-center gap-1">
+                        <Truck className="w-3.5 h-3.5 text-primary" />
+                        <span>Livraison Express</span>
+                      </span>
+                      {shippingCost === 0 || freeShippingApplied ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+                          Offerte
+                        </span>
+                      ) : (
+                        <span className="font-semibold text-foreground">{formatMAD(shippingCost)}</span>
+                      )}
                     </div>
 
                     <div className="border-t border-border/60 pt-3 mt-2 space-y-1">
-                      <div className="flex justify-between text-xs font-bold text-foreground">
-                        <span>Sous-total Panier</span>
-                        <span className="text-primary font-bold tracking-tight">{formatMAD(subtotal)}</span>
+                      <div className="flex justify-between text-sm font-bold text-foreground">
+                        <span>Total de la commande</span>
+                        <span className="text-primary font-bold tracking-tight text-base">{formatMAD(total)}</span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground italic">
-                        * Le total final (avec frais de livraison) vous sera confirmé sur WhatsApp selon votre ville.
+                      <p className="text-[10.5px] text-muted-foreground">
+                        Taxes et frais d'expédition inclus · Paiement 100% sécurisé
                       </p>
                     </div>
                   </div>

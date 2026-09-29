@@ -38,6 +38,7 @@ import {
   PlusCircle,
   Globe,
   Lock,
+  Tag,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCountries } from "@/hooks/useCountries";
@@ -52,6 +53,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { getProductGender, getProductName } from "@/lib/productLocalization";
 import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
+import { usePromo } from "@/contexts/PromoContext";
+import { recordPromotionRedemption } from "@/services/promoService";
 
 export interface OrderSelectionItem {
   size: string;
@@ -100,11 +103,15 @@ const ExpressOrderForm = ({
 }: ExpressOrderFormProps) => {
   const { t, language } = useLanguage();
   const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
+  const { appliedPromo, discountAmount, freeShippingApplied, applyPromo, removePromo, recalculateDiscount, isLoading: isPromoLoading } = usePromo();
   const navigate = useNavigate();
   const { settings } = useAppSettings();
   const { data: parfums = [] } = useParfums();
 
   const { countries, getCities } = useCountries();
+
+  const [promoInput, setPromoInput] = useState("");
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -215,6 +222,36 @@ const ExpressOrderForm = ({
     const extraTotal = extraItems.reduce((acc, it) => acc + it.subtotal, 0);
     return mainTotal + extraTotal;
   }, [activeMainItems, extraItems]);
+
+  const effectiveTotalPrice = Math.max(0, cumulativeTotalPrice - discountAmount);
+
+  // Recalcul automatique de la remise si le montant cumulé change
+  useEffect(() => {
+    const allCartLikeItems = [
+      ...activeMainItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+      ...extraItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+    ];
+    recalculateDiscount(cumulativeTotalPrice, allCartLikeItems);
+  }, [cumulativeTotalPrice, activeMainItems, extraItems, recalculateDiscount]);
+
+  const handleApplyPromo = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!promoInput.trim()) return;
+    setIsApplyingPromo(true);
+    const allCartLikeItems = [
+      ...activeMainItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+      ...extraItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+    ];
+    await applyPromo(
+      promoInput,
+      cumulativeTotalPrice,
+      allCartLikeItems,
+      phone.trim() || customer?.phone || undefined,
+      customer?.email || undefined
+    );
+    setIsApplyingPromo(false);
+    setPromoInput("");
+  };
 
   // Filtrage du catalogue pour l'ajout multi-parfums
   const filteredCatalog = useMemo(() => {
@@ -381,6 +418,10 @@ const ExpressOrderForm = ({
       const fullAddressText = `${address.trim()}, ${city.trim()}, ${country}`;
       saveLastOrderNumber(orderNumber);
 
+      const promoNote = appliedPromo
+        ? `\nCode promo appliqué: ${appliedPromo.code} (${appliedPromo.type === "percentage" ? `-${appliedPromo.value}%` : appliedPromo.type === "fixed" ? `-${appliedPromo.value} €` : "Livraison Offerte"}, Remise: -${discountAmount} €)`
+        : "";
+
       // Enregistrement de la commande dans Supabase
       try {
         const { data, error: dbError } = await supabase.from("orders").insert([
@@ -390,9 +431,9 @@ const ExpressOrderForm = ({
             customer_email: cleanEmail,
             customer_phone: phone.trim(),
             customer_address: fullAddressText,
-            total_amount: cumulativeTotalPrice,
+            total_amount: effectiveTotalPrice,
             status: "en_attente",
-            notes: `Commande express validée en ligne (Stripe — Réf: ${details.paymentIntentId || "Payé"})`,
+            notes: `Commande express validée en ligne (Stripe — Réf: ${details.paymentIntentId || "Payé"})${promoNote}`,
             items: allItemsToOrder,
           },
         ]);
@@ -402,6 +443,18 @@ const ExpressOrderForm = ({
           toast.error("Erreur d'enregistrement de la commande", {
             description: dbError.message,
           });
+        }
+
+        // Enregistrement de l'utilisation du coupon promotionnel
+        if (appliedPromo) {
+          recordPromotionRedemption({
+            promo_code: appliedPromo.code,
+            order_number: orderNumber,
+            customer_phone: phone.trim() || customer?.phone || undefined,
+            customer_email: cleanEmail || undefined,
+            discount_amount: discountAmount,
+            order_total: effectiveTotalPrice,
+          }).catch((err) => console.warn("Erreur enregistrement promo redemption :", err));
         }
 
         // Enregistrement et mise à jour automatique dans la base clients
@@ -420,7 +473,7 @@ const ExpressOrderForm = ({
               address: fullAddressText,
               phone: cleanPhone,
               total_orders: (existingCust.total_orders || 0) + 1,
-              total_spent: Number(existingCust.total_spent || 0) + Number(cumulativeTotalPrice || 0),
+              total_spent: Number(existingCust.total_spent || 0) + Number(effectiveTotalPrice || 0),
             })
             .eq("id", existingCust.id);
         } else {
@@ -431,7 +484,7 @@ const ExpressOrderForm = ({
               address: fullAddressText,
               email: cleanEmail,
               total_orders: 1,
-              total_spent: Number(cumulativeTotalPrice || 0),
+              total_spent: Number(effectiveTotalPrice || 0),
             },
           ]);
         }
@@ -445,7 +498,7 @@ const ExpressOrderForm = ({
         customer_name: customerFinalName,
         customer_phone: phone.trim(),
         customer_address: fullAddressText,
-        total_amount: cumulativeTotalPrice,
+        total_amount: effectiveTotalPrice,
         items: allItemsToOrder,
       }).catch((err) => {
         console.warn("Notification WhatsApp auto info:", err);
@@ -457,7 +510,7 @@ const ExpressOrderForm = ({
         customerName: customerFinalName,
         customerPhone: phone.trim(),
         customerAddress: fullAddressText,
-        totalPrice: cumulativeTotalPrice,
+        totalPrice: effectiveTotalPrice,
         items: allItemsToOrder,
       });
 
@@ -639,10 +692,83 @@ const ExpressOrderForm = ({
               <span className="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block">
                 {t.expressOrder.summary}
               </span>
-              <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
-                {formatMAD(cumulativeTotalPrice)}
-              </span>
+              {discountAmount > 0 ? (
+                <div className="flex flex-col items-end">
+                  <span className="text-[10px] sm:text-xs line-through text-muted-foreground font-medium">
+                    {formatMAD(cumulativeTotalPrice)}
+                  </span>
+                  <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
+                    {formatMAD(effectiveTotalPrice)}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
+                  {formatMAD(cumulativeTotalPrice)}
+                </span>
+              )}
             </div>
+          </div>
+
+          {/* SECTION CODE PROMO / COUPON */}
+          <div className="border-t border-primary/20 pt-2">
+            {appliedPromo ? (
+              <div className="flex items-center justify-between gap-2 bg-primary/15 border border-primary/40 rounded-lg px-2.5 py-1.5 text-xs animate-in fade-in duration-200">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Tag className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="font-mono font-bold tracking-wider text-primary text-[11px] truncate">
+                    {appliedPromo.code}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    ({appliedPromo.type === "percentage" ? `-${appliedPromo.value}%` : appliedPromo.type === "free_shipping" ? "Livraison Offerte" : `-${formatMAD(appliedPromo.value)}`})
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                    -{formatMAD(discountAmount)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={removePromo}
+                    className="text-muted-foreground hover:text-destructive p-0.5 rounded transition-colors cursor-pointer"
+                    title="Retirer le code promo"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <div className="relative flex-1">
+                  <Tag className="w-3 h-3 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleApplyPromo();
+                      }
+                    }}
+                    placeholder="Code promo (ex: KENZI10)"
+                    className="w-full h-7.5 pl-7 pr-2 text-[10px] sm:text-[11px] font-mono uppercase bg-background/70 border border-primary/30 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:normal-case placeholder:font-sans placeholder:text-muted-foreground/70"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleApplyPromo()}
+                  disabled={!promoInput.trim() || isApplyingPromo}
+                  className="h-7.5 px-2.5 text-[10px] font-semibold bg-primary hover:bg-primary-hover text-primary-foreground rounded-lg cursor-pointer shrink-0 disabled:opacity-50"
+                >
+                  {isApplyingPromo ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    "Appliquer"
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* LISTE DES PARFUMS SUPPLÉMENTAIRES AJOUTÉS */}
@@ -1030,7 +1156,7 @@ const ExpressOrderForm = ({
               {/* Module de Paiement Stripe Sécurisé */}
               <div className="pt-2">
                 <StripePaymentSection
-                  total={cumulativeTotalPrice}
+                  total={effectiveTotalPrice}
                   customerName={fullName.trim()}
                   customerEmail={customer?.email || (phone.trim().includes("@") ? phone.trim() : undefined)}
                   customerPhone={customer?.phone || (!phone.trim().includes("@") && phone.trim() ? phone.trim() : undefined)}

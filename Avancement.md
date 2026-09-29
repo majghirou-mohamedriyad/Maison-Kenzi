@@ -3,9 +3,15 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-09-29
-- **Statut général** : Système de Promotions — Phases 1 & 2 Développées avec Succès (Moteur de Calcul & Interface Admin)
+- **Statut général** : Système de Promotions — Phases 1, 2 & 4 Développées avec Succès (Moteur de Calcul, Administration & Champs Code Promo Clients)
 
 ---
+
+- [x] Intégration des Champs Code Promo & Tunnels de Commande Déduits en Temps Réel ([`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Tiroir Panier Flottant (`ShoppingBag.tsx`)** : Ajout du champ de saisie du code promo avec bouton « Appliquer », affichage du badge coupon actif avec bouton de suppression (`X`), déduction visuelle de la remise en direct et recalcul automatique du total panier.
+  - [x] **Tunnel de Commande Principal (`Checkout.tsx`)** : Insertion du bloc de saisie du code promo dans la colonne récapitulative de commande, déduction immédiate sur le total à payer, transmission du montant remisé au module de paiement Stripe et enregistrement de l'utilisation (`recordPromotionRedemption`) dans Supabase lors de la validation.
+  - [x] **Formulaire de Commande Directe Express (`ExpressOrderForm.tsx`)** : Intégration du sélecteur/champ de code promo dans la bannière récapitulative, affichage de l'ancien prix barré et du nouveau total remisé, synchronisation du montant avec Stripe Elements et enregistrement de la rédemption.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Phase 1 & Phase 2 du Système de Promotions & Codes Coupons ([`src/types/promotions.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/promotions.ts), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx), [`supabase/migrations/20260929153000_create_promotions_tables.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20260929153000_create_promotions_tables.sql)) :
   - [x] **Phase 1 (Modèles & Moteur de Calcul)** : Création des interfaces `PromoCode`, `PromoValidationResult`, `PromotionRedemption`, du service métier `promoService.ts` avec gestion des types (% / € / Livraison offerte), contrôle des dates d'expiration, seuils minimaux, quotas d'utilisations, restriction à 1x par client et persistance Supabase / localStorage.
