@@ -1,8 +1,12 @@
 -- Migration : Système de Promotions & Coupons — Maison Kenzi
--- Création des tables promotions et promotion_redemptions avec RLS et fonction d'incrémentation.
+-- Création propre et idempotente des tables promotions et promotion_redemptions.
+
+-- Suppression préalable propre si une table obsolète existait
+DROP TABLE IF EXISTS public.promotion_redemptions CASCADE;
+DROP TABLE IF EXISTS public.promotions CASCADE;
 
 -- 1. Table principale des promotions
-CREATE TABLE IF NOT EXISTS public.promotions (
+CREATE TABLE public.promotions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code VARCHAR(50) UNIQUE NOT NULL,
   description TEXT,
@@ -21,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.promotions (
 );
 
 -- 2. Table de suivi des utilisations par client
-CREATE TABLE IF NOT EXISTS public.promotion_redemptions (
+CREATE TABLE public.promotion_redemptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   promo_id UUID REFERENCES public.promotions(id) ON DELETE CASCADE,
   promo_code VARCHAR(50) NOT NULL,
@@ -71,3 +75,11 @@ CREATE POLICY "Gestion des utilisations promotions"
   FOR ALL
   USING (true)
   WITH CHECK (true);
+
+-- Insertion des 3 promotions initiales par défaut
+INSERT INTO public.promotions (code, description, type, value, min_order_amount, max_uses, current_uses, once_per_customer, is_active)
+VALUES
+  ('KENZI10', 'Offre Privilège Maison Kenzi — 10% de remise dès 50 €', 'percentage', 10.00, 50.00, NULL, 0, TRUE, TRUE),
+  ('BIENVENUE15', 'Offre d accueil Nouveaux Clients — 15% de remise dès 80 €', 'percentage', 15.00, 80.00, 500, 0, TRUE, TRUE),
+  ('LIVRAISON', 'Frais de livraison offerts dès 60 € d achat', 'free_shipping', 0.00, 60.00, NULL, 0, FALSE, TRUE)
+ON CONFLICT (code) DO NOTHING;
