@@ -2,9 +2,9 @@
  * Page d'Administration des Promotions & Codes Coupons — Maison Kenzi
  *
  * Interface de gestion, création, modification et suivi des codes promotionnels.
- * Comprend des KPIs interactifs, un générateur de codes à préfixes personnalisables,
+ * Comprend des KPIs interactifs, un générateur de codes à préfixes rapides,
  * un sélecteur visuel de types de remise par cartes, des presets rapides de pourcentages et dates,
- * un ticket d'aperçu haute joaillerie en direct et une validation anti-fraude.
+ * un sélecteur dynamique de catégories éligibles et une validation anti-fraude.
  * Conforme aux règles d'ingénierie : zéro emoji, icônes vectorielles lucide-react, commentaires en français.
  */
 
@@ -29,11 +29,11 @@ import {
   RotateCcw,
   Layers,
   Users,
-  Eye,
   Gift,
   Zap,
 } from "lucide-react";
 import { usePromo } from "@/contexts/PromoContext";
+import { useCategories } from "@/store/useCategoryStore";
 import type { PromoCode, PromoType, PromoCategoryTarget } from "@/types/promotions";
 import {
   Dialog,
@@ -57,24 +57,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
-
-// Catégories disponibles pour le ciblage
-const CATEGORY_OPTIONS = [
-  { value: "all", label: "Tout le catalogue (Toutes catégories)" },
-  { value: "parfums", label: "Parfums de Niche uniquement" },
-  { value: "cosmetiques", label: "Produits Cosmétiques uniquement" },
-  { value: "artisanat", label: "Artisanat & Décoration" },
-  { value: "bazar-chic", label: "Bazar Chic & Trésors" },
-];
 
 // Presets de pourcentages rapides
 const PERCENTAGE_PRESETS = [10, 15, 20, 25, 30, 50];
@@ -97,6 +80,28 @@ const generateRandomPromoCode = (prefix = "KENZI"): string => {
 
 const Promotions: React.FC = () => {
   const { promotions, savePromo, removePromoById, togglePromoActive, isLoading } = usePromo();
+  const categoriesList = useCategories();
+
+  // Liste dynamique des catégories
+  const categoryOptions = useMemo(() => {
+    const base = [{ value: "all", label: "Tout le catalogue (Toutes catégories)" }];
+    if (categoriesList && categoriesList.length > 0) {
+      categoriesList.forEach((cat) => {
+        base.push({
+          value: cat.slug || cat.id,
+          label: cat.name,
+        });
+      });
+    } else {
+      base.push(
+        { value: "parfums", label: "Parfums de Niche uniquement" },
+        { value: "cosmetiques", label: "Produits Cosmétiques uniquement" },
+        { value: "artisanat", label: "Artisanat & Décoration" },
+        { value: "bazar-chic", label: "Bazar Chic & Trésors" }
+      );
+    }
+    return base;
+  }, [categoriesList]);
 
   // Filtres et recherche
   const [search, setSearch] = useState("");
@@ -396,29 +401,31 @@ const Promotions: React.FC = () => {
 
         {/* Filtres Type et Statut */}
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full md:w-auto">
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="h-10 text-xs rounded-xl bg-background/50 border-border/80 w-full sm:w-44">
-              <SelectValue placeholder="Tous les types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
-              <SelectItem value="percentage">Pourcentage (%)</SelectItem>
-              <SelectItem value="fixed">Montant fixe (€)</SelectItem>
-              <SelectItem value="free_shipping">Livraison Offerte</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="w-full sm:w-44">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full h-10 px-3 text-xs rounded-xl bg-background/50 border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer"
+            >
+              <option value="all">Tous les types</option>
+              <option value="percentage">Pourcentage (%)</option>
+              <option value="fixed">Montant fixe (€)</option>
+              <option value="free_shipping">Livraison Offerte</option>
+            </select>
+          </div>
 
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-10 text-xs rounded-xl bg-background/50 border-border/80 w-full sm:w-36">
-              <SelectValue placeholder="Tous statuts" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous statuts</SelectItem>
-              <SelectItem value="active">Actifs</SelectItem>
-              <SelectItem value="inactive">Inactifs</SelectItem>
-              <SelectItem value="expired">Expirés</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="w-full sm:w-36">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full h-10 px-3 text-xs rounded-xl bg-background/50 border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer"
+            >
+              <option value="all">Tous statuts</option>
+              <option value="active">Actifs</option>
+              <option value="inactive">Inactifs</option>
+              <option value="expired">Expirés</option>
+            </select>
+          </div>
 
           {(search || typeFilter !== "all" || statusFilter !== "all") && (
             <Button
@@ -473,6 +480,11 @@ const Promotions: React.FC = () => {
                     promo.max_uses !== null &&
                     promo.max_uses !== undefined &&
                     (promo.current_uses || 0) >= promo.max_uses;
+
+                  // Label de la catégorie
+                  const catLabel =
+                    categoryOptions.find((c) => c.value === promo.target_category)?.label ||
+                    (promo.target_category === "all" || !promo.target_category ? "Tout le catalogue" : promo.target_category);
 
                   return (
                     <tr
@@ -533,10 +545,8 @@ const Promotions: React.FC = () => {
                               ? `Dès ${promo.min_order_amount.toFixed(2)} € d'achat`
                               : "Sans minimum d'achat"}
                           </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            {promo.target_category === "all" || !promo.target_category
-                              ? "Tout le catalogue"
-                              : `Catégorie : ${promo.target_category}`}
+                          <p className="text-[10px] text-muted-foreground line-clamp-1">
+                            {catLabel}
                           </p>
                         </div>
                       </td>
@@ -638,9 +648,9 @@ const Promotions: React.FC = () => {
         </div>
       </div>
 
-      {/* Modale Haute Joaillerie : Création / Modification de Code Promo */}
+      {/* Modale Épurée & Intuitive : Création / Modification de Code Promo */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl p-0 bg-card border-border/80 shadow-2xl flex flex-col">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[560px] max-h-[92vh] overflow-y-auto rounded-3xl p-0 bg-card border-border/80 shadow-2xl flex flex-col">
           {/* En-tête Prestigieux */}
           <div className="p-5 sm:p-6 bg-gradient-to-r from-primary/15 via-background to-background border-b border-border/50 sticky top-0 z-10 backdrop-blur-md">
             <div className="flex items-center gap-3">
@@ -648,427 +658,336 @@ const Promotions: React.FC = () => {
                 <Gift className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="font-serif text-xl sm:text-2xl font-light text-foreground">
+                <DialogTitle className="font-serif text-xl font-light text-foreground">
                   {editingPromo ? "Modifier le Code Promotionnel" : "Créer un Code Promotionnel"}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                  Définissez les privilèges, remises et conditions d'application de votre offre.
+                  Configurez les privilèges, remises et conditions de votre offre.
                 </DialogDescription>
               </div>
             </div>
           </div>
 
-          {/* Formulaire Principal avec Aperçu Live */}
-          <form onSubmit={handleSavePromo} className="p-5 sm:p-6 space-y-6 flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Colonne Gauche : Configuration du Formulaire (7 cols) */}
-              <div className="lg:col-span-7 space-y-5">
-                {/* 1. Code Promo & Générateur de Préfixes */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                      <Tag className="w-3.5 h-3.5 text-primary" />
-                      <span>Code Coupon (Majuscules) *</span>
-                    </Label>
-                    <span className="text-[10px] text-muted-foreground">Sans espaces</span>
-                  </div>
-
-                  <div className="relative">
-                    <Input
-                      type="text"
-                      required
-                      value={formCode}
-                      onChange={(e) => setFormCode(e.target.value.toUpperCase().replace(/\s+/g, ""))}
-                      placeholder="EXEMPLE10"
-                      className="h-11 rounded-xl font-mono uppercase tracking-widest font-bold text-sm bg-background/50 border-border/80 focus:border-primary pl-3.5"
-                    />
-                  </div>
-
-                  {/* Boutons de Préfixes Rapides */}
-                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    <span className="text-[10px] text-muted-foreground flex items-center gap-1 mr-1">
-                      <Zap className="w-3 h-3 text-amber-500" />
-                      Générer :
-                    </span>
-                    {PREFIX_PRESETS.map((prefix) => (
-                      <button
-                        key={prefix}
-                        type="button"
-                        onClick={() => setFormCode(generateRandomPromoCode(prefix))}
-                        className="px-2 py-1 text-[10px] font-mono font-medium rounded-lg bg-muted/60 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 cursor-pointer"
-                      >
-                        {prefix}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Description de l'offre */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-foreground">Description ou Motif de l'offre</Label>
-                  <Input
-                    type="text"
-                    value={formDescription}
-                    onChange={(e) => setFormDescription(e.target.value)}
-                    placeholder="Ex: Offre de bienvenue -15% dès 80 € d'achat"
-                    className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
-                  />
-                </div>
-
-                {/* 3. Sélecteur Visuel de Type de Réduction (3 Cartes) */}
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                    <Percent className="w-3.5 h-3.5 text-primary" />
-                    <span>Type de Réduction *</span>
-                  </Label>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    {/* Carte Pourcentage */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormType("percentage");
-                        if (formValue === 0) setFormValue(10);
-                      }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[78px] ${
-                        formType === "percentage"
-                          ? "bg-blue-500/10 border-blue-500/50 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/30"
-                          : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
-                      }`}
-                    >
-                      <Percent className="w-4 h-4 mb-1" />
-                      <div>
-                        <p className="text-xs font-semibold">Pourcentage</p>
-                        <p className="text-[10px] opacity-80">Remise en %</p>
-                      </div>
-                    </button>
-
-                    {/* Carte Montant Fixe */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormType("fixed");
-                        if (formValue === 0) setFormValue(15);
-                      }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[78px] ${
-                        formType === "fixed"
-                          ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-emerald-500/30"
-                          : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
-                      }`}
-                    >
-                      <Coins className="w-4 h-4 mb-1" />
-                      <div>
-                        <p className="text-xs font-semibold">Montant Fixe</p>
-                        <p className="text-[10px] opacity-80">Déduction en €</p>
-                      </div>
-                    </button>
-
-                    {/* Carte Livraison Offerte */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormType("free_shipping");
-                        setFormValue(0);
-                      }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[78px] ${
-                        formType === "free_shipping"
-                          ? "bg-amber-500/10 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-sm ring-1 ring-amber-500/30"
-                          : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
-                      }`}
-                    >
-                      <Truck className="w-4 h-4 mb-1" />
-                      <div>
-                        <p className="text-xs font-semibold">Livraison</p>
-                        <p className="text-[10px] opacity-80">Frais offerts</p>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 4. Valeur de Remise & Presets Rapides */}
-                {formType !== "free_shipping" && (
-                  <div className="space-y-2 p-3.5 rounded-2xl bg-muted/30 border border-border/60">
-                    <div className="flex justify-between items-center">
-                      <Label className="text-xs font-medium text-foreground">
-                        {formType === "percentage" ? "Valeur du Pourcentage (%) *" : "Montant de la Remise (€) *"}
-                      </Label>
-                      <span className="text-[11px] font-semibold text-primary">
-                        {formType === "percentage" ? `-${formValue}%` : `-${formValue} €`}
-                      </span>
-                    </div>
-
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        min={formType === "percentage" ? 1 : 0.5}
-                        max={formType === "percentage" ? 100 : 9999}
-                        step={formType === "percentage" ? 1 : 0.5}
-                        value={formValue || ""}
-                        onChange={(e) => setFormValue(parseFloat(e.target.value) || 0)}
-                        placeholder={formType === "percentage" ? "Ex: 15" : "Ex: 20"}
-                        className="h-10 rounded-xl text-xs sm:text-sm bg-background border-border/80 focus:border-primary font-semibold"
-                      />
-                    </div>
-
-                    {/* Presets rapides de valeurs */}
-                    <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                      <span className="text-[10px] text-muted-foreground mr-1">Raccourcis :</span>
-                      {(formType === "percentage" ? PERCENTAGE_PRESETS : FIXED_PRESETS).map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setFormValue(val)}
-                          className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${
-                            formValue === val
-                              ? "bg-primary text-primary-foreground shadow-xs"
-                              : "bg-background hover:bg-muted text-muted-foreground border border-border/60"
-                          }`}
-                        >
-                          {formType === "percentage" ? `${val}%` : `${val} €`}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 5. Conditions : Panier Minimum & Quota Maximal */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-foreground">Panier Minimum Requis (€)</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={5}
-                      value={formMinOrder || ""}
-                      onChange={(e) => setFormMinOrder(parseFloat(e.target.value) || 0)}
-                      placeholder="0 (aucun minimum)"
-                      className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-foreground">Quota Max d'Utilisations</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      step={1}
-                      value={formMaxUses}
-                      onChange={(e) => setFormMaxUses(e.target.value)}
-                      placeholder="Illimité"
-                      className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* 6. Calendrier & Validité avec Presets */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-primary" />
-                      <span>Période de Validité</span>
-                    </Label>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-muted-foreground">Date de début</span>
-                      <Input
-                        type="date"
-                        value={formStartDate}
-                        onChange={(e) => setFormStartDate(e.target.value)}
-                        className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-muted-foreground">Date d'expiration</span>
-                      <Input
-                        type="date"
-                        value={formEndDate}
-                        onChange={(e) => setFormEndDate(e.target.value)}
-                        placeholder="Illimité si vide"
-                        className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Presets de durées */}
-                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    <span className="text-[10px] text-muted-foreground mr-1">Durée :</span>
-                    <button
-                      type="button"
-                      onClick={() => handleApplyDurationPreset(7)}
-                      className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                    >
-                      7 jours
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleApplyDurationPreset(30)}
-                      className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                    >
-                      30 jours
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleApplyDurationPreset(90)}
-                      className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                    >
-                      3 mois
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleApplyDurationPreset(null)}
-                      className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                    >
-                      Illimité
-                    </button>
-                  </div>
-                </div>
-
-                {/* 7. Catégorie ciblée */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-primary" />
-                    <span>Catégorie de Produits Éligible</span>
-                  </Label>
-                  <Select value={formCategory} onValueChange={(val) => setFormCategory(val)}>
-                    <SelectTrigger className="h-10 text-xs rounded-xl bg-background/50 border-border/80">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORY_OPTIONS.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* 8. Options de Sécurité & Statut */}
-                <div className="pt-3 space-y-3 border-t border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-primary" />
-                        <span>Usage unique par client</span>
-                      </Label>
-                      <p className="text-[11px] text-muted-foreground">
-                        Empêche un même numéro de téléphone ou email de réutiliser ce code.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={formOncePerCustomer}
-                      onCheckedChange={setFormOncePerCustomer}
-                      className="cursor-pointer"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        <span>Activer immédiatement ce code promo</span>
-                      </Label>
-                      <p className="text-[11px] text-muted-foreground">
-                        Le coupon sera utilisable sur le site dès l'enregistrement.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={formIsActive}
-                      onCheckedChange={setFormIsActive}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                </div>
+          {/* Formulaire Unique & Épuré */}
+          <form onSubmit={handleSavePromo} className="p-5 sm:p-6 space-y-4 sm:space-y-5 flex-1">
+            {/* 1. Code Promo & Générateur de Préfixes */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-primary" />
+                  <span>Code Coupon (Majuscules) *</span>
+                </Label>
+                <span className="text-[10px] text-muted-foreground">Sans espaces</span>
               </div>
 
-              {/* Colonne Droite : Aperçu Haute Joaillerie du Bon en Direct (5 cols) */}
-              <div className="lg:col-span-5 space-y-4">
-                <div className="sticky top-24">
-                  <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                    <Eye className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-semibold uppercase tracking-wider">Aperçu du Coupon</span>
-                  </div>
+              <div className="relative">
+                <Input
+                  type="text"
+                  required
+                  value={formCode}
+                  onChange={(e) => setFormCode(e.target.value.toUpperCase().replace(/\s+/g, ""))}
+                  placeholder="EXEMPLE10"
+                  className="h-11 rounded-xl font-mono uppercase tracking-widest font-bold text-sm bg-background/50 border-border/80 focus:border-primary pl-3.5"
+                />
+              </div>
 
-                  {/* Carte Bon de Réduction Style Maison Kenzi */}
-                  <div className="rounded-3xl p-5 bg-gradient-to-br from-[#1c1917] to-[#0c0a09] text-white border border-[#38332e] shadow-2xl relative overflow-hidden">
-                    {/* Motif d'arrière-plan discret */}
-                    <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
-
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3.5">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#C9A96E]" />
-                        <span className="font-serif tracking-widest text-xs uppercase text-[#E5DDD0]">
-                          Maison Kenzi
-                        </span>
-                      </div>
-                      <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-full bg-[#C9A96E]/20 text-[#C9A96E] border border-[#C9A96E]/30">
-                        {formType === "percentage"
-                          ? `-${formValue}%`
-                          : formType === "fixed"
-                          ? `-${formValue} €`
-                          : "Offerte"}
-                      </span>
-                    </div>
-
-                    <div className="text-center py-2 space-y-1">
-                      <span className="text-[10px] uppercase tracking-widest text-[#9E958C]">
-                        Code Privilège
-                      </span>
-                      <div className="font-mono text-xl sm:text-2xl font-bold tracking-widest text-[#F3EFEA] bg-white/5 border border-dashed border-white/20 py-2 px-3 rounded-2xl">
-                        {formCode || "VOTRE-CODE"}
-                      </div>
-                      <p className="text-xs text-[#C9A96E] font-medium pt-1">
-                        {formType === "percentage"
-                          ? `Réduction de ${formValue}% sur vos créations`
-                          : formType === "fixed"
-                          ? `Remise exclusive de ${formValue} € sur votre panier`
-                          : "Frais de livraison offerts sur votre commande"}
-                      </p>
-                    </div>
-
-                    {formDescription && (
-                      <p className="text-[11px] text-[#A8A196] italic text-center px-2 py-1 line-clamp-2">
-                        "{formDescription}"
-                      </p>
-                    )}
-
-                    {/* Détails et conditions du ticket */}
-                    <div className="mt-4 pt-3 border-t border-white/10 space-y-1.5 text-[11px] text-[#9E958C]">
-                      <div className="flex justify-between">
-                        <span>Seuil requis :</span>
-                        <span className="text-[#E5DDD0] font-medium">
-                          {formMinOrder > 0 ? `${formMinOrder} € minimum` : "Sans minimum"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Éligibilité :</span>
-                        <span className="text-[#E5DDD0] font-medium">
-                          {formCategory === "all" ? "Tout le catalogue" : formCategory}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Validité :</span>
-                        <span className="text-[#E5DDD0] font-medium">
-                          {formEndDate ? `Jusqu'au ${new Date(formEndDate).toLocaleDateString("fr-FR")}` : "Illimitée"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-dashed border-white/15 flex items-center justify-between text-[10px] text-[#A8A196]">
-                      <span>{formOncePerCustomer ? "Usage unique / client" : "Multi-utilisations"}</span>
-                      <span className={formIsActive ? "text-emerald-400 font-medium" : "text-amber-400"}>
-                        {formIsActive ? "● Prêt à l'emploi" : "○ Inactif"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              {/* Boutons de Préfixes Rapides */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                <span className="text-[10px] text-muted-foreground flex items-center gap-1 mr-1">
+                  <Zap className="w-3 h-3 text-amber-500" />
+                  Générer :
+                </span>
+                {PREFIX_PRESETS.map((prefix) => (
+                  <button
+                    key={prefix}
+                    type="button"
+                    onClick={() => setFormCode(generateRandomPromoCode(prefix))}
+                    className="px-2 py-0.5 text-[10px] font-mono font-medium rounded-lg bg-muted/60 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 cursor-pointer"
+                  >
+                    {prefix}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <DialogFooter className="pt-4 border-t border-border/50 flex items-center justify-end gap-2 sticky bottom-0 bg-card/90 backdrop-blur-md pb-2">
+            {/* 2. Description de l'offre */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-foreground">Description ou Motif de l'offre</Label>
+              <Input
+                type="text"
+                value={formDescription}
+                onChange={(e) => setFormDescription(e.target.value)}
+                placeholder="Ex: Offre de bienvenue -15% dès 80 € d'achat"
+                className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
+              />
+            </div>
+
+            {/* 3. Sélecteur Visuel de Type de Réduction (3 Cartes) */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <Percent className="w-3.5 h-3.5 text-primary" />
+                <span>Type de Réduction *</span>
+              </Label>
+
+              <div className="grid grid-cols-3 gap-2">
+                {/* Carte Pourcentage */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormType("percentage");
+                    if (formValue === 0) setFormValue(10);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    formType === "percentage"
+                      ? "bg-blue-500/10 border-blue-500/50 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/30"
+                      : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
+                  }`}
+                >
+                  <Percent className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Pourcentage</p>
+                    <p className="text-[10px] opacity-80">Remise en %</p>
+                  </div>
+                </button>
+
+                {/* Carte Montant Fixe */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormType("fixed");
+                    if (formValue === 0) setFormValue(15);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    formType === "fixed"
+                      ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-emerald-500/30"
+                      : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
+                  }`}
+                >
+                  <Coins className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Montant Fixe</p>
+                    <p className="text-[10px] opacity-80">Déduction en €</p>
+                  </div>
+                </button>
+
+                {/* Carte Livraison Offerte */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormType("free_shipping");
+                    setFormValue(0);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    formType === "free_shipping"
+                      ? "bg-amber-500/10 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-sm ring-1 ring-amber-500/30"
+                      : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
+                  }`}
+                >
+                  <Truck className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Livraison</p>
+                    <p className="text-[10px] opacity-80">Frais offerts</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* 4. Valeur de Remise & Presets Rapides */}
+            {formType !== "free_shipping" && (
+              <div className="space-y-2 p-3.5 rounded-2xl bg-muted/30 border border-border/60">
+                <div className="flex justify-between items-center">
+                  <Label className="text-xs font-medium text-foreground">
+                    {formType === "percentage" ? "Valeur du Pourcentage (%) *" : "Montant de la Remise (€) *"}
+                  </Label>
+                  <span className="text-[11px] font-semibold text-primary">
+                    {formType === "percentage" ? `-${formValue}%` : `-${formValue} €`}
+                  </span>
+                </div>
+
+                <div className="relative">
+                  <Input
+                    type="number"
+                    min={formType === "percentage" ? 1 : 0.5}
+                    max={formType === "percentage" ? 100 : 9999}
+                    step={formType === "percentage" ? 1 : 0.5}
+                    value={formValue || ""}
+                    onChange={(e) => setFormValue(parseFloat(e.target.value) || 0)}
+                    placeholder={formType === "percentage" ? "Ex: 15" : "Ex: 20"}
+                    className="h-10 rounded-xl text-xs sm:text-sm bg-background border-border/80 focus:border-primary font-semibold"
+                  />
+                </div>
+
+                {/* Presets rapides de valeurs */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="text-[10px] text-muted-foreground mr-1">Raccourcis :</span>
+                  {(formType === "percentage" ? PERCENTAGE_PRESETS : FIXED_PRESETS).map((val) => (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => setFormValue(val)}
+                      className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${
+                        formValue === val
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "bg-background hover:bg-muted text-muted-foreground border border-border/60"
+                      }`}
+                    >
+                      {formType === "percentage" ? `${val}%` : `${val} €`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 5. Conditions : Panier Minimum & Quota Maximal */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Panier Minimum Requis (€)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={5}
+                  value={formMinOrder || ""}
+                  onChange={(e) => setFormMinOrder(parseFloat(e.target.value) || 0)}
+                  placeholder="0 (aucun minimum)"
+                  className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Quota Max d'Utilisations</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={formMaxUses}
+                  onChange={(e) => setFormMaxUses(e.target.value)}
+                  placeholder="Illimité"
+                  className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
+                />
+              </div>
+            </div>
+
+            {/* 6. Calendrier & Validité avec Presets */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-primary" />
+                <span>Période de Validité</span>
+              </Label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">Date de début</span>
+                  <Input
+                    type="date"
+                    value={formStartDate}
+                    onChange={(e) => setFormStartDate(e.target.value)}
+                    className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">Date d'expiration</span>
+                  <Input
+                    type="date"
+                    value={formEndDate}
+                    onChange={(e) => setFormEndDate(e.target.value)}
+                    placeholder="Illimité si vide"
+                    className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Presets de durées */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                <span className="text-[10px] text-muted-foreground mr-1">Durée :</span>
+                <button
+                  type="button"
+                  onClick={() => handleApplyDurationPreset(7)}
+                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                >
+                  7 jours
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyDurationPreset(30)}
+                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                >
+                  30 jours
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyDurationPreset(90)}
+                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                >
+                  3 mois
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyDurationPreset(null)}
+                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                >
+                  Illimité
+                </button>
+              </div>
+            </div>
+
+            {/* 7. Catégorie ciblée (Sélecteur Direct & Fiable) */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-primary" />
+                <span>Catégorie de Produits Éligible</span>
+              </Label>
+              <select
+                value={formCategory}
+                onChange={(e) => setFormCategory(e.target.value)}
+                className="w-full h-11 px-3.5 text-xs sm:text-sm rounded-xl bg-background/50 border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer transition-colors"
+              >
+                {categoryOptions.map((cat) => (
+                  <option key={cat.value} value={cat.value} className="bg-card text-foreground py-1.5">
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 8. Options de Sécurité & Statut */}
+            <div className="pt-2 space-y-3 border-t border-border/50">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-primary" />
+                    <span>Usage unique par client</span>
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Empêche un même numéro de téléphone ou email de réutiliser ce code.
+                  </p>
+                </div>
+                <Switch
+                  checked={formOncePerCustomer}
+                  onCheckedChange={setFormOncePerCustomer}
+                  className="cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>Activer immédiatement ce code promo</span>
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Le coupon sera utilisable sur le site dès l'enregistrement.
+                  </p>
+                </div>
+                <Switch
+                  checked={formIsActive}
+                  onCheckedChange={setFormIsActive}
+                  className="cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4 border-t border-border/50 flex items-center justify-end gap-2 sticky bottom-0 bg-card/95 backdrop-blur-md pb-1">
               <Button
                 type="button"
                 variant="outline"
