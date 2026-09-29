@@ -97,11 +97,12 @@ const App = () => (
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                     <FloatingCartButton />
-                  <ChatBotMount />
-                  <BackToTop />
-                  <SpeedInsights />
-                </MaintenanceGate>
-              </CartProvider>
+                    <ChatBotMount />
+                    <BackToTop />
+                    <SpeedInsights />
+                  </MaintenanceGate>
+                </CartProvider>
+              </PromoProvider>
             </CustomerAuthProvider>
           </LanguageProvider>
         </ThemeProvider>
