@@ -923,22 +923,22 @@ const Checkout = () => {
                   </div>
 
                   {/* Promo Code Input / Active Coupon Card */}
-                  <div className="border-t border-border/60 pt-3.5 space-y-2">
-                    <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                      <Tag className="w-3.5 h-3.5 text-primary" /> Code Promotionnel ou Privilège
+                  <div className="border-t border-border/60 pt-4 space-y-2.5">
+                    <Label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+                      <Tag className="w-4 h-4 text-primary" /> Code Promotionnel ou Privilège
                     </Label>
 
                     {appliedPromo ? (
-                      <div className="flex items-center justify-between gap-2 bg-primary/10 border border-primary/30 rounded-xl px-3 py-2.5 text-xs animate-in fade-in duration-200">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-primary/20 text-primary flex items-center justify-center shrink-0">
-                            <Tag className="w-3.5 h-3.5" />
+                      <div className="flex items-center justify-between gap-3 bg-primary/15 border-2 border-primary/35 rounded-2xl p-3 sm:p-3.5 text-xs sm:text-sm animate-in fade-in duration-200">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                            <Tag className="w-4 h-4" />
                           </div>
                           <div className="min-w-0">
-                            <span className="font-mono font-bold text-primary uppercase text-xs block truncate">
+                            <span className="font-mono font-bold text-primary uppercase text-xs sm:text-sm block truncate">
                               {appliedPromo.code}
                             </span>
-                            <span className="text-[10px] text-muted-foreground block truncate">
+                            <span className="text-[11px] sm:text-xs text-muted-foreground block truncate">
                               {appliedPromo.description ||
                                 (appliedPromo.type === "percentage"
                                   ? `Remise de ${appliedPromo.value}%`
@@ -949,37 +949,38 @@ const Checkout = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <div className="flex items-center gap-2.5 shrink-0">
+                          <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
                             {discountAmount > 0 ? `-${formatMAD(discountAmount)}` : "Offert"}
                           </span>
                           <button
                             type="button"
                             onClick={removePromo}
-                            className="w-6 h-6 rounded-lg hover:bg-destructive/15 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors cursor-pointer"
+                            className="w-7 h-7 rounded-lg hover:bg-destructive/15 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors cursor-pointer"
                             title="Retirer ce code"
                           >
-                            <X size={13} />
+                            <X size={15} />
                           </button>
                         </div>
                       </div>
                     ) : (
                       <form onSubmit={handleApplyPromo} className="flex items-center gap-2">
                         <div className="relative flex-1">
+                          <Tag className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <Input
                             type="text"
                             placeholder="Ex: KENZI10, BIENVENUE15..."
                             value={promoInput}
                             onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
-                            className="h-10 text-xs font-mono uppercase rounded-xl bg-background border-border/80 focus:border-primary placeholder:normal-case placeholder:font-sans"
+                            className="h-11 sm:h-12 pl-10 text-xs sm:text-sm font-mono uppercase rounded-xl bg-background border-border/80 focus:border-primary placeholder:normal-case placeholder:font-sans shadow-xs"
                           />
                         </div>
                         <Button
                           type="submit"
                           disabled={!promoInput.trim() || isApplyingPromo}
-                          className="h-10 px-4 text-xs font-semibold rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground shrink-0 cursor-pointer disabled:opacity-50"
+                          className="h-11 sm:h-12 px-5 text-xs sm:text-sm font-bold rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground shrink-0 cursor-pointer disabled:opacity-50 transition-all shadow-xs"
                         >
-                          {isApplyingPromo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Appliquer"}
+                          {isApplyingPromo ? <Loader2 className="w-4 h-4 animate-spin" /> : "Appliquer"}
                         </Button>
                       </form>
                     )}
