@@ -40,6 +40,7 @@ import Dashboard from "./admin/pages/Dashboard";
 import Produits from "./admin/pages/Produits";
 import CategoriesAdmin from "./admin/pages/Categories";
 import Commandes from "./admin/pages/Commandes";
+import Clients from "./admin/pages/Clients";
 import Promotions from "./admin/pages/Promotions";
 import Parametres from "./admin/pages/Parametres";
 import { PromoProvider } from "./contexts/PromoContext";
@@ -89,6 +90,7 @@ const App = () => (
                           <Route path="/admin/produits" element={<Produits />} />
                           <Route path="/admin/categories" element={<CategoriesAdmin />} />
                           <Route path="/admin/commandes" element={<Commandes />} />
+                          <Route path="/admin/clients" element={<Clients />} />
                           <Route path="/admin/promotions" element={<Promotions />} />
                           <Route path="/admin/parametres" element={<Parametres />} />
                         </Route>

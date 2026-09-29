@@ -28,6 +28,7 @@ import {
   Flower2,
   Palette,
   Landmark,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -93,9 +94,10 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: "Ventes & Marketing",
+    title: "Ventes & Clients",
     items: [
       { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, isOrderLink: true },
+      { to: "/admin/clients", label: "Clients", icon: Users },
       { to: "/admin/promotions", label: "Promotions & Codes", icon: Tag },
     ],
   },
@@ -112,6 +114,7 @@ const TITLES: Record<string, string> = {
   "/admin/produits": "Catalogue des Produits",
   "/admin/categories": "Univers & Familles Olfactives",
   "/admin/commandes": "Gestion des Commandes Clients",
+  "/admin/clients": "Répertoire des Clients",
   "/admin/promotions": "Promotions & Codes Réduction",
   "/admin/parametres": "Paramètres & Statut de la Maison",
 };

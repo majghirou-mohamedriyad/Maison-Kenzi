@@ -497,7 +497,6 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                     <span>{t("cart.paymentInternet", "Paiement par internet")}</span>
                   </div>
                 </div>
-              </div>
             </>
           )}
         </div>
