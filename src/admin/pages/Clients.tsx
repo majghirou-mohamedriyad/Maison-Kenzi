@@ -144,9 +144,11 @@ const Clients: React.FC = () => {
   });
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  // Chargement des données
-  const loadCustomers = useCallback(async () => {
-    setIsLoading(true);
+  // Chargement des données (avec option de rafraîchissement silencieux)
+  const loadCustomers = useCallback(async (showGlobalLoader = true) => {
+    if (showGlobalLoader) {
+      setIsLoading(true);
+    }
     try {
       const data = await fetchAdminCustomers();
       setCustomers(data);
@@ -154,12 +156,14 @@ const Clients: React.FC = () => {
       console.error("Erreur chargement clients :", err);
       toast.error("Impossible de charger la liste des clients.");
     } finally {
-      setIsLoading(false);
+      if (showGlobalLoader) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
-    loadCustomers();
+    loadCustomers(true);
   }, [loadCustomers]);
 
   // Copie dans le presse-papier avec feedback visuel
@@ -262,22 +266,31 @@ const Clients: React.FC = () => {
     if (res.success) {
       toast.success(selectedCustomer ? "Fiche client mise à jour avec succès !" : "Nouveau client ajouté !");
       setIsEditOpen(false);
-      loadCustomers();
+      loadCustomers(false);
     } else {
       toast.error(res.error || "Erreur lors de la sauvegarde.");
     }
   };
 
-  // Suppression d'un client
+  // Suppression d'un client avec mise à jour optimiste fluide (zéro scintillement ni rechargement de page)
   const handleConfirmDelete = async () => {
     if (!customerToDelete) return;
-    const res = await deleteCustomer(customerToDelete.email);
-    if (res.success) {
-      toast.success("Client supprimé avec succès.");
-      setCustomerToDelete(null);
-      loadCustomers();
-    } else {
-      toast.error(res.error || "Erreur lors de la suppression.");
+    const targetEmail = customerToDelete.email;
+
+    // Retrait optimiste immédiat de la ligne du tableau
+    setCustomers((prev) => prev.filter((c) => c.email.toLowerCase() !== targetEmail.toLowerCase()));
+    setCustomerToDelete(null);
+    toast.success("Client supprimé avec succès.");
+
+    try {
+      const res = await deleteCustomer(targetEmail);
+      if (!res.success) {
+        toast.error(res.error || "Erreur lors de la suppression en base de données.");
+        loadCustomers(false);
+      }
+    } catch {
+      toast.error("Erreur de connexion lors de la suppression.");
+      loadCustomers(false);
     }
   };
 
