@@ -741,7 +741,7 @@ const Promotions: React.FC = () => {
                               <p
                                 className={`text-[11px] flex items-center gap-1 ${
                                   isExpired ? "text-rose-500 font-semibold" : "text-muted-foreground"
-                                daylight savings text-muted-foreground`}
+                                }`}
                               >
                                 <span>Au {new Date(promo.end_date).toLocaleDateString("fr-FR")}</span>
                                 {isExpired && <span className="text-[10px] uppercase tracking-wider">(Expiré)</span>}
