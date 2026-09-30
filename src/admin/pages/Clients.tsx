@@ -9,8 +9,7 @@
  * - Adresse, Ville & Pays
  * - Historique des commandes et total cumulé des achats
  * 
- * Comprend la recherche instantanée, les filtres, le tri, l'exportation CSV,
- * la création et l'édition de fiches clients.
+ * Conception 100% responsive (vue en cartes sur mobile, tableau sur grand écran).
  * Conforme aux directives d'ingénierie : zéro emoji, icônes vectorielles lucide-react, commentaires en français.
  */
 
@@ -23,19 +22,13 @@ import {
   Calendar,
   MapPin,
   ShoppingBag,
-  Download,
-  Plus,
   Pencil,
   Trash2,
   Copy,
   Check,
   RotateCcw,
   Sparkles,
-  ShieldCheck,
-  UserCheck,
   ArrowUpDown,
-  ExternalLink,
-  Cake,
   Eye,
   X,
   Loader2,
@@ -90,7 +83,6 @@ function formatFrenchDate(dateStr?: string): string {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) {
-      // Si format YYYY-MM-DD direct
       const parts = dateStr.split("-");
       if (parts.length === 3) {
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -131,7 +123,7 @@ const Clients: React.FC = () => {
   const [customerToDelete, setCustomerToDelete] = useState<AdminCustomerItem | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Formulaire d'édition / création
+  // Formulaire d'édition
   const [formData, setFormData] = useState({
     email: "",
     first_name: "",
@@ -222,32 +214,18 @@ const Clients: React.FC = () => {
   }, [customers]);
 
   // Ouverture du formulaire de modification
-  const handleOpenEdit = (customer?: AdminCustomerItem) => {
-    if (customer) {
-      setSelectedCustomer(customer);
-      setFormData({
-        email: customer.email,
-        first_name: customer.first_name,
-        last_name: customer.last_name,
-        phone: customer.phone || "",
-        birth_date: customer.birth_date || "",
-        address: customer.address || "",
-        city: customer.city || "",
-        country: customer.country || "Belgique",
-      });
-    } else {
-      setSelectedCustomer(null);
-      setFormData({
-        email: "",
-        first_name: "",
-        last_name: "",
-        phone: "",
-        birth_date: "",
-        address: "",
-        city: "",
-        country: "Belgique",
-      });
-    }
+  const handleOpenEdit = (customer: AdminCustomerItem) => {
+    setSelectedCustomer(customer);
+    setFormData({
+      email: customer.email,
+      first_name: customer.first_name,
+      last_name: customer.last_name,
+      phone: customer.phone || "",
+      birth_date: customer.birth_date || "",
+      address: customer.address || "",
+      city: customer.city || "",
+      country: customer.country || "Belgique",
+    });
     setIsEditOpen(true);
   };
 
@@ -264,7 +242,7 @@ const Clients: React.FC = () => {
     setIsSaving(false);
 
     if (res.success) {
-      toast.success(selectedCustomer ? "Fiche client mise à jour avec succès !" : "Nouveau client ajouté !");
+      toast.success("Fiche client mise à jour avec succès !");
       setIsEditOpen(false);
       loadCustomers(false);
     } else {
@@ -272,7 +250,7 @@ const Clients: React.FC = () => {
     }
   };
 
-  // Suppression d'un client avec mise à jour optimiste fluide (zéro scintillement ni rechargement de page)
+  // Suppression d'un client avec mise à jour optimiste fluide
   const handleConfirmDelete = async () => {
     if (!customerToDelete) return;
     const targetEmail = customerToDelete.email;
@@ -294,63 +272,10 @@ const Clients: React.FC = () => {
     }
   };
 
-  // Exportation CSV pour Excel
-  const handleExportCSV = () => {
-    if (customers.length === 0) {
-      toast.info("Aucun client à exporter.");
-      return;
-    }
-
-    const headers = [
-      "Nom",
-      "Prénom",
-      "Email",
-      "Numéro de Téléphone",
-      "Date de Naissance",
-      "Âge",
-      "Adresse",
-      "Ville",
-      "Pays",
-      "Nombre de Commandes",
-      "Total Dépensé (MAD)",
-      "Date d'inscription",
-    ];
-
-    const rows = filteredCustomers.map((c) => {
-      const age = calculateAge(c.birth_date);
-      return [
-        `"${(c.last_name || "").replace(/"/g, '""')}"`,
-        `"${(c.first_name || "").replace(/"/g, '""')}"`,
-        `"${(c.email || "").replace(/"/g, '""')}"`,
-        `"${(c.phone || "").replace(/"/g, '""')}"`,
-        `"${c.birth_date || ""}"`,
-        `"${age !== null ? age : ""}"`,
-        `"${(c.address || "").replace(/"/g, '""')}"`,
-        `"${(c.city || "").replace(/"/g, '""')}"`,
-        `"${(c.country || "").replace(/"/g, '""')}"`,
-        c.orders_count,
-        c.total_spent.toFixed(2),
-        `"${c.created_at ? new Date(c.created_at).toLocaleDateString("fr-FR") : ""}"`,
-      ].join(",");
-    });
-
-    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `clients_maison_kenzi_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast.success("Fichier CSV téléchargé avec succès !");
-  };
-
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
       {/* EN-TÊTE DE LA PAGE */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shadow-xs">
@@ -367,45 +292,24 @@ const Clients: React.FC = () => {
           </div>
         </div>
 
-        {/* Boutons d'Action Principaux */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Bouton d'Actualisation */}
+        <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="outline"
             size="sm"
-            onClick={loadCustomers}
+            onClick={() => loadCustomers(true)}
             disabled={isLoading}
-            className="h-9 gap-1.5 text-xs font-semibold rounded-xl border-border/80 hover:bg-muted cursor-pointer"
+            className="h-9.5 px-3.5 gap-1.5 text-xs font-semibold rounded-xl border-border/80 hover:bg-muted cursor-pointer shadow-xs"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
             <span>Actualiser</span>
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleExportCSV}
-            className="h-9 gap-1.5 text-xs font-semibold rounded-xl border-primary/30 text-primary hover:bg-primary/10 cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Exporter CSV</span>
-          </Button>
-
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => handleOpenEdit()}
-            className="h-9 gap-1.5 text-xs font-bold rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer shadow-xs"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Nouveau Client</span>
           </Button>
         </div>
       </div>
 
       {/* CARTES KPIS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Clients */}
         <div className="bg-card/80 border border-border/70 rounded-2xl p-4 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
@@ -549,255 +453,427 @@ const Clients: React.FC = () => {
         </div>
       </div>
 
-      {/* TABLEAU DES CLIENTS */}
-      <div className="bg-card/90 border border-border/80 rounded-2xl shadow-sm overflow-hidden">
-        {isLoading ? (
-          <div className="py-20 flex flex-col items-center justify-center text-center space-y-3">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      {/* CONTENU RESPONSIVE : LISTE MOBILE & TABLEAU DESKTOP */}
+      {isLoading ? (
+        <div className="py-20 flex flex-col items-center justify-center text-center space-y-3 bg-card/90 border border-border/80 rounded-2xl">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-xs text-muted-foreground font-light">
+            Chargement des profils clients...
+          </p>
+        </div>
+      ) : filteredCustomers.length === 0 ? (
+        <div className="py-16 px-4 text-center space-y-3 bg-card/90 border border-border/80 rounded-2xl">
+          <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground mx-auto">
+            <Users className="w-6 h-6" />
+          </div>
+          <div className="space-y-1 max-w-sm mx-auto">
+            <h3 className="font-serif text-sm sm:text-base font-bold text-foreground">
+              Aucun client trouvé
+            </h3>
             <p className="text-xs text-muted-foreground font-light">
-              Chargement des profils clients...
+              {searchQuery
+                ? "Aucun client ne correspond à votre recherche. Essayez d'autres mots-clés."
+                : "Aucun profil client n'a encore été enregistré sur la boutique."}
             </p>
           </div>
-        ) : filteredCustomers.length === 0 ? (
-          <div className="py-16 px-4 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground mx-auto">
-              <Users className="w-6 h-6" />
-            </div>
-            <div className="space-y-1 max-w-sm mx-auto">
-              <h3 className="font-serif text-sm sm:text-base font-bold text-foreground">
-                Aucun client trouvé
-              </h3>
-              <p className="text-xs text-muted-foreground font-light">
-                {searchQuery
-                  ? "Aucun client ne correspond à votre recherche. Essayez d'autres mots-clés."
-                  : "Aucun profil client n'a encore été enregistré sur la boutique."}
-              </p>
-            </div>
-            {searchQuery && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchQuery("")}
-                className="text-xs font-semibold rounded-xl"
-              >
-                Réinitialiser la recherche
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-border/70 bg-muted/40 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-4">Client</th>
-                  <th className="py-3 px-4">Nom & Prénom</th>
-                  <th className="py-3 px-4">Email</th>
-                  <th className="py-3 px-4">Téléphone</th>
-                  <th className="py-3 px-4">Date de Naissance</th>
-                  <th className="py-3 px-4">Ville / Pays</th>
-                  <th className="py-3 px-4 text-right">Commandes</th>
-                  <th className="py-3 px-4 text-right">Total Dépensé</th>
-                  <th className="py-3 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {filteredCustomers.map((c) => {
-                  const fullName = `${c.first_name} ${c.last_name}`.trim() || "Client sans nom";
-                  const age = calculateAge(c.birth_date);
-                  const initials = getInitials(c.first_name, c.last_name);
+          {searchQuery && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSearchQuery("")}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Réinitialiser la recherche
+            </Button>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* 1. VUE MOBILE SOUS FORME DE CARTES (Écrans < lg) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 lg:hidden">
+            {filteredCustomers.map((c) => {
+              const fullName = `${c.first_name} ${c.last_name}`.trim() || "Client sans nom";
+              const age = calculateAge(c.birth_date);
+              const initials = getInitials(c.first_name, c.last_name);
 
-                  return (
-                    <tr
-                      key={c.id || c.email}
-                      className="hover:bg-muted/30 transition-colors group"
-                    >
-                      {/* Avatar & Initiales */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/15 text-primary border border-primary/30 flex items-center justify-center font-bold text-[11px] shrink-0 font-serif">
-                            {initials}
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-serif font-bold text-foreground block truncate">
-                              {fullName}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground font-mono">
-                              Inscrit le {new Date(c.created_at || Date.now()).toLocaleDateString("fr-FR")}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
+              return (
+                <div
+                  key={c.id || c.email}
+                  className="bg-card/90 border border-border/80 rounded-2xl p-4 shadow-xs space-y-3 hover:border-primary/40 transition-all"
+                >
+                  {/* En-tête de carte client */}
+                  <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-10 h-10 rounded-full bg-primary/15 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0 font-serif">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-serif font-bold text-sm text-foreground truncate">
+                          {fullName}
+                        </h4>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          Inscrit le {new Date(c.created_at || Date.now()).toLocaleDateString("fr-FR")}
+                        </span>
+                      </div>
+                    </div>
 
-                      {/* Nom & Prénom Séparés */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="space-y-0.5">
-                          <p className="font-semibold text-foreground">
-                            {c.last_name || "—"}
-                          </p>
-                          <p className="text-muted-foreground text-[11px]">
-                            {c.first_name || "—"}
-                          </p>
-                        </div>
-                      </td>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCustomer(c);
+                          setIsDetailOpen(true);
+                        }}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                        title="Voir la fiche"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEdit(c)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                        title="Modifier"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCustomerToDelete(c)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
 
-                      {/* Email */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-1.5 max-w-[200px]">
-                          <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  {/* Coordonnées */}
+                  <div className="space-y-1.5 text-xs">
+                    {/* Email */}
+                    <div className="flex items-center justify-between gap-2 bg-muted/30 px-2.5 py-1.5 rounded-xl">
+                      <span className="text-muted-foreground flex items-center gap-1.5 shrink-0 text-[11px]">
+                        <Mail className="w-3.5 h-3.5 text-primary" /> Email :
+                      </span>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <a
+                          href={`mailto:${c.email}`}
+                          className="font-medium text-foreground hover:text-primary truncate text-[11px]"
+                        >
+                          {c.email}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(c.email, `m_email_${c.id}`, "Email")}
+                          className="text-muted-foreground hover:text-primary p-0.5 cursor-pointer shrink-0"
+                        >
+                          {copiedField === `m_email_${c.id}` ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Téléphone */}
+                    <div className="flex items-center justify-between gap-2 bg-muted/30 px-2.5 py-1.5 rounded-xl">
+                      <span className="text-muted-foreground flex items-center gap-1.5 shrink-0 text-[11px]">
+                        <Phone className="w-3.5 h-3.5 text-primary" /> Téléphone :
+                      </span>
+                      {c.phone ? (
+                        <div className="flex items-center gap-1.5">
                           <a
-                            href={`mailto:${c.email}`}
-                            className="text-foreground hover:text-primary transition-colors truncate hover:underline"
-                            title={c.email}
+                            href={`tel:${c.phone}`}
+                            className="font-mono text-[11px] font-semibold text-foreground hover:text-primary"
                           >
-                            {c.email}
+                            {c.phone}
                           </a>
                           <button
                             type="button"
-                            onClick={() => handleCopy(c.email, `email_${c.id}`, "Email")}
-                            className="text-muted-foreground hover:text-primary p-0.5 rounded cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-                            title="Copier l'email"
+                            onClick={() => handleCopy(c.phone!, `m_phone_${c.id}`, "Téléphone")}
+                            className="text-muted-foreground hover:text-primary p-0.5 cursor-pointer"
                           >
-                            {copiedField === `email_${c.id}` ? (
+                            {copiedField === `m_phone_${c.id}` ? (
                               <Check className="w-3 h-3 text-emerald-500" />
                             ) : (
                               <Copy className="w-3 h-3" />
                             )}
                           </button>
                         </div>
-                      </td>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground italic">Non renseigné</span>
+                      )}
+                    </div>
 
-                      {/* Téléphone */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        {c.phone ? (
-                          <div className="flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    {/* Date de Naissance */}
+                    <div className="flex items-center justify-between gap-2 px-1 py-0.5">
+                      <span className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
+                        <Calendar className="w-3.5 h-3.5 text-primary" /> Date de Naissance :
+                      </span>
+                      <span className="text-[11px] font-medium text-foreground">
+                        {c.birth_date ? (
+                          <>
+                            {formatFrenchDate(c.birth_date)}
+                            {age !== null && ` (${age} ans)`}
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground italic">Non renseignée</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Ville / Pays */}
+                    <div className="flex items-center justify-between gap-2 px-1 py-0.5">
+                      <span className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
+                        <MapPin className="w-3.5 h-3.5 text-primary" /> Localisation :
+                      </span>
+                      <span className="text-[11px] font-medium text-foreground truncate">
+                        {c.city ? `${c.city}, ` : ""}{c.country || "Belgique"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Statistiques d'Achats Mobile */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-center">
+                    <div className="bg-primary/10 rounded-xl p-2">
+                      <span className="text-[9.5px] uppercase tracking-wider text-muted-foreground block font-semibold">
+                        Commandes
+                      </span>
+                      <span className="text-sm font-bold text-foreground">
+                        {c.orders_count}
+                      </span>
+                    </div>
+                    <div className="bg-primary/10 rounded-xl p-2">
+                      <span className="text-[9.5px] uppercase tracking-wider text-muted-foreground block font-semibold">
+                        Total Dépensé
+                      </span>
+                      <span className="text-sm font-bold text-primary truncate block">
+                        {formatMAD(c.total_spent)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 2. VUE TABLEAU DESKTOP (Écrans >= lg) */}
+          <div className="hidden lg:block bg-card/90 border border-border/80 rounded-2xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-border/70 bg-muted/40 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
+                    <th className="py-3.5 px-4">Client</th>
+                    <th className="py-3.5 px-4">Nom & Prénom</th>
+                    <th className="py-3.5 px-4">Email</th>
+                    <th className="py-3.5 px-4">Téléphone</th>
+                    <th className="py-3.5 px-4">Date de Naissance</th>
+                    <th className="py-3.5 px-4">Ville / Pays</th>
+                    <th className="py-3.5 px-4 text-right">Commandes</th>
+                    <th className="py-3.5 px-4 text-right">Total Dépensé</th>
+                    <th className="py-3.5 px-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/50">
+                  {filteredCustomers.map((c) => {
+                    const fullName = `${c.first_name} ${c.last_name}`.trim() || "Client sans nom";
+                    const age = calculateAge(c.birth_date);
+                    const initials = getInitials(c.first_name, c.last_name);
+
+                    return (
+                      <tr
+                        key={c.id || c.email}
+                        className="hover:bg-muted/30 transition-colors group"
+                      >
+                        {/* Avatar & Initiales */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/15 text-primary border border-primary/30 flex items-center justify-center font-bold text-[11px] shrink-0 font-serif">
+                              {initials}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-serif font-bold text-foreground block truncate">
+                                {fullName}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground font-mono">
+                                Inscrit le {new Date(c.created_at || Date.now()).toLocaleDateString("fr-FR")}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Nom & Prénom Séparés */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <div className="space-y-0.5">
+                            <p className="font-semibold text-foreground">
+                              {c.last_name || "—"}
+                            </p>
+                            <p className="text-muted-foreground text-[11px]">
+                              {c.first_name || "—"}
+                            </p>
+                          </div>
+                        </td>
+
+                        {/* Email */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-1.5 max-w-[200px]">
+                            <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                             <a
-                              href={`tel:${c.phone}`}
-                              className="font-mono text-[11px] text-foreground hover:text-primary transition-colors hover:underline"
+                              href={`mailto:${c.email}`}
+                              className="text-foreground hover:text-primary transition-colors truncate hover:underline"
+                              title={c.email}
                             >
-                              {c.phone}
+                              {c.email}
                             </a>
                             <button
                               type="button"
-                              onClick={() => handleCopy(c.phone!, `phone_${c.id}`, "Téléphone")}
+                              onClick={() => handleCopy(c.email, `email_${c.id}`, "Email")}
                               className="text-muted-foreground hover:text-primary p-0.5 rounded cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-                              title="Copier le numéro"
+                              title="Copier l'email"
                             >
-                              {copiedField === `phone_${c.id}` ? (
+                              {copiedField === `email_${c.id}` ? (
                                 <Check className="w-3 h-3 text-emerald-500" />
                               ) : (
                                 <Copy className="w-3 h-3" />
                               )}
                             </button>
                           </div>
-                        ) : (
-                          <span className="text-[11px] text-muted-foreground italic">Non renseigné</span>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* Date de Naissance */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        {c.birth_date ? (
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-1.5 text-foreground font-medium">
-                              <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
-                              <span>{formatFrenchDate(c.birth_date)}</span>
+                        {/* Téléphone */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          {c.phone ? (
+                            <div className="flex items-center gap-1.5">
+                              <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                              <a
+                                href={`tel:${c.phone}`}
+                                className="font-mono text-[11px] text-foreground hover:text-primary transition-colors hover:underline"
+                              >
+                                {c.phone}
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => handleCopy(c.phone!, `phone_${c.id}`, "Téléphone")}
+                                className="text-muted-foreground hover:text-primary p-0.5 rounded cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                                title="Copier le numéro"
+                              >
+                                {copiedField === `phone_${c.id}` ? (
+                                  <Check className="w-3 h-3 text-emerald-500" />
+                                ) : (
+                                  <Copy className="w-3 h-3" />
+                                )}
+                              </button>
                             </div>
-                            {age !== null && (
-                              <span className="text-[10px] text-muted-foreground font-mono block pl-5">
-                                ({age} ans)
-                              </span>
-                            )}
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground italic">Non renseigné</span>
+                          )}
+                        </td>
+
+                        {/* Date de Naissance */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          {c.birth_date ? (
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-1.5 text-foreground font-medium">
+                                <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
+                                <span>{formatFrenchDate(c.birth_date)}</span>
+                              </div>
+                              {age !== null && (
+                                <span className="text-[10px] text-muted-foreground font-mono block pl-5">
+                                  ({age} ans)
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
+                              Non renseignée
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Ville & Pays */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                            <span>{c.city ? `${c.city}, ` : ""}{c.country || "Belgique"}</span>
                           </div>
-                        ) : (
-                          <span className="text-[10px] text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
-                            Non renseignée
+                        </td>
+
+                        {/* Nombre de Commandes */}
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <span
+                            className={`font-semibold px-2 py-0.5 rounded-md text-[11px] ${
+                              c.orders_count > 0
+                                ? "bg-primary/10 text-primary font-bold"
+                                : "text-muted-foreground"
+                            }`}
+                          >
+                            {c.orders_count} commande{c.orders_count > 1 ? "s" : ""}
                           </span>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* Ville & Pays */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
-                          <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>{c.city ? `${c.city}, ` : ""}{c.country || "Belgique"}</span>
-                        </div>
-                      </td>
+                        {/* Total Dépensé */}
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap font-bold text-foreground">
+                          {c.total_spent > 0 ? (
+                            <span className="text-primary">{formatMAD(c.total_spent)}</span>
+                          ) : (
+                            <span className="text-muted-foreground font-normal">0,00 MAD</span>
+                          )}
+                        </td>
 
-                      {/* Nombre de Commandes */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <span
-                          className={`font-semibold px-2 py-0.5 rounded-md text-[11px] ${
-                            c.orders_count > 0
-                              ? "bg-primary/10 text-primary font-bold"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {c.orders_count} commande{c.orders_count > 1 ? "s" : ""}
-                        </span>
-                      </td>
-
-                      {/* Total Dépensé */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap font-bold text-foreground">
-                        {c.total_spent > 0 ? (
-                          <span className="text-primary">{formatMAD(c.total_spent)}</span>
-                        ) : (
-                          <span className="text-muted-foreground font-normal">0,00 MAD</span>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedCustomer(c);
-                              setIsDetailOpen(true);
-                            }}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-                            title="Voir la fiche détaillée"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEdit(c)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                            title="Modifier les coordonnées"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setCustomerToDelete(c)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
-                            title="Supprimer ce client"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedCustomer(c);
+                                setIsDetailOpen(true);
+                              }}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                              title="Voir la fiche détaillée"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(c)}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                              title="Modifier les coordonnées"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCustomerToDelete(c)}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                              title="Supprimer ce client"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* MODALE DE FICHE DÉTAILLÉE DU CLIENT */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-md rounded-2xl bg-card border-border/80 p-5 sm:p-6 space-y-4">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-card border-border/80 p-5 sm:p-6 space-y-4">
           <DialogHeader className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-serif font-bold text-base">
+              <div className="w-12 h-12 rounded-full bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-serif font-bold text-base shrink-0">
                 {selectedCustomer ? getInitials(selectedCustomer.first_name, selectedCustomer.last_name) : "MK"}
               </div>
-              <div>
-                <DialogTitle className="font-serif text-lg font-bold text-foreground">
+              <div className="min-w-0">
+                <DialogTitle className="font-serif text-lg font-bold text-foreground truncate">
                   {selectedCustomer?.first_name} {selectedCustomer?.last_name}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground">
@@ -814,43 +890,43 @@ const Clients: React.FC = () => {
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                     Prénom
                   </span>
-                  <p className="font-bold text-foreground">{selectedCustomer.first_name || "—"}</p>
+                  <p className="font-bold text-foreground truncate">{selectedCustomer.first_name || "—"}</p>
                 </div>
                 <div className="bg-muted/40 p-2.5 rounded-xl space-y-0.5">
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                     Nom
                   </span>
-                  <p className="font-bold text-foreground">{selectedCustomer.last_name || "—"}</p>
+                  <p className="font-bold text-foreground truncate">{selectedCustomer.last_name || "—"}</p>
                 </div>
               </div>
 
               <div className="space-y-2 pt-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
                     <Mail className="w-3.5 h-3.5 text-primary" /> Email :
                   </span>
-                  <span className="font-semibold text-foreground">{selectedCustomer.email}</span>
+                  <span className="font-semibold text-foreground truncate">{selectedCustomer.email}</span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
                     <Phone className="w-3.5 h-3.5 text-primary" /> Téléphone :
                   </span>
                   <span className="font-mono font-semibold text-foreground">{selectedCustomer.phone || "Non renseigné"}</span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
                     <Calendar className="w-3.5 h-3.5 text-primary" /> Date de Naissance :
                   </span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-semibold text-foreground text-right">
                     {formatFrenchDate(selectedCustomer.birth_date)}
                     {selectedCustomer.birth_date && ` (${calculateAge(selectedCustomer.birth_date)} ans)`}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
                     <MapPin className="w-3.5 h-3.5 text-primary" /> Adresse :
                   </span>
                   <span className="font-semibold text-foreground text-right max-w-[200px] truncate">
@@ -858,11 +934,11 @@ const Clients: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
                     <MapPin className="w-3.5 h-3.5 text-primary" /> Ville / Pays :
                   </span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-semibold text-foreground text-right truncate">
                     {selectedCustomer.city ? `${selectedCustomer.city}, ` : ""}{selectedCustomer.country || "Belgique"}
                   </span>
                 </div>
@@ -879,7 +955,7 @@ const Clients: React.FC = () => {
                   <span className="text-[10px] uppercase tracking-wider text-primary font-semibold">
                     Total Dépensé
                   </span>
-                  <p className="text-base font-bold text-primary">{formatMAD(selectedCustomer.total_spent)}</p>
+                  <p className="text-base font-bold text-primary truncate">{formatMAD(selectedCustomer.total_spent)}</p>
                 </div>
               </div>
             </div>
@@ -890,7 +966,7 @@ const Clients: React.FC = () => {
               type="button"
               variant="outline"
               onClick={() => setIsDetailOpen(false)}
-              className="w-full rounded-xl text-xs font-semibold"
+              className="w-full rounded-xl text-xs font-semibold cursor-pointer"
             >
               Fermer
             </Button>
@@ -898,15 +974,15 @@ const Clients: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* MODALE DE CRÉATION / MODIFICATION CLIENT */}
+      {/* MODALE DE MODIFICATION CLIENT */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-lg rounded-2xl bg-card border-border/80 p-5 sm:p-6">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-card border-border/80 p-5 sm:p-6">
           <DialogHeader className="space-y-1">
             <DialogTitle className="font-serif text-lg font-bold text-foreground">
-              {selectedCustomer ? "Modifier la Fiche Client" : "Créer une Nouvelle Fiche Client"}
+              Modifier la Fiche Client
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
-              Renseignez les coordonnées personnelles et postales du client.
+              Modifiez les coordonnées personnelles et postales du client.
             </DialogDescription>
           </DialogHeader>
 
@@ -948,17 +1024,15 @@ const Clients: React.FC = () => {
             {/* Email */}
             <div className="space-y-1">
               <Label htmlFor="email" className="text-xs font-semibold text-foreground">
-                Adresse Email *
+                Adresse Email (Non modifiable)
               </Label>
               <Input
                 id="email"
                 type="email"
                 required
-                disabled={Boolean(selectedCustomer)}
-                placeholder="Ex: yassine.bennani@gmail.com"
+                disabled
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="h-10 text-xs rounded-xl bg-background border-border/80 focus:border-primary"
+                className="h-10 text-xs rounded-xl bg-muted/50 border-border/80 text-muted-foreground cursor-not-allowed"
               />
             </div>
 
@@ -1054,7 +1128,7 @@ const Clients: React.FC = () => {
                 disabled={isSaving}
                 className="rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer shadow-xs"
               >
-                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Enregistrer"}
+                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Enregistrer les modifications"}
               </Button>
             </DialogFooter>
           </form>
@@ -1068,7 +1142,7 @@ const Clients: React.FC = () => {
           if (!open) setCustomerToDelete(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl bg-card border-border/80 p-5 sm:p-6">
+        <AlertDialogContent className="w-[calc(100vw-2rem)] sm:max-w-md rounded-2xl bg-card border-border/80 p-5 sm:p-6">
           <AlertDialogHeader className="space-y-2">
             <AlertDialogTitle className="font-serif text-lg font-bold text-foreground">
               Supprimer ce client ?
@@ -1082,12 +1156,12 @@ const Clients: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="pt-2">
-            <AlertDialogCancel className="rounded-xl text-xs font-semibold">
+            <AlertDialogCancel className="rounded-xl text-xs font-semibold cursor-pointer">
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="rounded-xl text-xs font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-xl text-xs font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
             >
               Supprimer Définitivement
             </AlertDialogAction>

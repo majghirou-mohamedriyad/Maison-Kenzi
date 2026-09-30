@@ -478,209 +478,354 @@ const Promotions: React.FC = () => {
         </div>
       </div>
 
-      {/* Tableau des Promotions */}
-      <div className="bg-card border border-border/70 rounded-3xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-border/60 bg-muted/30 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                <th className="py-4 px-6">Code & Description</th>
-                <th className="py-4 px-4">Type & Valeur</th>
-                <th className="py-4 px-4">Conditions</th>
-                <th className="py-4 px-4">Validité</th>
-                <th className="py-4 px-4">Utilisations</th>
-                <th className="py-4 px-4 text-center">Statut</th>
-                <th className="py-4 px-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 text-xs">
-              {filteredPromotions.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-muted-foreground">
-                    <Tag className="w-10 h-10 mx-auto text-muted-foreground/40 mb-3" />
-                    <p className="font-medium text-sm text-foreground">Aucun code promotionnel trouvé</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {search || typeFilter !== "all" || statusFilter !== "all"
-                        ? "Essayez d'ajuster vos critères de recherche ou de réinitialiser les filtres."
-                        : "Commencez par créer votre premier code promo pour dynamiser vos ventes."}
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                filteredPromotions.map((promo) => {
-                  const now = new Date();
-                  const isExpired = promo.end_date && new Date(promo.end_date) < now;
-                  const isLimitReached =
-                    promo.max_uses !== null &&
-                    promo.max_uses !== undefined &&
-                    (promo.current_uses || 0) >= promo.max_uses;
+      {/* AFFICHAGE RESPONSIVE : CARTES MOBILE (< lg) & TABLEAU DESKTOP (>= lg) */}
+      {filteredPromotions.length === 0 ? (
+        <div className="bg-card border border-border/70 rounded-3xl p-12 text-center text-muted-foreground shadow-sm">
+          <Tag className="w-10 h-10 mx-auto text-muted-foreground/40 mb-3" />
+          <p className="font-medium text-sm text-foreground">Aucun code promotionnel trouvé</p>
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+            {search || typeFilter !== "all" || statusFilter !== "all"
+              ? "Essayez d'ajuster vos critères de recherche ou de réinitialiser les filtres."
+              : "Commencez par créer votre premier code promo pour dynamiser vos ventes."}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* 1. VUE MOBILE EN CARTES (< lg) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 lg:hidden">
+            {filteredPromotions.map((promo) => {
+              const now = new Date();
+              const isExpired = promo.end_date && new Date(promo.end_date) < now;
+              const isLimitReached =
+                promo.max_uses !== null &&
+                promo.max_uses !== undefined &&
+                (promo.current_uses || 0) >= promo.max_uses;
 
-                  // Label de la catégorie
-                  const catLabel =
-                    categoryOptions.find((c) => c.value === promo.target_category)?.label ||
-                    (promo.target_category === "all" || !promo.target_category ? "Tout le catalogue" : promo.target_category);
+              const catLabel =
+                categoryOptions.find((c) => c.value === promo.target_category)?.label ||
+                (promo.target_category === "all" || !promo.target_category ? "Tout le catalogue" : promo.target_category);
 
-                  return (
-                    <tr
-                      key={promo.id}
-                      className="hover:bg-muted/20 transition-colors group"
-                    >
-                      {/* Code & Description */}
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm font-semibold tracking-wider text-foreground bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5 shadow-sm">
-                            {promo.code}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyCode(promo.code)}
-                            className="text-muted-foreground hover:text-foreground p-1 transition-colors rounded-md hover:bg-muted/50 cursor-pointer"
-                            title="Copier le code"
-                          >
-                            {copiedCode === promo.code ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        </div>
-                        {promo.description && (
-                          <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1 max-w-xs">
-                            {promo.description}
-                          </p>
-                        )}
-                      </td>
-
-                      {/* Type & Valeur */}
-                      <td className="py-4 px-4">
-                        {promo.type === "percentage" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                            <Percent className="w-3 h-3" />
-                            -{promo.value}%
-                          </span>
-                        ) : promo.type === "fixed" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            <Coins className="w-3 h-3" />
-                            -{promo.value.toFixed(2)} €
-                          </span>
+              return (
+                <div
+                  key={promo.id}
+                  className="bg-card/95 border border-border/80 rounded-2xl p-4 shadow-xs space-y-3 hover:border-primary/40 transition-all"
+                >
+                  {/* En-tête de la carte */}
+                  <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs sm:text-sm font-bold tracking-wider text-primary bg-primary/10 border border-primary/25 px-2.5 py-1 rounded-lg">
+                        {promo.code}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCode(promo.code)}
+                        className="text-muted-foreground hover:text-foreground p-1 transition-colors rounded-md hover:bg-muted/50 cursor-pointer"
+                        title="Copier le code"
+                      >
+                        {copiedCode === promo.code ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                            <Truck className="w-3 h-3" />
-                            Livraison Offerte
-                          </span>
+                          <Copy className="w-3.5 h-3.5" />
                         )}
-                      </td>
+                      </button>
+                    </div>
 
-                      {/* Conditions */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-0.5">
-                          <p className="text-foreground font-medium text-[11px]">
-                            {promo.min_order_amount && promo.min_order_amount > 0
-                              ? `Dès ${promo.min_order_amount.toFixed(2)} € d'achat`
-                              : "Sans minimum d'achat"}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground line-clamp-1">
-                            {catLabel}
-                          </p>
-                        </div>
-                      </td>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={promo.is_active && !isExpired && !isLimitReached}
+                        onCheckedChange={() => togglePromoActive(promo.id)}
+                        className="cursor-pointer scale-90"
+                      />
+                      <span
+                        className={`text-[10px] font-semibold uppercase tracking-wider ${
+                          promo.is_active && !isExpired && !isLimitReached
+                            ? "text-emerald-500"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {promo.is_active && !isExpired && !isLimitReached ? "Actif" : "Inactif"}
+                      </span>
+                    </div>
+                  </div>
 
-                      {/* Calendrier */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-0.5">
-                          {promo.start_date && (
-                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                              <span>Du {new Date(promo.start_date).toLocaleDateString("fr-FR")}</span>
+                  {/* Description si présente */}
+                  {promo.description && (
+                    <p className="text-xs text-foreground/90 font-medium">
+                      {promo.description}
+                    </p>
+                  )}
+
+                  {/* Détails en grille */}
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {/* Type & Valeur */}
+                    <div className="bg-muted/30 p-2 rounded-xl space-y-0.5">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                        Remise
+                      </span>
+                      {promo.type === "percentage" ? (
+                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                          -{promo.value}%
+                        </span>
+                      ) : promo.type === "fixed" ? (
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                          -{promo.value.toFixed(2)} €
+                        </span>
+                      ) : (
+                        <span className="font-bold text-amber-600 dark:text-amber-400">
+                          Livraison Offerte
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Utilisations */}
+                    <div className="bg-muted/30 p-2 rounded-xl space-y-0.5">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
+                        Utilisations
+                      </span>
+                      <span className="font-bold text-foreground">
+                        {promo.current_uses || 0} / {promo.max_uses !== null && promo.max_uses !== undefined ? promo.max_uses : "∞"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Conditions & Validité */}
+                  <div className="space-y-1 text-[11px] text-muted-foreground border-t border-border/40 pt-2">
+                    <p className="flex items-center justify-between">
+                      <span>Condition :</span>
+                      <span className="text-foreground font-medium">
+                        {promo.min_order_amount && promo.min_order_amount > 0
+                          ? `Dès ${promo.min_order_amount.toFixed(2)} €`
+                          : "Sans minimum"}
+                      </span>
+                    </p>
+                    <p className="flex items-center justify-between">
+                      <span>Catégorie :</span>
+                      <span className="text-foreground font-medium truncate max-w-[160px]">{catLabel}</span>
+                    </p>
+                    <p className="flex items-center justify-between">
+                      <span>Validité :</span>
+                      <span className={isExpired ? "text-rose-500 font-semibold" : "text-foreground font-medium"}>
+                        {promo.end_date ? `Jusqu'au ${new Date(promo.end_date).toLocaleDateString("fr-FR")}` : "Illimitée"}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Boutons d'Action Mobile */}
+                  <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/50">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenEditModal(promo)}
+                      className="h-8 px-3 text-xs gap-1.5 rounded-xl cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>Modifier</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDeleteTargetId(promo.id)}
+                      className="h-8 px-3 text-xs gap-1.5 rounded-xl border-rose-500/30 text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Supprimer</span>
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 2. VUE TABLEAU DESKTOP (>= lg) */}
+          <div className="hidden lg:block bg-card border border-border/70 rounded-3xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-border/60 bg-muted/30 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <th className="py-4 px-6">Code & Description</th>
+                    <th className="py-4 px-4">Type & Valeur</th>
+                    <th className="py-4 px-4">Conditions</th>
+                    <th className="py-4 px-4">Validité</th>
+                    <th className="py-4 px-4">Utilisations</th>
+                    <th className="py-4 px-4 text-center">Statut</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40 text-xs">
+                  {filteredPromotions.map((promo) => {
+                    const now = new Date();
+                    const isExpired = promo.end_date && new Date(promo.end_date) < now;
+                    const isLimitReached =
+                      promo.max_uses !== null &&
+                      promo.max_uses !== undefined &&
+                      (promo.current_uses || 0) >= promo.max_uses;
+
+                    const catLabel =
+                      categoryOptions.find((c) => c.value === promo.target_category)?.label ||
+                      (promo.target_category === "all" || !promo.target_category ? "Tout le catalogue" : promo.target_category);
+
+                    return (
+                      <tr
+                        key={promo.id}
+                        className="hover:bg-muted/20 transition-colors group"
+                      >
+                        {/* Code & Description */}
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm font-semibold tracking-wider text-foreground bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5 shadow-sm">
+                              {promo.code}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyCode(promo.code)}
+                              className="text-muted-foreground hover:text-foreground p-1 transition-colors rounded-md hover:bg-muted/50 cursor-pointer"
+                              title="Copier le code"
+                            >
+                              {copiedCode === promo.code ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </div>
+                          {promo.description && (
+                            <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1 max-w-xs">
+                              {promo.description}
                             </p>
                           )}
-                          {promo.end_date ? (
-                            <p
-                              className={`text-[11px] flex items-center gap-1 ${
-                                isExpired ? "text-rose-500 font-semibold" : "text-muted-foreground"
+                        </td>
+
+                        {/* Type & Valeur */}
+                        <td className="py-4 px-4">
+                          {promo.type === "percentage" ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                              <Percent className="w-3 h-3" />
+                              -{promo.value}%
+                            </span>
+                          ) : promo.type === "fixed" ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                              <Coins className="w-3 h-3" />
+                              -{promo.value.toFixed(2)} €
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                              <Truck className="w-3 h-3" />
+                              Livraison Offerte
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Conditions */}
+                        <td className="py-4 px-4">
+                          <div className="space-y-0.5">
+                            <p className="text-foreground font-medium text-[11px]">
+                              {promo.min_order_amount && promo.min_order_amount > 0
+                                ? `Dès ${promo.min_order_amount.toFixed(2)} € d'achat`
+                                : "Sans minimum d'achat"}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground line-clamp-1">
+                              {catLabel}
+                            </p>
+                          </div>
+                        </td>
+
+                        {/* Calendrier */}
+                        <td className="py-4 px-4">
+                          <div className="space-y-0.5">
+                            {promo.start_date && (
+                              <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                <span>Du {new Date(promo.start_date).toLocaleDateString("fr-FR")}</span>
+                              </p>
+                            )}
+                            {promo.end_date ? (
+                              <p
+                                className={`text-[11px] flex items-center gap-1 ${
+                                  isExpired ? "text-rose-500 font-semibold" : "text-muted-foreground"
+                                daylight savings text-muted-foreground`}
+                              >
+                                <span>Au {new Date(promo.end_date).toLocaleDateString("fr-FR")}</span>
+                                {isExpired && <span className="text-[10px] uppercase tracking-wider">(Expiré)</span>}
+                              </p>
+                            ) : (
+                              <p className="text-[11px] text-emerald-500">Durée illimitée</p>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Utilisations */}
+                        <td className="py-4 px-4">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-1 font-medium text-foreground">
+                              <span>{promo.current_uses || 0}</span>
+                              <span className="text-muted-foreground text-[11px]">
+                                / {promo.max_uses !== null && promo.max_uses !== undefined ? promo.max_uses : "∞"}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              {promo.once_per_customer ? (
+                                <span className="text-primary font-medium">1x par client</span>
+                              ) : (
+                                <span>Multi-usages client</span>
+                              )}
+                            </p>
+                            {isLimitReached && (
+                              <span className="text-[10px] text-rose-500 font-semibold block">Quota atteint</span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Statut Interrupteur */}
+                        <td className="py-4 px-4 text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            <Switch
+                              checked={promo.is_active && !isExpired && !isLimitReached}
+                              onCheckedChange={() => togglePromoActive(promo.id)}
+                              className="cursor-pointer"
+                            />
+                            <span
+                              className={`text-[10px] font-medium uppercase tracking-wider ${
+                                promo.is_active && !isExpired && !isLimitReached
+                                  ? "text-emerald-500"
+                                  : "text-muted-foreground"
                               }`}
                             >
-                              <span>Au {new Date(promo.end_date).toLocaleDateString("fr-FR")}</span>
-                              {isExpired && <span className="text-[10px] uppercase tracking-wider">(Expiré)</span>}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-emerald-500">Durée illimitée</p>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Utilisations */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-1 font-medium text-foreground">
-                            <span>{promo.current_uses || 0}</span>
-                            <span className="text-muted-foreground text-[11px]">
-                              / {promo.max_uses !== null && promo.max_uses !== undefined ? promo.max_uses : "∞"}
+                              {promo.is_active && !isExpired && !isLimitReached ? "Actif" : "Inactif"}
                             </span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                            {promo.once_per_customer ? (
-                              <span className="text-primary font-medium">1x par client</span>
-                            ) : (
-                              <span>Multi-usages client</span>
-                            )}
-                          </p>
-                          {isLimitReached && (
-                            <span className="text-[10px] text-rose-500 font-semibold block">Quota atteint</span>
-                          )}
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Statut Interrupteur */}
-                      <td className="py-4 px-4 text-center">
-                        <div className="flex flex-col items-center gap-1">
-                          <Switch
-                            checked={promo.is_active && !isExpired && !isLimitReached}
-                            onCheckedChange={() => togglePromoActive(promo.id)}
-                            className="cursor-pointer"
-                          />
-                          <span
-                            className={`text-[10px] font-medium uppercase tracking-wider ${
-                              promo.is_active && !isExpired && !isLimitReached
-                                ? "text-emerald-500"
-                                : "text-muted-foreground"
-                            }`}
-                          >
-                            {promo.is_active && !isExpired && !isLimitReached ? "Actif" : "Inactif"}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleOpenEditModal(promo)}
-                            className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 cursor-pointer"
-                            title="Modifier"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeleteTargetId(promo.id)}
-                            className="w-8 h-8 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-                            title="Supprimer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                        {/* Actions */}
+                        <td className="py-4 px-6 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleOpenEditModal(promo)}
+                              className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 cursor-pointer"
+                              title="Modifier"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setDeleteTargetId(promo.id)}
+                              className="w-8 h-8 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Modale Épurée & Intuitive : Création / Modification de Code Promo */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

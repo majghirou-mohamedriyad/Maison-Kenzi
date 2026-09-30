@@ -2,8 +2,18 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-29
-- **Statut général** : Gestion des Clients & Promotions Développées avec Succès (Répertoire Clients Admin, Moteur de Calcul & Tunnels de Commande)
+- **Dernière mise à jour** : 2026-09-30
+- **Statut général** : Responsive Design Intégral (Mobile & Desktop) des Pages Admin Clients & Promotions, Nettoyage des Actions et Gestion Optimisée
+
+- [x] Optimisation Responsive Complète & Nettoyage d'Actions des Pages Admin Clients & Promotions ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx)) :
+  - [x] **Suppression des Boutons « Exporter CSV » et « Nouveau Client »** : Nettoyage de l'en-tête de la page Répertoire des Clients (`Clients.tsx`) pour une interface d'administration épurée et centrée sur la consultation/gestion.
+  - [x] **Affichage Responsive Bimodal (Cartes Mobiles & Tableau Desktop)** :
+    - Sur mobile (`< lg`) : Passage automatique en liste de cartes riches et tactiles (avatar initiales, coordonnées avec copie 1-clic, badges d'état, métriques commandes/dépenses, actions rapides).
+    - Sur grand écran (`>= lg`) : Tableau complet avec défilement horizontal fluide et colonnes aérées.
+  - [x] **Formulaires & Modales 100% Responsives** :
+    - Modale de détail client & formulaire de modification (`Clients.tsx`) avec grille adaptative (`grid-cols-1 sm:grid-cols-2`) et conteneur à défilement tactile (`max-h-[90vh] overflow-y-auto`).
+    - Modale de création/édition de code promo (`Promotions.tsx`) avec grille adaptative, sélecteurs tactiles rapides et défilement fluide sans débordement sur clavier mobile.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Vidage Complet & Gestion Globale de la Table des Promotions (`/admin/promotions`) ([`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx)) :
   - [x] **Bouton & Action « Vider la table »** : Ajout d'un bouton dédié dans l'en-tête de la page d'administration des promotions avec modale de confirmation sécurisée (`AlertDialog`).
