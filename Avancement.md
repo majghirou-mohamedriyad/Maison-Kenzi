@@ -5,7 +5,10 @@
 - **Dernière mise à jour** : 2026-09-29
 - **Statut général** : Gestion des Clients & Promotions Développées avec Succès (Répertoire Clients Admin, Moteur de Calcul & Tunnels de Commande)
 
----
+- [x] Vidage Complet & Gestion Globale de la Table des Promotions (`/admin/promotions`) ([`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx)) :
+  - [x] **Bouton & Action « Vider la table »** : Ajout d'un bouton dédié dans l'en-tête de la page d'administration des promotions avec modale de confirmation sécurisée (`AlertDialog`).
+  - [x] **Purge Synchronisée Supabase & LocalStorage** : Suppression conjointe des tables `promotions`, `promotion_redemptions` et purge du cache local, sans réinjection involontaire de codes par défaut.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Page d'Administration du Répertoire des Clients (`/admin/clients`) ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx), [`src/services/customerService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/customerService.ts), [`src/admin/AdminLayout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/AdminLayout.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx), [`supabase/migrations/20260930000000_create_customers_table.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20260930000000_create_customers_table.sql)) :
   - [x] **Affichage Complet des Coordonnées** : Tableau haute couture listant pour chaque client son **Nom**, **Prénom**, **Adresse Email**, **Numéro de Téléphone**, **Date de Naissance** (avec calcul d'âge), **Ville & Pays**, **Nombre de Commandes** et **Total Dépensé (MAD)**.

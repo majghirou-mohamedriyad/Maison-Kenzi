@@ -31,6 +31,7 @@ import {
   Users,
   Gift,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { usePromo } from "@/contexts/PromoContext";
 import { useCategories } from "@/store/useCategoryStore";
@@ -79,7 +80,7 @@ const generateRandomPromoCode = (prefix = "KENZI"): string => {
 };
 
 const Promotions: React.FC = () => {
-  const { promotions, savePromo, removePromoById, togglePromoActive, isLoading } = usePromo();
+  const { promotions, savePromo, removePromoById, togglePromoActive, clearAllPromotions, isLoading } = usePromo();
   const categoriesList = useCategories();
 
   // Liste dynamique des catégories
@@ -115,6 +116,10 @@ const Promotions: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPromo, setEditingPromo] = useState<PromoCode | null>(null);
 
+  // Modale de vidage complet
+  const [isClearAllOpen, setIsClearAllOpen] = useState(false);
+  const [isClearingAll, setIsClearingAll] = useState(false);
+
   // Formulaire de promotion
   const [formCode, setFormCode] = useState("");
   const [formDescription, setFormDescription] = useState("");
@@ -131,6 +136,20 @@ const Promotions: React.FC = () => {
 
   // Modale de confirmation de suppression
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  // Vidage complet de la table
+  const handleConfirmClearAll = async () => {
+    setIsClearingAll(true);
+    try {
+      await clearAllPromotions();
+      toast.success("Table des promotions vidée avec succès.");
+      setIsClearAllOpen(false);
+    } catch {
+      toast.error("Erreur lors de la suppression globale des promotions.");
+    } finally {
+      setIsClearingAll(false);
+    }
+  };
 
   // Copie d'un code dans le presse-papier
   const handleCopyCode = (code: string) => {
@@ -310,13 +329,28 @@ const Promotions: React.FC = () => {
           </p>
         </div>
 
-        <Button
-          onClick={handleOpenCreateModal}
-          className="h-11 px-5 rounded-2xl bg-foreground text-background hover:bg-foreground/90 transition-all font-medium text-xs uppercase tracking-wider shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nouveau Code Promo</span>
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
+          {promotions.length > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsClearAllOpen(true)}
+              disabled={isClearingAll}
+              className="h-11 px-4 rounded-2xl border-destructive/30 text-destructive hover:bg-destructive/10 transition-all font-medium text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-xs"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Vider la table</span>
+            </Button>
+          )}
+
+          <Button
+            onClick={handleOpenCreateModal}
+            className="h-11 px-5 rounded-2xl bg-foreground text-background hover:bg-foreground/90 transition-all font-medium text-xs uppercase tracking-wider shadow-md flex items-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nouveau Code Promo</span>
+          </Button>
+        </div>
       </div>
 
       {/* Cartes d'Indicateurs KPIs */}
@@ -1008,7 +1042,33 @@ const Promotions: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Modale de Confirmation de Suppression */}
+      {/* Modale de Confirmation de Vidage Complet de la Table */}
+      <AlertDialog open={isClearAllOpen} onOpenChange={(open) => !open && setIsClearAllOpen(false)}>
+        <AlertDialogContent className="rounded-3xl bg-card border-border/80 p-6">
+          <AlertDialogHeader className="space-y-2">
+            <AlertDialogTitle className="font-serif text-lg font-bold text-foreground flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-rose-500" />
+              <span>Vider l'ensemble des promotions ?</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Cette action supprimera définitivement tous les codes promotionnels créés ainsi que l'historique des coupons. Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="pt-2">
+            <AlertDialogCancel className="rounded-xl text-xs cursor-pointer">Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmClearAll}
+              disabled={isClearingAll}
+              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold uppercase tracking-wider cursor-pointer gap-2"
+            >
+              {isClearingAll ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              <span>Vider Définitivement</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modale de Confirmation de Suppression Unitaire */}
       <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => !open && setDeleteTargetId(null)}>
         <AlertDialogContent className="rounded-3xl bg-card border-border/80">
           <AlertDialogHeader>

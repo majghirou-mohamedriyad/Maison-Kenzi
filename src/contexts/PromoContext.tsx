@@ -39,6 +39,7 @@ interface PromoContextType {
   savePromo: (promo: PromoCode) => Promise<PromoCode>;
   removePromoById: (id: string) => Promise<void>;
   togglePromoActive: (id: string) => Promise<void>;
+  clearAllPromotions: () => Promise<void>;
 }
 
 const PromoContext = createContext<PromoContextType | undefined>(undefined);
@@ -203,6 +204,16 @@ export const PromoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [promotions, savePromo]
   );
 
+  // Vider complètement la table des promotions
+  const clearAllPromotionsHandler = useCallback(async (): Promise<void> => {
+    setPromotions([]);
+    setAppliedPromo(null);
+    setDiscountAmount(0);
+    setFreeShippingApplied(false);
+    const { clearAllPromotions: clearService } = await import("@/services/promoService");
+    await clearService();
+  }, []);
+
   return (
     <PromoContext.Provider
       value={{
@@ -218,6 +229,7 @@ export const PromoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         savePromo,
         removePromoById,
         togglePromoActive,
+        clearAllPromotions: clearAllPromotionsHandler,
       }}
     >
       {children}

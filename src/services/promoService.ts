@@ -71,17 +71,17 @@ export const DEFAULT_PROMOTIONS: PromoCode[] = [
  * Récupère les codes promotionnels locaux
  */
 export const getLocalPromotions = (): PromoCode[] => {
-  if (typeof window === "undefined") return DEFAULT_PROMOTIONS;
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PROMOS);
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) return parsed;
     }
   } catch (err) {
     console.warn("Erreur lecture promotions locales :", err);
   }
-  return DEFAULT_PROMOTIONS;
+  return [];
 };
 
 /**
@@ -106,7 +106,7 @@ export const fetchAllPromotions = async (): Promise<PromoCode[]> => {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data && data.length > 0) {
+    if (!error && Array.isArray(data)) {
       saveLocalPromotions(data as PromoCode[]);
       return data as PromoCode[];
     }
@@ -114,6 +114,27 @@ export const fetchAllPromotions = async (): Promise<PromoCode[]> => {
     console.warn("Table promotions Supabase non disponible ou hors-ligne, utilisation du cache local :", err);
   }
   return getLocalPromotions();
+};
+
+/**
+ * Supprime l'ensemble des promotions et rédemptions (Vider la table)
+ */
+export const clearAllPromotions = async (): Promise<{ success: boolean; error?: string }> => {
+  saveLocalPromotions([]);
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem(STORAGE_KEY_REDEMPTIONS);
+      localStorage.removeItem("mk_applied_promo_code");
+    } catch {}
+  }
+  try {
+    await supabase.from("promotion_redemptions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase.from("promotions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    return { success: true };
+  } catch (err: any) {
+    console.warn("Erreur suppression globale Supabase :", err);
+    return { success: false, error: err.message };
+  }
 };
 
 /**
