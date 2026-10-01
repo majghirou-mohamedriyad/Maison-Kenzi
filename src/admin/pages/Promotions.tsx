@@ -921,39 +921,40 @@ const Promotions: React.FC = () => {
         </>
       )}
 
-      {/* Modale Épurée & Intuitive : Création / Modification de Code Promo */}
+      {/* Modale Épurée & Intuitive : Création / Modification de Code Promo (Format Large & Confortable) */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[560px] max-h-[92vh] overflow-y-auto rounded-3xl p-0 bg-card border-border/80 shadow-2xl flex flex-col">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-3xl lg:max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl p-0 bg-card border-border/80 shadow-2xl flex flex-col">
           {/* En-tête Prestigieux */}
           <div className="p-5 sm:p-6 bg-gradient-to-r from-primary/15 via-background to-background border-b border-border/50 sticky top-0 z-10 backdrop-blur-md">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-primary/20 text-primary flex items-center justify-center shrink-0 shadow-inner">
-                <Gift className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-primary/20 text-primary flex items-center justify-center shrink-0 shadow-inner">
+                <Gift className="w-6 h-6" />
               </div>
               <div>
-                <DialogTitle className="font-serif text-xl font-light text-foreground">
+                <DialogTitle className="font-serif text-xl sm:text-2xl font-light text-foreground">
                   {editingPromo ? "Modifier le Code Promotionnel" : "Créer un Code Promotionnel"}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                  Configurez les privilèges, remises et conditions de votre offre.
+                <DialogDescription className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                  Configurez les privilèges, réductions, quotas et produits éligibles de votre offre.
                 </DialogDescription>
               </div>
             </div>
           </div>
 
-          {/* Formulaire Unique & Épuré */}
-          <form onSubmit={handleSavePromo} className="p-5 sm:p-6 space-y-4 sm:space-y-5 flex-1">
-            {/* 1. Code Promo & Générateur de Préfixes */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-primary" />
-                  <span>Code Coupon (Majuscules) *</span>
-                </Label>
-                <span className="text-[10px] text-muted-foreground">Sans espaces</span>
-              </div>
+          {/* Formulaire Structuré & Confortable */}
+          <form onSubmit={handleSavePromo} className="p-5 sm:p-7 space-y-5 flex-1">
+            {/* 1. Ligne Supérieure : Code Promo & Description (Grille 2 Colonnes) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Code Promo & Préfixes */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5 text-primary" />
+                    <span>Code Coupon (Majuscules) *</span>
+                  </Label>
+                  <span className="text-[10px] text-muted-foreground">Sans espaces</span>
+                </div>
 
-              <div className="relative">
                 <Input
                   type="text"
                   required
@@ -962,47 +963,53 @@ const Promotions: React.FC = () => {
                   placeholder="EXEMPLE10"
                   className="h-11 rounded-xl font-mono uppercase tracking-widest font-bold text-sm bg-background/50 border-border/80 focus:border-primary pl-3.5"
                 />
+
+                {/* Boutons de Préfixes Rapides */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1 mr-1">
+                    <Zap className="w-3 h-3 text-amber-500" />
+                    Générer :
+                  </span>
+                  {PREFIX_PRESETS.map((prefix) => (
+                    <button
+                      key={prefix}
+                      type="button"
+                      onClick={() => setFormCode(generateRandomPromoCode(prefix))}
+                      className="px-2 py-0.5 text-[10px] font-mono font-medium rounded-lg bg-muted/60 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 cursor-pointer"
+                    >
+                      {prefix}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Boutons de Préfixes Rapides */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                <span className="text-[10px] text-muted-foreground flex items-center gap-1 mr-1">
-                  <Zap className="w-3 h-3 text-amber-500" />
-                  Générer :
-                </span>
-                {PREFIX_PRESETS.map((prefix) => (
-                  <button
-                    key={prefix}
-                    type="button"
-                    onClick={() => setFormCode(generateRandomPromoCode(prefix))}
-                    className="px-2 py-0.5 text-[10px] font-mono font-medium rounded-lg bg-muted/60 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all border border-border/50 cursor-pointer"
-                  >
-                    {prefix}
-                  </button>
-                ))}
+              {/* Description de l'offre */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span>Description ou Motif de l'offre</span>
+                </Label>
+                <Input
+                  type="text"
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  placeholder="Ex: Offre de bienvenue -15% dès 80 € d'achat"
+                  className="h-11 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Libellé explicite pour le suivi interne et l'affichage panier.
+                </p>
               </div>
             </div>
 
-            {/* 2. Description de l'offre */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-foreground">Description ou Motif de l'offre</Label>
-              <Input
-                type="text"
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Ex: Offre de bienvenue -15% dès 80 € d'achat"
-                className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
-              />
-            </div>
-
-            {/* 3. Sélecteur Visuel de Type de Réduction (3 Cartes) */}
-            <div className="space-y-1.5">
+            {/* 2. Sélecteur Visuel de Type de Réduction (3 Grandes Cartes) */}
+            <div className="space-y-2">
               <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <Percent className="w-3.5 h-3.5 text-primary" />
                 <span>Type de Réduction *</span>
               </Label>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Carte Pourcentage */}
                 <button
                   type="button"
@@ -1010,16 +1017,16 @@ const Promotions: React.FC = () => {
                     setFormType("percentage");
                     if (formValue === 0) setFormValue(10);
                   }}
-                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[80px] ${
                     formType === "percentage"
                       ? "bg-blue-500/10 border-blue-500/50 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/30"
                       : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
                   }`}
                 >
-                  <Percent className="w-4 h-4 mb-1" />
+                  <Percent className="w-5 h-5 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Pourcentage</p>
-                    <p className="text-[10px] opacity-80">Remise en %</p>
+                    <p className="text-xs sm:text-sm font-semibold">Pourcentage</p>
+                    <p className="text-[11px] opacity-80">Remise relative en %</p>
                   </div>
                 </button>
 
@@ -1030,16 +1037,16 @@ const Promotions: React.FC = () => {
                     setFormType("fixed");
                     if (formValue === 0) setFormValue(15);
                   }}
-                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[80px] ${
                     formType === "fixed"
                       ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-emerald-500/30"
                       : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
                   }`}
                 >
-                  <Coins className="w-4 h-4 mb-1" />
+                  <Coins className="w-5 h-5 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Montant Fixe</p>
-                    <p className="text-[10px] opacity-80">Déduction en €</p>
+                    <p className="text-xs sm:text-sm font-semibold">Montant Fixe</p>
+                    <p className="text-[11px] opacity-80">Déduction directe en €</p>
                   </div>
                 </button>
 
@@ -1050,34 +1057,35 @@ const Promotions: React.FC = () => {
                     setFormType("free_shipping");
                     setFormValue(0);
                   }}
-                  className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[80px] ${
                     formType === "free_shipping"
                       ? "bg-amber-500/10 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-sm ring-1 ring-amber-500/30"
                       : "bg-background/40 border-border/70 text-muted-foreground hover:border-border hover:bg-muted/30"
                   }`}
                 >
-                  <Truck className="w-4 h-4 mb-1" />
+                  <Truck className="w-5 h-5 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Livraison</p>
-                    <p className="text-[10px] opacity-80">Frais offerts</p>
+                    <p className="text-xs sm:text-sm font-semibold">Livraison Offerte</p>
+                    <p className="text-[11px] opacity-80">Frais d'envoi offerts</p>
                   </div>
                 </button>
               </div>
             </div>
 
-            {/* 4. Valeur de Remise & Presets Rapides */}
-            {formType !== "free_shipping" && (
-              <div className="space-y-2 p-3.5 rounded-2xl bg-muted/30 border border-border/60">
-                <div className="flex justify-between items-center">
-                  <Label className="text-xs font-medium text-foreground">
-                    {formType === "percentage" ? "Valeur du Pourcentage (%) *" : "Montant de la Remise (€) *"}
-                  </Label>
-                  <span className="text-[11px] font-semibold text-primary">
-                    {formType === "percentage" ? `-${formValue}%` : `-${formValue} €`}
-                  </span>
-                </div>
+            {/* 3. Valeur de Remise & Conditions (Grille 2/3 Colonnes) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Valeur de Remise */}
+              {formType !== "free_shipping" ? (
+                <div className="space-y-2 p-3.5 rounded-2xl bg-muted/30 border border-border/60">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs font-semibold text-foreground">
+                      {formType === "percentage" ? "Pourcentage (%) *" : "Montant (€) *"}
+                    </Label>
+                    <span className="text-xs font-bold text-primary">
+                      {formType === "percentage" ? `-${formValue}%` : `-${formValue} €`}
+                    </span>
+                  </div>
 
-                <div className="relative">
                   <Input
                     type="number"
                     min={formType === "percentage" ? 1 : 0.5}
@@ -1088,33 +1096,40 @@ const Promotions: React.FC = () => {
                     placeholder={formType === "percentage" ? "Ex: 15" : "Ex: 20"}
                     className="h-10 rounded-xl text-xs sm:text-sm bg-background border-border/80 focus:border-primary font-semibold"
                   />
-                </div>
 
-                {/* Presets rapides de valeurs */}
-                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                  <span className="text-[10px] text-muted-foreground mr-1">Raccourcis :</span>
-                  {(formType === "percentage" ? PERCENTAGE_PRESETS : FIXED_PRESETS).map((val) => (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => setFormValue(val)}
-                      className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${
-                        formValue === val
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "bg-background hover:bg-muted text-muted-foreground border border-border/60"
-                      }`}
-                    >
-                      {formType === "percentage" ? `${val}%` : `${val} €`}
-                    </button>
-                  ))}
+                  {/* Presets rapides de valeurs */}
+                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                    {(formType === "percentage" ? PERCENTAGE_PRESETS : FIXED_PRESETS).map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setFormValue(val)}
+                        className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all cursor-pointer ${
+                          formValue === val
+                            ? "bg-primary text-primary-foreground shadow-xs"
+                            : "bg-background hover:bg-muted text-muted-foreground border border-border/60"
+                        }`}
+                      >
+                        {formType === "percentage" ? `${val}%` : `${val} €`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-xs sm:text-sm">
+                    <Truck className="w-4 h-4" />
+                    <span>Frais de port offerts</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Offre la livraison gratuite au client sans déduction sur les articles.
+                  </p>
+                </div>
+              )}
 
-            {/* 5. Conditions : Panier Minimum & Quota Maximal */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Panier Minimum */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-foreground">Panier Minimum Requis (€)</Label>
+                <Label className="text-xs font-semibold text-foreground">Panier Minimum Requis (€)</Label>
                 <Input
                   type="number"
                   min={0}
@@ -1124,10 +1139,14 @@ const Promotions: React.FC = () => {
                   placeholder="0 (aucun minimum)"
                   className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
                 />
+                <p className="text-[10px] text-muted-foreground">
+                  Seuil en euros avant application de la réduction.
+                </p>
               </div>
 
+              {/* Quota d'utilisations */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-foreground">Quota Max d'Utilisations</Label>
+                <Label className="text-xs font-semibold text-foreground">Quota Max d'Utilisations</Label>
                 <Input
                   type="number"
                   min={1}
@@ -1137,15 +1156,51 @@ const Promotions: React.FC = () => {
                   placeholder="Illimité"
                   className="h-10 rounded-xl text-xs sm:text-sm bg-background/50 border-border/80 focus:border-primary"
                 />
+                <p className="text-[10px] text-muted-foreground">
+                  Nombre global d'utilisations autorisées (vide = illimité).
+                </p>
               </div>
             </div>
 
-            {/* 6. Calendrier & Validité avec Presets */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-primary" />
-                <span>Période de Validité</span>
-              </Label>
+            {/* 4. Calendrier & Période de Validité */}
+            <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-muted/20 border border-border/70">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-primary" />
+                  <span>Période de Validité</span>
+                </Label>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] text-muted-foreground mr-1">Raccourcis :</span>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyDurationPreset(7)}
+                    className="px-2 py-0.5 text-[10px] rounded-md bg-background hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                  >
+                    7j
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyDurationPreset(30)}
+                    className="px-2 py-0.5 text-[10px] rounded-md bg-background hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                  >
+                    30j
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyDurationPreset(90)}
+                    className="px-2 py-0.5 text-[10px] rounded-md bg-background hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                  >
+                    3 mois
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyDurationPreset(null)}
+                    className="px-2 py-0.5 text-[10px] rounded-md bg-background hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
+                  >
+                    Illimité
+                  </button>
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -1154,7 +1209,7 @@ const Promotions: React.FC = () => {
                     type="date"
                     value={formStartDate}
                     onChange={(e) => setFormStartDate(e.target.value)}
-                    className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
+                    className="h-10 rounded-xl text-xs bg-background border-border/80 focus:border-primary"
                   />
                 </div>
 
@@ -1165,53 +1220,20 @@ const Promotions: React.FC = () => {
                     value={formEndDate}
                     onChange={(e) => setFormEndDate(e.target.value)}
                     placeholder="Illimité si vide"
-                    className="h-10 rounded-xl text-xs bg-background/50 border-border/80 focus:border-primary"
+                    className="h-10 rounded-xl text-xs bg-background border-border/80 focus:border-primary"
                   />
                 </div>
               </div>
-
-              {/* Presets de durées */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                <span className="text-[10px] text-muted-foreground mr-1">Durée :</span>
-                <button
-                  type="button"
-                  onClick={() => handleApplyDurationPreset(7)}
-                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                >
-                  7 jours
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleApplyDurationPreset(30)}
-                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                >
-                  30 jours
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleApplyDurationPreset(90)}
-                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                >
-                  3 mois
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleApplyDurationPreset(null)}
-                  className="px-2 py-0.5 text-[10px] rounded-md bg-muted/60 hover:bg-muted text-muted-foreground border border-border/50 cursor-pointer"
-                >
-                  Illimité
-                </button>
-              </div>
             </div>
 
-            {/* 7. Périmètre d'Application & Éligibilité */}
-            <div className="space-y-3 p-3.5 sm:p-4 rounded-2xl bg-muted/20 border border-border/70">
+            {/* 5. Périmètre d'Application & Éligibilité (Format Étendu) */}
+            <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-muted/20 border border-border/70">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-primary" />
-                  <span>Périmètre d'Application du Code *</span>
+                <Label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <span>Périmètre d'Application du Code Promo *</span>
                 </Label>
-                <span className="text-[10px] text-muted-foreground font-medium">
+                <span className="text-[11px] text-muted-foreground font-medium">
                   {formTargetType === "all"
                     ? "Tout le catalogue"
                     : formTargetType === "category"
@@ -1221,69 +1243,69 @@ const Promotions: React.FC = () => {
               </div>
 
               {/* 3 Cartes de sélection du périmètre */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormTargetType("all")}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                     formTargetType === "all"
                       ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
                       : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
                   }`}
                 >
-                  <Sparkles className="w-4 h-4 mb-1" />
+                  <Sparkles className="w-4 h-4 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Tout le Site</p>
-                    <p className="text-[10px] opacity-80">Tous les produits</p>
+                    <p className="text-xs sm:text-sm font-semibold">Tout le Site</p>
+                    <p className="text-[10px] sm:text-[11px] opacity-80">Valable sur tous les articles</p>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setFormTargetType("category")}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                     formTargetType === "category"
                       ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
                       : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
                   }`}
                 >
-                  <Layers className="w-4 h-4 mb-1" />
+                  <Layers className="w-4 h-4 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Par Univers</p>
-                    <p className="text-[10px] opacity-80">Catégorie ciblée</p>
+                    <p className="text-xs sm:text-sm font-semibold">Par Univers</p>
+                    <p className="text-[10px] sm:text-[11px] opacity-80">Catégorie spécifique</p>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setFormTargetType("products")}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                     formTargetType === "products"
                       ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
                       : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
                   }`}
                 >
-                  <Package className="w-4 h-4 mb-1" />
+                  <Package className="w-4 h-4 mb-1.5" />
                   <div>
-                    <p className="text-xs font-semibold">Produits Ciblés</p>
-                    <p className="text-[10px] opacity-80">Sélection précise</p>
+                    <p className="text-xs sm:text-sm font-semibold">Produits Ciblés</p>
+                    <p className="text-[10px] sm:text-[11px] opacity-80">Sélection d'articles précis</p>
                   </div>
                 </button>
               </div>
 
               {/* Si Univers / Catégorie */}
               {formTargetType === "category" && (
-                <div className="space-y-1.5 pt-1">
-                  <Label className="text-[11px] font-medium text-foreground">Sélectionnez la catégorie :</Label>
+                <div className="space-y-1.5 pt-2">
+                  <Label className="text-xs font-medium text-foreground">Sélectionnez l'univers éligible :</Label>
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full h-10 px-3 text-xs sm:text-sm rounded-xl bg-background border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer"
+                    className="w-full h-11 px-3.5 text-xs sm:text-sm rounded-xl bg-background border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer"
                   >
                     {categoryOptions
                       .filter((c) => c.value !== "all")
                       .map((cat) => (
-                        <option key={cat.value} value={cat.value} className="bg-card text-foreground py-1">
+                        <option key={cat.value} value={cat.value} className="bg-card text-foreground py-1.5">
                           {cat.label}
                         </option>
                       ))}
@@ -1291,110 +1313,112 @@ const Promotions: React.FC = () => {
                 </div>
               )}
 
-              {/* Si Produits Spécifiques */}
+              {/* Si Produits Spécifiques : Grille Large 2 Colonnes */}
               {formTargetType === "products" && (
-                <div className="space-y-2.5 pt-1">
-                  <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between">
+                <div className="space-y-3 pt-2">
+                  <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
                     <div className="relative flex-1">
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         type="text"
-                        placeholder="Rechercher par nom ou catégorie..."
+                        placeholder="Rechercher un produit par nom, marque ou catégorie..."
                         value={productSearch}
                         onChange={(e) => setProductSearch(e.target.value)}
-                        className="h-9 pl-8 text-xs rounded-xl bg-background border-border/80"
+                        className="h-10 pl-9 text-xs sm:text-sm rounded-xl bg-background border-border/80"
                       />
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={handleSelectAllFilteredProducts}
-                        className="h-8 px-2.5 text-[11px] rounded-lg text-primary hover:bg-primary/10 cursor-pointer"
+                        className="h-9 px-3 text-xs rounded-xl text-primary border-primary/30 hover:bg-primary/10 cursor-pointer"
                       >
-                        <CheckSquare className="w-3 h-3 mr-1" />
+                        <CheckSquare className="w-3.5 h-3.5 mr-1.5" />
                         Tout cocher
                       </Button>
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={handleDeselectAllProducts}
-                        className="h-8 px-2.5 text-[11px] rounded-lg text-muted-foreground hover:bg-muted cursor-pointer"
+                        className="h-9 px-3 text-xs rounded-xl text-muted-foreground hover:bg-muted cursor-pointer"
                       >
-                        <Square className="w-3 h-3 mr-1" />
+                        <Square className="w-3.5 h-3.5 mr-1.5" />
                         Vider
                       </Button>
                     </div>
                   </div>
 
-                  {/* Liste défilable des produits */}
-                  <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1 border border-border/60 rounded-xl p-2 bg-background/60">
+                  {/* Grille 2 Colonnes Défilable des Produits */}
+                  <div className="max-h-72 overflow-y-auto pr-1 border border-border/60 rounded-2xl p-2.5 bg-background/60">
                     {filteredProductsForPicker.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">
+                      <p className="text-xs text-muted-foreground text-center py-6">
                         Aucun produit ne correspond à votre recherche.
                       </p>
                     ) : (
-                      filteredProductsForPicker.map((prod) => {
-                        const isSelected = formSelectedProductIds.includes(prod.id || prod.name);
-                        const thumb = prod.images?.[0] || prod.image_url;
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {filteredProductsForPicker.map((prod) => {
+                          const isSelected = formSelectedProductIds.includes(prod.id || prod.name);
+                          const thumb = prod.images?.[0] || prod.image_url;
 
-                        return (
-                          <div
-                            key={prod.id || prod.name}
-                            onClick={() => toggleProductSelection(prod.id || prod.name)}
-                            className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
-                              isSelected
-                                ? "bg-primary/10 border-primary/40 text-foreground"
-                                : "bg-card/60 border-border/40 hover:bg-muted/30 text-muted-foreground"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div
-                                className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
-                                  isSelected
-                                    ? "bg-primary border-primary text-primary-foreground"
-                                    : "border-border/80 bg-background"
-                                }`}
-                              >
-                                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                              </div>
-
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt={prod.name}
-                                  className="w-8 h-8 rounded-lg object-cover border border-border/50 shrink-0"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0 text-muted-foreground text-[10px] font-bold">
-                                  {(prod.name || "P").charAt(0)}
+                          return (
+                            <div
+                              key={prod.id || prod.name}
+                              onClick={() => toggleProductSelection(prod.id || prod.name)}
+                              className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
+                                isSelected
+                                  ? "bg-primary/10 border-primary/50 text-foreground shadow-xs ring-1 ring-primary/25"
+                                  : "bg-card/70 border-border/50 hover:bg-muted/30 text-muted-foreground hover:border-border"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
+                                    isSelected
+                                      ? "bg-primary border-primary text-primary-foreground"
+                                      : "border-border/80 bg-background"
+                                  }`}
+                                >
+                                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                                 </div>
-                              )}
 
-                              <div className="min-w-0">
-                                <p className="text-xs font-semibold text-foreground truncate">{prod.name}</p>
-                                <p className="text-[10px] text-muted-foreground truncate">
-                                  {prod.category || prod.maison || "Haute Parfumerie"}
-                                </p>
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt={prod.name}
+                                    className="w-9 h-9 rounded-lg object-cover border border-border/50 shrink-0"
+                                  />
+                                ) : (
+                                  <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0 text-muted-foreground text-[11px] font-bold">
+                                    {(prod.name || "P").charAt(0)}
+                                  </div>
+                                )}
+
+                                <div className="min-w-0">
+                                  <p className="text-xs font-semibold text-foreground truncate">{prod.name}</p>
+                                  <p className="text-[10px] text-muted-foreground truncate">
+                                    {prod.category || prod.maison || "Haute Parfumerie"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right shrink-0 pl-2">
+                                <span className="text-xs font-semibold text-foreground">
+                                  {prod.price_mad ? `${prod.price_mad} €` : ""}
+                                </span>
                               </div>
                             </div>
-
-                            <div className="text-right shrink-0 pl-2">
-                              <span className="text-xs font-medium text-foreground">
-                                {prod.price_mad ? `${prod.price_mad} €` : ""}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
 
                   {formSelectedProductIds.length > 0 && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium pt-0.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold pt-0.5">
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
                       <span>{formSelectedProductIds.length} produit(s) éligible(s) à ce code promotionnel.</span>
                     </div>
                   )}
@@ -1402,16 +1426,16 @@ const Promotions: React.FC = () => {
               )}
             </div>
 
-            {/* 8. Options de Sécurité & Statut */}
-            <div className="pt-2 space-y-3 border-t border-border/50">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
+            {/* 6. Options de Sécurité & Statut (Grille 2 Colonnes) */}
+            <div className="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-border/50">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/20 border border-border/60">
+                <div className="space-y-0.5 pr-3">
                   <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-primary" />
                     <span>Usage unique par client</span>
                   </Label>
                   <p className="text-[11px] text-muted-foreground">
-                    Empêche un même numéro de téléphone ou email de réutiliser ce code.
+                    1 seule utilisation par numéro / email.
                   </p>
                 </div>
                 <Switch
@@ -1421,14 +1445,14 @@ const Promotions: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/20 border border-border/60">
+                <div className="space-y-0.5 pr-3">
                   <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Activer immédiatement ce code promo</span>
+                    <span>Activer immédiatement</span>
                   </Label>
                   <p className="text-[11px] text-muted-foreground">
-                    Le coupon sera utilisable sur le site dès l'enregistrement.
+                    Coupon actif et utilisable dès validation.
                   </p>
                 </div>
                 <Switch
@@ -1439,7 +1463,7 @@ const Promotions: React.FC = () => {
               </div>
             </div>
 
-            <DialogFooter className="pt-4 border-t border-border/50 flex items-center justify-end gap-2 sticky bottom-0 bg-card/95 backdrop-blur-md pb-1">
+            <DialogFooter className="pt-4 border-t border-border/50 flex items-center justify-end gap-3 sticky bottom-0 bg-card/95 backdrop-blur-md pb-1">
               <Button
                 type="button"
                 variant="outline"
@@ -1451,9 +1475,9 @@ const Promotions: React.FC = () => {
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="h-11 rounded-xl bg-foreground text-background hover:bg-foreground/90 text-xs font-semibold uppercase tracking-wider px-6 cursor-pointer shadow-md"
+                className="h-11 rounded-xl bg-foreground text-background hover:bg-foreground/90 text-xs font-semibold uppercase tracking-wider px-7 cursor-pointer shadow-md"
               >
-                {isSaving ? "Enregistrement..." : editingPromo ? "Mettre à jour" : "Créer le Code Promo"}
+                {isSaving ? "Enregistrement..." : editingPromo ? "Mettre à jour l'offre" : "Créer le Code Promo"}
               </Button>
             </DialogFooter>
           </form>

@@ -9,7 +9,7 @@
   - [x] **Périmètre à 3 Niveaux de Ciblage** : Choix visuel dans l'administration entre *Tout le Site* (tous produits), *Par Univers* (catégorie ciblée) et *Produits Ciblés* (sélection nominative précise).
   - [x] **Sélecteur Multi-Produits Haute Précision dans l'Admin** : Recherche instantanée dans le catalogue, cases à cocher, affichage des photos miniatures, univers et prix, raccourcis « Tout cocher » et « Vider », et badge récapitulatif du nombre de produits éligibles.
   - [x] **Calcul Intelligent de la Réduction Éligible** : Le moteur de validation (`validatePromoCode`) et le contexte (`PromoContext`) vérifient la présence des articles ciblés dans le panier et appliquent la réduction (% ou montant fixe) **uniquement sur le sous-total des produits éligibles**.
-  - [x] **Badges & Visibilité dans les Tableaux & Cartes Mobiles** : Affichage d'un badge élégant `X produit(s) ciblé(s)` avec icône vectorielle `Package` dans la vue mobile et le tableau desktop d'administration.
+  - [x] **Élargissement Grand Format de la Modale de Création** : Passage à une largeur spacieuse et confortable (`sm:max-w-3xl lg:max-w-4xl`), organisation des champs en grille 2 et 3 colonnes, et affichage des produits ciblés en grille double défilable.
   - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Optimisation Responsive Complète & Nettoyage d'Actions des Pages Admin Clients & Promotions ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx)) :
