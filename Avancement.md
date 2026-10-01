@@ -2,8 +2,15 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-09-30
-- **Statut général** : Responsive Design Intégral (Mobile & Desktop) des Pages Admin Clients & Promotions, Nettoyage des Actions et Gestion Optimisée
+- **Dernière mise à jour** : 2026-10-01
+- **Statut général** : Ciblage Multi-Produits des Codes Promotionnels, Moteur de Calcul Éligible & Responsive Design
+
+- [x] Ciblage par Produits Spécifiques & Univers dans les Promotions ([`src/types/promotions.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/promotions.ts), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`supabase/migrations/20261001000000_add_target_products_to_promotions.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20261001000000_add_target_products_to_promotions.sql)) :
+  - [x] **Périmètre à 3 Niveaux de Ciblage** : Choix visuel dans l'administration entre *Tout le Site* (tous produits), *Par Univers* (catégorie ciblée) et *Produits Ciblés* (sélection nominative précise).
+  - [x] **Sélecteur Multi-Produits Haute Précision dans l'Admin** : Recherche instantanée dans le catalogue, cases à cocher, affichage des photos miniatures, univers et prix, raccourcis « Tout cocher » et « Vider », et badge récapitulatif du nombre de produits éligibles.
+  - [x] **Calcul Intelligent de la Réduction Éligible** : Le moteur de validation (`validatePromoCode`) et le contexte (`PromoContext`) vérifient la présence des articles ciblés dans le panier et appliquent la réduction (% ou montant fixe) **uniquement sur le sous-total des produits éligibles**.
+  - [x] **Badges & Visibilité dans les Tableaux & Cartes Mobiles** : Affichage d'un badge élégant `X produit(s) ciblé(s)` avec icône vectorielle `Package` dans la vue mobile et le tableau desktop d'administration.
+  - [x] **Conformité & Zéro Emoji** : Typographie Haute Parfumerie, icônes vectorielles `lucide-react`, commentaires en français.
 
 - [x] Optimisation Responsive Complète & Nettoyage d'Actions des Pages Admin Clients & Promotions ([`src/admin/pages/Clients.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Clients.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx)) :
   - [x] **Suppression des Boutons « Exporter CSV » et « Nouveau Client »** : Nettoyage de l'en-tête de la page Répertoire des Clients (`Clients.tsx`) pour une interface d'administration épurée et centrée sur la consultation/gestion.

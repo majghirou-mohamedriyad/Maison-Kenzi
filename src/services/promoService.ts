@@ -27,7 +27,9 @@ export const DEFAULT_PROMOTIONS: PromoCode[] = [
     is_active: true,
     start_date: new Date().toISOString(),
     end_date: null,
+    target_type: "all",
     target_category: "all",
+    target_products: [],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -44,7 +46,9 @@ export const DEFAULT_PROMOTIONS: PromoCode[] = [
     is_active: true,
     start_date: new Date().toISOString(),
     end_date: null,
+    target_type: "all",
     target_category: "all",
+    target_products: [],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -61,7 +65,9 @@ export const DEFAULT_PROMOTIONS: PromoCode[] = [
     is_active: true,
     start_date: new Date().toISOString(),
     end_date: null,
+    target_type: "all",
     target_category: "all",
+    target_products: [],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -286,7 +292,7 @@ export const recordPromotionRedemption = async (redemption: Omit<PromotionRedemp
 export const validatePromoCode = async (
   inputCode: string,
   subtotal: number,
-  cartItems: Array<{ price: number; quantity: number; category?: string }>,
+  cartItems: Array<{ id?: string; name?: string; price: number; quantity: number; category?: string }>,
   customerPhone?: string,
   customerEmail?: string
 ): Promise<PromoValidationResult> => {
@@ -381,14 +387,88 @@ export const validatePromoCode = async (
     }
   }
 
-  // 7. Calcul du montant de réduction
+  // 7. Vérification de l'éligibilité des articles du panier selon le ciblage
+  let eligibleItems = cartItems || [];
+  let isTargeted = false;
+
+  // 7.a Ciblage par produits spécifiques
+  if (
+    (promo.target_type === "products" || (!promo.target_type && promo.target_products && promo.target_products.length > 0)) &&
+    Array.isArray(promo.target_products) &&
+    promo.target_products.length > 0
+  ) {
+    isTargeted = true;
+    const targetedList = promo.target_products.map((t) => t.trim().toLowerCase());
+
+    eligibleItems = (cartItems || []).filter((item) => {
+      if (!item) return false;
+      const itemId = (item.id || "").trim().toLowerCase();
+      const itemName = (item.name || "").trim().toLowerCase();
+
+      return targetedList.some((target) => {
+        if (!target) return false;
+        return (
+          (itemId && itemId === target) ||
+          (itemName && itemName === target) ||
+          (itemName && target.length > 3 && itemName.includes(target)) ||
+          (itemId && target.length > 3 && itemId.includes(target))
+        );
+      });
+    });
+
+    if (eligibleItems.length === 0) {
+      const namesPreview = Array.isArray(promo.target_product_names) && promo.target_product_names.length > 0
+        ? ` (${promo.target_product_names.slice(0, 2).join(", ")}${promo.target_product_names.length > 2 ? "..." : ""})`
+        : "";
+      return {
+        isValid: false,
+        discountAmount: 0,
+        finalAmount: subtotal,
+        errorMessage: `Ce code promotionnel s'applique uniquement à des articles spécifiques${namesPreview} non présents dans votre panier.`,
+      };
+    }
+  }
+  // 7.b Ciblage par catégorie
+  else if (
+    promo.target_type === "category" &&
+    promo.target_category &&
+    promo.target_category !== "all"
+  ) {
+    isTargeted = true;
+    const targetCat = promo.target_category.toLowerCase();
+
+    eligibleItems = (cartItems || []).filter((item) => {
+      if (!item) return false;
+      const cat = (item.category || "").toLowerCase();
+      return cat && cat === targetCat;
+    });
+
+    // Si les articles du panier ne portent pas explicitement la catégorie, on ne bloque pas si le panier est non vide
+    if (eligibleItems.length === 0 && (cartItems || []).some((i) => i.category)) {
+      return {
+        isValid: false,
+        discountAmount: 0,
+        finalAmount: subtotal,
+        errorMessage: `Ce code promotionnel s'applique uniquement aux articles de la catégorie sélectionnée.`,
+      };
+    }
+    if (eligibleItems.length === 0) {
+      eligibleItems = cartItems || [];
+    }
+  }
+
+  // 8. Calcul de la base éligible et de la réduction
+  const eligibleSubtotal = isTargeted
+    ? eligibleItems.reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0)
+    : subtotal;
+
   let discountAmount = 0;
   let freeShippingApplied = false;
 
   if (promo.type === "percentage") {
-    discountAmount = Math.round((subtotal * (promo.value / 100)) * 100) / 100;
+    discountAmount = Math.round((eligibleSubtotal * (promo.value / 100)) * 100) / 100;
   } else if (promo.type === "fixed") {
-    discountAmount = Math.min(promo.value, subtotal);
+    discountAmount = Math.min(promo.value, eligibleSubtotal);
   } else if (promo.type === "free_shipping") {
     freeShippingApplied = true;
     discountAmount = 0;

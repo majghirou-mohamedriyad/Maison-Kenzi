@@ -228,19 +228,39 @@ const ExpressOrderForm = ({
   // Recalcul automatique de la remise si le montant cumulé change
   useEffect(() => {
     const allCartLikeItems = [
-      ...activeMainItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
-      ...extraItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+      ...activeMainItems.map((it) => ({
+        id: it.parfumName || parfumName,
+        name: it.parfumName || parfumName,
+        price: it.unitPrice,
+        quantity: it.quantity,
+      })),
+      ...extraItems.map((it) => ({
+        id: it.parfumId || it.parfumName,
+        name: it.parfumName,
+        price: it.unitPrice,
+        quantity: it.quantity,
+      })),
     ];
     recalculateDiscount(cumulativeTotalPrice, allCartLikeItems);
-  }, [cumulativeTotalPrice, activeMainItems, extraItems, recalculateDiscount]);
+  }, [cumulativeTotalPrice, activeMainItems, extraItems, parfumName, recalculateDiscount]);
 
   const handleApplyPromo = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!promoInput.trim()) return;
     setIsApplyingPromo(true);
     const allCartLikeItems = [
-      ...activeMainItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
-      ...extraItems.map((it) => ({ price: it.unitPrice, quantity: it.quantity })),
+      ...activeMainItems.map((it) => ({
+        id: it.parfumName || parfumName,
+        name: it.parfumName || parfumName,
+        price: it.unitPrice,
+        quantity: it.quantity,
+      })),
+      ...extraItems.map((it) => ({
+        id: it.parfumId || it.parfumName,
+        name: it.parfumName,
+        price: it.unitPrice,
+        quantity: it.quantity,
+      })),
     ];
     await applyPromo(
       promoInput,

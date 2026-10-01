@@ -8,6 +8,8 @@
 
 export type PromoType = "percentage" | "fixed" | "free_shipping";
 
+export type PromoTargetType = "all" | "category" | "products";
+
 export type PromoCategoryTarget = "all" | "parfums" | "cosmetiques" | "artisanat" | "bazar-chic" | string;
 
 /**
@@ -26,7 +28,10 @@ export interface PromoCode {
   is_active: boolean;               // Statut actif / inactif
   start_date?: string | null;       // Date ISO de début de validité
   end_date?: string | null;         // Date ISO de fin de validité / expiration
-  target_category?: PromoCategoryTarget; // Catégorie ciblée ("all" ou slug de catégorie)
+  target_type?: PromoTargetType;    // Type de ciblage : "all" (tout), "category" (par univers), "products" (sélection précise)
+  target_category?: PromoCategoryTarget; // Catégorie ciblée si target_type === "category"
+  target_products?: string[];       // Liste des identifiants / noms des produits éligibles si target_type === "products"
+  target_product_names?: string[]; // Libellés des produits ciblés pour affichage fluide
   created_at?: string;
   updated_at?: string;
 }

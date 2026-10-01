@@ -17,6 +17,14 @@ import {
 } from "@/services/promoService";
 import { toast } from "sonner";
 
+export interface PromoCartItem {
+  id?: string;
+  name?: string;
+  price: number;
+  quantity: number;
+  category?: string;
+}
+
 interface PromoContextType {
   promotions: PromoCode[];
   appliedPromo: PromoCode | null;
@@ -26,14 +34,14 @@ interface PromoContextType {
   applyPromo: (
     code: string,
     subtotal: number,
-    cartItems: Array<{ price: number; quantity: number; category?: string }>,
+    cartItems: PromoCartItem[],
     customerPhone?: string,
     customerEmail?: string
   ) => Promise<PromoValidationResult>;
   removePromo: () => void;
   recalculateDiscount: (
     subtotal: number,
-    cartItems: Array<{ price: number; quantity: number; category?: string }>
+    cartItems: PromoCartItem[]
   ) => void;
   refreshPromotions: () => Promise<void>;
   savePromo: (promo: PromoCode) => Promise<PromoCode>;
@@ -70,9 +78,9 @@ export const PromoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     refreshPromotions();
   }, [refreshPromotions]);
 
-  // Recalcul du montant de remise si le sous-total du panier change
+  // Recalcul du montant de remise si le sous-total ou les articles du panier changent
   const recalculateDiscount = useCallback(
-    (subtotal: number, cartItems: Array<{ price: number; quantity: number; category?: string }>) => {
+    (subtotal: number, cartItems: PromoCartItem[]) => {
       if (!appliedPromo) {
         setDiscountAmount(0);
         setFreeShippingApplied(false);
@@ -93,12 +101,89 @@ export const PromoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return;
       }
 
+      // Détermination des articles éligibles selon le ciblage
+      let eligibleItems = cartItems || [];
+      let isTargeted = false;
+
+      // Ciblage par produits
+      if (
+        (appliedPromo.target_type === "products" || (!appliedPromo.target_type && appliedPromo.target_products && appliedPromo.target_products.length > 0)) &&
+        Array.isArray(appliedPromo.target_products) &&
+        appliedPromo.target_products.length > 0
+      ) {
+        isTargeted = true;
+        const targetedList = appliedPromo.target_products.map((t) => t.trim().toLowerCase());
+
+        eligibleItems = (cartItems || []).filter((item) => {
+          if (!item) return false;
+          const itemId = (item.id || "").trim().toLowerCase();
+          const itemName = (item.name || "").trim().toLowerCase();
+
+          return targetedList.some((target) => {
+            if (!target) return false;
+            return (
+              (itemId && itemId === target) ||
+              (itemName && itemName === target) ||
+              (itemName && target.length > 3 && itemName.includes(target)) ||
+              (itemId && target.length > 3 && itemId.includes(target))
+            );
+          });
+        });
+
+        if (eligibleItems.length === 0 && (cartItems || []).length > 0) {
+          setAppliedPromo(null);
+          setDiscountAmount(0);
+          setFreeShippingApplied(false);
+          try {
+            localStorage.removeItem(APPLIED_PROMO_STORAGE_KEY);
+          } catch {}
+          toast.info("Code promotionnel retiré", {
+            description: "Les articles éligibles à cette promotion ne sont plus dans votre panier.",
+          });
+          return;
+        }
+      }
+      // Ciblage par catégorie
+      else if (
+        appliedPromo.target_type === "category" &&
+        appliedPromo.target_category &&
+        appliedPromo.target_category !== "all"
+      ) {
+        isTargeted = true;
+        const targetCat = appliedPromo.target_category.toLowerCase();
+        eligibleItems = (cartItems || []).filter((item) => {
+          if (!item) return false;
+          const cat = (item.category || "").toLowerCase();
+          return cat && cat === targetCat;
+        });
+
+        if (eligibleItems.length === 0 && (cartItems || []).some((i) => i.category)) {
+          setAppliedPromo(null);
+          setDiscountAmount(0);
+          setFreeShippingApplied(false);
+          try {
+            localStorage.removeItem(APPLIED_PROMO_STORAGE_KEY);
+          } catch {}
+          toast.info("Code promotionnel retiré", {
+            description: "Les articles de la catégorie éligible ne sont plus dans votre panier.",
+          });
+          return;
+        }
+        if (eligibleItems.length === 0) {
+          eligibleItems = cartItems || [];
+        }
+      }
+
+      const eligibleSubtotal = isTargeted
+        ? eligibleItems.reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0)
+        : subtotal;
+
       if (appliedPromo.type === "percentage") {
-        const discount = Math.round((subtotal * (appliedPromo.value / 100)) * 100) / 100;
+        const discount = Math.round((eligibleSubtotal * (appliedPromo.value / 100)) * 100) / 100;
         setDiscountAmount(discount);
         setFreeShippingApplied(false);
       } else if (appliedPromo.type === "fixed") {
-        const discount = Math.min(appliedPromo.value, subtotal);
+        const discount = Math.min(appliedPromo.value, eligibleSubtotal);
         setDiscountAmount(discount);
         setFreeShippingApplied(false);
       } else if (appliedPromo.type === "free_shipping") {
@@ -114,7 +199,7 @@ export const PromoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     async (
       code: string,
       subtotal: number,
-      cartItems: Array<{ price: number; quantity: number; category?: string }>,
+      cartItems: PromoCartItem[],
       customerPhone?: string,
       customerEmail?: string
     ): Promise<PromoValidationResult> => {

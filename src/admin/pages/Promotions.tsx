@@ -32,10 +32,15 @@ import {
   Gift,
   Zap,
   Loader2,
+  Package,
+  CheckSquare,
+  Square,
+  X,
 } from "lucide-react";
 import { usePromo } from "@/contexts/PromoContext";
 import { useCategories } from "@/store/useCategoryStore";
-import type { PromoCode, PromoType, PromoCategoryTarget } from "@/types/promotions";
+import { useParfums } from "@/hooks/useParfums";
+import type { PromoCode, PromoType, PromoCategoryTarget, PromoTargetType } from "@/types/promotions";
 import {
   Dialog,
   DialogContent,
@@ -82,6 +87,7 @@ const generateRandomPromoCode = (prefix = "KENZI"): string => {
 const Promotions: React.FC = () => {
   const { promotions, savePromo, removePromoById, togglePromoActive, clearAllPromotions, isLoading } = usePromo();
   const categoriesList = useCategories();
+  const { data: allProducts = [] } = useParfums();
 
   // Liste dynamique des catégories
   const categoryOptions = useMemo(() => {
@@ -131,11 +137,27 @@ const Promotions: React.FC = () => {
   const [formIsActive, setFormIsActive] = useState<boolean>(true);
   const [formStartDate, setFormStartDate] = useState<string>("");
   const [formEndDate, setFormEndDate] = useState<string>("");
+  const [formTargetType, setFormTargetType] = useState<PromoTargetType>("all");
   const [formCategory, setFormCategory] = useState<PromoCategoryTarget>("all");
+  const [formSelectedProductIds, setFormSelectedProductIds] = useState<string[]>([]);
+  const [productSearch, setProductSearch] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // Modale de confirmation de suppression
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  // Filtrage des produits pour le sélecteur dans la modale
+  const filteredProductsForPicker = useMemo(() => {
+    const list = Array.isArray(allProducts) ? allProducts : [];
+    const q = productSearch.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((p) => {
+      const matchName = (p.name || "").toLowerCase().includes(q);
+      const matchMaison = (p.maison || "").toLowerCase().includes(q);
+      const matchCat = (p.category || "").toLowerCase().includes(q);
+      return matchName || matchMaison || matchCat;
+    });
+  }, [allProducts, productSearch]);
 
   // Vidage complet de la table
   const handleConfirmClearAll = async () => {
@@ -170,6 +192,24 @@ const Promotions: React.FC = () => {
     setFormEndDate(target.toISOString().split("T")[0]);
   };
 
+  // Basculer la sélection d'un produit
+  const toggleProductSelection = (productId: string) => {
+    setFormSelectedProductIds((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    );
+  };
+
+  // Sélectionner tous les produits filtrés
+  const handleSelectAllFilteredProducts = () => {
+    const allFilteredIds = filteredProductsForPicker.map((p) => p.id || p.name);
+    setFormSelectedProductIds((prev) => Array.from(new Set([...prev, ...allFilteredIds])));
+  };
+
+  // Désélectionner tous les produits
+  const handleDeselectAllProducts = () => {
+    setFormSelectedProductIds([]);
+  };
+
   // Ouverture modale de création
   const handleOpenCreateModal = () => {
     setEditingPromo(null);
@@ -183,7 +223,10 @@ const Promotions: React.FC = () => {
     setFormIsActive(true);
     setFormStartDate(new Date().toISOString().split("T")[0]);
     setFormEndDate("");
+    setFormTargetType("all");
     setFormCategory("all");
+    setFormSelectedProductIds([]);
+    setProductSearch("");
     setIsModalOpen(true);
   };
 
@@ -200,7 +243,19 @@ const Promotions: React.FC = () => {
     setFormIsActive(promo.is_active);
     setFormStartDate(promo.start_date ? promo.start_date.split("T")[0] : "");
     setFormEndDate(promo.end_date ? promo.end_date.split("T")[0] : "");
+
+    const inferredTargetType: PromoTargetType =
+      promo.target_type ||
+      (Array.isArray(promo.target_products) && promo.target_products.length > 0
+        ? "products"
+        : promo.target_category && promo.target_category !== "all"
+        ? "category"
+        : "all");
+
+    setFormTargetType(inferredTargetType);
     setFormCategory(promo.target_category || "all");
+    setFormSelectedProductIds(promo.target_products || []);
+    setProductSearch("");
     setIsModalOpen(true);
   };
 
@@ -224,6 +279,16 @@ const Promotions: React.FC = () => {
       return;
     }
 
+    if (formTargetType === "products" && formSelectedProductIds.length === 0) {
+      toast.error("Veuillez sélectionner au moins un produit éligible pour cette promotion.");
+      return;
+    }
+
+    // Récupération des noms pour affichage fluide
+    const selectedNames = allProducts
+      .filter((p) => formSelectedProductIds.includes(p.id) || formSelectedProductIds.includes(p.name))
+      .map((p) => p.name);
+
     setIsSaving(true);
     try {
       const payload: PromoCode = {
@@ -239,7 +304,10 @@ const Promotions: React.FC = () => {
         is_active: formIsActive,
         start_date: formStartDate ? new Date(formStartDate).toISOString() : null,
         end_date: formEndDate ? new Date(formEndDate).toISOString() : null,
-        target_category: formCategory,
+        target_type: formTargetType,
+        target_category: formTargetType === "category" ? formCategory : "all",
+        target_products: formTargetType === "products" ? formSelectedProductIds : [],
+        target_product_names: formTargetType === "products" ? selectedNames : [],
         created_at: editingPromo?.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -599,8 +667,22 @@ const Promotions: React.FC = () => {
                       </span>
                     </p>
                     <p className="flex items-center justify-between">
-                      <span>Catégorie :</span>
-                      <span className="text-foreground font-medium truncate max-w-[160px]">{catLabel}</span>
+                      <span>Périmètre :</span>
+                      <span className="text-foreground font-medium truncate max-w-[170px] inline-flex items-center gap-1">
+                        {promo.target_type === "products" || (Array.isArray(promo.target_products) && promo.target_products.length > 0) ? (
+                          <span className="inline-flex items-center gap-1 text-primary font-semibold">
+                            <Package className="w-3 h-3" />
+                            {promo.target_products?.length || 0} produit(s) ciblé(s)
+                          </span>
+                        ) : promo.target_type === "category" && promo.target_category !== "all" ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Layers className="w-3 h-3" />
+                            {catLabel}
+                          </span>
+                        ) : (
+                          <span>Tout le catalogue</span>
+                        )}
+                      </span>
                     </p>
                     <p className="flex items-center justify-between">
                       <span>Validité :</span>
@@ -644,7 +726,7 @@ const Promotions: React.FC = () => {
                   <tr className="border-b border-border/60 bg-muted/30 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <th className="py-4 px-6">Code & Description</th>
                     <th className="py-4 px-4">Type & Valeur</th>
-                    <th className="py-4 px-4">Conditions</th>
+                    <th className="py-4 px-4">Conditions & Périmètre</th>
                     <th className="py-4 px-4">Validité</th>
                     <th className="py-4 px-4">Utilisations</th>
                     <th className="py-4 px-4 text-center">Statut</th>
@@ -715,17 +797,29 @@ const Promotions: React.FC = () => {
                           )}
                         </td>
 
-                        {/* Conditions */}
+                        {/* Conditions & Périmètre */}
                         <td className="py-4 px-4">
-                          <div className="space-y-0.5">
+                          <div className="space-y-1">
                             <p className="text-foreground font-medium text-[11px]">
                               {promo.min_order_amount && promo.min_order_amount > 0
                                 ? `Dès ${promo.min_order_amount.toFixed(2)} € d'achat`
                                 : "Sans minimum d'achat"}
                             </p>
-                            <p className="text-[10px] text-muted-foreground line-clamp-1">
-                              {catLabel}
-                            </p>
+                            {promo.target_type === "products" || (Array.isArray(promo.target_products) && promo.target_products.length > 0) ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-primary/10 text-primary border border-primary/25">
+                                <Package className="w-3 h-3" />
+                                {promo.target_products?.length || 0} produit(s) ciblé(s)
+                              </span>
+                            ) : promo.target_type === "category" && promo.target_category !== "all" ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground line-clamp-1">
+                                <Layers className="w-3 h-3" />
+                                {catLabel}
+                              </span>
+                            ) : (
+                              <p className="text-[10px] text-muted-foreground line-clamp-1">
+                                Tout le catalogue
+                              </p>
+                            )}
                           </div>
                         </td>
 
@@ -1110,23 +1204,202 @@ const Promotions: React.FC = () => {
               </div>
             </div>
 
-            {/* 7. Catégorie ciblée (Sélecteur Direct & Fiable) */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-primary" />
-                <span>Catégorie de Produits Éligible</span>
-              </Label>
-              <select
-                value={formCategory}
-                onChange={(e) => setFormCategory(e.target.value)}
-                className="w-full h-11 px-3.5 text-xs sm:text-sm rounded-xl bg-background/50 border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer transition-colors"
-              >
-                {categoryOptions.map((cat) => (
-                  <option key={cat.value} value={cat.value} className="bg-card text-foreground py-1.5">
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
+            {/* 7. Périmètre d'Application & Éligibilité */}
+            <div className="space-y-3 p-3.5 sm:p-4 rounded-2xl bg-muted/20 border border-border/70">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-primary" />
+                  <span>Périmètre d'Application du Code *</span>
+                </Label>
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  {formTargetType === "all"
+                    ? "Tout le catalogue"
+                    : formTargetType === "category"
+                    ? "Par univers"
+                    : `${formSelectedProductIds.length} article(s) sélectionné(s)`}
+                </span>
+              </div>
+
+              {/* 3 Cartes de sélection du périmètre */}
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormTargetType("all")}
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                    formTargetType === "all"
+                      ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
+                      : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Tout le Site</p>
+                    <p className="text-[10px] opacity-80">Tous les produits</p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormTargetType("category")}
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                    formTargetType === "category"
+                      ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
+                      : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
+                  }`}
+                >
+                  <Layers className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Par Univers</p>
+                    <p className="text-[10px] opacity-80">Catégorie ciblée</p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormTargetType("products")}
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
+                    formTargetType === "products"
+                      ? "bg-primary/10 border-primary text-primary shadow-xs ring-1 ring-primary/30"
+                      : "bg-background/50 border-border/70 text-muted-foreground hover:bg-muted/40"
+                  }`}
+                >
+                  <Package className="w-4 h-4 mb-1" />
+                  <div>
+                    <p className="text-xs font-semibold">Produits Ciblés</p>
+                    <p className="text-[10px] opacity-80">Sélection précise</p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Si Univers / Catégorie */}
+              {formTargetType === "category" && (
+                <div className="space-y-1.5 pt-1">
+                  <Label className="text-[11px] font-medium text-foreground">Sélectionnez la catégorie :</Label>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value)}
+                    className="w-full h-10 px-3 text-xs sm:text-sm rounded-xl bg-background border border-border/80 text-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    {categoryOptions
+                      .filter((c) => c.value !== "all")
+                      .map((cat) => (
+                        <option key={cat.value} value={cat.value} className="bg-card text-foreground py-1">
+                          {cat.label}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Si Produits Spécifiques */}
+              {formTargetType === "products" && (
+                <div className="space-y-2.5 pt-1">
+                  <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between">
+                    <div className="relative flex-1">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="Rechercher par nom ou catégorie..."
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        className="h-9 pl-8 text-xs rounded-xl bg-background border-border/80"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSelectAllFilteredProducts}
+                        className="h-8 px-2.5 text-[11px] rounded-lg text-primary hover:bg-primary/10 cursor-pointer"
+                      >
+                        <CheckSquare className="w-3 h-3 mr-1" />
+                        Tout cocher
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleDeselectAllProducts}
+                        className="h-8 px-2.5 text-[11px] rounded-lg text-muted-foreground hover:bg-muted cursor-pointer"
+                      >
+                        <Square className="w-3 h-3 mr-1" />
+                        Vider
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Liste défilable des produits */}
+                  <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1 border border-border/60 rounded-xl p-2 bg-background/60">
+                    {filteredProductsForPicker.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-4">
+                        Aucun produit ne correspond à votre recherche.
+                      </p>
+                    ) : (
+                      filteredProductsForPicker.map((prod) => {
+                        const isSelected = formSelectedProductIds.includes(prod.id || prod.name);
+                        const thumb = prod.images?.[0] || prod.image_url;
+
+                        return (
+                          <div
+                            key={prod.id || prod.name}
+                            onClick={() => toggleProductSelection(prod.id || prod.name)}
+                            className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                              isSelected
+                                ? "bg-primary/10 border-primary/40 text-foreground"
+                                : "bg-card/60 border-border/40 hover:bg-muted/30 text-muted-foreground"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div
+                                className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
+                                  isSelected
+                                    ? "bg-primary border-primary text-primary-foreground"
+                                    : "border-border/80 bg-background"
+                                }`}
+                              >
+                                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                              </div>
+
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt={prod.name}
+                                  className="w-8 h-8 rounded-lg object-cover border border-border/50 shrink-0"
+                                />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0 text-muted-foreground text-[10px] font-bold">
+                                  {(prod.name || "P").charAt(0)}
+                                </div>
+                              )}
+
+                              <div className="min-w-0">
+                                <p className="text-xs font-semibold text-foreground truncate">{prod.name}</p>
+                                <p className="text-[10px] text-muted-foreground truncate">
+                                  {prod.category || prod.maison || "Haute Parfumerie"}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="text-right shrink-0 pl-2">
+                              <span className="text-xs font-medium text-foreground">
+                                {prod.price_mad ? `${prod.price_mad} €` : ""}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {formSelectedProductIds.length > 0 && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium pt-0.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>{formSelectedProductIds.length} produit(s) éligible(s) à ce code promotionnel.</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* 8. Options de Sécurité & Statut */}
