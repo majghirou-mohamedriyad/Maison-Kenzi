@@ -1,218 +1,216 @@
-# 🌿 Maison Kenzi | Parfums & Produits Cosmétiques
+# Maison Kenzi — Plateforme E-Commerce Haute Couture
 
 <p align="center">
-  <img src="public\mk-logo.png" alt="Maison Kenzi Logo" width="120" />
+  <img src="public/mk-logo.png" alt="Logo Maison Kenzi" width="140" />
 </p>
 
 <p align="center">
-  <strong>Maison marocaine de haute parfumerie et soins d'exception.</strong><br>
-  Une plateforme e-commerce moderne, élégante et performante dédiée aux fragrances authentiques et aux soins premium au Maroc.
+  <strong>Plateforme e-commerce de prestige dédiée à la Haute Parfumerie, aux Soins Cosmétiques, aux Créations Artisanales et au Bazar Chic & Décoration.</strong><br>
+  Une expérience d'achat sur-mesure alliant élégance visuelle, personnalisation d'exception, rapidité de commande et administration complète des ventes.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18" />
-  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Stripe-Elements-635BFF?style=flat-square&logo=stripe&logoColor=white" alt="Stripe" />
+  <img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" />
 </p>
 
 ---
 
-## 📑 Sommaire
+## Sommaire
 
-- [À propos du projet](#-à-propos-du-projet)
-- [✨ Fonctionnalités Principales](#-fonctionnalités-principales)
-  - [🛍️ Boutique & Expérience Client](#-boutique--expérience-client)
-  - [⚡ E-Commerce & Tunnel d'Achat](#-e-commerce--tunnel-dachat)
-  - [🛡️ Back-Office & Administration](#️-back-office--administration)
-  - [🤖 Support Client & Assistant IA](#-support-client--assistant-ia)
-- [🛠️ Stack Technique](#️-stack-technique)
-- [📂 Structure du Projet](#-structure-du-projet)
-- [🚀 Démarrage Rapide](#-démarrage-rapide)
+- [Aperçu du Projet](#aperçu-du-projet)
+- [Piliers Fonctionnels](#piliers-fonctionnels)
+  - [1. Expérience Client & Design Haute Couture](#1-expérience-client--design-haute-couture)
+  - [2. Catalogue & Les 4 Univers](#2-catalogue--les-4-univers)
+  - [3. Tunnels de Commande & Paiement Sécurisé](#3-tunnels-de-commande--paiement-sécurisé)
+  - [4. Espace Client Privilège](#4-espace-client-privilège)
+  - [5. Moteur de Promotions & Codes Réduction](#5-moteur-de-promotions--codes-réduction)
+  - [6. Espace d'Administration & Pilotage](#6-espace-dadministration--pilotage)
+  - [7. Infrastructure Serveur & Sécurité](#7-infrastructure-serveur--sécurité)
+- [Stack Technique](#stack-technique)
+- [Architecture du Projet](#architecture-du-projet)
+- [Installation & Démarrage](#installation--démarrage)
   - [Prérequis](#prérequis)
-  - [Installation](#installation)
-  - [Variables d'Environnement](#variables-denvironnement)
-  - [Initialisation de la Base de Données](#initialisation-de-la-base-de-données)
-  - [Lancer l'Application](#lancer-lapplication)
-- [📦 Scripts Disponibles](#-scripts-disponibles)
-- [🔒 Sécurité & Bonnes Pratiques](#-sécurité--bonnes-pratiques)
-- [🌐 Déploiement](#-déploiement)
-- [🤝 Contribution](#-contribution)
-- [📄 Licence](#-licence)
+  - [Configuration de l'Environnement](#configuration-de-lenvironnement)
+  - [Lancement Local](#lancement-local)
+- [Commandes Disponibles](#commandes-disponibles)
+- [Sécurité & Conformité](#sécurité--conformité)
+- [Licence & Droits](#licence--droits)
 
 ---
 
-## 📖 À propos du projet
+## Aperçu du Projet
 
-**Maison Kenzi** est une application web e-commerce moderne conçue pour offrir une expérience utilisateur haut de gamme et immersive. Elle met en valeur des collections exclusives de parfums (Homme, Femme, Unisexe), de déodorants sticks de luxe et de coffrets cadeaux, avec une logistique adaptée au marché marocain (paiement à la livraison - *Cash on Delivery*, suivi en temps réel et livraison rapide).
-
----
-
-## ✨ Fonctionnalités Principales
-
-### 🛍️ Boutique & Expérience Client
-- **Catalogue Dynamique** : Navigation fluide par collections, genres, notes olfactives et saisons.
-- **Fiches Produits Riches** : Visualisation détaillée, sélection des contenances, prévisualisation interactive des flacons (`FlaconPreview`).
-- **Thèmes Personnalisables** : Support complet du mode Sombre (*Dark Mode*) et Clair (*Light Mode*).
-- **SEO Avancé & Données Structurées** : Intégration OpenGraph, Twitter Cards et balises JSON-LD (`schema.org`) pour un référencement optimal.
-- **Design Responsive & Micro-interactions** : Interface ultra-fluide adaptée mobile, tablette et desktop grâce à Tailwind CSS et Radix UI.
-
-### ⚡ E-Commerce & Tunnel d'Achat
-- **Panier Interactif (`CartProvider`)** : Sauvegarde locale, modification rapide des quantités et calcul dynamique des totaux.
-- **Tunnel de Commande Express (`Checkout`)** : Formulaire optimisé pour le marché local avec validation Zod et gestion du paiement à la livraison (COD).
-- **Génération de Factures PDF** : Téléchargement et visualisation des reçus et factures au format PDF avec `jspdf` et `jspdf-autotable`.
-
-### 🛡️ Back-Office & Administration
-- **Espace Administrateur Sécurisé (`/admin`)** : Authentification protégée par `AdminGuard`.
-- **Tableau de Bord & Analytics** : Statistiques des ventes, graphiques d'évolution du chiffre d'affaires et indicateurs de performance avec `Recharts`.
-- **Gestion des Produits & Stocks** : Ajout, modification, gestion des prix, statuts et stocks en temps réel.
-- **Gestion des Commandes & Clients** : Suivi des statuts (En attente, Confirmée, Expédiée, Livrée), historique client et fiches de livraison.
-- **Gestion Saisonnière & Best-Sellers** : Mise en avant simplifiée des produits vedettes et offres du moment.
-- **Finances & Rapports** : Suivi détaillé des transactions et marges.
-- **Mode Maintenance** : Passerelle de maintenance activable pour les opérations techniques (`MaintenanceGate`).
-
-### 🤖 Support Client & Assistant IA
-- **ChatBot Interactif Intégré** : Réponse instantanée aux questions fréquentes des clients (suivi de commande, conseils parfumerie, délais de livraison).
-- **Console d'Administration du Bot** : Personnalisation des réponses et paramètres de l'assistant depuis l'espace admin.
+**Maison Kenzi** est une solution e-commerce haut de gamme conçue pour valoriser des créations artisanales et des collections exclusives de haute parfumerie. Conçue avec une exigence éditoriale stricte, la plateforme associe des performances de chargement instantanées, un design immersif adaptatif (clair/sombre), un double tunnel de commande sécurisé et un back-office complet de pilotage commercial.
 
 ---
 
-## 🛠️ Stack Technique
+## Piliers Fonctionnels
+
+### 1. Expérience Client & Design Haute Couture
+- **Direction Artistique Luxury Nude** : Palette chromatique élégante (Nude, Travertin, Noir épuré et accents Doré Champagne `#9E7938`).
+- **Double Thème Visuel** : Basculement fluide entre Mode Clair et Mode Sombre.
+- **Conception 100% Responsive** : Expérience tactile fluide optimisée pour mobiles, tablettes et grands écrans.
+- **Plateforme Bilingue (Français / Anglais)** : Internationalisation complète (i18n) des interfaces, catalogues, fiches et formulaires.
+- **Micro-interactions Cinématographiques** : Transitions douces, survol subtil et icônes vectorielles professionnelles exclusives (`lucide-react`, zéro emoji).
+
+### 2. Catalogue & Les 4 Univers
+- **Parfums de Niche** : Pyramide olfactive éditoriale (Notes de tête, cœur, fond), filtres par genre, saisons et formats.
+- **Produits Cosmétiques & Soins** : Fiches détaillées, conseils d'application et ingrédients d'exception.
+- **Produits Artisanaux** : Offres par paliers et packs multi-pièces avec calcul direct de l'économie réalisée.
+- **Bazar Chic & Décoration** : Options de personnalisation client sur-mesure (pastilles de teintes, tailles/dimensions, gravure/monogramme personnalisé).
+- **Recherche & Recommandations** : Moteur de recherche instantané et carrousels intelligents de produits similaires.
+
+### 3. Tunnels de Commande & Paiement Sécurisé
+- **Tiroir Panier Flottant** : Consultation en direct sans rupture de navigation, gestion des quantités et jauge dynamique pour le palier de livraison offerte.
+- **Commande Express (1-Clic)** : Formulaire d'achat direct accéléré depuis la fiche produit avec pré-remplissage des coordonnées.
+- **Paiement Sécurisé Stripe Elements** : Prise en charge des Cartes Bancaires, Apple Pay et Stripe Link avec validation stricte des adresses et formats internationaux (Belgique, France, Maroc, etc.).
+- **Canal Conciergerie WhatsApp** : Accès direct à l'assistance privée pour un suivi personnalisé des commandes.
+
+### 4. Espace Client Privilège
+- **Gestion des Comptes Clients** : Inscription et connexion complètes (Nom, Prénom, Téléphone, Email, Date de naissance, Mot de passe avec affichage/masquage sécurisé).
+- **Espace « Mon Compte »** : Consultation et mise à jour en direct des coordonnées personnelles et de l'adresse de livraison par défaut.
+- **Historique & Suivi des Commandes** : Consultation en temps réel des commandes passées et des statuts de livraison.
+- **Sécurisation du Processus d'Achat** : Protection du tunnel de paiement et invitation fluide à l'authentification avec reprise immédiate du panier.
+
+### 5. Moteur de Promotions & Codes Réduction
+- **Typologie des Réductions** : Pourcentages (-10%, -20%), Montants fixes (-15 EUR) et Livraison gratuite.
+- **Périmètre de Ciblage Avancé** :
+  - Offre globale sur l'ensemble de la boutique.
+  - Offre restreinte à un univers spécifique (ex. Parfums ou Bazar Chic).
+  - Offre ciblée nominativement sur une sélection de produits précis avec calcul de remise appliqué exclusivement sur les articles éligibles.
+- **Contrôles Anti-Fraude** : Seuils minimaux d'achat, dates de validité, quotas d'utilisations globaux et limitation stricte à une utilisation par client.
+
+### 6. Espace d'Administration & Pilotage
+- **Tableau de Bord Stratégique** : Indicateurs clés en direct (Chiffre d'affaires, volume de commandes, catalogue actif, meilleures ventes).
+- **Gestion Complète du Catalogue & Stocks** : Création, modification, upload d'images haute définition, gestion des variantes et des options de personnalisation.
+- **Répertoire & Fiches Clients** : Consultation complète des clients, âges calculés, coordonnées, volume d'achats et montant cumulé dépensé, avec recherche multi-champs et tri avancé.
+- **Gestion des Promotions** : Création assistée de codes promotionnels, générateur de préfixes, interrupteur d'activation 1-clic et purge globale sécurisée.
+
+### 7. Infrastructure Serveur & Sécurité
+- **Déploiement VPS & Haute Disponibilité** : Conteneurisation Docker, gestionnaire de processus PM2 et serveur Nginx.
+- **Chiffrement SSL / HTTPS** : Certificats Let's Encrypt et protocoles cryptographiques stricts.
+- **Base de Données PostgreSQL & Sécurité RLS** : Politiques de Row Level Security garantissant l'étanchéité des données sensibles.
+
+---
+
+## Stack Technique
 
 | Domaine | Technologies |
 | :--- | :--- |
-| **Frontend** | [React 18](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/) |
-| **Styling & UI** | [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/) (Radix UI), [Lucide Icons](https://lucide.dev/) |
-| **State & Data Fetching** | Context API, [TanStack React Query v5](https://tanstack.com/query/latest) |
-| **Base de Données & Auth** | [Supabase](https://supabase.com/) (PostgreSQL, Row Level Security, Edge Functions) |
-| **Formulaires & Validation** | [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
-| **Visualisation & Rapports** | [Recharts](https://recharts.org/), [jsPDF](https://github.com/parallax/jsPDF) & `jspdf-autotable` |
-| **Carrousels & Gestures** | [Embla Carousel React](https://www.embla-carousel.com/) |
+| **Frontend Framework** | React 18, TypeScript 5, Vite 5 |
+| **Styling & Design System** | Tailwind CSS 3.4, Radix UI, Class Variance Authority, Lucide Icons |
+| **State Management** | Context API React, Stores personnalisés |
+| **Backend & Base de Données** | Supabase (PostgreSQL, Auth, Storage, Row Level Security) |
+| **Paiement & Monétique** | Stripe Elements, Stripe JS (@stripe/react-stripe-js) |
+| **Formulaires & Validation** | React Hook Form, Zod |
+| **Internationalisation** | Architecture bilingue native (FR / EN) |
+| **Serveur & Déploiement** | VPS Debian/Ubuntu, Docker, Nginx, PM2, Node.js |
 
 ---
 
-## 📂 Structure du Projet
+## Architecture du Projet
 
 ```text
-tabatparfum/
-├── public/                 # Assets statiques (logos, favicons, illustrations)
+Maison-Kenzi/
+├── public/                 # Assets statiques publics (logo officiel, icônes, manifest)
 ├── src/
-│   ├── admin/              # Module Back-Office (Pages, Composants, Layouts, Guards)
-│   │   ├── pages/          # Dashboard, Produits, Commandes, Clients, Finances, etc.
-│   │   ├── AdminGuard.tsx  # Protection des routes admin
-│   │   ├── AdminLayout.tsx # Navigation et mise en page back-office
-│   │   └── AdminLogin.tsx  # Connexion administrateur
-│   ├── assets/             # Images, icônes et styles importés
+│   ├── admin/              # Module Back-Office Administration
+│   │   ├── components/     # Composants dédiés (ProductModal, ProductTable, etc.)
+│   │   ├── pages/          # Dashboard, Produits, Commandes, Clients, Promotions, Finances
+│   │   ├── AdminGuard.tsx  # Protection des accès administrateur
+│   │   └── AdminLayout.tsx # Structure et navigation de la console d'administration
+│   ├── assets/             # Visuels et feuilles de style spécifiques
 │   ├── components/         # Composants réutilisables
-│   │   ├── ui/             # Composants de base shadcn/ui (Button, Dialog, etc.)
-│   │   ├── header/         # En-tête et navigation principale
-│   │   ├── footer/         # Pied de page et liens légaux
-│   │   ├── product/        # Cartes produits, filtres, sélecteurs
-│   │   ├── ChatBot.tsx     # Assistant conversationnel
-│   │   └── Seo.tsx         # Gestionnaire de métadonnées SEO
-│   ├── contexts/           # Contextes React (ThemeContext, etc.)
-│   ├── data/               # Données de référence et mock data (parfums.ts)
-│   ├── hooks/              # Hooks React personnalisés (use-toast, use-mobile, etc.)
-│   ├── integrations/       # Client et connecteurs d'APIs (Supabase)
-│   ├── lib/                # Fonctions utilitaires (utils.ts)
-│   ├── pages/              # Pages publiques (Index, Category, ProductDetail, Checkout, About)
-│   ├── store/              # Gestion d'état global du panier (cart.tsx)
-│   ├── types/              # Définitions TypeScript
-│   ├── App.tsx             # Routeur principal et configuration globale
-│   ├── index.css           # Thèmes Tailwind et variables CSS
+│   │   ├── auth/           # Modales de connexion et d'inscription client
+│   │   ├── checkout/       # Modules de paiement Stripe Elements et validation
+│   │   ├── content/        # Sections éditoriales, carrousels, formulaires express
+│   │   ├── header/         # En-tête, navigation bilingue et tiroir panier flottant
+│   │   ├── footer/         # Pied de page de prestige et mentions légales
+│   │   └── ui/             # Composants d'interface stylisés (shadcn/ui / Radix UI)
+│   ├── contexts/           # Fournisseurs d'état (CustomerAuth, Promo, Cart, Theme)
+│   ├── data/               # Données de référence initiales
+│   ├── hooks/              # Hooks React sur-mesure (useParfums, useToast, etc.)
+│   ├── i18n/               # Dictionnaires de traduction (Français / Anglais)
+│   ├── lib/                # Fonctions utilitaires, calculs de prix et helpers
+│   ├── pages/              # Pages publiques (Accueil, Univers, Fiche Produit, Commande, Compte)
+│   ├── services/           # Services API Supabase & Stripe (promo, client, commande)
+│   ├── store/              # Stores de synchronisation d'état local et persistance
+│   ├── types/              # Définitions des types et interfaces TypeScript
+│   ├── App.tsx             # Configuration des routes publiques et administratives
+│   ├── index.css           # Tokens de design, typographies et styles globaux
 │   └── main.tsx            # Point d'entrée de l'application
 ├── supabase/
-│   ├── migrations/         # Migrations SQL de la base de données
-│   └── setup_tabat_database.sql # Script complet d'initialisation Supabase
-├── index.html              # Fichier HTML d'entrée & métadonnées globales
-├── tailwind.config.ts      # Configuration Tailwind CSS
-├── vite.config.ts          # Configuration de Vite
-└── package.json            # Dépendances et scripts du projet
+│   ├── migrations/         # Schémas et migrations SQL de la base de données
+│   └── setup_maisonkenzi_database.sql # Script SQL complet d'initialisation
+├── index.html              # Fichier HTML d'entrée & métadonnées SEO
+├── tailwind.config.ts      # Configuration des couleurs et du design system Tailwind
+├── vite.config.ts          # Configuration de l'environnement Vite
+└── package.json            # Dépendances et scripts de développement
 ```
 
 ---
 
-## 🚀 Démarrage Rapide
+## Installation & Démarrage
 
 ### Prérequis
-- [Node.js](https://nodejs.org/) (version 18+ recommandée)
-- Un gestionnaire de paquets : `npm`, `yarn` ou `pnpm`
-- Un projet [Supabase](https://supabase.com/) configuré
+- **Node.js** version 18 ou supérieure
+- Gestionnaire de paquets **npm**, **pnpm** ou **yarn**
+- Instance **Supabase** (Cloud ou VPS Docker auto-hébergé)
+- Compte **Stripe** (Clé publiable & clé secrète)
 
-### Installation
+### Configuration de l'Environnement
 
-1. **Cloner le dépôt :**
-   ```bash
-   git clone https://github.com/Azzammoo10/tabatparfum.git
-   cd tabatparfum
-   ```
+Créez un fichier `.env` à la racine du projet avec les variables suivantes :
 
-2. **Installer les dépendances :**
+```env
+VITE_SUPABASE_URL="https://votre-domaine-ou-projet.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="votre_cle_publique_anon_supabase"
+VITE_STRIPE_PUBLISHABLE_KEY="pk_test_votre_cle_publique_stripe"
+```
+
+### Lancement Local
+
+1. **Installer les dépendances :**
    ```bash
    npm install
    ```
 
-### Variables d'Environnement
+2. **Démarrer le serveur de développement :**
+   ```bash
+   npm run dev
+   ```
 
-Créez un fichier `.env` à la racine du projet et renseignez vos clés Supabase :
-
-```env
-VITE_SUPABASE_PROJECT_ID="votre_project_id"
-VITE_SUPABASE_URL="https://votre_project_id.supabase.co"
-VITE_SUPABASE_PUBLISHABLE_KEY="votre_publishable_key"
-```
-
-### Initialisation de la Base de Données
-
-Exécutez le script SQL fourni dans le SQL Editor de votre projet Supabase :
-- Fichier : [`supabase/setup_tabat_database.sql`](supabase/setup_tabat_database.sql)
-
-Ce script configure les tables de produits, catégories, commandes, clients, paramètres du site, ainsi que les stratégies de sécurité RLS (*Row Level Security*).
-
-### Lancer l'Application
-
-Démarrez le serveur de développement local :
-
-```bash
-npm run dev
-```
-
-Ouvrez ensuite [http://localhost:5173](http://localhost:5173) dans votre navigateur.
+3. **Accéder à l'application :**
+   Ouvrez votre navigateur à l'adresse [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## 📦 Scripts Disponibles
+## Commandes Disponibles
 
-| Commande | Description |
+| Commande | Rôle |
 | :--- | :--- |
-| `npm run dev` | Démarre le serveur de développement avec HMR |
-| `npm run build` | Compile l'application TypeScript & Vite pour la production |
-| `npm run build:dev` | Compile l'application en mode développement |
-| `npm run preview` | Prévisualise localement le bundle de production généré |
-| `npm run lint` | Analyse le code avec ESLint pour détecter les erreurs |
+| `npm run dev` | Démarre le serveur local de développement avec rechargement à chaud (HMR) |
+| `npm run build` | Génère le bundle de production optimisé dans le dossier `dist/` |
+| `npm run preview` | Prévisualise localement le rendu de production généré |
+| `npm run lint` | Analyse le code TypeScript et React pour vérifier la conformité |
 
 ---
 
-## 🔒 Sécurité & Bonnes Pratiques
+## Sécurité & Conformité
 
-- **Politique de Sécurité du Contenu (CSP)** : Configurée dans `index.html` pour restreindre les sources autorisées.
-- **Row Level Security (RLS)** : Activé sur Supabase pour garantir la confidentialité des données sensibles (commandes, clients, finances).
-- **Règles de Guarding Admin** : Vérification des droits d'accès avant le rendu des modules d'administration.
-- **Validation Stricte** : Typage TypeScript de bout en bout et validation de formulaires avec Zod.
-
----
-
-## 🌐 Déploiement
-
-L'application est optimisée pour être déployée instantanément sur [Vercel](https://vercel.com/) ou [Netlify] :
-
-1. Connectez votre dépôt GitHub à **Vercel** ou **Netlify**.
-2. Configurez les variables d'environnement (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`).
-3. Le fichier [`vercel.json`](vercel.json) inclus gère automatiquement la réécriture des routes Single Page Application (SPA).
+- **Row Level Security (RLS)** : Cloisonnement strict des données entre clients et administrateurs sur PostgreSQL.
+- **Paiements Conformes PCI-DSS** : Les données bancaires transitent exclusivement par les serveurs sécurisés de Stripe (aucune donnée de carte n'est stockée localement).
+- **Protection des Routes & Guards** : Contrôle systématique des autorisations administratives avant l'accès au back-office.
+- **Validation Zod de Bout en Bout** : Assainissement et validation stricte de toutes les données saisies par les utilisateurs.
+- **Règles d'Ingénierie & Zéro Emoji** : Interface épurée et typographie sobre respectant les standards de l'industrie du luxe.
 
 ---
 
-## 📄 Licence
+## Licence & Droits
 
-Ce projet est développé pour la marque **Tabat**. Tous droits réservés.
+Tous droits réservés. Projet conçu et développé pour la marque **Maison Kenzi**.
