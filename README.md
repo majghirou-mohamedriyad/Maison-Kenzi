@@ -39,6 +39,7 @@
   - [Lancement Local](#lancement-local)
 - [Commandes Disponibles](#commandes-disponibles)
 - [Sécurité & Conformité](#sécurité--conformité)
+- [Contributeurs & Auteur](#contributeurs--auteur)
 - [Licence & Droits](#licence--droits)
 
 ---
@@ -208,6 +209,39 @@ VITE_STRIPE_PUBLISHABLE_KEY="pk_test_votre_cle_publique_stripe"
 - **Protection des Routes & Guards** : Contrôle systématique des autorisations administratives avant l'accès au back-office.
 - **Validation Zod de Bout en Bout** : Assainissement et validation stricte de toutes les données saisies par les utilisateurs.
 - **Règles d'Ingénierie & Zéro Emoji** : Interface épurée et typographie sobre respectant les standards de l'industrie du luxe.
+
+---
+
+## Contributeurs & Auteur
+
+<table>
+  <tr>
+    <td align="center" width="140">
+      <a href="https://github.com/majghirou-mohamedriyad">
+        <img src="https://github.com/majghirou-mohamedriyad.png" width="100" height="100" style="border-radius: 50%; object-fit: cover;" alt="Mohamed Riyad Majghirou" />
+        <br>
+        <strong>Mohamed Riyad Majghirou</strong>
+      </a>
+    </td>
+    <td>
+      <p><strong>Lead Développeur Full-Stack & Architecte Solution</strong></p>
+      <p>Conception et réalisation intégrale de la plateforme e-commerce Maison Kenzi, des tunnels de paiement Stripe, du moteur de promotions ciblées et de l'infrastructure Cloud VPS.</p>
+      <p>
+        <a href="https://github.com/majghirou-mohamedriyad">
+          <img src="https://img.shields.io/badge/GitHub-majghirou--mohamedriyad-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
+        </a>
+        &nbsp;
+        <a href="https://www.linkedin.com/in/mohamed-riyad-majghirou">
+          <img src="https://img.shields.io/badge/LinkedIn-Mohamed_Riyad_Majghirou-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn" />
+        </a>
+        &nbsp;
+        <a href="mailto:riyadmaj10@gmail.com">
+          <img src="https://img.shields.io/badge/Email-riyadmaj10@gmail.com-D14836?style=flat-square&logo=gmail&logoColor=white" alt="Email" />
+        </a>
+      </p>
+    </td>
+  </tr>
+</table>
 
 ---
 
