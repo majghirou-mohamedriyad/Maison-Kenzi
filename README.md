@@ -214,34 +214,36 @@ VITE_STRIPE_PUBLISHABLE_KEY="pk_test_votre_cle_publique_stripe"
 
 ## Contributeurs & Auteur
 
-<table>
-  <tr>
-    <td align="center" width="140">
-      <a href="https://github.com/majghirou-mohamedriyad">
-        <img src="https://github.com/majghirou-mohamedriyad.png" width="100" height="100" style="border-radius: 50%; object-fit: cover;" alt="Mohamed Riyad Majghirou" />
-        <br>
-        <strong>Mohamed Riyad Majghirou</strong>
-      </a>
-    </td>
-    <td>
-      <p><strong>Lead Développeur Full-Stack & Architecte Solution</strong></p>
-      <p>Conception et réalisation intégrale de la plateforme e-commerce Maison Kenzi, des tunnels de paiement Stripe, du moteur de promotions ciblées et de l'infrastructure Cloud VPS.</p>
-      <p>
-        <a href="https://github.com/majghirou-mohamedriyad">
-          <img src="https://img.shields.io/badge/GitHub-majghirou--mohamedriyad-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
-        </a>
-        &nbsp;
-        <a href="https://www.linkedin.com/in/mohamed-riyad-majghirou">
-          <img src="https://img.shields.io/badge/LinkedIn-Mohamed_Riyad_Majghirou-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn" />
-        </a>
-        &nbsp;
-        <a href="mailto:riyadmaj10@gmail.com">
-          <img src="https://img.shields.io/badge/Email-riyadmaj10@gmail.com-D14836?style=flat-square&logo=gmail&logoColor=white" alt="Email" />
-        </a>
-      </p>
-    </td>
-  </tr>
-</table>
+<div align="center">
+
+<a href="https://github.com/majghirou-mohamedriyad">
+  <img src="https://github.com/majghirou-mohamedriyad.png" width="130" height="130" style="border-radius: 50%; border: 3px solid #9E7938; box-shadow: 0 4px 14px rgba(0,0,0,0.15); object-fit: cover;" alt="Mohamed Riyad Majghirou" />
+</a>
+
+<br><br>
+
+### **Mohamed Riyad Majghirou**
+*Lead Développeur Full-Stack & Architecte Solution E-Commerce*
+
+<p align="center">
+  Conception et réalisation intégrale de la plateforme <strong>Maison Kenzi</strong> : architecture frontend réactive, tunnels de paiement sécurisés Stripe, moteur de promotions ciblées et infrastructure Cloud VPS.
+</p>
+
+<p align="center">
+  <a href="https://github.com/majghirou-mohamedriyad" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-majghirou--mohamedriyad-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/mohamed-riyad-majghirou-5b62aa388" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-Mohamed_Riyad_Majghirou-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+  &nbsp;
+  <a href="mailto:riyadmaj10@gmail.com">
+    <img src="https://img.shields.io/badge/Email-riyadmaj10@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
+  </a>
+</p>
+
+</div>
 
 ---
 

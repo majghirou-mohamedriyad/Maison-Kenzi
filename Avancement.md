@@ -8,7 +8,7 @@
 - [x] Refonte & Finalisation Complète du README.md ([`README.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/README.md)) :
   - [x] **Documentation Intégrale de la Plateforme Maison Kenzi** : Présentation haut de gamme, badges officiels, récapitulatif détaillé des 7 piliers fonctionnels (4 univers, tunnel Stripe Elements, espace client avec date de naissance, promotions ciblées, console d'administration, infrastructure VPS).
   - [x] **Architecture, Guide de Démarrage & Sécurité** : Arborescence complète du projet, variables d'environnement, commandes Vite/npm et conformité stricte aux standards de prestige sans emoji.
-  - [x] **Section Contributeurs & Auteur** : Carte de profil avec photo circulaire, profil GitHub (`majghirou-mohamedriyad`), LinkedIn et adresse email directe (`riyadmaj10@gmail.com`).
+  - [x] **Section Contributeurs & Auteur (Design Showcase)** : Vitrine centrée haute couture avec photo cerclée d'or `#9E7938`, profil GitHub (`majghirou-mohamedriyad`), lien direct LinkedIn vérifié (`mohamed-riyad-majghirou-5b62aa388`) et adresse email directe (`riyadmaj10@gmail.com`).
 
 - [x] Exclusion des Documents & Devis LaTeX dans Git ([`.gitignore`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.gitignore)) :
   - [x] **Ignorer les Fichiers Sources & Sorties LaTeX** : Ajout des règles `*.tex`, `*.aux`, `*.out`, `*.toc`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz` au fichier `.gitignore` pour préserver la confidentialité et éviter de versionner les artefacts de compilation.
