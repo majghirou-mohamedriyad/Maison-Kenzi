@@ -10,8 +10,9 @@
   - [x] **Architecture, Guide de Démarrage & Sécurité** : Arborescence complète du projet, variables d'environnement, commandes Vite/npm et conformité stricte aux standards de prestige sans emoji.
   - [x] **Section Contributeurs & Auteur (Design Showcase)** : Vitrine centrée haute couture avec photo cerclée d'or `#9E7938`, profil GitHub (`majghirou-mohamedriyad`), lien direct LinkedIn vérifié (`mohamed-riyad-majghirou-5b62aa388`) et adresse email directe (`riyadmaj10@gmail.com`).
 
-- [x] Exclusion des Documents & Devis LaTeX dans Git ([`.gitignore`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.gitignore)) :
-  - [x] **Ignorer les Fichiers Sources & Sorties LaTeX** : Ajout des règles `*.tex`, `*.aux`, `*.out`, `*.toc`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz` au fichier `.gitignore` pour préserver la confidentialité et éviter de versionner les artefacts de compilation.
+- [x] Audit & Sécurisation Complète du Fichier Git ([`.gitignore`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.gitignore)) :
+  - [x] **Ignorer les Fichiers Sources & Sorties LaTeX** : Exclusion de `*.tex`, `*.aux`, `*.out`, `*.toc`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz`, `*.bcf`, `*.run.xml`, `*.bbl`, `*.blg`, `*.lof`, `*.lot`, `*.nav`, `*.snm`, `*.vrb` et `devis-*.pdf`.
+  - [x] **Protection des Secrets, Certificats & Données** : Exclusion des clés et certificats (`*.pem`, `*.key`, `*.crt`, `*.pfx`, `*.p12`, `*.kdbx`, `id_rsa*`), des bases locales (`*.sqlite`, `*.db`, `.supabase/`) et dossiers temporaires (`tmp/`, `temp/`, `.tmp/`, `.temp/`).
 
 - [x] Élaboration du Devis Commercial \& Récapitulatif Fonctionnel de A à Z en LaTeX ([`devis-maison-kenzi.tex`](file:///c:/Users/PC/Desktop/Maison-Kenzi/devis-maison-kenzi.tex)) :
   - [x] **Logo Officiel & Présentation de Prestige** : Intégration du logo vectoriel officiel `public/mk-logo.png` dans l'en-tête, charte graphique de prestige (Or `#9E7938`, Nude/Noir `#1A1A1A`, Ardoise `#4A4A4A`), bordures soignées et typographie éditoriale.

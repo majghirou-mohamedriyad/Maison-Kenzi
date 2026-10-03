@@ -20,6 +20,10 @@ out/
 *.pem
 *.key
 *.crt
+*.pfx
+*.p12
+*.kdbx
+id_rsa*
 
 # Local databases & storage
 *.sqlite
@@ -28,6 +32,13 @@ out/
 *.db-wal
 *.db-shm
 *.db-journal
+.supabase/
+
+# Temporary & cache folders
+tmp/
+temp/
+.tmp/
+.temp/
 
 # Logs
 logs/
@@ -60,6 +71,7 @@ lerna-debug.log*
 ehthumbs.db
 Thumbs.db
 [Dd]esktop.ini
+$RECYCLE.BIN/
 
 # Testing & Coverage
 coverage/
@@ -97,4 +109,15 @@ vps-guide.txt
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+*.bcf
+*.run.xml
+*.bbl
+*.blg
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+devis-*.pdf
+
 
