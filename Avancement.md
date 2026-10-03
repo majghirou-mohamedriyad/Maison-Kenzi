@@ -2,8 +2,17 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-10-01
-- **Statut général** : Ciblage Multi-Produits des Codes Promotionnels, Moteur de Calcul Éligible & Responsive Design
+- **Dernière mise à jour** : 2026-10-03
+- **Statut général** : Réalisation du Devis Commercial LaTeX Haute Couture & Gestion Intégrale E-Commerce
+
+- [x] Exclusion des Documents & Devis LaTeX dans Git ([`.gitignore`](file:///c:/Users/PC/Desktop/Maison-Kenzi/.gitignore)) :
+  - [x] **Ignorer les Fichiers Sources & Sorties LaTeX** : Ajout des règles `*.tex`, `*.aux`, `*.out`, `*.toc`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz` au fichier `.gitignore` pour préserver la confidentialité et éviter de versionner les artefacts de compilation.
+
+- [x] Élaboration du Devis Commercial \& Récapitulatif Fonctionnel de A à Z en LaTeX ([`devis-maison-kenzi.tex`](file:///c:/Users/PC/Desktop/Maison-Kenzi/devis-maison-kenzi.tex)) :
+  - [x] **Logo Officiel & Présentation de Prestige** : Intégration du logo vectoriel officiel `public/mk-logo.png` dans l'en-tête, charte graphique de prestige (Or `#9E7938`, Nude/Noir `#1A1A1A`, Ardoise `#4A4A4A`), bordures soignées et typographie éditoriale.
+  - [x] **Détail Complet des 7 Piliers Métier de A à Z** : Description claire et accessible (sans jargon technique) : Expérience & Design Haute Couture, Catalogue 4 Univers, Double Tunnel d'Achat & Commande Express, Espace Client Privilège, Moteur de Promotions Ciblées, Espace d'Administration & Pilotage des Ventes, et Infrastructure Serveur Dédié (VPS), Sécurité SSL & Mise en Ligne.
+  - [x] **Grille Tarifaire Calibrée à 3 800 DH** : Découpage transparent en 6 lots équilibrés (Lot 1 : 950 DH, Lot 2 : 750 DH, Lot 3 : 550 DH, Lot 4 : 450 DH, Lot 5 : 550 DH, Lot 6 : 550 DH) totalisant 3 800,00 DH net avec encarts de garanties et signatures.
+  - [x] **Conformité & Zéro Emoji** : Rédaction en français soigné, présentation professionnelle, zéro emoji.
 
 - [x] Ciblage par Produits Spécifiques & Univers dans les Promotions ([`src/types/promotions.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/types/promotions.ts), [`src/services/promoService.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/services/promoService.ts), [`src/contexts/PromoContext.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/contexts/PromoContext.tsx), [`src/admin/pages/Promotions.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Promotions.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`supabase/migrations/20261001000000_add_target_products_to_promotions.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20261001000000_add_target_products_to_promotions.sql)) :
   - [x] **Périmètre à 3 Niveaux de Ciblage** : Choix visuel dans l'administration entre *Tout le Site* (tous produits), *Par Univers* (catégorie ciblée) et *Produits Ciblés* (sélection nominative précise).

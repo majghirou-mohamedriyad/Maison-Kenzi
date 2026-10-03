@@ -88,3 +88,13 @@ skills-lock.json
 
 # Guides privés VPS
 vps-guide.txt
+
+# Documents & Devis LaTeX
+*.tex
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
