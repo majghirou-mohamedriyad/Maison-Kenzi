@@ -225,7 +225,7 @@ const ExpressOrderForm = ({
   }, [activeMainItems, extraItems]);
 
   const isMorocco = (country || countryQuery || "").trim().toLowerCase() === "maroc" || (country || countryQuery || "").trim().toLowerCase() === "morocco";
-  const shippingCost = freeShippingApplied ? 0 : (isMorocco ? 25 : 0);
+  const shippingCost = freeShippingApplied ? 0 : (isMorocco ? 25 : 7);
   const effectiveTotalPrice = Math.max(0, cumulativeTotalPrice - discountAmount + shippingCost);
 
   // Recalcul automatique de la remise si le montant cumulé change
@@ -727,7 +727,7 @@ const ExpressOrderForm = ({
                   </span>
                   {shippingCost > 0 && (
                     <span className="text-[9px] text-muted-foreground font-medium">
-                      (dont +{formatMAD(shippingCost)} livraison Maroc)
+                      (dont +{formatMAD(shippingCost)} livraison {isMorocco ? "Maroc" : "Europe"})
                     </span>
                   )}
                 </div>

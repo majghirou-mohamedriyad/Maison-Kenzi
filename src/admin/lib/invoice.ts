@@ -278,7 +278,8 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   ].filter(Boolean).join(" ").toLowerCase();
 
   const isMorocco = destinationText.includes("maroc") || destinationText.includes("morocco");
-  const shippingCost = isMorocco ? 25 : Math.max(0, Number(order.total_amount || 0) - itemsSubtotal);
+  const actualDiff = Number(order.total_amount || 0) - itemsSubtotal;
+  const shippingCost = actualDiff > 0 ? actualDiff : (isMorocco ? 25 : 7);
   const displaySubtotal = itemsSubtotal > 0 ? itemsSubtotal : Math.max(0, Number(order.total_amount || 0) - shippingCost);
   const finalTotal = Number(order.total_amount || 0) || (displaySubtotal + shippingCost);
 
@@ -306,7 +307,7 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...BRAND.muted);
-  doc.text(isMorocco ? "Livraison (Maroc) :" : "Livraison :", boxX + 14, ty + 36);
+  doc.text(isMorocco ? "Livraison (Maroc) :" : "Livraison (Europe) :", boxX + 14, ty + 36);
   doc.setFont("helvetica", "bold");
   if (shippingCost > 0) {
     doc.setTextColor(...BRAND.ink);

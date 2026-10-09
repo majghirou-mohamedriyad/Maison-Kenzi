@@ -5,11 +5,11 @@
 - **Dernière mise à jour** : 2026-10-09
 - **Statut général** : Gestion des Promotions Ciblées, Documentation Schéma maisonkenzi & Finalisation
 
-- [x] Application des Frais de Livraison de 25 € pour le Maroc sur la Commande & Facture PDF ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) :
-  - [x] **Calcul Dynamique selon le Pays** : Détection automatique de la destination (Maroc / Morocco) et ajout instantané de 25,00 € de frais de livraison dans le total de la commande.
-  - [x] **Génération de Facture PDF A4 de Prestige (`invoice.ts`)** : Prise en compte automatique des frais de livraison Maroc sur le reçu / facture PDF avec ventilation exacte : *Sous-total*, *Livraison (Maroc) : +25,00 €* et *Total TTC*, avec logo officiel Maison Kenzi.
-  - [x] **Affichage Transparent dans les Récapitulatifs** : Mention claire de la ligne « Livraison Express (Maroc) : +25,00 € » sur la page de paiement (`Checkout.tsx`) et dans le bandeau de commande express (`ExpressOrderForm.tsx`), avec transmission exacte du montant final à Stripe.
-  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `Truck` (`lucide-react`), commentaires en français.
+- [x] Application de la Grille Tarifaire de Livraison (7 € Europe & 25 € Maroc) sur la Commande & Facture PDF ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) :
+  - [x] **Calcul Dynamique selon la Destination** : Application automatique de **7,00 €** pour les pays d'Europe (Belgique, France, Suisse, Espagne, etc.) et **25,00 €** pour le Maroc, avec gratuité offerte si un code promo de type `free_shipping` est appliqué.
+  - [x] **Génération de Facture PDF A4 de Prestige (`invoice.ts`)** : Prise en compte et ventilation automatique sur la facture PDF : *Sous-total*, ligne dédiée *« Livraison (Europe) : +7,00 € »* ou *« Livraison (Maroc) : +25,00 € »* (ou *« Offerte »*) et *Total TTC*, avec logo officiel Maison Kenzi.
+  - [x] **Affichage Transparent dans les Récapitulatifs de Commande** : Mention explicite du coût de livraison sélectionné sur la page de paiement (`Checkout.tsx`) et dans le bandeau de commande directe (`ExpressOrderForm.tsx`), avec transmission exacte du montant final à Stripe.
+  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `Truck` (`lucide-react`), typographie soignée et commentaires en français.
 
 - [x] Bouton d'Assistance WhatsApp pour Pays Non Listé ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Assistance Directe dans les Tunnels de Commande** : Intégration d'un lien d'assistance rapide WhatsApp sous le sélecteur de pays et d'un encart dédié dans le menu déroulant lorsque la recherche de pays ne renvoie aucun résultat.
