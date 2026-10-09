@@ -2,8 +2,8 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-10-03
-- **Statut général** : Réalisation du Devis Commercial LaTeX Haute Couture & Gestion Intégrale E-Commerce
+- **Dernière mise à jour** : 2026-10-09
+- **Statut général** : Gestion des Promotions Ciblées, Documentation Schéma maisonkenzi & Finalisation
 
 - [x] Refonte & Finalisation Complète du README.md ([`README.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/README.md)) :
   - [x] **Documentation Intégrale de la Plateforme Maison Kenzi** : Présentation haut de gamme, badges officiels, récapitulatif détaillé des 7 piliers fonctionnels (4 univers, tunnel Stripe Elements, espace client avec date de naissance, promotions ciblées, console d'administration, infrastructure VPS).
