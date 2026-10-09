@@ -224,7 +224,9 @@ const ExpressOrderForm = ({
     return mainTotal + extraTotal;
   }, [activeMainItems, extraItems]);
 
-  const effectiveTotalPrice = Math.max(0, cumulativeTotalPrice - discountAmount);
+  const isMorocco = (country || countryQuery || "").trim().toLowerCase() === "maroc" || (country || countryQuery || "").trim().toLowerCase() === "morocco";
+  const shippingCost = freeShippingApplied ? 0 : (isMorocco ? 25 : 0);
+  const effectiveTotalPrice = Math.max(0, cumulativeTotalPrice - discountAmount + shippingCost);
 
   // Recalcul automatique de la remise si le montant cumulé change
   useEffect(() => {
@@ -713,14 +715,21 @@ const ExpressOrderForm = ({
               <span className="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block">
                 {t.expressOrder.summary}
               </span>
-              {discountAmount > 0 ? (
+              {discountAmount > 0 || shippingCost > 0 ? (
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] sm:text-xs line-through text-muted-foreground font-medium">
-                    {formatMAD(cumulativeTotalPrice)}
-                  </span>
+                  {discountAmount > 0 && (
+                    <span className="text-[10px] sm:text-xs line-through text-muted-foreground font-medium">
+                      {formatMAD(cumulativeTotalPrice)}
+                    </span>
+                  )}
                   <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
                     {formatMAD(effectiveTotalPrice)}
                   </span>
+                  {shippingCost > 0 && (
+                    <span className="text-[9px] text-muted-foreground font-medium">
+                      (dont +{formatMAD(shippingCost)} livraison Maroc)
+                    </span>
+                  )}
                 </div>
               ) : (
                 <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">

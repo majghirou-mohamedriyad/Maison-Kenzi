@@ -112,9 +112,9 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
     doc.setFillColor(...BRAND.ink);
     doc.roundedRect(M, headerY, 40, 40, 6, 6, "F");
     doc.setFont("times", "bold");
-    doc.setFontSize(22);
+    doc.setFontSize(16);
     doc.setTextColor(...BRAND.gold);
-    doc.text("T", M + 13, headerY + 28);
+    doc.text("MK", M + 6, headerY + 26);
     titleX = M + 52;
   }
 
@@ -266,6 +266,22 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   const tableEndY: number = doc.lastAutoTable.finalY || tableStartY + 60;
 
   /* ---------------- TOTALS SUMMARY BOX (CLEANLY ALIGNED) ---------------- */
+  const itemsSubtotal = (order.items || []).reduce((acc: number, it: OrderItem) => {
+    return acc + (it.subtotal || (it.price ? it.price * it.quantity : 0));
+  }, 0);
+
+  const destinationText = [
+    (order as any).shipping_country,
+    (order as any).country,
+    order.shipping_city,
+    order.shipping_address,
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  const isMorocco = destinationText.includes("maroc") || destinationText.includes("morocco");
+  const shippingCost = isMorocco ? 25 : Math.max(0, Number(order.total_amount || 0) - itemsSubtotal);
+  const displaySubtotal = itemsSubtotal > 0 ? itemsSubtotal : Math.max(0, Number(order.total_amount || 0) - shippingCost);
+  const finalTotal = Number(order.total_amount || 0) || (displaySubtotal + shippingCost);
+
   const boxW = 240;
   const boxX = pageW - M - boxW;
   const ty = tableEndY + 20;
@@ -284,16 +300,21 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   doc.text("Sous-total :", boxX + 14, ty + 20);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND.ink);
-  doc.text(money(order.total_amount), boxX + boxW - 14, ty + 20, { align: "right" });
+  doc.text(money(displaySubtotal), boxX + boxW - 14, ty + 20, { align: "right" });
 
   // Row 2: Livraison
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...BRAND.muted);
-  doc.text("Livraison :", boxX + 14, ty + 36);
+  doc.text(isMorocco ? "Livraison (Maroc) :" : "Livraison :", boxX + 14, ty + 36);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...BRAND.ink);
-  doc.text("Gratuite", boxX + boxW - 14, ty + 36, { align: "right" });
+  if (shippingCost > 0) {
+    doc.setTextColor(...BRAND.ink);
+    doc.text(`+${money(shippingCost)}`, boxX + boxW - 14, ty + 36, { align: "right" });
+  } else {
+    doc.setTextColor(34, 139, 34); // Forest Green for free
+    doc.text("Gratuite", boxX + boxW - 14, ty + 36, { align: "right" });
+  }
 
   // Divider line
   doc.setDrawColor(...BRAND.rule);
@@ -309,7 +330,7 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.setTextColor(...BRAND.goldDeep);
-  doc.text(money(order.total_amount), boxX + boxW - 14, ty + 62, { align: "right" });
+  doc.text(money(finalTotal), boxX + boxW - 14, ty + 62, { align: "right" });
 
   /* ---------------- FOOTER SECTION ---------------- */
   const fy = pageH - 24;

@@ -5,6 +5,12 @@
 - **Dernière mise à jour** : 2026-10-09
 - **Statut général** : Gestion des Promotions Ciblées, Documentation Schéma maisonkenzi & Finalisation
 
+- [x] Application des Frais de Livraison de 25 € pour le Maroc sur la Commande & Facture PDF ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) :
+  - [x] **Calcul Dynamique selon le Pays** : Détection automatique de la destination (Maroc / Morocco) et ajout instantané de 25,00 € de frais de livraison dans le total de la commande.
+  - [x] **Génération de Facture PDF A4 de Prestige (`invoice.ts`)** : Prise en compte automatique des frais de livraison Maroc sur le reçu / facture PDF avec ventilation exacte : *Sous-total*, *Livraison (Maroc) : +25,00 €* et *Total TTC*, avec logo officiel Maison Kenzi.
+  - [x] **Affichage Transparent dans les Récapitulatifs** : Mention claire de la ligne « Livraison Express (Maroc) : +25,00 € » sur la page de paiement (`Checkout.tsx`) et dans le bandeau de commande express (`ExpressOrderForm.tsx`), avec transmission exacte du montant final à Stripe.
+  - [x] **Conformité & Zéro Emoji** : Icônes vectorielles `Truck` (`lucide-react`), commentaires en français.
+
 - [x] Bouton d'Assistance WhatsApp pour Pays Non Listé ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
   - [x] **Assistance Directe dans les Tunnels de Commande** : Intégration d'un lien d'assistance rapide WhatsApp sous le sélecteur de pays et d'un encart dédié dans le menu déroulant lorsque la recherche de pays ne renvoie aucun résultat.
   - [x] **Message Prédéfini Contextuel** : Ouverture instantanée de WhatsApp avec message automatique contenant le nom du pays recherché par le client pour faciliter la prise en charge par la conciergerie.
@@ -21,7 +27,7 @@
 
 - [x] Élaboration du Devis Commercial \& Récapitulatif Fonctionnel de A à Z en LaTeX ([`devis-maison-kenzi.tex`](file:///c:/Users/PC/Desktop/Maison-Kenzi/devis-maison-kenzi.tex)) :
   - [x] **Logo Officiel & Présentation de Prestige** : Intégration du logo vectoriel officiel `public/mk-logo.png` dans l'en-tête, charte graphique de prestige (Or `#9E7938`, Nude/Noir `#1A1A1A`, Ardoise `#4A4A4A`), bordures soignées et typographie éditoriale.
-  - [x] **Détail Complet des 7 Piliers Métier de A à Z** : Description claire et accessible (sans jargon technique) : Expérience & Design Haute Couture, Catalogue 4 Univers, Double Tunnel d'Achat & Commande Express, Espace Client Privilège, Moteur de Promotions Ciblées, Espace d'Administration & Pilotage des Ventes, et Infrastructure Serveur Dédié (VPS), Sécurité SSL & Mise en Ligne.
+  - [x] **Détail Complet des 7 Piliers Métier de A à Z** : Description claire et accessible (sans jargon technique) : Expérience & Design Haute Couture, Catalogue 4 Univers, Double Tunnel d'Achat & Commande Express (avec calcul dynamique des frais Maroc et passerelle WhatsApp pays non listé), Espace Client Privilège, Moteur de Promotions Ciblées, Espace d'Administration & Pilotage des Ventes, et Infrastructure Serveur Dédié (VPS), Sécurité SSL & Mise en Ligne.
   - [x] **Grille Tarifaire Calibrée à 3 800 DH** : Découpage transparent en 6 lots équilibrés (Lot 1 : 950 DH, Lot 2 : 750 DH, Lot 3 : 550 DH, Lot 4 : 450 DH, Lot 5 : 550 DH, Lot 6 : 550 DH) totalisant 3 800,00 DH net avec encarts de garanties et signatures.
   - [x] **Conformité & Zéro Emoji** : Rédaction en français soigné, présentation professionnelle, zéro emoji.
 
