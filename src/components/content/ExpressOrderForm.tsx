@@ -39,6 +39,7 @@ import {
   Globe,
   Lock,
   Tag,
+  MessageCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCountries } from "@/hooks/useCountries";
@@ -1010,34 +1011,53 @@ const ExpressOrderForm = ({
                   </div>
 
                   {/* Dropdown Pays (REST Countries filtré Maroc & Europe) */}
-                  {showCountryDropdown && filteredCountries.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1 max-h-48 overflow-y-auto space-y-0.5">
-                      {filteredCountries.map((c) => (
-                        <button
-                          key={c.code}
-                          type="button"
-                          onClick={() => {
-                            setCountry(c.name);
-                            setCountryQuery(c.name);
-                            setShowCountryDropdown(false);
-                            const cCities = getCities(c.name);
-                            if (cCities && cCities.length > 0) {
-                              setCity(cCities[0]);
-                              setCityQuery(cCities[0]);
-                            }
-                          }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
-                            (country || "").toLowerCase() === c.name.toLowerCase()
-                              ? "bg-primary/10 text-primary font-semibold"
-                              : "text-foreground hover:bg-secondary/80"
-                          }`}
-                        >
-                          <span className="flex items-center gap-1.5">
-                            <span className="font-medium">{c.name}</span>
-                          </span>
-                          <span className="text-[10px] text-muted-foreground uppercase font-mono">{c.code}</span>
-                        </button>
-                      ))}
+                  {showCountryDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-xl z-50 p-1.5 max-h-52 overflow-y-auto space-y-1">
+                      {filteredCountries.length > 0 ? (
+                        filteredCountries.map((c) => (
+                          <button
+                            key={c.code}
+                            type="button"
+                            onClick={() => {
+                              setCountry(c.name);
+                              setCountryQuery(c.name);
+                              setShowCountryDropdown(false);
+                              const cCities = getCities(c.name);
+                              if (cCities && cCities.length > 0) {
+                                setCity(cCities[0]);
+                                setCityQuery(cCities[0]);
+                              }
+                            }}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer ${
+                              (country || "").toLowerCase() === c.name.toLowerCase()
+                                ? "bg-primary/10 text-primary font-semibold"
+                                : "text-foreground hover:bg-secondary/80"
+                            }`}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span className="font-medium">{c.name}</span>
+                            </span>
+                            <span className="text-[10px] text-muted-foreground uppercase font-mono">{c.code}</span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-2.5 text-center space-y-1.5">
+                          <p className="text-[11px] text-muted-foreground">
+                            Votre pays &laquo; {countryQuery} &raquo; n'est pas dans la liste ?
+                          </p>
+                          <a
+                            href={`https://wa.me/${(settings?.whatsapp_phone || "212652535301").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                              `Bonjour Maison Kenzi, je souhaite commander pour le pays suivant : ${countryQuery || "mon pays"}. Pouvez-vous m'assister ?`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-2.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[11px] font-semibold transition-all cursor-pointer shadow-xs"
+                          >
+                            <MessageCircle className="w-3 h-3 shrink-0" />
+                            <span>Commander ce pays sur WhatsApp</span>
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1060,12 +1080,27 @@ const ExpressOrderForm = ({
                         className={`px-1.5 py-0.5 rounded text-[9px] font-medium transition-all cursor-pointer ${
                           country === cName
                             ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                            : "bg-secondary/60 text-muted-foreground hover:text-foreground border border-border/40"
+                            : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/50"
                         }`}
                       >
                         {cName}
                       </button>
                     ))}
+                  </div>
+
+                  {/* Bouton d'assistance WhatsApp pour pays non listé */}
+                  <div className="pt-0.5">
+                    <a
+                      href={`https://wa.me/${(settings?.whatsapp_phone || "212652535301").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        `Bonjour Maison Kenzi, je souhaite passer commande mais mon pays (${countryQuery || "mon pays"}) ne figure pas dans la liste des destinations. Pouvez-vous m'aider ?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[10.5px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-medium transition-colors cursor-pointer group"
+                    >
+                      <MessageCircle className="w-3 h-3 shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="underline underline-offset-2">Pays introuvable ? Commander via WhatsApp</span>
+                    </a>
                   </div>
                 </div>
 

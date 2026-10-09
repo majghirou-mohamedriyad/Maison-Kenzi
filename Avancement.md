@@ -5,6 +5,11 @@
 - **Dernière mise à jour** : 2026-10-09
 - **Statut général** : Gestion des Promotions Ciblées, Documentation Schéma maisonkenzi & Finalisation
 
+- [x] Bouton d'Assistance WhatsApp pour Pays Non Listé ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx)) :
+  - [x] **Assistance Directe dans les Tunnels de Commande** : Intégration d'un lien d'assistance rapide WhatsApp sous le sélecteur de pays et d'un encart dédié dans le menu déroulant lorsque la recherche de pays ne renvoie aucun résultat.
+  - [x] **Message Prédéfini Contextuel** : Ouverture instantanée de WhatsApp avec message automatique contenant le nom du pays recherché par le client pour faciliter la prise en charge par la conciergerie.
+  - [x] **Conformité & Zéro Emoji** : Icône vectorielle `MessageCircle` (`lucide-react`), palette Luxury Nude, commentaires en français.
+
 - [x] Refonte & Finalisation Complète du README.md ([`README.md`](file:///c:/Users/PC/Desktop/Maison-Kenzi/README.md)) :
   - [x] **Documentation Intégrale de la Plateforme Maison Kenzi** : Présentation haut de gamme, badges officiels, récapitulatif détaillé des 7 piliers fonctionnels (4 univers, tunnel Stripe Elements, espace client avec date de naissance, promotions ciblées, console d'administration, infrastructure VPS).
   - [x] **Architecture, Guide de Démarrage & Sécurité** : Arborescence complète du projet, variables d'environnement, commandes Vite/npm et conformité stricte aux standards de prestige sans emoji.
