@@ -245,7 +245,7 @@ export const getProductGroupLabel = (groupKey: ProductGroupKey, language: string
     case "artisanat":
       return language === "en" ? "Handcrafted Creations" : "Produits Artisanaux";
     case "antiques":
-      return language === "en" ? "Rare Antiques & Treasures" : "Antiques & Pièces Rares";
+      return language === "en" ? "Bazar Chic" : "Bazar Chic";
     default:
       return language === "en" ? "Other Creations" : "Autres Créations";
   }
