@@ -451,10 +451,10 @@ const CategoriesAdmin = () => {
       if (editingCat) {
         const res = await updateCategory(editingCat.id, {
           name: name.trim(),
-          name_en: nameEn.trim() || undefined,
+          name_en: nameEn.trim(),
           slug: finalSlug,
           description: description.trim(),
-          description_en: descriptionEn.trim() || undefined,
+          description_en: descriptionEn.trim(),
           image: primaryImage,
           icon: primaryImage,
           images: images,
@@ -472,10 +472,10 @@ const CategoriesAdmin = () => {
       } else {
         const res = await addCategory({
           name: name.trim(),
-          name_en: nameEn.trim() || undefined,
+          name_en: nameEn.trim(),
           slug: finalSlug,
           description: description.trim(),
-          description_en: descriptionEn.trim() || undefined,
+          description_en: descriptionEn.trim(),
           image: primaryImage,
           icon: primaryImage,
           images: images,

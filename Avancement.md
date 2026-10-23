@@ -2,8 +2,15 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-10-09
-- **Statut général** : Gestion des Promotions Ciblées, Documentation Schéma maisonkenzi & Finalisation
+- **Dernière mise à jour** : 2026-10-23
+- **Statut général** : Persistance Bilingue des Catégories, Gestion des Promotions Ciblées & Infrastructure VPS
+
+- [x] Résolution de la Persistance Bilingue des Catégories (`Category Name EN` & `Collection Description EN`) ([`src/admin/pages/Categories.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/pages/Categories.tsx), [`src/store/useCategoryStore.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/store/useCategoryStore.ts), [`supabase/migrations/20261023140000_add_bilingual_columns_to_categories.sql`](file:///c:/Users/PC/Desktop/Maison-Kenzi/supabase/migrations/20261023140000_add_bilingual_columns_to_categories.sql), [`vps-guide.txt`](file:///c:/Users/PC/Desktop/Maison-Kenzi/vps-guide.txt)) :
+  - [x] **Diagnostic Précis & Cause Racine** : L'API Supabase PostgreSQL renvoyait l'erreur `column categories.name_en does not exist`, déclenchant le repli automatique sans colonnes optionnelles et empêchant la sauvegarde des traductions anglaises.
+  - [x] **Création de la Migration Dédiée** : Script SQL ajoutant `name_en`, `description_en`, `gender` et `is_coming_soon` avec rechargement du schéma PostgREST (`NOTIFY pgrst`).
+  - [x] **Nettoyage du Formulaire Admin** : Transmission explicite des champs `name_en` et `description_en` nettoyés lors de la mise à jour et de l'ajout.
+  - [x] **Documentation Commande VPS 1-Ligne** : Ajout de la commande `docker exec` dans le guide de maintenance VPS pour synchroniser PostgreSQL instantanément.
+  - [x] **Conformité & Zéro Emoji** : Documentation et commentaires en français.
 
 - [x] Application de la Grille Tarifaire de Livraison (7 € Europe & 25 € Maroc) sur la Commande & Facture PDF ([`src/pages/Checkout.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/Checkout.tsx), [`src/components/content/ExpressOrderForm.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/content/ExpressOrderForm.tsx), [`src/admin/lib/invoice.ts`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/admin/lib/invoice.ts)) :
   - [x] **Calcul Dynamique selon la Destination** : Application automatique de **7,00 €** pour les pays d'Europe (Belgique, France, Suisse, Espagne, etc.) et **25,00 €** pour le Maroc, avec gratuité offerte si un code promo de type `free_shipping` est appliqué.
