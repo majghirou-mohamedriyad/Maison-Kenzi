@@ -46,6 +46,7 @@ import {
   Ruler,
   Type,
   HelpCircle,
+  Truck,
 } from "lucide-react";
 
 import { getParfumSeasons } from "@/lib/seasonsStore";
@@ -101,6 +102,7 @@ const emptyForm = {
   active: true,
   isNew: false,
   isBestseller: false,
+  freeShipping: false,
   hasTiers: false,
   tiers: [] as Array<{ quantity: number | string; price: number | string; label: string; label_en?: string }>,
   hasCustomOptions: false,
@@ -321,6 +323,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
           active: initial.active ?? true,
           isNew: !!initial.isNew,
           isBestseller: !!initial.isBestseller,
+          freeShipping: !!initial.free_shipping || !!(initial as any).freeShipping,
           hasTiers: hasTiersInit,
           tiers: initTiers.map((t) => ({
             quantity: Number(t.quantity) || 1,
@@ -818,6 +821,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
       images: finalImages,
       isNew: f.isNew,
       isBestseller: f.isBestseller,
+      free_shipping: f.freeShipping,
       active: f.active,
       stock: numStock,
       stock_5ml: numStock,
@@ -3157,7 +3161,7 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
               {/* Carte 5 : Visibilité & Badges — Format Horizontal 3 Colonnes Compact */}
               <section className="bg-[#FAF7F2]/60 dark:bg-[#1C1A18]/60 p-3 rounded-xl border border-[#E5DDD0] dark:border-[#2D2A26] space-y-1.5">
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#C9A96E]">Visibilité & Badges</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5">
                   <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
                     <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Actif en boutique</span>
                     <Switch checked={f.active} onCheckedChange={(v) => set("active", v)} />
@@ -3169,6 +3173,13 @@ const ProductModal = ({ open, onOpenChange, initial, defaultCategory }: Props) =
                   <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
                     <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Best Seller</span>
                     <Switch checked={f.isBestseller} onCheckedChange={(v) => set("isBestseller", v)} />
+                  </label>
+                  <label className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px] p-2 rounded-lg bg-white dark:bg-[#141312] border border-[#E5DDD0] dark:border-[#2D2A26] cursor-pointer">
+                    <div className="flex items-center gap-1 min-w-0">
+                      <Truck className="w-3.5 h-3.5 text-[#C9A96E] shrink-0" />
+                      <span className="font-medium text-[#1A1816] dark:text-[#FAF7F2] truncate">Livraison Offerte</span>
+                    </div>
+                    <Switch checked={f.freeShipping} onCheckedChange={(v) => set("freeShipping", v)} />
                   </label>
                 </div>
               </section>

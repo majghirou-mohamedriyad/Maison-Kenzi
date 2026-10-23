@@ -225,7 +225,20 @@ const ExpressOrderForm = ({
   }, [activeMainItems, extraItems]);
 
   const isMorocco = (country || countryQuery || "").trim().toLowerCase() === "maroc" || (country || countryQuery || "").trim().toLowerCase() === "morocco";
-  const shippingCost = freeShippingApplied ? 0 : (isMorocco ? 25 : 7);
+  const currentParfum = useMemo(() => {
+    return parfums.find((p) => p.name === parfumName || (items && items[0]?.parfumId ? p.id === items[0].parfumId : false));
+  }, [parfums, parfumName, items]);
+
+  const hasFreeShippingItem = useMemo(() => {
+    if (currentParfum?.free_shipping) return true;
+    return extraItems.some((extra) => {
+      const extraP = parfums.find((p) => p.id === extra.parfumId || p.name === extra.parfumName);
+      return !!extraP?.free_shipping;
+    });
+  }, [currentParfum, extraItems, parfums]);
+
+  const isFreeShippingEffective = freeShippingApplied || hasFreeShippingItem;
+  const shippingCost = isFreeShippingEffective ? 0 : (isMorocco ? 25 : 7);
   const effectiveTotalPrice = Math.max(0, cumulativeTotalPrice - discountAmount + shippingCost);
 
   // Recalcul automatique de la remise si le montant cumulé change
@@ -725,11 +738,15 @@ const ExpressOrderForm = ({
                   <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">
                     {formatMAD(effectiveTotalPrice)}
                   </span>
-                  {shippingCost > 0 && (
+                  {shippingCost > 0 ? (
                     <span className="text-[9px] text-muted-foreground font-medium">
                       (dont +{formatMAD(shippingCost)} livraison {isMorocco ? "Maroc" : "Europe"})
                     </span>
-                  )}
+                  ) : hasFreeShippingItem ? (
+                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">
+                      (Livraison offerte)
+                    </span>
+                  ) : null}
                 </div>
               ) : (
                 <span className="text-sm sm:text-lg font-bold tracking-tight text-primary">

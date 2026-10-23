@@ -20,6 +20,7 @@ export interface CartItem {
   imageLabel: string;
   imageLabel_en?: string;
   imageUrl?: string | null;
+  free_shipping?: boolean;
 }
 
 interface CartContextValue {

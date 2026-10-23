@@ -47,6 +47,7 @@ import { StripePaymentSection } from "@/components/checkout/StripePaymentSection
 import { usePromo } from "@/contexts/PromoContext";
 import { recordPromotionRedemption } from "@/services/promoService";
 import { Tag, Loader2, X } from "lucide-react";
+import { useProducts } from "@/store/useProductStore";
 
 const Checkout = () => {
   const { t, language } = useLanguage();
@@ -57,6 +58,7 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   const { countries, getCities } = useCountries();
+  const allProducts = useProducts();
 
   const [promoInput, setPromoInput] = useState("");
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
@@ -143,7 +145,11 @@ const Checkout = () => {
   }, [country, getCities]);
 
   const isMorocco = (country || countryQuery || "").trim().toLowerCase() === "maroc" || (country || countryQuery || "").trim().toLowerCase() === "morocco";
-  const shippingCost = freeShippingApplied ? 0 : (isMorocco ? 25 : 7);
+  const hasProductWithFreeShipping = useMemo(() => {
+    return items.some((item) => (item as any).free_shipping || allProducts.some((p) => p.id === item.id && p.free_shipping));
+  }, [items, allProducts]);
+  const isFreeShipping = freeShippingApplied || hasProductWithFreeShipping;
+  const shippingCost = isFreeShipping ? 0 : (isMorocco ? 25 : 7);
   const total = Math.max(0, subtotal - discountAmount + shippingCost);
 
   const handleApplyPromo = async (e?: React.FormEvent) => {
@@ -1043,9 +1049,9 @@ const Checkout = () => {
                         <Truck className="w-3.5 h-3.5 text-primary" />
                         <span>Livraison Express {isMorocco ? "(Maroc)" : "(Europe)"}</span>
                       </span>
-                      {shippingCost === 0 || freeShippingApplied ? (
+                      {shippingCost === 0 ? (
                         <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
-                          Offerte
+                          {hasProductWithFreeShipping ? "Offerte (Inclus)" : "Offerte"}
                         </span>
                       ) : (
                         <span className="font-semibold text-foreground">+{formatMAD(shippingCost)}</span>

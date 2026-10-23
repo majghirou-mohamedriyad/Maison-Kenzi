@@ -52,6 +52,7 @@ export type Parfum = {
   images?: string[];
   isNew?: boolean;
   isBestseller?: boolean;
+  free_shipping?: boolean;
   seasons?: string[];
   sale_mode?: 'decant' | 'full_bottle';
   full_bottle_price?: number | null;

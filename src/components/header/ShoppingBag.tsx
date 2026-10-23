@@ -85,9 +85,12 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   // Seuil dynamique de livraison gratuite configuré depuis l'administration
   const freeShippingThreshold = Number(settings.free_shipping_threshold) > 0 ? Number(settings.free_shipping_threshold) : 500;
 
-  // Calcul du progrès pour la livraison gratuite
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
-  const remainingForFree = Math.max(0, freeShippingThreshold - subtotal);
+  // Détection si au moins un article du panier a la livraison offerte par produit
+  const hasFreeShippingItem = items.some((i) => i.free_shipping || allProducts.some((p) => p.id === i.id && p.free_shipping));
+  const isFreeShippingEffective = freeShippingApplied || hasFreeShippingItem || remainingForFree === 0;
+
+  // Calcul du progrès pour la livraison gratuite (100% si un produit a la livraison offerte)
+  const progressPercent = isFreeShippingEffective ? 100 : Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
 
   // Suggestions de découverte (parfums non encore dans le panier)
   const cartIds = new Set(items.map((i) => i.id));
@@ -180,7 +183,11 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
           <div className="flex items-center justify-between text-[11px] mb-1.5">
             <span className="flex items-center gap-1.5 text-primary font-semibold">
               <Truck className="w-3.5 h-3.5 shrink-0" />
-              {remainingForFree === 0 ? (
+              {hasFreeShippingItem ? (
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  Livraison Express Offerte avec un article de votre panier !
+                </span>
+              ) : remainingForFree === 0 ? (
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   {t("cart.freeShippingReached", "Livraison Express Offerte partout au Maroc & en Europe !")}
                 </span>
@@ -443,7 +450,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
                       <Truck className="w-3 h-3 text-primary" />
                       <span>{t("cart.shippingToMorocco", "Livraison partout au Maroc & Europe")}</span>
                     </span>
-                    {remainingForFree === 0 || freeShippingApplied ? (
+                    {isFreeShippingEffective ? (
                       <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
                         {t("cart.free", "GRATUITE")}
                       </span>

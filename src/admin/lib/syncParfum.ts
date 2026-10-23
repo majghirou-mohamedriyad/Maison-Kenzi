@@ -167,6 +167,7 @@ export const upsertParfumToSupabase = async (
     is_active: p.active ?? true,
     is_new: !!p.isNew,
     is_bestseller: !!p.isBestseller,
+    free_shipping: !!p.free_shipping,
     sale_mode: p.sale_mode ?? "full_bottle",
     full_bottle_volume_ml: p.full_bottle_volume_ml ? Number(p.full_bottle_volume_ml) : null,
     full_bottle_price: p.full_bottle_price != null ? Number(p.full_bottle_price) : numPrice,
@@ -183,26 +184,37 @@ export const upsertParfumToSupabase = async (
     volume_unit: p.volume_unit || null,
   };
 
-  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques, paliers, options personnalisables)
+  // 1. Tentative avec toutes les colonnes modernes (images, bilingue, cosmétiques, paliers, options, free_shipping)
   const { error } = await supabase.from("parfums").upsert(row as any, { onConflict: "id" });
   if (error) {
     console.warn("Supabase upsert - tentative avec repli:", error.message);
 
-    // 2. Repli si les colonnes cosmétiques, bilingues, tiers ou custom_options ne sont pas encore migrées sur PostgreSQL
-    const fallbackRow = { ...row };
+    // 2. Repli A : si seules les colonnes has_tiers / quantity_tiers ne sont pas dans le cache PostgREST
+    const fallbackRowWithoutTiers = { ...row };
+    delete fallbackRowWithoutTiers.has_tiers;
+    delete fallbackRowWithoutTiers.quantity_tiers;
+
+    const { error: errA } = await supabase.from("parfums").upsert(fallbackRowWithoutTiers as any, { onConflict: "id" });
+    if (!errA) {
+      return;
+    }
+
+    console.warn("Supabase upsert repli A échoué, essai repli B:", errA.message);
+
+    // 3. Repli B : si les colonnes cosmétiques ou options ne sont pas migrées non plus
+    const fallbackRow = { ...fallbackRowWithoutTiers };
     delete fallbackRow.weight_value;
     delete fallbackRow.weight_unit;
     delete fallbackRow.volume_value;
     delete fallbackRow.volume_unit;
-    delete fallbackRow.has_tiers;
-    delete fallbackRow.quantity_tiers;
     delete fallbackRow.has_custom_options;
     delete fallbackRow.custom_options;
+    // Note: on conserve free_shipping qui existe dans la table
     
     const { error: err2 } = await supabase.from("parfums").upsert(fallbackRow as any, { onConflict: "id" });
     if (err2) {
       console.warn("Supabase upsert repli 2 (sans champs bilingues):", err2.message);
-      // 3. Repli de compatibilité standard sans les colonnes optionnelles
+      // 4. Repli de compatibilité standard sans les colonnes optionnelles bilingues
       const {
         categories: _cat,
         seasons: _sea,
@@ -217,7 +229,12 @@ export const upsertParfumToSupabase = async (
       const { error: err3 } = await supabase.from("parfums").upsert(fallbackRowBase as any, { onConflict: "id" });
       if (err3) {
         console.error("Erreur critique Supabase parfums upsert:", err3);
-        throw err3;
+        // Dernier recours si même free_shipping n'existait pas
+        delete (fallbackRowBase as any).free_shipping;
+        const { error: errFinal } = await supabase.from("parfums").upsert(fallbackRowBase as any, { onConflict: "id" });
+        if (errFinal) {
+          throw errFinal;
+        }
       }
     }
   }

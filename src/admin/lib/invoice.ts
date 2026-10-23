@@ -278,8 +278,10 @@ export async function buildInvoicePdf(order: Order): Promise<jsPDF> {
   ].filter(Boolean).join(" ").toLowerCase();
 
   const isMorocco = destinationText.includes("maroc") || destinationText.includes("morocco");
-  const actualDiff = Number(order.total_amount || 0) - itemsSubtotal;
-  const shippingCost = actualDiff > 0 ? actualDiff : (isMorocco ? 25 : 7);
+  const actualDiff = Math.max(0, Number(order.total_amount || 0) - itemsSubtotal);
+  // Si le total correspond exactement au sous-total des articles, la livraison a ete offerte
+  const isFreeDelivery = itemsSubtotal > 0 && Math.abs(Number(order.total_amount || 0) - itemsSubtotal) < 0.01;
+  const shippingCost = isFreeDelivery ? 0 : (actualDiff > 0 ? actualDiff : (isMorocco ? 25 : 7));
   const displaySubtotal = itemsSubtotal > 0 ? itemsSubtotal : Math.max(0, Number(order.total_amount || 0) - shippingCost);
   const finalTotal = Number(order.total_amount || 0) || (displaySubtotal + shippingCost);
 

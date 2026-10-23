@@ -57,6 +57,7 @@ export type Parfum = {
   is_active: boolean;
   is_new: boolean;
   is_bestseller: boolean;
+  free_shipping?: boolean;
   stock_status: StockStatus;
   // Full bottle mode / single item mode
   sale_mode?: SaleMode;

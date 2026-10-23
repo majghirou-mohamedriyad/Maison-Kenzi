@@ -105,6 +105,7 @@ const withDefaults = (p: AdminParfum): AdminParfum => {
     weight_unit: p.weight_unit || "g",
     volume_value: p.volume_value,
     volume_unit: p.volume_unit || "ml",
+    free_shipping: !!p.free_shipping,
   };
 };
 
@@ -265,6 +266,7 @@ if (typeof window !== "undefined") {
                   images: finalImages,
                   isNew: !!r.is_new,
                   isBestseller: !!r.is_bestseller,
+                  free_shipping: r.free_shipping != null ? !!r.free_shipping : !!localMatch?.free_shipping,
                   sale_mode: r.sale_mode ?? localMatch?.sale_mode ?? "decant",
                   full_bottle_price: r.full_bottle_price ? Number(r.full_bottle_price) : localMatch?.full_bottle_price ?? null,
                   full_bottle_volume_ml: r.full_bottle_volume_ml ? Number(r.full_bottle_volume_ml) : localMatch?.full_bottle_volume_ml ?? null,

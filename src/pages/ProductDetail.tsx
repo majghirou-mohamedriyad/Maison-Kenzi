@@ -463,6 +463,7 @@ const ParfumDetail = () => {
         imageLabel: (customOptionsSummary ? `${customOptionsSummary} • ` : "") + (displaySubtitle || parfum.image_label),
         imageLabel_en: (customOptionsSummary ? `${customOptionsSummary} • ` : "") + (parfum.image_label_en || ""),
         imageUrl: parfum.image_url,
+        free_shipping: !!parfum.free_shipping,
       });
     });
 
@@ -828,6 +829,13 @@ const ParfumDetail = () => {
                   {parfum.is_new && (
                     <span className="text-[10px] uppercase tracking-wider text-primary-foreground bg-primary px-2.5 py-0.5 rounded-full font-medium shadow-xs animate-badge-glow">
                       {language === "en" ? "New" : "Nouveau"}
+                    </span>
+                  )}
+
+                  {parfum.free_shipping && (
+                    <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold shadow-xs">
+                      <Truck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      <span>{language === "en" ? "Free Shipping" : "Livraison Offerte"}</span>
                     </span>
                   )}
 

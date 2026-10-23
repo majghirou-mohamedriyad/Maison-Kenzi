@@ -25,6 +25,7 @@ import {
   Square,
   Flower2,
   Palette,
+  Truck,
 } from "lucide-react";
 import type { AdminParfum } from "@/store/useProductStore";
 import { getPrimaryImage } from "@/lib/productImages";
@@ -226,6 +227,11 @@ const ProductTable = ({
                           </span>
                         )}
                       </>
+                    )}
+                    {p.free_shipping && (
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
+                        <Truck className="w-2.5 h-2.5" /> Livraison Offerte
+                      </span>
                     )}
                   </div>
                 </div>
@@ -477,6 +483,11 @@ const ProductTable = ({
                                     </span>
                                   )}
                                 </>
+                              )}
+                              {p.free_shipping && (
+                                <span className="inline-flex items-center gap-1 text-[8.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
+                                  <Truck className="w-2.5 h-2.5" /> Livraison Offerte
+                                </span>
                               )}
                             </div>
                           </div>
