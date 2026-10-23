@@ -280,7 +280,7 @@ const ParfumDetail = () => {
       try {
         const p = JSON.parse(raw);
         if (Array.isArray(p)) return p;
-      } catch {}
+      } catch { }
     }
     return [];
   }, [parfum]);
@@ -724,18 +724,6 @@ const ParfumDetail = () => {
                 );
               })()}
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground text-center">
-                <div className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-card/40 border border-border/60">
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>{t.product.authenticity}</span>
-                </div>
-                <div className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-card/40 border border-border/60">
-                  <Truck className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>{t.common.freeShipping}</span>
-                </div>
-              </div>
-
               {/* Product Olfactory & Seasonal Profile Card / Conseils d'application */}
               {(isParfum || translatedDescription || parfum.weight_value || parfum.volume_value) && (
                 <div className="p-3.5 sm:p-4 rounded-2xl bg-card/40 border border-border/70 space-y-3 text-xs">
@@ -919,11 +907,10 @@ const ParfumDetail = () => {
                                   key={val.id}
                                   type="button"
                                   onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
-                                  className={`group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all duration-200 cursor-pointer ${
-                                    isSelected
+                                  className={`group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all duration-200 cursor-pointer ${isSelected
                                       ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-xs"
                                       : "border-border/80 bg-background hover:border-primary/40"
-                                  }`}
+                                    }`}
                                 >
                                   {val.color_code && (
                                     <span
@@ -952,11 +939,10 @@ const ParfumDetail = () => {
                                   key={val.id}
                                   type="button"
                                   onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
-                                  className={`p-2.5 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                                    isSelected
+                                  className={`p-2.5 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${isSelected
                                       ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-xs"
                                       : "border-border/80 bg-background hover:border-primary/40"
-                                  }`}
+                                    }`}
                                 >
                                   <span className="text-xs sm:text-sm font-semibold text-foreground">{valLabel}</span>
                                   {val.price_modifier ? (
@@ -993,11 +979,10 @@ const ParfumDetail = () => {
                                   key={val.id}
                                   type="button"
                                   onClick={() => setSelectedCustomOptions((prev) => ({ ...prev, [opt.id]: val.id }))}
-                                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-                                    isSelected
+                                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isSelected
                                       ? "border-primary bg-primary/10 ring-2 ring-primary/40 text-foreground"
                                       : "border-border/80 bg-background text-foreground hover:border-primary/40"
-                                  }`}
+                                    }`}
                                 >
                                   <span>{valLabel}</span>
                                   {val.price_modifier ? (
