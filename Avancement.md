@@ -3,7 +3,12 @@
 ## État d'Avancement Global
 
 - **Dernière mise à jour** : 2026-11-09
-- **Statut général** : Correction du Crash Tiroir Panier (ShoppingBag) & ErrorBoundary Global
+- **Statut général** : Optimisation UX d'Ajout au Panier (Non-Intrusif) & Bouclier Global
+
+- [x] Optimisation de l'Expérience d'Ajout au Panier sans Ouverture Automatique Forcée ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)) :
+  - [x] **Suppression de l'Ouverture Automatique du Tiroir Panier** : Retrait de l'appel bloquant `openCart()` lors du clic sur *« Ajouter au panier »*, évitant que la barre latérale ne vienne masquer la page produit.
+  - [x] **Notification Toast Interactive & Bilingue** : Affichage d'un toast de confirmation élégant indiquant le produit et le format choisi, avec bouton d'action contextuel *« Voir le panier »* (*« View bag »* en anglais) permettant au client d'ouvrir le tiroir uniquement s'il le souhaite.
+  - [x] **Conformité & Zéro Emoji** : Typographie soignée, zéro emoji et respect strict de l'ergonomie e-commerce haut de gamme.
 
 - [x] Correction du Crash Écran Blanc lors de l'Ajout au Panier & Sécurisation ErrorBoundary ([`src/components/header/ShoppingBag.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/header/ShoppingBag.tsx), [`src/components/ErrorBoundary.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/components/ErrorBoundary.tsx), [`src/App.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/App.tsx)) :
   - [x] **Correction de la Référence Manquante `remainingForFree`** : Restauration de la variable `remainingForFree = Math.max(0, freeShippingThreshold - subtotal)` dans `ShoppingBag.tsx`, prévenant l'exception `ReferenceError: remainingForFree is not defined` déclenchée à l'ouverture du tiroir de panier lors de l'ajout d'un produit.

@@ -468,10 +468,13 @@ const ParfumDetail = () => {
     });
 
     const summary = selectedItems.map((i) => `${i.sizeLabel} × ${i.quantity}`).join(", ");
-    toast.success("Ajouté au panier", {
+    toast.success(language === "en" ? "Added to bag" : "Ajouté au panier", {
       description: `${displayName || parfum.name} (${summary})`,
+      action: {
+        label: language === "en" ? "View bag" : "Voir le panier",
+        onClick: () => openCart(),
+      },
     });
-    openCart();
   };
 
   const seoTitle = `${displayName || parfum.name} — ${parfum.maison || "Maison Kenzi"} | Haute Parfumerie`.slice(0, 70);
