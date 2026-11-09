@@ -44,6 +44,7 @@ import Clients from "./admin/pages/Clients";
 import Promotions from "./admin/pages/Promotions";
 import Parametres from "./admin/pages/Parametres";
 import { PromoProvider } from "./contexts/PromoContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -51,63 +52,65 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <ThemeProvider>
-          <LanguageProvider>
-            <CustomerAuthProvider>
-              <PromoProvider>
-                <CartProvider>
-                  <Toaster />
-                  <Sonner />
-                  <ScrollToTop />
-                  <CustomerAuthModal />
-                  <MaintenanceGate>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/collection/:collection" element={<Collection />} />
-                      <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
-                      <Route path="/checkout" element={<Checkout />} />
-                      <Route path="/compte" element={<Account />} />
-                      <Route path="/mon-compte" element={<Account />} />
-                      <Route path="/connexion" element={<Auth />} />
-                      <Route path="/inscription" element={<Auth />} />
-                      <Route path="/login" element={<Auth />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/service-client" element={<ServiceClient />} />
-                      <Route path="/about/service-client" element={<ServiceClient />} />
-                      <Route path="/contact" element={<ServiceClient />} />
-                      <Route path="/suivi-commande" element={<OrderTracking />} />
-                      <Route path="/tracking" element={<OrderTracking />} />
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
-                      <Route path="/terms-of-service" element={<TermsOfService />} />
-                      <Route path="/conditions-generales" element={<TermsOfService />} />
+        <ErrorBoundary>
+          <ThemeProvider>
+            <LanguageProvider>
+              <CustomerAuthProvider>
+                <PromoProvider>
+                  <CartProvider>
+                    <Toaster />
+                    <Sonner />
+                    <ScrollToTop />
+                    <CustomerAuthModal />
+                    <MaintenanceGate>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/collection/:collection" element={<Collection />} />
+                        <Route path="/parfum/:parfumId" element={<ParfumDetail />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/compte" element={<Account />} />
+                        <Route path="/mon-compte" element={<Account />} />
+                        <Route path="/connexion" element={<Auth />} />
+                        <Route path="/inscription" element={<Auth />} />
+                        <Route path="/login" element={<Auth />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/service-client" element={<ServiceClient />} />
+                        <Route path="/about/service-client" element={<ServiceClient />} />
+                        <Route path="/contact" element={<ServiceClient />} />
+                        <Route path="/suivi-commande" element={<OrderTracking />} />
+                        <Route path="/tracking" element={<OrderTracking />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
+                        <Route path="/terms-of-service" element={<TermsOfService />} />
+                        <Route path="/conditions-generales" element={<TermsOfService />} />
 
-                      {/* Admin */}
-                      <Route path="/admin/login" element={<AdminLogin />} />
-                      <Route element={<AdminGuard />}>
-                        <Route element={<AdminLayout />}>
-                          <Route path="/admin" element={<Dashboard />} />
-                          <Route path="/admin/produits" element={<Produits />} />
-                          <Route path="/admin/categories" element={<CategoriesAdmin />} />
-                          <Route path="/admin/commandes" element={<Commandes />} />
-                          <Route path="/admin/clients" element={<Clients />} />
-                          <Route path="/admin/promotions" element={<Promotions />} />
-                          <Route path="/admin/parametres" element={<Parametres />} />
+                        {/* Admin */}
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route element={<AdminGuard />}>
+                          <Route element={<AdminLayout />}>
+                            <Route path="/admin" element={<Dashboard />} />
+                            <Route path="/admin/produits" element={<Produits />} />
+                            <Route path="/admin/categories" element={<CategoriesAdmin />} />
+                            <Route path="/admin/commandes" element={<Commandes />} />
+                            <Route path="/admin/clients" element={<Clients />} />
+                            <Route path="/admin/promotions" element={<Promotions />} />
+                            <Route path="/admin/parametres" element={<Parametres />} />
+                          </Route>
                         </Route>
-                      </Route>
 
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    <FloatingCartButton />
-                    <ChatBotMount />
-                    <BackToTop />
-                    <SpeedInsights />
-                  </MaintenanceGate>
-                </CartProvider>
-              </PromoProvider>
-            </CustomerAuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                      <FloatingCartButton />
+                      <ChatBotMount />
+                      <BackToTop />
+                      <SpeedInsights />
+                    </MaintenanceGate>
+                  </CartProvider>
+                </PromoProvider>
+              </CustomerAuthProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

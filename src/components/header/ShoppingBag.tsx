@@ -85,11 +85,14 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
   // Seuil dynamique de livraison gratuite configuré depuis l'administration
   const freeShippingThreshold = Number(settings.free_shipping_threshold) > 0 ? Number(settings.free_shipping_threshold) : 500;
 
+  // Montant restant pour bénéficier de la livraison gratuite
+  const remainingForFree = Math.max(0, freeShippingThreshold - subtotal);
+
   // Détection si au moins un article du panier a la livraison offerte par produit
   const hasFreeShippingItem = items.some((i) => i.free_shipping || allProducts.some((p) => p.id === i.id && p.free_shipping));
   const isFreeShippingEffective = freeShippingApplied || hasFreeShippingItem || remainingForFree === 0;
 
-  // Calcul du progrès pour la livraison gratuite (100% si un produit a la livraison offerte)
+  // Calcul du progrès pour la livraison gratuite (100% si un produit a la livraison offerte ou seuil atteint)
   const progressPercent = isFreeShippingEffective ? 100 : Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
 
   // Suggestions de découverte (parfums non encore dans le panier)
@@ -183,7 +186,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
           <div className="flex items-center justify-between text-[11px] mb-1.5">
             <span className="flex items-center gap-1.5 text-primary font-semibold">
               <Truck className="w-3.5 h-3.5 shrink-0" />
-              {hasFreeShippingItem ? (
+              {hasFreeShippingItem || freeShippingApplied ? (
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   Livraison Express Offerte avec un article de votre panier !
                 </span>
@@ -204,7 +207,7 @@ const ShoppingBag = ({ isOpen, onClose }: ShoppingBagProps) => {
 
           <div className="w-full h-1.5 bg-secondary/80 rounded-full overflow-hidden">
             <div
-              className={`h-full transition-all duration-500 rounded-full ${remainingForFree === 0
+              className={`h-full transition-all duration-500 rounded-full ${isFreeShippingEffective
                   ? "bg-emerald-500 shadow-xs shadow-emerald-500/50"
                   : "bg-primary"
                 }`}
