@@ -2,8 +2,12 @@
 
 ## État d'Avancement Global
 
-- **Dernière mise à jour** : 2026-11-09
-- **Statut général** : Optimisation UX d'Ajout au Panier (Non-Intrusif) & Bouclier Global
+- **Dernière mise à jour** : 2026-11-14
+- **Statut général** : Vérification de Domaine Meta (Facebook) & Optimisations Panier
+
+- [x] Intégration de la Balise de Vérification de Domaine Meta / Facebook ([`index.html`](file:///c:/Users/PC/Desktop/Maison-Kenzi/index.html)) :
+  - [x] **Insertion Statique dans `<head>`** : Ajout de la balise `<meta name="facebook-domain-verification" content="v9y29h2y5gvkrisej43rfyimwo4xaw" />` directement dans la source HTML brute de la page d'accueil (`index.html`), garantissant une reconnaissance immédiate par le robot d'indexation de Meta sans exécution JavaScript.
+  - [x] **Conformité & Documentation** : En-tête de section clair en français, sans emoji.
 
 - [x] Optimisation de l'Expérience d'Ajout au Panier sans Ouverture Automatique Forcée ([`src/pages/ProductDetail.tsx`](file:///c:/Users/PC/Desktop/Maison-Kenzi/src/pages/ProductDetail.tsx)) :
   - [x] **Suppression de l'Ouverture Automatique du Tiroir Panier** : Retrait de l'appel bloquant `openCart()` lors du clic sur *« Ajouter au panier »*, évitant que la barre latérale ne vienne masquer la page produit.
